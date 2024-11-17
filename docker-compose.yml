@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+
+  user_db:
+    container_name: user_db_container
+    image: mongo:latest
+    restart: always
+    ports: 
+      - 27018:27017
+    volumes: 
+      - mongo_user_db:/data/db
+    networks: 
+      - event_planner_network
+
+  user_services:
+    container_name: user_services_container 
+    build: ./backend/user
+    ports: 
+      - 3001:3001
+    environment: 
+      MONGO_URL: "mongodb://user_db_container:27017/userService"
+      PORT: 3001
+      JWT_SECRET: "sreedeviEventPlannerApplication"
+    # if user service depends on rabitmq add that once it is used
+    depends_on: 
+      - user_db
+    volumes: 
+      - ./backend/user:/usr/src/app/user
+      # can map onlu code folder as well like, ./user/src(from local):/usr/src/app/user(in docker container)
+      # by /usr/src/app/user each microservice is kept in separate folder in docker container /usr/src/app
+    networks: 
+      - event_planner_network  
+
+  frontend:
+    container_name: angular_container  
+    build: ./frontend  
+    ports: 
+      - 4200:4200
+    networks: 
+      - event_planner_network
+
+  nginx:
+    container_name: nginx_container
+    image: nginx:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - ./backend/nginx/nginx.conf:/etc/nginx/nginx.conf  
+    depends_on:
+      - user_services
+      - frontend
+      # add other services as it is added
+    networks: 
+      - event_planner_network  
+
+volumes:
+  mongo_user_db: {}
+  # mongo_event_db: {}
+  # mongo_booking_db: {}
+
+networks:
+  event_planner_network:
+    driver: bridge
+
