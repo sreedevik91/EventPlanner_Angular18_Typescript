@@ -1,0 +1,12 @@
+
+<section>
+
+@if(role==='admin'){
+    <app-admin-dashboard></app-admin-dashboard>
+}@else if(role==='user'){
+    <app-user-dashboard></app-user-dashboard>
+}@else if(role==='provider') {
+    <app-provider-dashboard></app-provider-dashboard>
+}
+
+</section>

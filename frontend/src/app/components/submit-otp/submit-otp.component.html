@@ -1,0 +1,53 @@
+<section class="py-3 py-md-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
+                <div class="card border border-light-subtle rounded-3 shadow-sm">
+                    <div class="card-body p-3 p-md-4 p-xl-5">
+                        <div>
+                            <app-alert [showAlert]="alert" [alertMessage]="message" [classText]="class" [alertText]="text"></app-alert>
+                        </div>
+
+                        <div>
+
+                            <h2 class="fs-6 fw-normal text-center text-secondary mb-4">Enter OTP sent to your registered
+                                email.</h2>
+
+                            <form [formGroup]="otpForm">
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">Enter OTP:</label>
+                                    <input type="text" class="form-control" id="recipient-name" formControlName="otp">
+                                    @if(otpForm.controls['otp'].touched &&
+                                    otpForm.controls['otp'].errors?.['required'] ){
+                                    <div>
+                                        <span class="text-danger">This is required</span>
+                                    </div>
+                                    }
+                                </div>
+
+                                <div>
+                                    @if(isOtpExpired){
+                                        Otp Expired. Click to <a (click)="resendOtp()" style="cursor: pointer;">Resend Otp</a>
+                                    }@else{
+                                        Otp will expire in {{timer}}
+                                    }
+                                   
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-block text-center">
+                                    <button class="btn btn-primary btn-lg m-3" [disabled]="otpForm.invalid"
+                                        (click)="verifyOtp()">Log in</button>
+                                    <button class="btn btn-danger btn-lg m-3" (click)="backToLogin()">Cancel</button>
+                                </div>
+
+
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
