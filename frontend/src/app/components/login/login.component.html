@@ -193,12 +193,12 @@
                                             <button type="button" class="btn btn-success m-3"
                                                 [disabled]="userRegistrationForm.invalid" (click)="register()">Register</button>
                                             <button type="reset" class="btn btn-info m-3"
-                                                (click)="isLoginForm=true;isRole=false">Cancel</button>
+                                                (click)="isLoginForm=true;isRole=false; reload()">Cancel</button>
                                         </div>
         
                                         <div class="mb-3">
                                             <p class="m-0 text-secondary text-center">Already have an account? <a
-                                                    (click)="isLoginForm=true;isRole=false"
+                                                    (click)="isLoginForm=true;isRole=false;reload()"
                                                     class="btn link-primary text-decoration-none">Login</a>
                                             </p>
                                         </div>

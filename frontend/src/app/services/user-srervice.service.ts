@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { loggedUserData, loginData, registerData } from '../model/model';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserSrerviceService {
 
-  baseUrl: string = 'http://localhost:4000/user/'
+  baseUrl: string = environment.apiUrl
   user!: loggedUserData;
 
   http = inject(HttpClient)

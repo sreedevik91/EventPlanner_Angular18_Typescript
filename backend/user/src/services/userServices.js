@@ -34,7 +34,7 @@ class UserServices {
 
     }
 
-    async sendMail(name, email, content) {
+    async sendMail(name, email, content, subject) {
         try {
             const transporter = nodemailer.createTransport({
                 service: 'gmail',
@@ -47,7 +47,7 @@ class UserServices {
             let mailOptions = {
                 from: process.env.EMAIL_USER,
                 to: email,
-                subject: "Reset Password !",
+                subject: `${subject}`,
                 html: `
             <div>
             <p>Dear ${name}, </p>
@@ -88,7 +88,8 @@ class UserServices {
                  <p>We have received a request to reset your password for Dream Event. Kindly click the link below to continue with reset password.</p>
                  <p><a href="${process.env.EMAIL_URL}reset/${token}"> Reset Password </a></p>
                 `
-                let response = this.sendMail(user.name, email, content)
+                let subject = "Reset Password !"
+                let response = this.sendMail(user.name, email, content, subject)
                 if (response) {
                     return { success: true, message: 'Email sent successfully' }
                 } else {
@@ -119,7 +120,9 @@ class UserServices {
                 <p>Please find below OTP for verification</p>
                 <p>${otp}</p>
                 `
-            let response = await this.sendMail(name, email, content)
+            let subject = "Login OTP !"
+
+            let response = await this.sendMail(name, email, content, subject)
             if (response) {
                 console.log('OTP sent to email');
             }
@@ -216,7 +219,9 @@ class UserServices {
                 if (user != null && await bcrypt.compare(password, user.password)) {
 
                     const cookieData = await this.getToken(user)
+                    if(user.role !=='admin'){
                     this.sendOtp(user.name, user.email)
+                    }
                     // console.log('cookieData: ', cookieData);
                     return { cookieData, success: true }
 
