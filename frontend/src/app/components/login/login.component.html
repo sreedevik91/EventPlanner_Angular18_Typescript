@@ -29,7 +29,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="message-text" class="col-form-label">Password:</label>
-                                    <input class="form-control" id="message-text" formControlName="password">
+                                    <input type="password" class="form-control" id="message-text" formControlName="password">
                                     @if(userLoginForm.controls['password'].touched &&
                                     userLoginForm.controls['password'].errors?.['required'] ){
                                     <div>
@@ -156,7 +156,7 @@
                                         </div>
                                         }
                                         <label for="" class="form-label">Password:</label>
-                                        <input type="text" class="form-control" formControlName="password">
+                                        <input type="password" class="form-control" formControlName="password">
                                         @if(userRegistrationForm.controls['password'].touched &&
                                         userRegistrationForm.controls['password'].errors?.['minlength']){
                                         <div>

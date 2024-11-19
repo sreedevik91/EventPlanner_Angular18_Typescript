@@ -8,7 +8,7 @@ import { AlertComponent } from '../../shared/components/alert/alert.component';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, AlertComponent,RouterLink],
+  imports: [ReactiveFormsModule, AlertComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
