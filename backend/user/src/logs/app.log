@@ -1,0 +1,9 @@
+POST /login 200 [21/Nov/2024:20:39:00 +0000] - 1035.597 ms localhost
+POST /verifyOtp 200 [21/Nov/2024:20:39:16 +0000] - 63.679 ms localhost
+POST /verifyOtp 200 [21/Nov/2024:20:39:25 +0000] - 12.291 ms localhost
+POST /verifyOtp 200 [21/Nov/2024:20:41:33 +0000] - 5.117 ms localhost
+GET /sendOtp/672fa8abb6da377b761a20dc 200 [21/Nov/2024:20:41:37 +0000] - 15.559 ms localhost
+POST /verifyOtp 200 [21/Nov/2024:20:42:23 +0000] - 7.462 ms localhost
+POST /login 200 [21/Nov/2024:20:46:17 +0000] - 168.758 ms localhost
+POST /verifyOtp 200 [21/Nov/2024:20:46:32 +0000] - 8.559 ms localhost
+GET /logout 304 [21/Nov/2024:20:46:54 +0000] - 1.117 ms localhost

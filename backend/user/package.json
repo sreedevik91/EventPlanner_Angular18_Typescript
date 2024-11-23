@@ -1,28 +1,40 @@
 {
-  "name": "user",
+  "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "description": "",
   "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.9.1",
     "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.8.0",
+    "mongoose": "^8.8.2",
     "morgan": "^1.10.0",
     "nodemailer": "^6.9.16",
     "nodemon": "^3.1.7",
     "otp-generator": "^4.0.1",
-    "rotating-file-stream": "^3.2.5"
+    "rotating-file-stream": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
   },
-  "description": ""
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/nodemailer": "^6.4.17",
+    "@types/otp-generator": "^4.0.2"
+  }
 }

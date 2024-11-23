@@ -1,0 +1,16 @@
+GET / 200 [21/Nov/2024:19:18:54 +0000] - 25.270 ms localhost
+GET /styles.css 200 [21/Nov/2024:19:18:54 +0000] - 8.567 ms localhost
+GET /@vite/client 304 [21/Nov/2024:19:18:54 +0000] - 10.077 ms localhost
+GET /polyfills.js 304 [21/Nov/2024:19:18:54 +0000] - 4.758 ms localhost
+GET /main.js 304 [21/Nov/2024:19:18:54 +0000] - 5.499 ms localhost
+GET /@fs/C:/Users/USER/Desktop/BroCampTasks/Angular_Project/frontend/node_modules/vite/dist/client/env.mjs 304 [21/Nov/2024:19:18:54 +0000] - 5.782 ms localhost
+GET /favicon.ico 304 [21/Nov/2024:19:18:55 +0000] - 5.090 ms localhost
+GET / - [21/Nov/2024:19:22:55 +0000] - - ms localhost
+GET /login 200 [21/Nov/2024:19:52:45 +0000] - 100.042 ms localhost
+GET /@vite/client 304 [21/Nov/2024:19:52:47 +0000] - 82.430 ms localhost
+GET /styles.css 200 [21/Nov/2024:19:52:47 +0000] - 64.595 ms localhost
+GET /polyfills.js 304 [21/Nov/2024:19:52:48 +0000] - 3.398 ms localhost
+GET /main.js 304 [21/Nov/2024:19:52:48 +0000] - 5.755 ms localhost
+GET /@fs/C:/Users/USER/Desktop/BroCampTasks/Angular_Project/frontend/node_modules/vite/dist/client/env.mjs 304 [21/Nov/2024:19:52:48 +0000] - 2.304 ms localhost
+GET /favicon.ico 304 [21/Nov/2024:19:52:49 +0000] - 16.732 ms localhost
+GET / - [21/Nov/2024:19:56:48 +0000] - - ms localhost
