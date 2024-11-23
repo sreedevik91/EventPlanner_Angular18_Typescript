@@ -7,35 +7,46 @@ import { IUser, IUserDb, JwtPayload, LoginData } from '../interfaces/userInterfa
 import UserRepository from '../repository/userRepository'
 import { ObjectId } from 'mongoose'
 import { CookieOptions } from 'express'
+import userRepository from '../repository/userRepository'
 
 dotenv.config()
 
 class UserServices {
 
-    async getToken(user: IUser) {
+    // async getToken(user: IUser) {
+    //     try {
+    //         const payload: JwtPayload = {
+    //             id: user._id as string,
+    //             user: user.name,
+    //             role: user.role,
+    //             googleId: user.googleId,
+    //             email: user.email
+    //         }
+    //         let accessSecret = process.env.JWT_ACCESS_SECRET!
+    //         let refreshSecret = process.env.JWT_REFRESH_SECRET!
+
+    //           let accessToken = jwt.sign(payload, accessSecret, { expiresIn: '15m' })
+    //           let refreshToken = jwt.sign(payload, refreshSecret, { expiresIn: '10d' })
+
+    //         const options:CookieOptions = {
+    //             httpOnly: true,
+    //             maxAge: 36000,
+    //             secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
+    //             // sameSite: 'none'
+    //         }
+
+    //         return {payload, accessToken,refreshToken, options}
+    //     } catch (error: any) {
+    //         console.log('Error from generate token: ', error.message);
+    //     }
+
+    // }
+
+    async getToken(payload: JwtPayload, secret: string, expiresIn: string) {
         try {
-            const payload: JwtPayload = {
-                id: user._id as string,
-                user: user.name,
-                role: user.role,
-                googleId: user.googleId,
-                email: user.email
-            }
-            let secret = process.env.JWT_SECRET
-            let token: string=''
-            if (secret) {
-                token = jwt.sign(payload, secret, { expiresIn: '1d' })
-            } else {
-                console.log('JWT secret is missing');
-            }
 
-            const options:CookieOptions = {
-                httpOnly: true,
-                maxAge: 36000,
-                secure: process.env.NODE_ENV === 'production' // secure will become true when the app is running in production
-            }
-
-            return {payload, token, options}
+            let token = jwt.sign(payload, secret, { expiresIn })
+            return token
         } catch (error: any) {
             console.log('Error from generate token: ', error.message);
         }
@@ -123,6 +134,7 @@ class UserServices {
     async sendOtp(name: string, email: string, id: string) {
 
         try {
+
             let otp = otpGenerator.generate(4, { digits: true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false })
             let otpData = {
                 otp,
@@ -135,7 +147,7 @@ class UserServices {
                 <p>Please find below OTP for verification</p>
                 <p>${otp}</p>
                 `
-            let subject = "Login OTP !"
+            let subject = "Verification OTP !"
 
             let response = await this.sendMail(name, email, content, subject)
             if (response) {
@@ -167,7 +179,7 @@ class UserServices {
 
     }
 
-    async resetUserPassword(data:{password:string,token:string}) {
+    async resetUserPassword(data: { password: string, token: string }) {
 
         try {
             const { password, token } = data
@@ -208,9 +220,14 @@ class UserServices {
                 if (isUser) {
                     return { success: false, message: 'Username not available' }
                 }
-                const user = await UserRepository.createUser(userData)
+                const user:any = await UserRepository.createUser(userData)
+                console.log(user);
+                
+                if(user){
+                   await this.sendOtp(user.name, user.email, user._id)
+                }
                 // console.log('user saved', user);
-                return { success: true, message: 'User registered successfully' }
+                return { success: true, message: 'User registered successfully', userData:user}
             }
 
 
@@ -225,28 +242,73 @@ class UserServices {
         try {
             if (loginData.googleId && loginData.email) {
                 const isUser = await UserRepository.getUserByEmail(loginData.email)
-                let cookieData
+
+                let user: IUser
                 if (isUser) {
-                    cookieData = await this.getToken(isUser)
+                    user = isUser
+                    // cookieData = await this.getToken(isUser)
                 } else {
-                    const user = await UserRepository.createUser(loginData)
+                    user = await UserRepository.createUser(loginData)
                     console.log('Google user saved', user);
-                    cookieData = await this.getToken(user)
+                    // cookieData = await this.getToken(user)
                 }
+
+                const payload: JwtPayload = {
+                    id: user._id as string,
+                    user: user.name,
+                    role: user.role,
+                    googleId: user.googleId,
+                    email: user.email
+                }
+
+                let accessSecret = process.env.JWT_ACCESS_SECRET!
+                let refreshSecret = process.env.JWT_REFRESH_SECRET!
+
+                const options: CookieOptions = {
+                    httpOnly: true,
+                    maxAge: 36000,
+                    secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
+                    // sameSite: 'none'
+                }
+
+                let accessToken = await this.getToken(payload, accessSecret, '15m')
+                let refreshToken = await this.getToken(payload, refreshSecret, '10d')
+
+                let cookieData = { payload, accessToken, refreshToken, options }
 
                 return { cookieData, success: true }
 
             } else {
                 const { username, password } = loginData
                 if (username && password) {
-                    const user= await UserRepository.getUserByUsername(username)
+                    const user = await UserRepository.getUserByUsername(username)
                     if (user != null && user.password && await bcrypt.compare(password, user.password)) {
-
-                        const cookieData = await this.getToken(user)
-                        let id=user._id as string
-                        if (user.role !== 'admin') {
-                            this.sendOtp(user.name, user.email,id)
+                        const payload: JwtPayload = {
+                            id: user._id as string,
+                            user: user.name,
+                            role: user.role,
+                            googleId: user.googleId,
+                            email: user.email
                         }
+
+                        let accessSecret = process.env.JWT_ACCESS_SECRET!
+                        let refreshSecret = process.env.JWT_REFRESH_SECRET!
+
+                        const options: CookieOptions = {
+                            httpOnly: true,
+                            maxAge: 36000,
+                            secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
+                            // sameSite: 'none'
+                        }
+
+                        let accessToken = await this.getToken(payload, accessSecret, '15m')
+                        let refreshToken = await this.getToken(payload, refreshSecret, '10d')
+
+                        let cookieData = { payload, accessToken, refreshToken, options }
+                        // let id = user._id as string
+                        // if (user.role !== 'admin') {
+                        //     this.sendOtp(user.name, user.email, id)
+                        // }
                         // console.log('cookieData: ', cookieData);
                         return { cookieData, success: true }
 
@@ -256,29 +318,29 @@ class UserServices {
                 }
 
             }
-        } catch (error:any) {
+        } catch (error: any) {
             console.log('Error from userService login: ', error.message);
         }
 
 
     }
 
-    async verifyLoginOtp(data:{id:string,otp:string}) {
+    async verifyLoginOtp(data: { id: string, otp: string }) {
 
         try {
             const { id, otp } = data
             const user = await UserRepository.getUserById(id)
             if (user) {
                 const { otpData } = user
-                if(otpData){
+                if (otpData) {
                     console.log('dbTime: ', otpData.expiresIn);
                     console.log('timeNow: ', Date.now());
-    
+
                     if (Date.now() > otpData.expiresIn) {
                         console.log('otp expired');
                         return { success: false, message: 'Otp expired' }
                     }
-    
+
                     if (otp === otpData.otp) {
                         console.log('otp matched');
                         return { success: true, message: 'Otp matched' }
@@ -287,14 +349,60 @@ class UserServices {
                         return { success: false, message: 'Otp did not match' }
                     }
                 }
-                
+
             }
-        } catch (error:any) {
+        } catch (error: any) {
             console.log('Error from verify login otp: ', error.message);
         }
 
     }
 
+    async getUsers() {
+
+        try {
+            let data = await UserRepository.getAllUsers()
+            if (data) {
+                return { success: true, data }
+            } else {
+                return { success: false, message: 'could not fetch data' }
+            }
+        } catch (error: any) {
+            console.log('Error from verify login otp: ', error.message);
+        }
+
+    }
+
+    async getNewToken(refreshToken: string) {
+
+        // decoded token:  {
+        //     id: '6738f8c218960f422dbd066c',
+        //     user: 'Admin',
+        //     role: 'admin',
+        //     email: ' sreedevisooraj15@gmail.com',
+        //     iat: 1732400320,
+        //     exp: 1732401220
+        //   }
+        try {
+            let decoded: any = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
+
+            const { id, user, role, googleId, email } = decoded
+            const payload: JwtPayload = { id, user, role, googleId, email }
+            let newToken = await this.getToken(payload, process.env.JWT_ACCESS_SECRET!, '15m')
+            const options: CookieOptions = {
+                httpOnly: true,
+                maxAge: 36000,
+                secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
+            }
+            if (newToken) {
+                return { success: true, accessToken: newToken, options: options }
+            } else {
+                return { success: false, message: 'Could not refresh token' }
+            }
+        } catch (error: any) {
+            console.log('Error from verify login otp: ', error.message);
+        }
+
+    }
 
 }
 

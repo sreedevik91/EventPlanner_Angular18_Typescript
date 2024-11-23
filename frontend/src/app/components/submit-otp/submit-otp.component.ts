@@ -72,7 +72,7 @@ export class SubmitOtpComponent implements OnInit {
           console.log(res);
           if(res.success){
             this.otpForm.reset()
-            this.router.navigate(['dashboard']);
+            this.router.navigate(['login']);
           }else{
             this.callAlert("alert alert-danger", "Login Failed", res.message)
           }

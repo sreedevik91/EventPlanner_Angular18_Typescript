@@ -40,6 +40,11 @@ export const routes: Routes = [
                 component:DashboardComponent,
                 canActivate:[authGuard]
             },
+            {
+                path:'users',
+                component:HomeComponent,
+                canActivate:[authGuard]
+            },
            
         ]
     },

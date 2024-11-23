@@ -1,17 +1,32 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { loginData, registerData } from '../../model/model';
 import { UserSrerviceService } from '../../services/user-srervice.service';
 import { RouterLink } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink,AsyncPipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  allUsers:any=[]
+  ngOnInit(): void {
+    this.userService.getAllUsers().subscribe({
+      next:(res:any)=>{
+        console.log('all users: ', res);
+        
+        this.allUsers=res.data
+      },
+      error:(error:any)=>{
+console.log(error.message);
+
+      }
+    })
+  }
 
   @ViewChild('modal') modal!: ElementRef;
 

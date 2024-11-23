@@ -132,11 +132,12 @@ export class LoginComponent implements OnInit, AfterViewInit {
       next: (res: any) => {
         console.log(res);
         if (res.success === true) {
-          if(res.userData.role==='admin'){
           this.router.navigateByUrl('dashboard')
-          }else{
-            this.router.navigateByUrl(`/otp/${res.userData.id}`)
-          }
+          // if(res.userData.role==='admin'){
+          // this.router.navigateByUrl('dashboard')
+          // }else{
+          //   this.router.navigateByUrl(`/otp/${res.userData.id}`)
+          // }
           this.userService.setUser(res.userData)
         } else {
           this.callAlert("alert alert-danger", "Login Failed", res.message)
@@ -160,7 +161,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
         console.log(res);
         if (res.success) {
           this.callAlert("alert alert-success", "Success!", res.message)
-          this.isLoginForm = true
+          this.router.navigateByUrl(`/otp/${res.userData._id}`)
+          // this.isLoginForm = true
         } else {
           this.callAlert("alert alert-danger", "Failed!", res.message)
         }

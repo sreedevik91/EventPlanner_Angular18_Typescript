@@ -33,9 +33,11 @@ export interface JwtPayload {
     email: string;
 }
 
+
 export interface CookieType {
     payload: JwtPayload;
-    token: string;
+    refreshToken:string | undefined;
+    accessToken: string | undefined;
     options:CookieOptions
 }
 

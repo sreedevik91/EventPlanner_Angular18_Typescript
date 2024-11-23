@@ -51,4 +51,9 @@ export class UserSrerviceService {
     return this.http.get(`${this.baseUrl}sendOtp/${id}`)
   }
 
+  getAllUsers(){
+    // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
+    return this.http.get(`${this.baseUrl}users`)
+
+  }
 }
