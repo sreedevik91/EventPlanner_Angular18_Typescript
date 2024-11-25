@@ -27,6 +27,7 @@ export class UserSrerviceService {
   setUser(data: loggedUserData) {
     this.user = data
   }
+  
   getUser() {
     return this.user
   }
@@ -54,6 +55,10 @@ export class UserSrerviceService {
   getAllUsers(){
     // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
     return this.http.get(`${this.baseUrl}users`)
-
   }
+
+  refreshToken(){
+    return this.http.get(`${this.baseUrl}refreshToken`)
+  }
+  
 }

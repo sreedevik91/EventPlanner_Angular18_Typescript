@@ -8,7 +8,7 @@ import { Component, Input } from '@angular/core';
   styleUrl: './alert.component.css'
 })
 export class AlertComponent {
-  
+ 
 @Input() showAlert:boolean=false
 @Input() alertMessage:string=''
 @Input() classText:string=''

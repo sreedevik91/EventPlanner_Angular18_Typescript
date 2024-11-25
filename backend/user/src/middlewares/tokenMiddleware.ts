@@ -13,7 +13,7 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
 
     console.log('entered token verification ');
     console.log('Request Headers:', req.headers);
-    console.log('Cookies:',req.cookies);
+    console.log('Cookies:', req.cookies);
 
     const token = req.cookies?.accessToken
 
@@ -21,18 +21,26 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
 
 
     if (!token) {
-        res.status(404).json({ success: false, message: 'Unauthorized' })
+        res.status(401).json({ success: false, message: 'Unauthorized: Token Missing' })
         return
     }
     try {
-            const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!)
-            console.log('decoded token: ', decoded);
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!)
+        console.log('decoded token: ', decoded);
 
-            req.user = decoded
-            next()
+        req.user = decoded
+        next()
 
     } catch (error: any) {
-        res.json({ success: false, message: error.message })
+
+        console.log('token middleware error: ', error);
+
+        if (error.name === 'TokenExpiredError') {
+            res.status(401).json({ success: false, message: 'Token Expired' })
+            return
+        }
+
+        res.status(401).json({ success: false, message: 'Unauthorized: Invalid token' })
     }
 }
 

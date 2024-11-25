@@ -104,10 +104,15 @@ class UserController {
                 return
             }
             let tokenRes: any = await userServices.getNewToken(refreshToken)
-            const { accessToken, options } = tokenRes
-            res.cookie('accessToken', accessToken, options)
-            res.json({ success: true, message: 'Token refreshed' })
-
+            const { accessToken, options,payload } = tokenRes
+            if(accessToken){
+                res.cookie('accessToken', accessToken, options)
+                res.cookie('refreshToken', refreshToken, options)
+                res.json({ success: true, message: 'Token refreshed',userData: payload })
+                return
+            }
+            res.json({ success: false, message: 'Token could not refresh'})
+          
         } catch (error: any) {
             console.log('Error from getAllUsers : ', error.message);
         }

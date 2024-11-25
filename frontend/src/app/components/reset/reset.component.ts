@@ -52,7 +52,7 @@ export class ResetComponent implements OnInit {
 
   resetForm: FormGroup = new FormGroup(
     {
-      newPassword: new FormControl('', [Validators.required,Validators.minLength(8)]),
+      password: new FormControl('', [Validators.required,Validators.minLength(8)]),
       confirmPassword: new FormControl('',[ Validators.required, PasswordMatchValidator])
     },
     // { validators: PasswordMatchValidator }

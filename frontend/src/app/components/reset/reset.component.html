@@ -17,14 +17,14 @@
                                 <div class="mb-3">
                                     <label for="recipient-name" class="col-form-label">New Password:</label>
                                     <input type="password" class="form-control" id="recipient-name"
-                                        formControlName="newPassword">
-                                    @if(resetForm.controls['newPassword'].touched &&
-                                    resetForm.controls['newPassword'].errors?.['required'] ){
+                                        formControlName="password">
+                                    @if(resetForm.controls['password'].touched &&
+                                    resetForm.controls['password'].errors?.['required'] ){
                                     <div>
                                         <span class="text-danger">This is required</span>
                                     </div>
-                                    }@else if (resetForm.controls['newPassword'].touched &&
-                                    resetForm.controls['newPassword'].errors?.['minlength'] ) {
+                                    }@else if (resetForm.controls['password'].touched &&
+                                    resetForm.controls['password'].errors?.['minlength'] ) {
                                     <div>
                                         <span class="text-danger">Minimum 8 characters required</span>
                                     </div>

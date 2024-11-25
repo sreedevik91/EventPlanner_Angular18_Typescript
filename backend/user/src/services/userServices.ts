@@ -13,39 +13,9 @@ dotenv.config()
 
 class UserServices {
 
-    // async getToken(user: IUser) {
-    //     try {
-    //         const payload: JwtPayload = {
-    //             id: user._id as string,
-    //             user: user.name,
-    //             role: user.role,
-    //             googleId: user.googleId,
-    //             email: user.email
-    //         }
-    //         let accessSecret = process.env.JWT_ACCESS_SECRET!
-    //         let refreshSecret = process.env.JWT_REFRESH_SECRET!
-
-    //           let accessToken = jwt.sign(payload, accessSecret, { expiresIn: '15m' })
-    //           let refreshToken = jwt.sign(payload, refreshSecret, { expiresIn: '10d' })
-
-    //         const options:CookieOptions = {
-    //             httpOnly: true,
-    //             maxAge: 36000,
-    //             secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
-    //             // sameSite: 'none'
-    //         }
-
-    //         return {payload, accessToken,refreshToken, options}
-    //     } catch (error: any) {
-    //         console.log('Error from generate token: ', error.message);
-    //     }
-
-    // }
-
     async getToken(payload: JwtPayload, secret: string, expiresIn: string) {
         try {
-
-            let token = jwt.sign(payload, secret, { expiresIn })
+            let token = jwt.sign(payload, secret, { expiresIn:expiresIn })
             return token
         } catch (error: any) {
             console.log('Error from generate token: ', error.message);
@@ -266,12 +236,12 @@ class UserServices {
 
                 const options: CookieOptions = {
                     httpOnly: true,
-                    maxAge: 36000,
+                    // maxAge: 86400,
                     secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
                     // sameSite: 'none'
                 }
 
-                let accessToken = await this.getToken(payload, accessSecret, '15m')
+                let accessToken = await this.getToken(payload, accessSecret, '1m')
                 let refreshToken = await this.getToken(payload, refreshSecret, '10d')
 
                 let cookieData = { payload, accessToken, refreshToken, options }
@@ -296,20 +266,15 @@ class UserServices {
 
                         const options: CookieOptions = {
                             httpOnly: true,
-                            maxAge: 36000,
+                            // maxAge: 86400,
                             secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
                             // sameSite: 'none'
                         }
 
-                        let accessToken = await this.getToken(payload, accessSecret, '15m')
+                        let accessToken = await this.getToken(payload, accessSecret, '1m')
                         let refreshToken = await this.getToken(payload, refreshSecret, '10d')
 
                         let cookieData = { payload, accessToken, refreshToken, options }
-                        // let id = user._id as string
-                        // if (user.role !== 'admin') {
-                        //     this.sendOtp(user.name, user.email, id)
-                        // }
-                        // console.log('cookieData: ', cookieData);
                         return { cookieData, success: true }
 
                     } else {
@@ -387,14 +352,14 @@ class UserServices {
 
             const { id, user, role, googleId, email } = decoded
             const payload: JwtPayload = { id, user, role, googleId, email }
-            let newToken = await this.getToken(payload, process.env.JWT_ACCESS_SECRET!, '15m')
+            let newToken = await this.getToken(payload, process.env.JWT_ACCESS_SECRET!, '1m')
             const options: CookieOptions = {
                 httpOnly: true,
-                maxAge: 36000,
+                // maxAge: 86400,
                 secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
             }
             if (newToken) {
-                return { success: true, accessToken: newToken, options: options }
+                return { success: true, accessToken: newToken, options ,payload}
             } else {
                 return { success: false, message: 'Could not refresh token' }
             }

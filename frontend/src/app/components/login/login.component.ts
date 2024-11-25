@@ -4,6 +4,7 @@ import { UserSrerviceService } from '../../services/user-srervice.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
+import { PasswordMatchValidator } from '../../shared/validators/formValidator';
 
 @Component({
   selector: 'app-login',
@@ -96,9 +97,10 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   userRegistrationForm: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z ]+$'), Validators.minLength(3)]),
-    email: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required,Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')]),
     username: new FormControl('', [Validators.required, Validators.minLength(3)]),
     password: new FormControl('', [Validators.required, Validators.minLength(8)]),
+    confirmPassword: new FormControl('',[ Validators.required, PasswordMatchValidator]),
     mobile: new FormControl('', [Validators.required, Validators.minLength(10), Validators.pattern('^[0-9]+$')]),
     role: new FormControl('')
   })
@@ -115,6 +117,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   
 
   callAlert(classValue: string, text: string, message: string) {
+    debugger
     this.alert = true
     this.class = classValue
     this.text = text
@@ -133,13 +136,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
         console.log(res);
         if (res.success === true) {
           this.router.navigateByUrl('dashboard')
-          // if(res.userData.role==='admin'){
-          // this.router.navigateByUrl('dashboard')
-          // }else{
-          //   this.router.navigateByUrl(`/otp/${res.userData.id}`)
-          // }
           this.userService.setUser(res.userData)
         } else {
+          debugger
           this.callAlert("alert alert-danger", "Login Failed", res.message)
         }
       },
@@ -154,8 +153,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   register() {
     this.userRegistrationForm.get('role')?.setValue(this.userRole)
-    this.registrationData = this.userRegistrationForm.value
-    // console.log(this.userRegistrationForm);
+    const {confirmPassword,...rest} = this.userRegistrationForm.value
+    this.registrationData=rest
+    console.log(this.registrationData);
     this.userService.registerUser(this.registrationData).subscribe({
       next:(res: any) => {
         console.log(res);
@@ -185,13 +185,13 @@ export class LoginComponent implements OnInit, AfterViewInit {
         if (res.success) {
           this.callAlert('alert alert-success', 'Email sent', res.message)
         } else {
-          this.callAlert('alert alert-danger', 'Sendin email failed', res.message)
+          this.callAlert('alert alert-danger', 'Sent email failed', res.message)
         }
         this.emailForm.reset()
   
       },
       error:(error:any)=>{
-        this.callAlert("alert alert-danger", "Sending email Failed", error.message)
+        this.callAlert("alert alert-danger", "Sent email Failed", error.message)
 
       }
     })

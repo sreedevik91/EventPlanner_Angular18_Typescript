@@ -2,16 +2,14 @@
     <div class="container">
         <div>
             <app-alert [showAlert]="alert" [alertMessage]="message" [classText]="class" [alertText]="text"></app-alert>
+            <!-- <app-alert [alertSuccess]="success" [alertMessage]="message"></app-alert> -->
+
         </div>
         <div class="row justify-content-center">
             <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
                 <div class="card border border-light-subtle rounded-3 shadow-sm">
                     <div class="card-body p-3 p-md-4 p-xl-5">
-
-
                         <div>
-
-
                             @if(isLoginForm){
                         <h2 class="fs-6 fw-normal text-center text-secondary mb-4">Sign in to your account</h2>
 
@@ -141,6 +139,10 @@
                                         <div>
                                             <span class="text-danger">This is required</span>
                                         </div>
+                                        }@else if(userRegistrationForm.controls['email'].touched && userRegistrationForm.controls['email'].errors?.['pattern']){
+                                            <div>
+                                                <span class="text-danger">Enter a valid email id</span>
+                                            </div>
                                         }
                                         <label for="" class="form-label">Username:</label>
                                         <input type="text" class="form-control" formControlName="username">
@@ -161,6 +163,19 @@
                                         userRegistrationForm.controls['password'].errors?.['minlength']){
                                         <div>
                                             <span class="text-danger">Minimum 8 characters required</span>
+                                        </div>
+                                        }@else if(userRegistrationForm.controls['password'].touched &&
+                                        userRegistrationForm.controls['password'].errors?.['required']){
+                                        <div>
+                                            <span class="text-danger">This is required</span>
+                                        </div>
+                                        }
+                                        <label for="" class="form-label">Confirm Password:</label>
+                                        <input type="password" class="form-control" formControlName="confirmPassword">
+                                        @if(userRegistrationForm.controls['confirmPassword'].touched &&
+                                        userRegistrationForm.controls['confirmPassword'].errors?.['noMatch']){
+                                         <div>
+                                            <span class="text-danger">Password did not match</span>
                                         </div>
                                         }@else if(userRegistrationForm.controls['password'].touched &&
                                         userRegistrationForm.controls['password'].errors?.['required']){
