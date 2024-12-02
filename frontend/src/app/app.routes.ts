@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -7,6 +6,9 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
 import { authGuard } from './guards/authGuard/auth.guard';
 import { ResetComponent } from './components/reset/reset.component';
 import { SubmitOtpComponent } from './components/submit-otp/submit-otp.component';
+import { UsersComponent } from './components/users/users.component';
+import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
+import { GoogleAuthCallbackComponent } from './components/google-auth-callback/google-auth-callback.component';
 
 export const routes: Routes = [
     {
@@ -19,17 +21,20 @@ export const routes: Routes = [
         component:LoginComponent
     },
     {
+        path:'googleLogin/callback',
+        component:GoogleAuthCallbackComponent
+    },
+    {
         path:'reset/:token',
         component:ResetComponent,
     },
     {
-        path:'otp/:id',
-        component:SubmitOtpComponent,
+        path:'verifyEmail',
+        component:VerifyEmailComponent,
     },
     {
-        path:'home',
-        component:HomeComponent,
-        canActivate:[authGuard]
+        path:'otp/:id',
+        component:SubmitOtpComponent,
     },
     {
         path:'',
@@ -42,7 +47,7 @@ export const routes: Routes = [
             },
             {
                 path:'users',
-                component:HomeComponent,
+                component:UsersComponent,
                 canActivate:[authGuard]
             },
            

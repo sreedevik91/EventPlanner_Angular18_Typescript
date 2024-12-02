@@ -7,10 +7,6 @@ import connectDb from './src/config/db'
 
 connectDb()
 
-// app.get('/', (req, res) => {
-//     res.send('Backend server running .....')
-// })
-
 app.use(logger)
 app.use('/', userRoute)
 

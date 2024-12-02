@@ -10,13 +10,40 @@ export interface IUser extends Document {
     googleId?: string;
     otpData?: { otp: string; expiresIn: number }
     role: string;
-    status: string;
+    isActive: boolean;
+    isVerified: boolean;
 }
 
-export type IUserDb= IUser & Document
+export interface IOtpData {
+    otp: string;
+    expiresIn: string;
+}
+
+export interface IUserDb extends IUser, Document {
+    _id: string
+}
+
+// export type IUserDb= IUser & Document
+
+// export interface IUserDb extends Document {
+//     otpData: IOtpData;
+//     _id: string;
+//     name: string;
+//     email: string;
+//     username?: string;
+//     password?: string;
+//     mobile?: number;
+//     googleId?:string;
+//     role: string;
+//     createdAt: string;
+//     updatedAt: string;
+//     __v: number;
+//     isActive: boolean;
+//     isVerified: boolean;
+//   }
 
 export interface IUserRepository {
-    getAllUsers(): Promise<IUser[]>;
+    getAllUsers(filter:any,sort:any,limit:number,skip:number): Promise<IUser[]>;
     getUserById(id: string): Promise<IUser | null>;
     getUserByEmail(email: string): Promise<IUser | null>;
     getUserByUsername(username: string): Promise<Document & IUser | null>;
@@ -36,9 +63,9 @@ export interface JwtPayload {
 
 export interface CookieType {
     payload: JwtPayload;
-    refreshToken:string | undefined;
+    refreshToken: string | undefined;
     accessToken: string | undefined;
-    options:CookieOptions
+    options: CookieOptions
 }
 
 
@@ -49,3 +76,10 @@ export interface LoginData {
     username?: string;
     password?: string
 }
+
+export interface IGoogleUser {
+    googleId: string;
+    email: string;
+    name: string;
+}
+

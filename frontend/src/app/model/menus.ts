@@ -11,7 +11,7 @@ export const Menus=[
     },
     {
         path:'users',
-        text:'Services',
+        text:'Users',
         roles:['admin']
     },
     {

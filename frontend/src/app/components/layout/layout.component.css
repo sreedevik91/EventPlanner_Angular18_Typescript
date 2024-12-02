@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Bokor&family=Parkinsans:wght@300..800&display=swap');
+
+.nav-link.active {
+    background-color: #ebeab9 !important;
+    color: #000000 !important;
+    font-weight: bold;
+}
+
+.nav-link:hover {
+    background-color: #ebeab9;
+    color: #000000 !important;
+}

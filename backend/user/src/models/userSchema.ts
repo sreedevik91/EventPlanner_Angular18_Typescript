@@ -1,9 +1,9 @@
-import mongoose, { CallbackError, Error, Schema } from "mongoose";
+import mongoose, { CallbackError, Error, model, Schema } from "mongoose";
 
 import bcrypt from 'bcryptjs';
-import { IUser } from "../interfaces/userInterface";
+import { IUser, IUserDb } from "../interfaces/userInterface";
 
-const UserSchema:Schema<IUser> = new Schema({
+const UserSchema:Schema<IUserDb> = new Schema<IUserDb>({
     name: {
         type: String,
         required: true
@@ -52,10 +52,13 @@ const UserSchema:Schema<IUser> = new Schema({
         enum: ['user', 'provider', 'admin'],
         default: 'user'
     },
-    status: {
-        type: String,
-        enum: ['active', 'inactive', 'blocked'],
-        default: 'active'
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     },
 
 },
@@ -83,5 +86,5 @@ UserSchema.pre<IUser>('save', async function (next) {
 
 })
 
-const User = mongoose.model<IUser>('user', UserSchema)
+const User = model<IUserDb>('user', UserSchema)
 export default User

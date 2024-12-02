@@ -1,5 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap');
 html,
 body {
-    background-color: #FFF7EA;
+    /* background-color: #FFF7EA; */
+    /* background-color:#FFF6EA */
+    background-color:#FFFFEC;
+    font-family: "Parkinsans", sans-serif;
 }

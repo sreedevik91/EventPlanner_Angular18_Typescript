@@ -30,8 +30,8 @@ class UserRepository implements IUserRepository {
         return await user.save()
     }
 
-    async getAllUsers(): Promise<IUserDb[]> {
-        const users = await User.find()
+    async getAllUsers(filter:any,sort:any,limit:number,skip:number): Promise<IUserDb[]> {
+        const users = await User.find(filter).sort(sort).limit(limit).skip(skip)
         return users
     }
 
@@ -40,6 +40,10 @@ class UserRepository implements IUserRepository {
         return updateUser
     }
 
+    async getTotalUsers():Promise<number>{
+        const usersCount = await User.find().countDocuments()
+        return usersCount
+    }
 }
 
 export default new UserRepository()

@@ -1,0 +1,278 @@
+<section class="container mt-4 p-3">
+    <div>
+        <app-alert></app-alert>
+    </div>
+    <div class="row mb-2">
+        <div class="col-md-8 text-dark fs-3 fw-bold">
+           <p>User Management</p> 
+        </div>
+        <div class="col-md-4 text-end">
+            <app-button [btnClass]=" 'btn-dark' " (onBtnClick)="showModal()">Add User</app-button>
+        </div>
+    </div>
+    <div class="row d-flex flex-row"  [formGroup]="searchFilterForm">
+        <!-- <form [formGroup]="searchFilterForm"> -->
+        <div class="col-md-3">
+            <label for=""> Name: </label><input type="text" class="form-control" formControlName="userName">
+        </div>
+        <div class="col-md-3">
+            <label for=""> Status: </label><input type="text" class="form-control" formControlName="userStatus">
+        </div>
+        <div class="col-md-3">
+            <label for=""> Role: </label><input type="text" class="form-control" formControlName="role">
+        </div>
+        <div class="col-md-3">
+            <app-button [btnClass]="'btn-dark mt-4 rounded-pill'" (onBtnClick)="onSearch()">Search</app-button>
+        </div>
+        <div class="col-md-3 align-item-left mt-4 mb-4">
+            <select formControlName="pageSize" (change)="onSearch()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    <!-- </form> -->
+    </div>
+    <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Users</h6>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Sl.No</th>
+                        <th scope="col" role="button" (click)="onSort('name')">Name</th>
+                        <th scope="col" role="button" (click)="onSort('email')">Email</th>
+                        <th scope="col" role="button" (click)="onSort('role')">Role</th>
+                        <th scope="col" role="button" (click)="onSort('mobile')">Mobile</th>
+                        <th scope="col" role="button" (click)="onSort('isActive')">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (item of users(); track $index) {
+                    <tr>
+                        <th scope="row">{{$index + 1}}</th>
+                        <td>{{item.name}}</td>
+                        <td>{{item.email}}</td>
+                        <td>
+                           @if (item.role==='user'){
+                            User
+                           }@else if(item.role==='provider'){
+                            Service Provider
+                           }@else if(item.role==='admin'){
+                            Admin
+                           }
+                        </td>
+                        <td>{{item.mobile}}</td>
+                        <td>
+                            @if(item.isActive){
+                            Active
+                            }@else{
+                            Inactive
+                            }
+                        </td>
+                        <td>
+
+                            <app-button (onBtnClick)="onEdit(item._id)"><i
+                                    class="fa-solid fa-pen-to-square"></i></app-button>
+
+                            <app-button (onBtnClick)="setStatus(item._id)" (click)="item.isActive=!item.isActive">
+                                @if(item.isActive){
+                                <i class="fa-solid fa-eye"></i>
+                                } @else {
+                                <i class="fa-solid fa-eye-slash"></i>
+                                }
+                            </app-button>
+                            <!-- <app-button><i class="fa-solid fa-lock"></i></app-button>
+                            <app-button><i class="fa-solid fa-unlock"></i></app-button> -->
+
+                            <!-- <app-button><i class="fa-solid fa-user-lock"></i></app-button> -->
+                            <!-- <app-button><i class="fa fa-trash-can-arrow-up"></i></app-button> -->
+                            <!-- <app-button><i class="fa-solid fa-unlock-keyhole"></i></app-button> -->
+
+                        </td>
+                    </tr>
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+
+        <nav>
+            <ul class="pagination">
+                <li class="page-item" [class.disabled]="currentPage===1">
+                    <a class="page-link" role="button" (click)="onPageChange(currentPage-1)">Previous</a>
+                </li>
+                @for (item of getTotalPages(); track $index) {
+                    <li class="page-item">
+                        <a class="page-link" [class.active]="currentPage===item" role="button" (click)="onPageChange(item)">{{item}}</a>
+                    </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" role="button" [class.disabled]="getTotalPages()" (click)="onPageChange(currentPage+1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+
+
+    <!-- Modal -->
+    <div class="modal" #modal>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    @if(userForm.controls['id'].value===0){
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add User</h1>
+                    }@else {
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit User</h1>
+                    }
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="hideModal()"></button>
+                </div>
+                <div class="modal-body">
+
+
+                    <form [formGroup]="userForm">
+                        <app-form [label]=" 'Name:' " [tooltip]=" 'Enter name' " [Validation]="userForm.controls['name'].touched &&
+                    userForm.controls['name'].errors ? userForm.controls['name'].errors : {}">
+                            <input type="text" class="form-control" formControlName="name">
+                        </app-form>
+
+                        <!-- <label for="" class="form-label">Name:</label>
+                    <input type="text" class="form-control" formControlName="name">
+                    @if(userForm.controls['name'].touched &&
+                    userForm.controls['name'].errors?.['required'] ){
+                    <div>
+                        <span class="text-danger">This is required</span>
+                    </div>
+                    }@else if(userForm.controls['name'].touched &&
+                    userForm.controls['name'].errors?.['pattern']){
+                    <div>
+                        <span class="text-danger">Only alphabets are allowed</span>
+                    </div>
+                    }@else if(userForm.controls['name'].touched &&
+                    userForm.controls['name'].errors?.['minlength']) {
+                    <div>
+                        <span class="text-danger">Minimun 3 letters required</span>
+                    </div>
+                    } -->
+
+
+                        <app-form [label]=" 'Email:' " [tooltip]=" 'Enter email' " [Validation]="userForm.controls['email'].touched &&
+                    userForm.controls['email'].errors ? userForm.controls['email'].errors : {}">
+                            <input type="text" class="form-control" formControlName="email">
+                        </app-form>
+
+
+                        <!-- <label for="" class="form-label">Email:</label>
+                    <input type="text" class="form-control" formControlName="email">
+                    @if(userForm.controls['email'].touched &&
+                    userForm.controls['email'].errors?.['required']){
+                    <div>
+                        <span class="text-danger">This is required</span>
+                    </div>
+                    }
+                    <label for="" class="form-label">Username:</label>
+                    <input type="text" class="form-control" formControlName="username">
+                    @if(userForm.controls['username'].touched &&
+                    userForm.controls['username'].errors?.['required']){
+                    <div>
+                        <span class="text-danger">This is required</span>
+                    </div>
+                    }@else if(userForm.controls['username'].touched &&
+                    userForm.controls['username'].errors?.['minlength']){
+                    <div>
+                        <span class="text-danger">Mininmum 3 characters required</span>
+                    </div>
+                    } -->
+                        @if(userForm.controls['id'].value===0){
+                        <app-form [label]=" 'Username:' " [tooltip]=" 'Enter username' " [Validation]="userForm.controls['username'].touched &&
+                    userForm.controls['username'].errors ? userForm.controls['username'].errors : {}">
+                            <input type="text" class="form-control" formControlName="username">
+                        </app-form>
+                        <app-form [label]=" 'Password:' " [tooltip]=" 'Enter password' " [Validation]="userForm.controls['password'].touched &&
+                    userForm.controls['password'].errors ? userForm.controls['password'].errors : {}">
+                            <input type="password" class="form-control" formControlName="password">
+                        </app-form>
+                        }
+                        <!-- <label for="" class="form-label">Password:</label>
+                    <input type="text" class="form-control" formControlName="password">
+                    @if(userForm.controls['password'].touched &&
+                    userForm.controls['password'].errors?.['minlength']){
+                    <div>
+                        <span class="text-danger">Minimum 8 characters required</span>
+                    </div>
+                    }@else if(userForm.controls['password'].touched &&
+                    userForm.controls['password'].errors?.['required']){
+                    <div>
+                        <span class="text-danger">This is required</span>
+                    </div>
+                    } -->
+
+                        <app-form [label]=" 'Mobile:' " [tooltip]=" 'Enter contact number' " [Validation]="userForm.controls['mobile'].touched &&
+                    userForm.controls['mobile'].errors ? userForm.controls['mobile'].errors : {}">
+                            <input type="tel" class="form-control" formControlName="mobile">
+                        </app-form>
+
+                        <!-- <label for="" class="form-label">Mobile:</label>
+                    <input type="text" class="form-control" formControlName="mobile">
+                    @if(userForm.controls['mobile'].touched &&
+                    userForm.controls['mobile'].errors?.['required']){
+                    <div>
+                        <span class="text-danger form-text">This is required</span>
+                    </div>
+                    }@else if(userForm.controls['mobile'].touched &&
+                    userForm.controls['mobile'].errors?.['minlength']){
+                    <div>
+                        <span class="text-danger">10 digits required</span>
+                    </div>
+                    }@else if(userForm.controls['mobile'].touched &&
+                    userForm.controls['mobile'].errors?.['pattern']){
+                    <div>
+                        <span class="text-danger">Only numbers are allowed</span>
+                    </div>
+                    } -->
+
+                        <app-form [label]=" 'Role:' " [tooltip]=" 'Enter user role' " [Validation]="userForm.controls['role'].touched &&
+                    userForm.controls['role'].errors ? userForm.controls['role'].errors : {}">
+
+                            <select class="form-select" formControlName="role">
+                                <option value="">--Select--</option>
+                                <option value="user">User</option>
+                                <option value="provider">Service Provider</option>
+                                <option value="admin">Admin</option>
+                            </select>
+
+                        </app-form>
+
+                        <div class="d-grid gap-2 d-md-block">
+
+                            @if(userForm.controls['id'].value===0){
+                            <app-button [btnClass]=" 'btn-success m-3' " (onBtnClick)="saveUser()">Save
+                                User</app-button>
+                            }@else {
+                            <app-button [btnClass]=" 'btn-success m-3' "
+                                (onBtnClick)="editUser(userForm.controls['_id'].value)">Update User</app-button>
+                            }
+
+                            <app-button [btnClass]=" 'btn-info m-3' " (onBtnClick)="hideModal()">Cancel</app-button>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</section>

@@ -1,48 +1,37 @@
 <section class="py-3 py-md-5">
     <div class="container">
         <div>
-            <app-alert [showAlert]="alert" [alertMessage]="message" [classText]="class" [alertText]="text"></app-alert>
-            <!-- <app-alert [alertSuccess]="success" [alertMessage]="message"></app-alert> -->
-
+            <app-alert></app-alert>
         </div>
         <div class="row justify-content-center">
             <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
-                <div class="card border border-light-subtle rounded-3 shadow-sm">
+                <div class="card border border-light-subtle rounded-3 shadow">
                     <div class="card-body p-3 p-md-4 p-xl-5">
                         <div>
                             @if(isLoginForm){
-                        <h2 class="fs-6 fw-normal text-center text-secondary mb-4">Sign in to your account</h2>
+                            <h2 class="fs-5 fw-normal text-center text-secondary mb-4">Sign in to your account</h2>
 
                             <form [formGroup]="userLoginForm">
                                 <div class="mb-3">
-                                    <label for="recipient-name" class="col-form-label">Username:</label>
-                                    <input type="text" class="form-control" id="recipient-name"
-                                        formControlName="username">
-                                    @if(userLoginForm.controls['username'].touched &&
-                                    userLoginForm.controls['username'].errors?.['required'] ){
-                                    <div>
-                                        <span class="text-danger">This is required</span>
-                                    </div>
-                                    }
+
+                                    <app-form [label]=" 'Username:' " [tooltip]=" 'Enter Username' "
+                                        [Validation]="userLoginForm.controls['username'].touched &&
+                                    userLoginForm.controls['username'].errors ? userLoginForm.controls['username'].errors : {}">
+                                        <input type="text" class="form-control" id="recipient-name"
+                                            formControlName="username">
+                                    </app-form>
+
                                 </div>
                                 <div class="mb-3">
-                                    <label for="message-text" class="col-form-label">Password:</label>
-                                    <input type="password" class="form-control" id="message-text" formControlName="password">
-                                    @if(userLoginForm.controls['password'].touched &&
-                                    userLoginForm.controls['password'].errors?.['required'] ){
-                                    <div>
-                                        <span class="text-danger">This is required</span>
-                                    </div>
-                                    }@else if(userLoginForm.controls['password'].touched &&
-                                    userLoginForm.controls['password'].errors?.['minlength']) {
-                                    <div>
-                                        <span class="text-danger">Minimun 8 characters required</span>
-                                    </div>
-                                    }
+
+                                    <app-form [label]=" 'Password:' " [tooltip]=" 'Enter Password' "
+                                        [Validation]="userLoginForm.controls['username'].touched &&
+                                userLoginForm.controls['password'].errors ? userLoginForm.controls['password'].errors : {}">
+                                        <input type="password" class="form-control" id="message-text"
+                                            formControlName="password">
+                                    </app-form>
+
                                 </div>
-                                <!-- <div>
-                            <input type="hidden" [value]="userRole" class="form-control" id="recipient-name" formControlName="role">
-                        </div> -->
 
                                 <div class="d-grid gap-2 d-md-block text-center">
                                     <button class="btn btn-primary btn-lg m-3" [disabled]="userLoginForm.invalid"
@@ -56,7 +45,7 @@
                                             class="btn link-primary text-decoration-none">Forgot Password ? </a>
                                     </p>
                                 </div>
-    
+
                                 <div class="mb-3">
                                     <p class="m-0 text-secondary text-center">Don't have an account? <a
                                             (click)="isLoginForm=false;isRole=false"
@@ -65,161 +54,108 @@
                                 </div>
                             </form>
 
-                        
-                            <div id="googleButton"></div>
 
-                            
+                            <div class="d-flex justify-content-center">
+                                <app-button [btnClass]="'btn-dark text-white rounded-pill'" (onBtnClick)="googleSignin()"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" width="20px" height="20px" alt="">Sign in with Google</app-button>
+                            </div>
 
-                           
-                                                          
+                            <!-- <div id="googleButton">
+                            </div> -->
+
                             }@else if(!isLoginForm){
 
-                                @if(isSendEmail){
-                        <h2 class="fs-6 fw-normal text-center text-secondary mb-4">Enter registered email to send reset password link</h2>
+                            @if(isSendEmail){
+                            <h2 class="fs-5 fw-normal text-center text-secondary mb-4">Enter registered email to send
+                                reset password link</h2>
 
-                                    <form [formGroup]="emailForm">
-                                        <div class="mb-3">
-                                            <label for="recipient-name" class="col-form-label">Email:</label>
-                                            <input type="text" class="form-control" id="recipient-name"
-                                                formControlName="email">
-                                            @if(emailForm.controls['email'].touched &&
-                                            emailForm.controls['email'].errors?.['required'] ){
-                                            <div>
-                                                <span class="text-danger">This is required</span>
-                                            </div>
-                                            }
-                                        </div>
+                            <form [formGroup]="emailForm">
+                                <div class="mb-3">
 
-                                        <div class="d-grid gap-2 d-md-block text-center">
-                                            <button class="btn btn-primary btn-lg m-3" [disabled]="emailForm.invalid"
-                                                (click)="getSendMail()">Submit</button>
-                                            <!-- <a class="btn btn-danger btn-lg m-3" (click)="isLoginForm=true">Cancel</a> -->
-                                            <button class="btn btn-danger btn-lg m-3" (click)="reload()">Cancel</button>
-                                        </div>
-                                    </form>
-                                }@else {
-                                    @if(!isRole){
-                                        <div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="isLoginForm=true;isRole=false"></button>
-        
-                                        </div>
-                                <h2 class="fs-6 fw-normal text-center text-secondary mb-4">Register as </h2>
-        
-                                    <div style="display: flex;">
-                                        <button class="btn btn-primary m-3" (click)="isRole=true;userRole='user'">User</button>
-                                        <button class="btn btn-primary m-3" (click)="isRole=true;userRole='provider'">Service Provider</button>
-                                    </div>
-                                    } @else if(isRole){
-                                <h2 class="fs-6 fw-normal text-center text-secondary mb-4">Create your account</h2>
-        
-                                    <form [formGroup]="userRegistrationForm">
-                                        <label for="" class="form-label">Name:</label>
-                                        <input type="text" class="form-control" formControlName="name">
-                                        @if(userRegistrationForm.controls['name'].touched &&
-                                        userRegistrationForm.controls['name'].errors?.['required'] ){
-                                        <div>
-                                            <span class="text-danger">This is required</span>
-                                        </div>
-                                        }@else if(userRegistrationForm.controls['name'].touched &&
-                                        userRegistrationForm.controls['name'].errors?.['pattern']){
-                                        <div>
-                                            <span class="text-danger">Only alphabets are allowed</span>
-                                        </div>
-                                        }@else if(userRegistrationForm.controls['name'].touched &&
-                                        userRegistrationForm.controls['name'].errors?.['minlength']) {
-                                        <div>
-                                            <span class="text-danger">Minimun 3 letters required</span>
-                                        </div>
-                                        }
-        
-                                        <label for="" class="form-label">Email:</label>
-                                        <input type="text" class="form-control" formControlName="email">
-                                        @if(userRegistrationForm.controls['email'].touched &&
-                                        userRegistrationForm.controls['email'].errors?.['required']){
-                                        <div>
-                                            <span class="text-danger">This is required</span>
-                                        </div>
-                                        }@else if(userRegistrationForm.controls['email'].touched && userRegistrationForm.controls['email'].errors?.['pattern']){
-                                            <div>
-                                                <span class="text-danger">Enter a valid email id</span>
-                                            </div>
-                                        }
-                                        <label for="" class="form-label">Username:</label>
-                                        <input type="text" class="form-control" formControlName="username">
-                                        @if(userRegistrationForm.controls['username'].touched &&
-                                        userRegistrationForm.controls['username'].errors?.['required']){
-                                        <div>
-                                            <span class="text-danger">This is required</span>
-                                        </div>
-                                        }@else if(userRegistrationForm.controls['username'].touched &&
-                                        userRegistrationForm.controls['username'].errors?.['minlength']){
-                                        <div>
-                                            <span class="text-danger">Mininmum 3 characters required</span>
-                                        </div>
-                                        }
-                                        <label for="" class="form-label">Password:</label>
-                                        <input type="password" class="form-control" formControlName="password">
-                                        @if(userRegistrationForm.controls['password'].touched &&
-                                        userRegistrationForm.controls['password'].errors?.['minlength']){
-                                        <div>
-                                            <span class="text-danger">Minimum 8 characters required</span>
-                                        </div>
-                                        }@else if(userRegistrationForm.controls['password'].touched &&
-                                        userRegistrationForm.controls['password'].errors?.['required']){
-                                        <div>
-                                            <span class="text-danger">This is required</span>
-                                        </div>
-                                        }
-                                        <label for="" class="form-label">Confirm Password:</label>
-                                        <input type="password" class="form-control" formControlName="confirmPassword">
-                                        @if(userRegistrationForm.controls['confirmPassword'].touched &&
-                                        userRegistrationForm.controls['confirmPassword'].errors?.['noMatch']){
-                                         <div>
-                                            <span class="text-danger">Password did not match</span>
-                                        </div>
-                                        }@else if(userRegistrationForm.controls['password'].touched &&
-                                        userRegistrationForm.controls['password'].errors?.['required']){
-                                        <div>
-                                            <span class="text-danger">This is required</span>
-                                        </div>
-                                        }
-                                        <label for="" class="form-label">Mobile:</label>
-                                        <input type="text" class="form-control" formControlName="mobile">
-                                        @if(userRegistrationForm.controls['mobile'].touched &&
-                                        userRegistrationForm.controls['mobile'].errors?.['required']){
-                                        <div>
-                                            <span class="text-danger form-text">This is required</span>
-                                        </div>
-                                        }@else if(userRegistrationForm.controls['mobile'].touched &&
-                                        userRegistrationForm.controls['mobile'].errors?.['minlength']){
-                                        <div>
-                                            <span class="text-danger">10 digits required</span>
-                                        </div>
-                                        }@else if(userRegistrationForm.controls['mobile'].touched &&
-                                        userRegistrationForm.controls['mobile'].errors?.['pattern']){
-                                        <div>
-                                            <span class="text-danger">Only numbers are allowed</span>
-                                        </div>
-                                        }
-                                        <!-- <div>
-                                        <input type="hidden" [value]="userRole" class="form-control" id="recipient-name" formControlName="role">
-                                    </div> -->
-                                        <div class="d-grid gap-2 d-md-block">
-                                            <button type="button" class="btn btn-success m-3"
-                                                [disabled]="userRegistrationForm.invalid" (click)="register()">Register</button>
-                                            <button type="reset" class="btn btn-info m-3"
-                                                (click)="isLoginForm=true;isRole=false; reload()">Cancel</button>
-                                        </div>
-        
-                                        <div class="mb-3">
-                                            <p class="m-0 text-secondary text-center">Already have an account? <a
-                                                    (click)="isLoginForm=true;isRole=false;reload()"
-                                                    class="btn link-primary text-decoration-none">Login</a>
-                                            </p>
-                                        </div>
-                                    </form>
-                                    }
-                                }
+                                    <app-form [label]=" 'Email:' " [tooltip]=" 'Enter Email' "
+                                        [Validation]="emailForm.controls['email'].touched && emailForm.controls['email'].errors ? emailForm.controls['email'].errors : {}">
+                                        <input type="text" class="form-control" id="recipient-name"
+                                            formControlName="email">
+                                    </app-form>
+
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-block text-center">
+                                    <button class="btn btn-primary btn-lg m-3" [disabled]="emailForm.invalid"
+                                        (click)="getSendMail()">Submit</button>
+                                    <!-- <a class="btn btn-danger btn-lg m-3" (click)="isLoginForm=true">Cancel</a> -->
+                                    <button class="btn btn-danger btn-lg m-3" (click)="reload()">Cancel</button>
+                                </div>
+                            </form>
+                            }@else {
+                            @if(!isRole){
+                       <div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn-close" style="width: 2px;height: 15px;" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="isLoginForm=true;isRole=false"></button>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <span class="fs-5 fw-normal text-center text-secondary mb-5">Register as: </span>
+
+                        </div>
+                       
+                        <div style="display: flex; justify-content: space-around;">
+                            <button class="btn btn-dark m-3 rounded-pill" style="width: 150px;height: 40px;" (click)="isRole=true;userRole='user'">User</button>
+                            <button class="btn btn-dark m-3 rounded-pill" style="width: 150px;height: 40px;"  (click)="isRole=true;userRole='provider'">Provider</button>
+                        </div>
+
+                       </div>
+                            } @else if(isRole){
+                            <h2 class="fs-5 fw-normal text-center text-secondary mb-4">Create your account</h2>
+
+                            <form [formGroup]="userRegistrationForm">
+
+                                <app-form [label]=" 'Name:' " [tooltip]=" 'Enter Name' "
+                                    [Validation]="userRegistrationForm.controls['name'].touched && userRegistrationForm.controls['name'].errors ? userRegistrationForm.controls['name'].errors : {}">
+                                    <input type="text" class="form-control" formControlName="name">
+                                </app-form>
+
+                                <app-form [label]=" 'Email:' " [tooltip]=" 'Enter Email' "
+                                    [Validation]="userRegistrationForm.controls['email'].touched && userRegistrationForm.controls['email'].errors ? userRegistrationForm.controls['email'].errors : {}">
+                                    <input type="text" class="form-control" formControlName="email">
+                                </app-form>
+
+                                <app-form [label]=" 'Username:' " [tooltip]=" 'Enter Username' "
+                                    [Validation]="userRegistrationForm.controls['username'].touched && userRegistrationForm.controls['username'].errors ? userRegistrationForm.controls['username'].errors : {}">
+                                    <input type="text" class="form-control" formControlName="username">
+                                </app-form>
+
+                                <app-form [label]=" 'Password:' " [tooltip]=" 'Enter Password' "
+                                    [Validation]="userRegistrationForm.controls['password'].touched && userRegistrationForm.controls['password'].errors ? userRegistrationForm.controls['password'].errors : {}">
+                                    <input type="password" class="form-control" formControlName="password">
+                                </app-form>
+
+                                <app-form [label]=" 'Confirm Password:' "
+                                    [tooltip]=" 'Enter password once more to confirm' "
+                                    [Validation]="userRegistrationForm.controls['confirmPassword'].touched && userRegistrationForm.controls['confirmPassword'].errors ? userRegistrationForm.controls['confirmPassword'].errors : {}">
+                                    <input type="password" class="form-control" formControlName="confirmPassword">
+                                </app-form>
+
+                                <app-form [label]=" 'Mobile:' " [tooltip]=" 'Enter Mobile' "
+                                    [Validation]="userRegistrationForm.controls['mobile'].touched && userRegistrationForm.controls['mobile'].errors ? userRegistrationForm.controls['mobile'].errors : {}">
+                                    <input type="text" class="form-control" formControlName="mobile">
+                                </app-form>
+
+                                <div class="d-grid gap-2 d-md-block">
+                                    <button type="button" class="btn btn-success m-3"
+                                        [disabled]="userRegistrationForm.invalid" (click)="register()">Register</button>
+                                    <button type="reset" class="btn btn-info m-3"
+                                        (click)="isLoginForm=true;isRole=false; reload()">Cancel</button>
+                                </div>
+
+                                <div class="mb-3">
+                                    <p class="m-0 text-secondary text-center">Already have an account? <a
+                                            (click)="isLoginForm=true;isRole=false;reload()"
+                                            class="btn link-primary text-decoration-none">Login</a>
+                                    </p>
+                                </div>
+                            </form>
+                            }
+                            }
 
                             }
 
@@ -229,10 +165,9 @@
                         </div>
 
                     </div>
-                    
+
                 </div>
             </div>
         </div>
     </div>
 </section>
-

@@ -1,7 +1,7 @@
 <section class="py-3 py-md-5">
     <div class="container">
         <div>
-            <app-alert [showAlert]="alert" [alertMessage]="message" [classText]="class" [alertText]="text"></app-alert>
+            <app-alert></app-alert>
         </div>
         <div class="row justify-content-center">
             <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
@@ -14,43 +14,21 @@
                             <h2 class="fs-6 fw-normal text-center text-secondary mb-4">Reset Password</h2>
 
                             <form [formGroup]="resetForm">
-                                <div class="mb-3">
-                                    <label for="recipient-name" class="col-form-label">New Password:</label>
-                                    <input type="password" class="form-control" id="recipient-name"
-                                        formControlName="password">
-                                    @if(resetForm.controls['password'].touched &&
-                                    resetForm.controls['password'].errors?.['required'] ){
-                                    <div>
-                                        <span class="text-danger">This is required</span>
-                                    </div>
-                                    }@else if (resetForm.controls['password'].touched &&
-                                    resetForm.controls['password'].errors?.['minlength'] ) {
-                                    <div>
-                                        <span class="text-danger">Minimum 8 characters required</span>
-                                    </div>
-                                    }
-                                </div>
-                                <div class="mb-3">
-                                    <label for="message-text" class="col-form-label">Confirm Password:</label>
-                                    <input type="password" class="form-control" id="message-text" formControlName="confirmPassword">
-                                    @if(resetForm.controls['confirmPassword'].touched &&
-                                    resetForm.controls['confirmPassword'].errors?.['required'] ){
-                                    <div>
-                                        <span class="text-danger">This is required</span>
-                                    </div>
-                                    }
 
-                                    @if(resetForm.controls['confirmPassword'].touched &&
-                                    resetForm.controls['confirmPassword'].errors?.['noMatch']) {
-                                    <div>
-                                        <span class="text-danger">Password did not match</span>
-                                    </div>
-                                    }
-                                </div>
+                                <app-form [label]=" 'Password:' " [tooltip]=" 'Enter Password' "
+                                    [Validation]="resetForm.controls['password'].touched && resetForm.controls['password'].errors ? resetForm.controls['password'].errors : {}">
+                                    <input type="password" class="form-control" id="recipient-name" formControlName="password">
+                                </app-form>
+
+                                <app-form [label]=" 'Confirm Password:' "
+                                    [tooltip]=" 'Enter password once more to confirm' "
+                                    [Validation]="resetForm.controls['confirmPassword'].touched && resetForm.controls['confirmPassword'].errors ? resetForm.controls['confirmPassword'].errors : {}">
+                                    <input type="password" class="form-control" id="message-text" formControlName="confirmPassword">
+                                </app-form>
 
                                 <div class="d-grid gap-2 d-md-block text-center">
                                     <button class="btn btn-primary btn-lg m-3" [disabled]="resetForm.invalid"
-                                        (click)="resetPassword()">Log in</button>
+                                        (click)="resetPassword()">Reset</button>
                                     <button class="btn btn-danger btn-lg m-3">Cancel</button>
                                 </div>
 

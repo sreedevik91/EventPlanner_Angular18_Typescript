@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { UserSrerviceService } from '../../services/user-srervice.service';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { Menus } from '../../model/menus';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink,RouterLinkActive],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
@@ -21,8 +21,13 @@ export class LayoutComponent {
   menus=Menus
 
   constructor() {
-    this.role = this.userService.getUser().role
-    this.userName = this.userService.getUser().user
+    this.userService.loggedUser$.subscribe((user)=>{
+      if(user){
+        this.role = user.role
+        this.userName = user.user
+      }
+    })
+  
     // console.log('User role: ',this.role);
     this.menus.forEach((element:any)=>{
      let isRole=element.roles.includes(this.role)
