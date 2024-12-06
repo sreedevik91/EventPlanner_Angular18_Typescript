@@ -56,7 +56,11 @@ const UserSchema:Schema<IUserDb> = new Schema<IUserDb>({
         type: Boolean,
         default: true
     },
-    isVerified: {
+    isEmailVerified: {
+        type: Boolean,
+        default: false
+    },
+    isUserVerified: {
         type: Boolean,
         default: false
     },

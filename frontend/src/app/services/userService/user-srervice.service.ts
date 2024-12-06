@@ -29,15 +29,16 @@ export class UserSrerviceService {
   }
 
   userLogin(data: ILoginData) {
-    // debugger
-    return this.http.post(`${this.baseUrl}login`, data)
+    return this.http.post(`${this.baseUrl}login`, data, { observe: 'response' })
+    // { observe: 'response' } will incluse status codes in response which could be get be response.status
+    // backend response data would be accessed by response.body.keyName
   }
 
-  googleSignin(){
+  googleSignin() {
     window.location.href = 'http://localhost:4000/user/auth/google';
   }
 
-  handleGoogleSignin(){
+  handleGoogleSignin() {
     return this.http.get(`${this.baseUrl}data`)
   }
 
@@ -62,13 +63,17 @@ export class UserSrerviceService {
     return this.http.post(`${this.baseUrl}verifyEmail`, data)
   }
 
+  verifyUser(id: string) {
+    return this.http.post(`${this.baseUrl}verifyUser`, { id })
+  }
+
   resendOtp(id: string) {
     return this.http.get(`${this.baseUrl}sendOtp/${id}`)
   }
 
-  getAllUsers(params:any) {
+  getAllUsers(params: any) {
     // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
-    return this.http.get(`${this.baseUrl}users`,{params})
+    return this.http.get(`${this.baseUrl}users`, { params })
   }
 
   getUsersCount() {

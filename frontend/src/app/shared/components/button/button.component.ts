@@ -10,7 +10,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class ButtonComponent {
 
   @Input() btnClass: string = ''
-  // @Input() btnText: any
+  @Input() btnTitle: string=''
 
   @Output() onBtnClick = new EventEmitter()
 

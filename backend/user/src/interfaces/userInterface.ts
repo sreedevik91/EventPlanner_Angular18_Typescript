@@ -11,7 +11,8 @@ export interface IUser extends Document {
     otpData?: { otp: string; expiresIn: number }
     role: string;
     isActive: boolean;
-    isVerified: boolean;
+    isEmailVerified: boolean;
+    isUserVerified: boolean;
 }
 
 export interface IOtpData {
@@ -43,13 +44,14 @@ export interface IUserDb extends IUser, Document {
 //   }
 
 export interface IUserRepository {
-    getAllUsers(filter:any,sort:any,limit:number,skip:number): Promise<IUser[]>;
-    getUserById(id: string): Promise<IUser | null>;
-    getUserByEmail(email: string): Promise<IUser | null>;
-    getUserByUsername(username: string): Promise<Document & IUser | null>;
-    createUser(user: Partial<IUser>): Promise<IUser>;
+    getAllUsers(filter:any,sort:any,limit:number,skip:number): Promise<IUserDb[]>;
+    getUserById(id: string): Promise<IUserDb | null>;
+    getUserByEmail(email: string): Promise<IUserDb | null>;
+    getUserByUsername(username: string): Promise<IUserDb | null>;
+    createUser(user: Partial<IUser>): Promise<IUserDb>;
     updateUser(id: string, user: Partial<IUser>): Promise<IUserDb | null>;
     deleteUser(id: string): Promise<DeleteResult>;
+    getTotalUsers():Promise<number>
 }
 
 export interface JwtPayload {

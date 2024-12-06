@@ -6,8 +6,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { ISearchFilter } from '../../model/interface/interface';
+import { HttpParams } from '@angular/common/http';
+import { IUser } from '../../model/interface/interface';
 
 @Component({
   selector: 'app-users',
@@ -19,14 +19,16 @@ import { ISearchFilter } from '../../model/interface/interface';
 export class UsersComponent implements OnInit {
 
   users$: any = []
-  users = signal<any[]>([])
+  users = signal<IUser[]>([])
 
   userFormObj: User = new User()
   searchFilterFormObj: SearchFilter = new SearchFilter()
   // searchParams:any
 
-  searchParams= new HttpParams()
-  totalUsers:number=0
+  isAddUser: boolean = false
+
+  searchParams = new HttpParams()
+  totalUsers: number = 0
 
   @ViewChild('modal') formModal!: ElementRef
 
@@ -36,7 +38,7 @@ export class UsersComponent implements OnInit {
   userServices = inject(UserSrerviceService)
   alertService = inject(AlertService)
 
-  currentPage:number=Number(this.searchFilterFormObj.pageNumber)
+  currentPage: number = Number(this.searchFilterFormObj.pageNumber)
 
   constructor() {
     this.getTotalUsers()
@@ -46,15 +48,14 @@ export class UsersComponent implements OnInit {
 
   ngOnInit() {
     this.searchParams = this.searchParams
-    .set('pageNumber', this.searchFilterFormObj.pageNumber)
-    .set('pageSize', this.searchFilterFormObj.pageSize)
+      .set('pageNumber', this.searchFilterFormObj.pageNumber)
+      .set('pageSize', this.searchFilterFormObj.pageSize)
     this.getUsers(this.searchParams)
   }
 
   initialiseUserForm() {
     this.userForm = new FormGroup({
       _id: new FormControl(this.userFormObj._id),
-      id: new FormControl(this.userFormObj.id),
       name: new FormControl(this.userFormObj.name, [Validators.required, Validators.pattern('^[a-zA-Z ]+$'), Validators.minLength(3)]),
       email: new FormControl(this.userFormObj.email, [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')]),
       username: new FormControl(this.userFormObj.username, [Validators.required, Validators.minLength(3)]),
@@ -76,9 +77,9 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  onSort(value:string){
+  onSort(value: string) {
     this.searchParams = this.searchParams.set('sortBy', value)
-    this.searchFilterFormObj.sortOrder=this.searchFilterFormObj.sortOrder==='asc' ? 'desc' : 'asc'
+    this.searchFilterFormObj.sortOrder = this.searchFilterFormObj.sortOrder === 'asc' ? 'desc' : 'asc'
     this.searchParams = this.searchParams.set('sortOrder', this.searchFilterFormObj.sortOrder)
     this.getUsers(this.searchParams)
   }
@@ -104,32 +105,17 @@ export class UsersComponent implements OnInit {
     if (this.searchFilterFormObj.role !== '') {
       this.searchParams = this.searchParams.set('role', this.searchFilterFormObj.role)
     }
-    
-    this.userServices.getAllUsers(this.searchParams).subscribe({
-      next: (res: any) => {
-        if (res.success) {
-          this.users$ = res.data
-          this.users.set(res.data)
-          // console.log('users: ', this.users$);
-        } else {
-          console.log('could not get users');
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
-        }
-      },
-      error: (error: any) => {
-        console.log(error);
-        this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
-      }
-    })
+
+    this.getUsers(this.searchParams)
   }
 
-  getTotalUsers(){
+  getTotalUsers() {
     this.userServices.getUsersCount().subscribe({
       next: (res: any) => {
         if (res.success) {
           this.totalUsers = res.data
           console.log('total users count: ', this.totalUsers);
-          
+
         } else {
           console.log('could not get users');
           this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
@@ -142,25 +128,25 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  getTotalPages(){
-    let totalPages=Math.ceil(this.totalUsers/Number(this.searchFilterFormObj.pageSize))
-    return Array(totalPages).fill(0).map((e,i)=>i+1)
+  getTotalPages() {
+    let totalPages = Math.ceil(this.totalUsers / Number(this.searchFilterFormObj.pageSize))
+    return Array(totalPages).fill(0).map((e, i) => i + 1)
   }
 
-  getLastpage(){
-    return Math.ceil(this.totalUsers/Number(this.searchFilterFormObj.pageSize))
+  getLastpage() {
+    return Math.ceil(this.totalUsers / Number(this.searchFilterFormObj.pageSize))
   }
 
-  onPageChange(page:number){
+  onPageChange(page: number) {
     // debugger
-    this.currentPage=page
-    this.searchFilterFormObj.pageNumber=page.toString()
+    this.currentPage = page
+    this.searchFilterFormObj.pageNumber = page.toString()
     this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
-    console.log('pageNumber: ',this.searchFilterFormObj.pageNumber);
+    console.log('pageNumber: ', this.searchFilterFormObj.pageNumber);
     this.getUsers(this.searchParams)
   }
 
-  getUsers(params:HttpParams) {
+  getUsers(params: HttpParams) {
     this.userServices.getAllUsers(params).subscribe({
       next: (res: any) => {
         if (res.success) {
@@ -191,7 +177,7 @@ export class UsersComponent implements OnInit {
         if (res.success) {
           console.log('update user response: ', res.data);
           this.alertService.getAlert('alert alert-success', 'Success!', res.message)
-
+          this.getUsers(this.searchParams)
           // this.getUsers()
           this.hideModal()
         } else {
@@ -210,16 +196,17 @@ export class UsersComponent implements OnInit {
   }
 
   saveUser() {
-    let { id, _id, ...rest } = this.userForm.value
-    let data = rest
+    const { id, _id, ...rest } = this.userForm.value
+    const data = rest
+    // this.userFormObj.id=0
     console.log('create user data:', this.userForm.value);
     this.userServices.registerUser(data).subscribe({
       next: (res: any) => {
         if (res.success) {
           console.log('update user response: ', res.userData);
           this.alertService.getAlert('alert alert-success', 'Success!', res.message)
-
-          // this.getUsers()
+          this.getUsers(this.searchParams)
+          this.getTotalUsers()
           this.hideModal()
         } else {
           console.log('could not get users', res.message);
@@ -233,6 +220,7 @@ export class UsersComponent implements OnInit {
 
       }
     })
+
   }
 
   onEdit(userId: string) {
@@ -257,6 +245,31 @@ export class UsersComponent implements OnInit {
       next: (res: any) => {
         console.log('edit status response: ', res);
         if (res.success) {
+          this.getUsers(this.searchParams)
+
+          this.alertService.getAlert('alert alert-success', 'Success!', res.message)
+
+        } else {
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
+
+        }
+
+      },
+      error: (error: any) => {
+        console.log(error);
+        this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
+
+      }
+    })
+  }
+
+  verifyUser(userId: string) {
+    this.userServices.verifyUser(userId).subscribe({
+      next: (res: any) => {
+        console.log('verify user response: ', res);
+        if (res.success) {
+          this.getUsers(this.searchParams)
+
           this.alertService.getAlert('alert alert-success', 'Success!', res.message)
 
         } else {
@@ -276,6 +289,7 @@ export class UsersComponent implements OnInit {
   hideModal() {
     this.formModal.nativeElement.style.display = 'none'
     this.userForm.reset()
+    this.isAddUser = false
   }
 
   showModal() {

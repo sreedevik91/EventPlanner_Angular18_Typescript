@@ -1,17 +1,21 @@
 import { CookieType } from "../interfaces/userInterface";
 import { Request, Response } from 'express'
-import userServices from "../services/userServices";
+import UserServices from "../services/userServices";
 import { log } from "console";
 
 class UserController {
+
     async registerUser(req: Request, res: Response) {
         try {
-            const isUser = await userServices.register(req.body)
+            const isUser = await UserServices.register(req.body)
             console.log('response from register user: ', isUser);
-            res.json(isUser)
+
+            isUser?.success ? res.status(201).json(isUser) : res.status(400).json(isUser)
+
 
         } catch (error: any) {
             console.log('Error from Register User: ', error.message);
+            res.status(500).json(error.message)
         }
     }
 
@@ -20,7 +24,7 @@ class UserController {
             // console.log('google user: ', req.user);
 
             if (req.user) {
-                const login = await userServices.login(req.user)
+                const login = await UserServices.login(req.user)
                 if (login) {
                     if (login.emailVerified) {
                         if (login.success && login.cookieData) {
@@ -57,17 +61,18 @@ class UserController {
         try {
             let user = req.user
             console.log('google user data from token: ', user);
-            res.json({ success: true, data: user })    
+            res.status(200).json({ success: true, data: user })
         } catch (error: any) {
             console.log('Error from getGoogleUser: ', error.message);
+            res.status(500).json({ success: true, message: error.message })
         }
-      
+
     }
 
 
     async userLogin(req: Request, res: Response) {
         try {
-            const login = await userServices.login(req.body)
+            const login = await UserServices.login(req.body)
             if (login) {
                 if (login.emailVerified) {
                     if (login.success && login.cookieData) {
@@ -76,19 +81,19 @@ class UserController {
                         const { payload, refreshToken, accessToken, options } = cookie
                         res.cookie('refreshToken', refreshToken, options)
                         res.cookie('accessToken', accessToken, options)
-                        res.json({ success: true, emailVerified: true, message: 'Logged in success', data: payload })
+                        res.status(200).json({ success: true, emailVerified: true, message: 'Logged in success', data: payload })
 
                         console.log('sending login response from  controller to frontend: login success emailVerified success fail');
 
                     } else {
 
-                        res.json({ success: false, emailVerified: true, message: 'User not found.Invalid username or password' })
+                        res.status(400).json({ success: false, emailVerified: true, message: 'User not found.Invalid username or password' })
                         console.log('sending login response from  controller to frontend: login fail emailVerified success fail');
 
                     }
                 } else {
 
-                    res.json({ success: false, emailVerified: false, message: 'Email not verified' })
+                    res.status(400).json({ success: false, emailVerified: false, message: 'Email not verified' })
                     console.log('sending login response from  controller to frontend: login fail emailNotVerified success fail');
 
                 }
@@ -97,17 +102,20 @@ class UserController {
 
         } catch (error: any) {
             console.log('Error from Login User: ', error.message);
+            res.status(500).json({ success: false, message: error.message })
         }
     }
 
     async sendResetEmail(req: Request, res: Response) {
         try {
             console.log(req.body.email);
-            const response = await userServices.sendResetPasswordEmail(req.body.email)
+            const response = await UserServices.sendResetPasswordEmail(req.body.email)
             console.log("sendMail: ", response);
-            res.json(response)
+            response?.success ? res.status(200).json(response) : res.status(400).json(response)
+
         } catch (error: any) {
             console.log('Error from send email to user: ', error.message);
+            res.status(500).json(error.message)
         }
     }
 
@@ -115,21 +123,25 @@ class UserController {
         try {
             console.log('resetPassword data from req body:', req.body);
 
-            const response = await userServices.resetUserPassword(req.body)
+            const response = await UserServices.resetUserPassword(req.body)
             // console.log('reset password response: ', response);
-            res.json(response)
+            response?.success ? res.status(200).json(response) : res.status(400).json(response)
+
         } catch (error: any) {
             console.log('Error from reset password : ', error.message);
+            res.status(500).json(error.message)
         }
     }
 
 
     async verifyOtp(req: Request, res: Response) {
         try {
-            const response = await userServices.verifyLoginOtp(req.body)
-            res.json(response)
+            const response = await UserServices.verifyLoginOtp(req.body)
+            response?.success ? res.status(200).json(response) : res.status(400).json(response)
+
         } catch (error: any) {
             console.log('Error from verify otp : ', error.message);
+            res.status(500).json(error.message)
         }
     }
 
@@ -138,36 +150,48 @@ class UserController {
             const id = req.params.id
             console.log("id to resend otp: ", id);
 
-            const response = await userServices.resendUserOtp(req.params.id)
-            res.json(response)
+            const response = await UserServices.resendUserOtp(req.params.id)
+            response?.success ? res.status(200).json(response) : res.status(400).json(response)
+
         } catch (error: any) {
             console.log('Error from resend otp : ', error.message);
+            res.status(500).json(error.message)
         }
     }
 
     async userLogout(req: Request, res: Response) {
-        res.clearCookie('accessToken')
-        res.clearCookie('refreshToken')
-        res.json({ success: true, message: 'User logged out' })
+        try {
+            res.clearCookie('accessToken')
+            res.clearCookie('refreshToken')
+            res.status(200).json({ success: true, message: 'User logged out' })
+        } catch (error:any) {
+            res.status(500).json(error.message)
+        }
     }
 
     async getAllUsers(req: Request, res: Response) {
 
         try {
-            let users = await userServices.getUsers(req.query)
-            res.json(users)
+            let users = await UserServices.getUsers(req.query)
+            users?.success ? res.status(200).json(users) : res.status(400).json(users)
+
         } catch (error: any) {
             console.log('Error from getAllUsers : ', error.message);
+            res.status(500).json(error.message)
+
         }
     }
 
     async getUsersCount(req: Request, res: Response) {
 
         try {
-            let users = await userServices.getUsersCount()
-            res.json(users)
+            let users = await UserServices.getUsersCount()
+            users?.success ? res.status(200).json(users) : res.status(400).json(users)
+            
         } catch (error: any) {
             console.log('Error from getUsersCount : ', error.message);
+            res.status(500).json(error.message)
+
         }
     }
 
@@ -179,18 +203,19 @@ class UserController {
                 res.json({ success: false, message: 'Refresh Token is missing' })
                 return
             }
-            let tokenRes: any = await userServices.getNewToken(refreshToken)
+            let tokenRes: any = await UserServices.getNewToken(refreshToken)
             const { accessToken, options, payload } = tokenRes
             if (accessToken) {
                 res.cookie('accessToken', accessToken, options)
                 res.cookie('refreshToken', refreshToken, options)
-                res.json({ success: true, message: 'Token refreshed', data: payload })
+                res.status(200).json({ success: true, message: 'Token refreshed', data: payload })
                 return
             }
-            res.json({ success: false, message: 'Token could not refresh' })
+            res.status(400).json({ success: false, message: 'Token could not refresh' })
 
         } catch (error: any) {
             console.log('Error from refreshToken : ', error.message);
+            res.status(500).json({ success: false, message: 'Token could not refresh' })
         }
     }
 
@@ -200,10 +225,13 @@ class UserController {
             const { data } = req.body
             console.log('user details to update: ', userId, data);
 
-            const newUserResponse = await userServices.updateUser(userId, data)
-            res.json(newUserResponse)
+            const newUserResponse = await UserServices.updateUser(userId, data)
+            newUserResponse?.success ? res.status(200).json(newUserResponse) : res.status(400).json(newUserResponse)
+
         } catch (error: any) {
             console.log('Error from edit user : ', error.message);
+            res.status(500).json(error.message)
+
         }
     }
 
@@ -212,10 +240,13 @@ class UserController {
             const { id } = req.body
             // console.log('id to edit user',id);
 
-            const newStatusResponse = await userServices.updateUserStatus(id)
-            res.json(newStatusResponse)
+            const newStatusResponse = await UserServices.updateUserStatus(id)
+            newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
+          
         } catch (error: any) {
             console.log('Error from edit status : ', error.message);
+            res.status(500).json(error.message)
+
         }
     }
 
@@ -224,10 +255,13 @@ class UserController {
             const { id } = req.params
             console.log('id to get user', id);
 
-            const userResponse = await userServices.getUser(id)
-            res.json(userResponse)
+            const userResponse = await UserServices.getUser(id)
+            userResponse?.success ? res.status(200).json(userResponse) : res.status(400).json(userResponse)
+
         } catch (error: any) {
             console.log('Error from get user : ', error.message);
+            res.status(500).json(error.message)
+
         }
     }
 
@@ -235,14 +269,31 @@ class UserController {
         try {
             const { email } = req.body
             console.log('email to verify', req.body.email);
-            const verifyEmailResponse = await userServices.verifyUserEmail(email)
-            res.json(verifyEmailResponse)
+            const verifyEmailResponse = await UserServices.verifyUserEmail(email)
+            verifyEmailResponse?.success ? res.status(200).json(verifyEmailResponse) : res.status(400).json({message:'could not send otp to verify email'})
+
         } catch (error: any) {
             console.log('Error from verify user email : ', error.message);
+            res.status(500).json(error.message)
+
+        }
+    }
+
+    async verifyUser(req: Request, res: Response) {
+        try {
+            const { id } = req.body
+            console.log('id to verify', req.body.id);
+            const verifyEmailResponse = await UserServices.verifyUser(id)
+            verifyEmailResponse?.success ? res.status(200).json(verifyEmailResponse) : res.status(400).json(verifyEmailResponse)
+
+        } catch (error: any) {
+            console.log('Error from verify user : ', error.message);
+            res.status(500).json(error.message)
+
         }
     }
 }
 
 
 
-export const userController = new UserController()
+export default new UserController()

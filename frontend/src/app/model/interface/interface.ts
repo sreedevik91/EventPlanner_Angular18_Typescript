@@ -47,7 +47,8 @@ export interface IUser {
     updatedAt: string;
     __v: number;
     isActive: boolean;
-    isVerified: boolean;
+    isEmailVerified: boolean;
+    isUserVerified: boolean;
 }
 
 export interface IAlert {

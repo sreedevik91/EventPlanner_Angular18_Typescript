@@ -5,9 +5,7 @@ import nodemailer from 'nodemailer'
 import otpGenerator from 'otp-generator'
 import { IUser, IUserDb, JwtPayload, LoginData } from '../interfaces/userInterface'
 import UserRepository from '../repository/userRepository'
-import { ObjectId } from 'mongoose'
 import { CookieOptions } from 'express'
-import userRepository from '../repository/userRepository'
 
 dotenv.config()
 
@@ -44,7 +42,7 @@ class UserServices {
                 <p></p>
                 <p>${content}</p>
                 <p></p>
-                <p>Regards,</p>
+                <p>Warm Regards,</p>
                 <p>Admin</p>
                 <p>Dream Events</p>
                 </div>
@@ -68,6 +66,7 @@ class UserServices {
 
     async sendResetPasswordEmail(email: string) {
         try {
+            // const user = await UserRepository.getUserByEmail(email)
             const user = await UserRepository.getUserByEmail(email)
 
             if (user) {
@@ -264,11 +263,11 @@ class UserServices {
                 if (username && password) {
                     const user = await UserRepository.getUserByUsername(username)
 
-                    console.log('user for login from db: ', user?.isVerified, user);
+                    console.log('user for login from db: ', user?.isEmailVerified, user);
 
                     if (user) {
                         console.log('entered email verified loop ');
-                        if (user.isVerified === true) {
+                        if (user.isEmailVerified === true) {
                             if (user.password && await bcrypt.compare(password, user.password)) {
                                 const payload: JwtPayload = {
                                     id: user._id as string,
@@ -341,7 +340,7 @@ class UserServices {
 
                     if (otp === otpData.otp) {
                         console.log('otp matched');
-                        user.isVerified = true
+                        user.isEmailVerified = true
                         await user.save()
                         return { success: true, message: 'Otp matched' }
                     } else {
@@ -372,43 +371,43 @@ class UserServices {
 
     }
 
-    async getUsers(params:any) {
+    async getUsers(params: any) {
 
         try {
-            const {userName,userStatus,role,pageNumber,pageSize,sortBy,sortOrder}=params
-            console.log('search filter params:', userName,userStatus,role,pageNumber,pageSize,sortBy,sortOrder);
-            let filterQ:any={}
-            let sortQ:any={}
-            let skip=0
-            if(userName!==undefined){
-                filterQ.name= { $regex: `.*${userName}.*`, $options: 'i' } 
+            const { userName, userStatus, role, pageNumber, pageSize, sortBy, sortOrder } = params
+            console.log('search filter params:', userName, userStatus, role, pageNumber, pageSize, sortBy, sortOrder);
+            let filterQ: any = {}
+            let sortQ: any = {}
+            let skip = 0
+            if (userName !== undefined) {
+                filterQ.name = { $regex: `.*${userName}.*`, $options: 'i' }
                 // { $regex: `.*${search}.*`, $options: 'i' } 
             }
-            if(userStatus !==undefined){
-                filterQ.isActive=userStatus.toLowerCase().includes('active') ? true : false
+            if (userStatus !== undefined) {
+                filterQ.isActive = userStatus.toLowerCase().includes('active') ? true : false
             }
-            if(role!==undefined){
-                filterQ.role={ $regex: `.*${role}.*`, $options: 'i' } 
+            if (role !== undefined) {
+                filterQ.role = { $regex: `.*${role}.*`, $options: 'i' }
             }
-            if(sortOrder!==undefined && sortBy!==undefined){
-                let order= sortOrder==='asc' ? 1 : -1
-                if(sortBy==='name') {sortQ.name=order}
-                else if(sortBy==='email') {sortQ.email=order}
-                else if(sortBy==='role') {sortQ.role=order}
-                else if(sortBy==='mobile') {sortQ.mobile=order}
-                else if(sortBy==='isActive') {sortQ.isActive=order}              
-            }else{
-                sortQ.createdAt=1
+            if (sortOrder !== undefined && sortBy !== undefined) {
+                let order = sortOrder === 'asc' ? 1 : -1
+                if (sortBy === 'name') { sortQ.name = order }
+                else if (sortBy === 'email') { sortQ.email = order }
+                else if (sortBy === 'role') { sortQ.role = order }
+                else if (sortBy === 'mobile') { sortQ.mobile = order }
+                else if (sortBy === 'isActive') { sortQ.isActive = order }
+            } else {
+                sortQ.createdAt = 1
             }
 
-            console.log('sortQ: ',sortQ);
-            
-            skip=(Number(pageNumber)-1) * Number(pageSize)
-            
-            console.log('skip: ',skip);
+            console.log('sortQ: ', sortQ);
+
+            skip = (Number(pageNumber) - 1) * Number(pageSize)
+
+            console.log('skip: ', skip);
 
 
-            let data = await UserRepository.getAllUsers(filterQ,sortQ,Number(pageSize),skip)
+            let data = await UserRepository.getAllUsers(filterQ, sortQ, Number(pageSize), skip)
 
             if (data) {
                 return { success: true, data }
@@ -455,7 +454,7 @@ class UserServices {
 
     async updateUser(userId: string, data: Partial<IUser>) {
         try {
-            const updatedUser = await userRepository.updateUser(userId, data)
+            const updatedUser = await UserRepository.updateUser(userId, data)
             console.log('updatedUser: ', updatedUser);
 
             if (updatedUser) {
@@ -471,7 +470,7 @@ class UserServices {
 
     async updateUserStatus(userId: string) {
         try {
-            const user = await userRepository.getUserById(userId)
+            const user = await UserRepository.getUserById(userId)
             if (user) {
                 user.isActive = !user.isActive
                 let res = await user.save()
@@ -492,7 +491,7 @@ class UserServices {
 
     async getUser(id: string) {
         try {
-            const user = await userRepository.getUserById(id)
+            const user = await UserRepository.getUserById(id)
             if (user) {
 
                 return { success: true, data: user }
@@ -508,7 +507,7 @@ class UserServices {
 
     async getUsersCount() {
         try {
-            const user = await userRepository.getTotalUsers()
+            const user = await UserRepository.getTotalUsers()
             if (user) {
 
                 return { success: true, data: user }
@@ -518,6 +517,31 @@ class UserServices {
 
         } catch (error: any) {
             console.log('Error from getUsersCount: ', error.message);
+        }
+
+    }
+
+    async verifyUser(id: string) {
+
+        try {
+            // const { email } = data
+            const user = await UserRepository.getUserById(id)
+            if (user) {
+                user.isUserVerified = true
+                await user.save()
+                let content = `
+                <p>Glad to inform that your account with Dream Events has been verified.</p>
+                <p>May youe events get more memorable with us. Happt events!</p>
+               `
+                let subject = "Account Verified"
+                await this.sendMail(user.name, user.email, content, subject)
+                return { success: true, message: 'user verified', data: user }
+            } else {
+                return { success: false, message: 'could not verify user' }
+
+            }
+        } catch (error: any) {
+            console.log('Error from verifyUserEmail: ', error.message);
         }
 
     }

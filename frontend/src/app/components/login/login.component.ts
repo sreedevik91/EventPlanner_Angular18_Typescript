@@ -68,10 +68,14 @@ export class LoginComponent{
       next: (res: any) => {
         // debugger
         console.log(res);
-        if (res.emailVerified) {
-          if (res.success === true) {
+        console.log(res.body);
+        // console.log(res.body.emailVerified);
+        if (res.body.emailVerified) {
+          if (res.status === 200) {
+            console.log(this.router);
+            
             this.router.navigateByUrl('dashboard')
-            this.userService.setLoggedUser(res.data)
+            this.userService.setLoggedUser(res.body.data)
 
           } else {
             // this.callAlert("alert alert-danger", "Login Failed", res.message)
