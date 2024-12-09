@@ -11,6 +11,7 @@ export class ButtonComponent {
 
   @Input() btnClass: string = ''
   @Input() btnTitle: string=''
+  @Input() disabled: boolean=false
 
   @Output() onBtnClick = new EventEmitter()
 

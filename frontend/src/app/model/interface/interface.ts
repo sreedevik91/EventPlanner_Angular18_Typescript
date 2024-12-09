@@ -28,6 +28,13 @@ export interface ILoggedUserData {
     email: string;
 }
 
+export interface INewServiceData {
+    name: string;
+    events: string[];
+    provider: string;
+    choices: IChoice[];
+}
+
 export interface IOtpData {
     otp: string;
     expiresIn: string;
@@ -49,6 +56,25 @@ export interface IUser {
     isActive: boolean;
     isEmailVerified: boolean;
     isUserVerified: boolean;
+}
+
+export interface IService {
+   _id: string;
+    name: string;
+    events: string;
+    provider:string;
+    choices:IChoice[];
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+    isActive: boolean;
+    isApproved: boolean;
+}
+
+interface IChoice {
+    choiceName: string;
+    choiceType: string;
+    choicePrice: number;
 }
 
 export interface IAlert {

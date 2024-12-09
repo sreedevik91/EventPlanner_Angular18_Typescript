@@ -79,7 +79,7 @@ export class LoginComponent{
 
           } else {
             // this.callAlert("alert alert-danger", "Login Failed", res.message)
-            this.alertService.getAlert("alert alert-danger", "Login Failed", res.message)
+            this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
 
           }
         } else {

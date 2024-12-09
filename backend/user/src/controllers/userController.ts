@@ -283,8 +283,8 @@ class UserController {
         try {
             const { id } = req.body
             console.log('id to verify', req.body.id);
-            const verifyEmailResponse = await UserServices.verifyUser(id)
-            verifyEmailResponse?.success ? res.status(200).json(verifyEmailResponse) : res.status(400).json(verifyEmailResponse)
+            const verifyUser = await UserServices.verifyUser(id)
+            verifyUser?.success ? res.status(200).json(verifyUser) : res.status(400).json(verifyUser)
 
         } catch (error: any) {
             console.log('Error from verify user : ', error.message);

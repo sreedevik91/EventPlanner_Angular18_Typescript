@@ -1,17 +1,29 @@
-export interface IService {
+import { DeleteResult } from "mongoose";
+
+export interface IService extends Document {
     name: string;
-    eventId: string[];
-    providerId: string[];
+    events: string[];
+    provider: string;
     choices: IChoice[];
     isApproved: boolean;
     isActive: boolean;
 }
 export interface IChoice {
-    name: string;
-    type: string;
-    price: number;
+    choiceName: string;
+    choiceType: string;
+    choicePrice: number;
 }
 
-export interface IServiceDb extends IService {
-    _id: string
+export interface IServiceDb extends IService,Document {
+    _id: string;
+    save: () => Promise<IServiceDb>
+}
+
+export interface IServiceRepository{
+    getAllServices(filter:any,sort:any,limit:number,skip:number):Promise<IService[]>;
+    createService(service:IService):Promise<IService>;
+    getServiceById(id:string):Promise<IServiceDb | null>;
+    updateService(id:string,service:Partial<IService>):Promise<IServiceDb | null>;
+    deleteService(id:string):Promise<DeleteResult>;
+    getTotalServices():Promise<number>;
 }

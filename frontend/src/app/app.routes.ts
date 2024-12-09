@@ -9,6 +9,7 @@ import { SubmitOtpComponent } from './components/submit-otp/submit-otp.component
 import { UsersComponent } from './components/users/users.component';
 import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
 import { GoogleAuthCallbackComponent } from './components/google-auth-callback/google-auth-callback.component';
+import { EventServicesComponent } from './components/event-services/event-services.component';
 
 export const routes: Routes = [
     {
@@ -48,6 +49,11 @@ export const routes: Routes = [
             {
                 path:'users',
                 component:UsersComponent,
+                canActivate:[authGuard]
+            },
+            {
+                path:'services',
+                component:EventServicesComponent,
                 canActivate:[authGuard]
             },
            

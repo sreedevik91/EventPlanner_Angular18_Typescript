@@ -1,0 +1,134 @@
+<section class="container mt-4 p-3">
+
+    <div class="row mb-2">
+        <div class="col-md-8 text-dark fs-3 fw-bold">
+            <p>Service Management</p>
+        </div>
+        
+    </div>
+    <div class="row d-flex flex-row" [formGroup]="searchFilterForm">
+        <!-- <form [formGroup]="searchFilterForm"> -->
+        <div class="col-md-3">
+            <label for=""> Name: </label><input type="text" class="form-control" formControlName="serviceName">
+        </div>
+        <div class="col-md-3">
+            <label for=""> Provider: </label><input type="text" class="form-control" formControlName="provider">
+        </div>
+        <!-- <div class="col-md-3">
+            <label for=""> Role: </label><input type="text" class="form-control" formControlName="role">
+        </div> -->
+        <div class="col-md-3">
+            <app-button [btnClass]="'btn-dark mt-4 rounded-pill'" (onBtnClick)="onSearch()">Search</app-button>
+        </div>
+        <div class="col-md-3 align-item-left mt-4 mb-4">
+            <select formControlName="pageSize" (change)="onSearch()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <!-- </form> -->
+    </div>
+    <div>
+        <app-alert></app-alert>
+    </div>
+    <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Service</h6>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Sl.No</th>
+                        <th scope="col" role="button" (click)="onSort('name')">Name</th>
+                        <th scope="col" role="button" (click)="onSort('provider')">Provider</th>
+                        <th scope="col" role="button" (click)="onSort('events')">Events</th>
+                        <th scope="col">Options</th>
+                        <th scope="col" role="button" (click)="onSort('isActive')">Status</th>
+                        <th scope="col" role="button" (click)="onSort('isApproved')">Approval</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (item of services(); track $index) {
+                    <tr>
+                        <th scope="row">{{$index + 1}}</th>
+                        <td>{{item.name}}</td>
+                        <td>{{item.provider}}</td>
+                        <td>
+                            @for (event of item.events; track $index) {
+                            <p>{{event}}</p>
+                            }
+                        </td>
+                        <td>
+                            @for (choice of item.choices; track $index) {
+                            <p>Name:{{choice.choiceName}}</p>
+                            @if(choice.choiceType !==''){
+                            <p>Type:{{choice.choiceType}}</p>
+                            }
+                            <p>Price:{{choice.choicePrice}}</p>
+                            }
+                        </td>
+                        <td>
+                            @if(item.isActive){
+                            Active
+                            }@else{
+                            Blocked
+                            }
+                        </td>
+                        <td>
+                            @if(item.isApproved){
+                            Approved
+                            }@else{
+                            -
+                            }
+                        </td>
+
+                        <td>
+                            @if(item.isApproved){
+                            <app-button [btnTitle]="'Service Approved'" [disabled]="true"><i
+                                    class="fa-solid fa-user-check"></i></app-button>
+                            }@else {
+                            <app-button [btnTitle]="'Approve service'" (onBtnClick)="approveService(item._id)"><i
+                                    class="fa-solid fa-user-xmark"></i></app-button>
+                            }
+
+                            <!--  -->
+                            <!-- <i class="fa-solid fa-lock"></i> -->
+                            <!-- <i class="fa-solid fa-unlock"></i> -->
+                        </td>
+                    </tr>
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+
+        <nav>
+            <ul class="pagination">
+                <li class="page-item" [class.disabled]="currentPage===1">
+                    <a class="page-link" role="button" (click)="onPageChange(currentPage-1)">Previous</a>
+                </li>
+                @for (item of getTotalPages(); track $index) {
+                <li class="page-item">
+                    <a class="page-link" [class.active]="currentPage===item" role="button"
+                        (click)="onPageChange(item)">{{item}}</a>
+                </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" role="button" [class.disabled]="currentPage===getLastpage()"
+                        (click)="onPageChange(currentPage+1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+
+    
+
+</section>

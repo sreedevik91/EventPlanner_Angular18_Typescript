@@ -17,7 +17,7 @@ export class User{
     }
 }
 
-export class SearchFilter{
+export class UserSearchFilter{
     userName: string;
     userStatus: string;
     role: string;

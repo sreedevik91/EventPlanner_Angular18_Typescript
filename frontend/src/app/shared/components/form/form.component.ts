@@ -1,9 +1,10 @@
+import { JsonPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-form',
   standalone: true,
-  imports: [],
+  imports: [JsonPipe],
   templateUrl: './form.component.html',
   styleUrl: './form.component.css'
 })

@@ -1,40 +1,45 @@
-import mongoose, { model, Schema }  from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import { IService, IServiceDb } from "../interfaces/serviceInterfaces";
 
 
-const ServiceSchema:Schema<IService> = new Schema<IService>({
-name:{
-    type:String,
-    required:true
-},
-  eventId: [{
-    type: Schema.Types.ObjectId
+const ServiceSchema: Schema<IService> = new Schema<IService>({
+  name: {
+    type: String,
+    required: true
+  },
+  events: [{
+    type: String,
+    required: true
   }],
-  providerId: [{
-    type: Schema.Types.ObjectId
-  }],
-  choices: [{
-    name: {
+  provider: {
+    type: String,
+    required: true
+  },
+  choices: [{                                           
+    choiceName: {
       type: String
     },
-    type: {
+    choiceType: {
       type: String
     },
-    price: {
+    choicePrice: {
       type: Number
     }
   }],
   isApproved: {
-    type: Boolean
+    type: Boolean,
+    default: false
   },
   isActive: {
-    type: Boolean
-  } 
+    type: Boolean,
+    default: true
+  }
 },
-{
-    timestamps:true
-}
+  {
+    timestamps: true
+  }
 );
 
-const Service= model<IService>('service',ServiceSchema)
+const Service = model<IService>('service', ServiceSchema)
 export default Service
+

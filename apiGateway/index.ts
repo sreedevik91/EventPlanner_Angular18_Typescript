@@ -32,6 +32,7 @@ app.use(morgan(':method :url :status [:date[clf]] - :response-time ms :host',{st
 
 const services = [
     { path: '/user', target: process.env.USER_SERVICE },
+    { path: '/service', target: process.env.SERVICES_SERVICE },
     { path: '/', target: process.env.FRONTEND },
 ]
 

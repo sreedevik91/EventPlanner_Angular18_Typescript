@@ -1,7 +1,7 @@
 import { Component, ElementRef, inject, OnChanges, OnInit, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { ButtonComponent } from '../../shared/components/button/button.component';
-import { SearchFilter, User } from '../../model/class/userClass';
+import { UserSearchFilter, User } from '../../model/class/userClass';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
@@ -22,7 +22,7 @@ export class UsersComponent implements OnInit {
   users = signal<IUser[]>([])
 
   userFormObj: User = new User()
-  searchFilterFormObj: SearchFilter = new SearchFilter()
+  searchFilterFormObj: UserSearchFilter = new UserSearchFilter()
   // searchParams:any
 
   isAddUser: boolean = false

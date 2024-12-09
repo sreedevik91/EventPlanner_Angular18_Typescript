@@ -9,7 +9,7 @@ import { BehaviorSubject, take, tap } from 'rxjs';
 })
 export class UserSrerviceService {
 
-  baseUrl: string = environment.apiUrl
+  baseUrl: string = environment.apiUserUrl
 
   http = inject(HttpClient)
 
