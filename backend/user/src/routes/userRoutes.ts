@@ -33,15 +33,26 @@ router.post('/resetPassword',userController.resetPassword)
 router.post('/verifyOtp',userController.verifyOtp)
 router.get('/sendOtp/:id',userController.resendOtp)
 router.get('/refreshToken',userController.refreshToken)
-router.get('/users',verifyToken,userController.getAllUsers)
-router.get('/usersCount',verifyToken,userController.getUsersCount)
-router.post('/verifyUser',verifyToken,userController.verifyUser)
-router.get('/user/:id',verifyToken,userController.getUser)
-router.get('/data',verifyToken,userController.getGoogleUser)
-router.post('/edit/:userId',verifyToken,userController.editUser)
-router.post('/editStatus',verifyToken,userController.editStatus)
+
+// router.get('/users',verifyToken,userController.getAllUsers)
+// router.get('/usersCount',verifyToken,userController.getUsersCount)
+// router.post('/verifyUser',verifyToken,userController.verifyUser)
+// router.get('/user/:id',verifyToken,userController.getUser)
+// router.get('/data',verifyToken,userController.getGoogleUser)
+// router.post('/edit/:userId',verifyToken,userController.editUser)
+// router.post('/editStatus',verifyToken,userController.editStatus)
+
+router.get('/users',userController.getAllUsers)
+router.get('/usersCount',userController.getUsersCount)
+router.post('/verifyUser',userController.verifyUser)
+router.get('/user/:id',userController.getUser)
+router.get('/data',userController.getGoogleUser)
+router.post('/edit/:userId',userController.editUser)
+router.post('/editStatus',userController.editStatus)
+
 router.get('/logout',userController.userLogout)
 
 userRouter.use(router)
 
 export default userRouter
+

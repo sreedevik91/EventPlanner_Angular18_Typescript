@@ -1,4 +1,4 @@
-import { CookieType } from "../interfaces/userInterface";
+import { CookieType, LoginData } from "../interfaces/userInterface";
 import { Request, Response } from 'express'
 import UserServices from "../services/userServices";
 import { log } from "console";
@@ -59,9 +59,15 @@ class UserController {
 
     async getGoogleUser(req: Request, res: Response) {
         try {
-            let user = req.user
+            let user:LoginData | undefined = req.user
             console.log('google user data from token: ', user);
-            res.status(200).json({ success: true, data: user })
+            if (user?.email) {
+                let userDb = await UserServices.getGoogleUser(user.email)
+            // res.status(200).json({ success: true, data: user })
+            userDb?.success ? res.status(200).json(userDb) : res.status(400).json(userDb)
+
+            }
+
         } catch (error: any) {
             console.log('Error from getGoogleUser: ', error.message);
             res.status(500).json({ success: true, message: error.message })
@@ -87,7 +93,7 @@ class UserController {
 
                     } else {
 
-                        res.status(400).json({ success: false, emailVerified: true, message: 'User not found.Invalid username or password' })
+                        res.status(400).json({ success: false, emailVerified: true, message: login.message ? login.message : 'User not found.Invalid username or password' })
                         console.log('sending login response from  controller to frontend: login fail emailVerified success fail');
 
                     }
@@ -164,7 +170,7 @@ class UserController {
             res.clearCookie('accessToken')
             res.clearCookie('refreshToken')
             res.status(200).json({ success: true, message: 'User logged out' })
-        } catch (error:any) {
+        } catch (error: any) {
             res.status(500).json(error.message)
         }
     }
@@ -187,7 +193,7 @@ class UserController {
         try {
             let users = await UserServices.getUsersCount()
             users?.success ? res.status(200).json(users) : res.status(400).json(users)
-            
+
         } catch (error: any) {
             console.log('Error from getUsersCount : ', error.message);
             res.status(500).json(error.message)
@@ -242,7 +248,7 @@ class UserController {
 
             const newStatusResponse = await UserServices.updateUserStatus(id)
             newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
-          
+
         } catch (error: any) {
             console.log('Error from edit status : ', error.message);
             res.status(500).json(error.message)
@@ -256,6 +262,8 @@ class UserController {
             console.log('id to get user', id);
 
             const userResponse = await UserServices.getUser(id)
+            console.log('get user response:', userResponse);
+            
             userResponse?.success ? res.status(200).json(userResponse) : res.status(400).json(userResponse)
 
         } catch (error: any) {
@@ -270,7 +278,7 @@ class UserController {
             const { email } = req.body
             console.log('email to verify', req.body.email);
             const verifyEmailResponse = await UserServices.verifyUserEmail(email)
-            verifyEmailResponse?.success ? res.status(200).json(verifyEmailResponse) : res.status(400).json({message:'could not send otp to verify email'})
+            verifyEmailResponse?.success ? res.status(200).json(verifyEmailResponse) : res.status(400).json({ message: 'could not send otp to verify email' })
 
         } catch (error: any) {
             console.log('Error from verify user email : ', error.message);

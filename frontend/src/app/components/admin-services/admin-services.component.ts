@@ -12,7 +12,7 @@ import { AlertComponent } from '../../shared/components/alert/alert.component';
 @Component({
   selector: 'app-admin-services',
   standalone: true,
-  imports: [ReactiveFormsModule,ButtonComponent,AlertComponent],
+  imports: [ReactiveFormsModule, ButtonComponent, AlertComponent],
   templateUrl: './admin-services.component.html',
   styleUrl: './admin-services.component.css'
 })
@@ -37,13 +37,10 @@ export class AdminServicesComponent {
     this.initialiseSearchFilterForm()
   }
   ngOnInit(): void {
-    this.userService.loggedUser$.subscribe((user: any) => {
-    
-
-    })
-    this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
-      .set('pageSize', this.searchFilterFormObj.pageSize)
-    this.getAllServices(this.searchParams)
+    //  this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
+    //   .set('pageSize', this.searchFilterFormObj.pageSize)
+    // this.getAllServices(this.searchParams)
+    this.onRefresh()
   }
 
   initialiseSearchFilterForm() {
@@ -53,7 +50,7 @@ export class AdminServicesComponent {
       pageNumber: new FormControl(this.searchFilterFormObj.pageNumber),
       pageSize: new FormControl(this.searchFilterFormObj.pageSize),
       sortBy: new FormControl(this.searchFilterFormObj.sortBy),
-      sortOrder: new FormControl(this.searchFilterFormObj.sortOrder),
+      sortOrder: new FormControl(this.searchFilterFormObj.sortOrder)
     })
   }
 
@@ -73,6 +70,15 @@ export class AdminServicesComponent {
 
       }
     })
+  }
+
+  onRefresh() {
+    this.searchParams= new HttpParams()
+    this.searchFilterForm.get('serviceName')?.setValue('')
+    this.searchFilterForm.get('provider')?.setValue('')
+    this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
+      .set('pageSize', this.searchFilterFormObj.pageSize)
+    this.getAllServices(this.searchParams)
   }
 
   onSearch() {
@@ -98,8 +104,9 @@ export class AdminServicesComponent {
 
   onSort(value: string) {
     this.searchFilterFormObj.sortOrder = this.searchFilterFormObj.sortOrder === 'asc' ? 'desc' : 'asc'
-    this.searchParams.set('sortBy', value)
+    this.searchParams = this.searchParams.set('sortBy', value)
       .set('sortOrder', this.searchFilterFormObj.sortOrder)
+    console.log(this.searchParams);
     this.getAllServices(this.searchParams)
 
   }
@@ -109,7 +116,8 @@ export class AdminServicesComponent {
       next: (res: any) => {
         if (res.status === 200) {
           this.services.set(res.body.data)
-          console.log('total services: ', this.services());
+          console.log('all services: ', this.services());
+    this.searchParams= new HttpParams()
         } else {
           console.log('could not get users');
           this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
@@ -126,7 +134,7 @@ export class AdminServicesComponent {
     this.serviceService.approveService(id).subscribe({
       next: (res: any) => {
         console.log('verify user response: ', res);
-        if (res.status===200) {
+        if (res.status === 200) {
           this.getAllServices(this.searchParams)
 
           this.alertService.getAlert('alert alert-success', 'Success!', res.message)
@@ -145,7 +153,7 @@ export class AdminServicesComponent {
     })
   }
 
-  
+
 
   deleteService(id: string) {
     this.serviceService.deleteService(id).subscribe({

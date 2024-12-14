@@ -34,7 +34,7 @@ export class ProviderServicesComponent implements OnInit {
   userService = inject(UserSrerviceService)
   alertService = inject(AlertService)
 
-  isAddService: boolean = false
+  isAddService: boolean = true
   currentPage: number = Number(this.searchFilterFormObj.pageNumber)
   totalServices: number = 0
   services = signal<IService[]>([])
@@ -65,9 +65,18 @@ export class ProviderServicesComponent implements OnInit {
       _id: new FormControl(this.serviceFromObj._id),
       name: new FormControl(this.serviceFromObj.name, [Validators.required]),
       provider: new FormControl(this.serviceFromObj.provider, [Validators.required]),
-      events: new FormArray([
+      // events: new FormArray([
+      //   new FormControl(this.serviceFromObj.events, [Validators.required])
+      // ]),
+      events: this.isAddService? new FormArray([
         new FormControl(this.serviceFromObj.events, [Validators.required])
-      ]),
+      ]) 
+      : 
+      new FormArray(
+        this.serviceFromObj.events.map((event)=>{
+         return new FormControl(event, [Validators.required])
+        })
+      ),
       choices: new FormArray(
         (this.serviceFromObj.choices).map((choice) => {
           return new FormGroup({
@@ -108,6 +117,11 @@ export class ProviderServicesComponent implements OnInit {
 
   getEvents() {
     const events = (<FormArray>this.serviceForm.get('events'))['controls']
+
+    console.log('events array: ',events.forEach((e)=>{
+      console.log(e);
+    }));
+    
     return events
   }
   addEvent() {
@@ -121,6 +135,8 @@ export class ProviderServicesComponent implements OnInit {
 
   getChoices() {
     const choices = ((<FormArray>this.serviceForm.get('choices'))['controls'])
+    console.log('choices array: ',choices);
+
     return choices
   }
 
@@ -169,6 +185,15 @@ export class ProviderServicesComponent implements OnInit {
     })
   }
 
+  onRefresh() {
+    this.searchParams= new HttpParams()
+    this.searchFilterForm.get('serviceName')?.setValue('')
+    this.searchFilterForm.get('provider')?.setValue('')
+    this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
+      .set('pageSize', this.searchFilterFormObj.pageSize)
+    this.getAllServices(this.searchParams)
+  }
+
   onSearch() {
     console.log(this.searchFilterForm.value);
     this.searchFilterFormObj = this.searchFilterForm.value
@@ -192,7 +217,7 @@ export class ProviderServicesComponent implements OnInit {
 
   onSort(value: string) {
     this.searchFilterFormObj.sortOrder = this.searchFilterFormObj.sortOrder === 'asc' ? 'desc' : 'asc'
-    this.searchParams.set('sortBy', value)
+    this.searchParams=this.searchParams.set('sortBy', value)
       .set('sortOrder', this.searchFilterFormObj.sortOrder)
     this.getAllServices(this.searchParams)
 
@@ -216,12 +241,19 @@ export class ProviderServicesComponent implements OnInit {
     })
   }
 
+  onAddService(){
+    debugger
+    this.isAddService=true
+    this.showModal()
+  }
+
   onEdit(id: string) {
+    this.isAddService=false
     this.serviceService.getServiceById(id).subscribe({
       next: (res: any) => {
         if (res.status === 200) {
           this.serviceFromObj = res.body.data
-          // console.log(this.serviceFromObj);
+          console.log('update form data: ',this.serviceFromObj);
           this.initialiseServiceForm()
           this.getChoiceOptions()
           this.showModal()
@@ -290,15 +322,15 @@ export class ProviderServicesComponent implements OnInit {
 
     this.serviceService.editService(data, id).subscribe({
       next: (res: any) => {
+        debugger
         if (res.status===200) {
-          console.log('update user response: ', res.body.data);
-          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
-          this.getAllServices(this.searchParams)
-          // this.getUsers()
+          console.log('update user response: ', res.body);
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message || 'Service updated')
           this.hideModal()
+          this.getAllServices(this.searchParams)
         } else {
-          console.log('could not get users', res.body.message);
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
+          console.log('could not get service', res.body.message || '');
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message || '')
 
         }
       },
@@ -351,18 +383,10 @@ export class ProviderServicesComponent implements OnInit {
 
   hideModal() {
     this.formModal.nativeElement.style.display = 'none'
-    this.isAddService=false
+    this.isAddService=true
     this.serviceForm.reset()
-    this.serviceFromObj = {
-      _id: '',
-      name: '',
-      events: [],
-      provider: '',
-      choices: [{ choiceName: '', choicePrice: 0, choiceType: '' }]
-    }
-    // this.initialiseServiceForm()
-    this.isType = false
-
+    this.serviceFromObj =  new Service()
+    this.initialiseServiceForm()
   }
 
 

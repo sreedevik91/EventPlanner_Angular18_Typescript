@@ -25,7 +25,7 @@ export class UserSrerviceService {
   }
 
   registerUser(data: IRegisterData) {
-    return this.http.post(`${this.baseUrl}register`, data)
+    return this.http.post(`${this.baseUrl}register`,data,{ observe: 'response' })
   }
 
   userLogin(data: ILoginData) {
@@ -39,63 +39,63 @@ export class UserSrerviceService {
   }
 
   handleGoogleSignin() {
-    return this.http.get(`${this.baseUrl}data`)
+    return this.http.get(`${this.baseUrl}data`, { observe: 'response' })
   }
 
   sendResetEmail(data: any) {
-    return this.http.post(`${this.baseUrl}sendResetEmail`, data)
+    return this.http.post(`${this.baseUrl}sendResetEmail`, data, { observe: 'response' })
   }
 
   resetPassword(data: any) {
-    return this.http.post(`${this.baseUrl}resetPassword`, data)
+    return this.http.post(`${this.baseUrl}resetPassword`, data, { observe: 'response' })
   }
 
   userLogout() {
     this.loggedUserSubject.next(null)
-    return this.http.get(`${this.baseUrl}logout`)
+    return this.http.get(`${this.baseUrl}logout`, { observe: 'response' })
   }
 
   verifyOtp(data: any) {
-    return this.http.post(`${this.baseUrl}verifyOtp`, data)
+    return this.http.post(`${this.baseUrl}verifyOtp`, data, { observe: 'response' })
   }
 
   verifyUserEmail(data: any) {
-    return this.http.post(`${this.baseUrl}verifyEmail`, data)
+    return this.http.post(`${this.baseUrl}verifyEmail`, data,  { observe: 'response' })
   }
 
   verifyUser(id: string) {
-    return this.http.post(`${this.baseUrl}verifyUser`, { id })
+    return this.http.post(`${this.baseUrl}verifyUser`, { id },  { observe: 'response' })
   }
 
   resendOtp(id: string) {
-    return this.http.get(`${this.baseUrl}sendOtp/${id}`)
+    return this.http.get(`${this.baseUrl}sendOtp/${id}`, { observe: 'response' })
   }
 
   getAllUsers(params: any) {
     // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
-    return this.http.get(`${this.baseUrl}users`, { params })
+    return this.http.get(`${this.baseUrl}users`, { observe: 'response',params })
   }
 
   getUsersCount() {
     // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
-    return this.http.get(`${this.baseUrl}usersCount`)
+    return this.http.get(`${this.baseUrl}usersCount`, { observe: 'response' })
   }
 
   getUserById(id: string) {
     // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
-    return this.http.get(`${this.baseUrl}user/${id}`)
+    return this.http.get(`${this.baseUrl}user/${id}`, { observe: 'response' })
   }
 
   refreshToken() {
-    return this.http.get(`${this.baseUrl}refreshToken`)
+    return this.http.get(`${this.baseUrl}refreshToken`, { observe: 'response' })
   }
 
   editUser(data: any, id: string) {
-    return this.http.post(`${this.baseUrl}edit/${id}`, { data })
+    return this.http.post(`${this.baseUrl}edit/${id}`, { data }, { observe: 'response' })
   }
 
   editStatus(id: string) {
-    return this.http.post(`${this.baseUrl}editStatus`, { id })
+    return this.http.post(`${this.baseUrl}editStatus`, { id }, { observe: 'response' })
   }
 
 }

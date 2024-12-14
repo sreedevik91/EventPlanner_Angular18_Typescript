@@ -21,6 +21,7 @@
         </div>
         <div class="col-md-3">
             <app-button [btnClass]="'btn-dark mt-4 rounded-pill'" (onBtnClick)="onSearch()">Search</app-button>
+            <app-button [btnClass]="'btn-dark mt-4 ms-3 rounded-pill'" (onBtnClick)="onRefresh()">Refresh</app-button>
         </div>
         <div class="col-md-3 align-item-left mt-4 mb-4">
             <select formControlName="pageSize" (change)="onSearch()">

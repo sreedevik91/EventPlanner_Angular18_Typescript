@@ -2,6 +2,9 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { config } from 'dotenv'
 import { Request, Response, NextFunction } from 'express'
+import userRepository from '../repository/userRepository'
+import { match } from 'path-to-regexp'
+
 
 config()
 
@@ -15,6 +18,30 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
     console.log('Request Headers:', req.headers);
     console.log('Cookies:', req.cookies);
 
+    const publicRoutes=[
+        '/',
+        'user/register',
+        'user/verifyEmail',
+        'user/login',
+        'user/sendResetEmail',
+        'user/resetPassword',
+        'user/verifyOtp',
+        'user/sendOtp/:id',
+        'user/refreshToken',
+        'user/logout',
+        ]
+        
+        const isPublicRoute=publicRoutes.some(route=>{
+        let matchValue:any=match(route,{decode:decodeURIComponent})
+        return matchValue
+        })
+        
+        if(isPublicRoute) {
+        next()
+        }
+        
+        
+
     const token = req.cookies?.accessToken
 
     console.log('cookie token: ', token);
@@ -25,10 +52,18 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
         return
     }
     try {
-        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!)
+        const decoded = <JwtPayload>jwt.verify(token, process.env.JWT_ACCESS_SECRET!)
         console.log('decoded token: ', decoded);
 
+        const userId = decoded.id
+        let user = await userRepository.getUserById(userId)
+        if (!user?.isActive) {
+            res.status(403).json({ success: false, message: 'Account is blocked' })
+            return
+        }
+        
         req.user = decoded
+
         next()
 
     } catch (error: any) {

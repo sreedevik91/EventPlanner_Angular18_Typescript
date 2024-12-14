@@ -60,6 +60,9 @@ export interface JwtPayload {
     role: string;
     googleId?: string;
     email: string;
+    isActive: boolean;
+    isEmailVerified: boolean;
+    isUserVerified: boolean;
 }
 
 

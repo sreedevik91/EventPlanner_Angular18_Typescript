@@ -36,7 +36,7 @@ class UserRepository implements IUserRepository {
     }
 
     async updateUser(id: string, data: Partial<IUser>): Promise<IUserDb | null> {
-        const updateUser = await User.findOneAndUpdate({ _id: id }, {$set:data})
+        const updateUser = await User.findOneAndUpdate({ _id: id }, {$set:data},{new:true})
         return updateUser
     }
 

@@ -47,10 +47,11 @@ export class UsersComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.searchParams = this.searchParams
-      .set('pageNumber', this.searchFilterFormObj.pageNumber)
-      .set('pageSize', this.searchFilterFormObj.pageSize)
-    this.getUsers(this.searchParams)
+    // this.searchParams = this.searchParams
+    //   .set('pageNumber', this.searchFilterFormObj.pageNumber)
+    //   .set('pageSize', this.searchFilterFormObj.pageSize)
+    // this.getUsers(this.searchParams)
+    this.onRefresh()
   }
 
   initialiseUserForm() {
@@ -75,6 +76,17 @@ export class UsersComponent implements OnInit {
       sortBy: new FormControl(this.searchFilterFormObj.sortBy),
       sortOrder: new FormControl(this.searchFilterFormObj.sortOrder),
     })
+  }
+
+
+  onRefresh() {
+    this.searchParams= new HttpParams()
+    this.searchFilterForm.get('userName')?.setValue('')
+    this.searchFilterForm.get('userStatus')?.setValue('')
+    this.searchFilterForm.get('role')?.setValue('')
+    this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
+      .set('pageSize', this.searchFilterFormObj.pageSize)
+    this.getUsers(this.searchParams)
   }
 
   onSort(value: string) {
@@ -112,13 +124,13 @@ export class UsersComponent implements OnInit {
   getTotalUsers() {
     this.userServices.getUsersCount().subscribe({
       next: (res: any) => {
-        if (res.success) {
-          this.totalUsers = res.data
+        if (res.status===200) {
+          this.totalUsers = res.body.data
           console.log('total users count: ', this.totalUsers);
 
         } else {
           console.log('could not get users');
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
         }
       },
       error: (error: any) => {
@@ -149,12 +161,12 @@ export class UsersComponent implements OnInit {
   getUsers(params: HttpParams) {
     this.userServices.getAllUsers(params).subscribe({
       next: (res: any) => {
-        if (res.success) {
-          this.users$ = res.data
-          this.users.set(res.data)
+        if (res.status===200) {
+          this.users$ = res.body.data
+          this.users.set(res.body.data)
         } else {
           console.log('could not get users');
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
 
         }
       },
@@ -174,15 +186,15 @@ export class UsersComponent implements OnInit {
 
     this.userServices.editUser(data, userId).subscribe({
       next: (res: any) => {
-        if (res.success) {
-          console.log('update user response: ', res.data);
-          this.alertService.getAlert('alert alert-success', 'Success!', res.message)
+        if (res.status===200) {
+          console.log('update user response: ', res.body.data);
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
           this.getUsers(this.searchParams)
           // this.getUsers()
           this.hideModal()
         } else {
-          console.log('could not get users', res.message);
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
+          console.log('could not get users', res.body.message);
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
 
         }
       },
@@ -202,15 +214,15 @@ export class UsersComponent implements OnInit {
     console.log('create user data:', this.userForm.value);
     this.userServices.registerUser(data).subscribe({
       next: (res: any) => {
-        if (res.success) {
-          console.log('update user response: ', res.userData);
-          this.alertService.getAlert('alert alert-success', 'Success!', res.message)
+        if (res.status===200) {
+          console.log('update user response: ', res.body.userData);
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
           this.getUsers(this.searchParams)
           this.getTotalUsers()
           this.hideModal()
         } else {
-          console.log('could not get users', res.message);
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
+          console.log('could not get users', res.body.message);
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
 
         }
       },
@@ -226,7 +238,7 @@ export class UsersComponent implements OnInit {
   onEdit(userId: string) {
     this.userServices.getUserById(userId).subscribe({
       next: (res: any) => {
-        this.userFormObj = res.data
+        this.userFormObj = res.body.data
         // console.log(this.userFormObj);
         this.initialiseUserForm()
         this.showModal()
@@ -244,20 +256,20 @@ export class UsersComponent implements OnInit {
     this.userServices.editStatus(userId).subscribe({
       next: (res: any) => {
         console.log('edit status response: ', res);
-        if (res.success) {
+        if (res.status===200) {
           this.getUsers(this.searchParams)
 
-          this.alertService.getAlert('alert alert-success', 'Success!', res.message)
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
 
         } else {
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
 
         }
 
       },
       error: (error: any) => {
         console.log(error);
-        this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
+        this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
 
       }
     })
@@ -267,13 +279,13 @@ export class UsersComponent implements OnInit {
     this.userServices.verifyUser(userId).subscribe({
       next: (res: any) => {
         console.log('verify user response: ', res);
-        if (res.success) {
+        if (res.status===200) {
           this.getUsers(this.searchParams)
 
-          this.alertService.getAlert('alert alert-success', 'Success!', res.message)
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
 
         } else {
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
 
         }
 

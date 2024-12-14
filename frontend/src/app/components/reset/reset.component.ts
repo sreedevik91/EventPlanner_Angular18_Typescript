@@ -10,7 +10,7 @@ import { AlertService } from '../../services/alertService/alert.service';
 @Component({
   selector: 'app-reset',
   standalone: true,
-  imports: [AlertComponent, ReactiveFormsModule,FormComponent],
+  imports: [AlertComponent, ReactiveFormsModule, FormComponent],
   templateUrl: './reset.component.html',
   styleUrl: './reset.component.css'
 })
@@ -55,8 +55,8 @@ export class ResetComponent implements OnInit {
 
   resetForm: FormGroup = new FormGroup(
     {
-      password: new FormControl('', [Validators.required,Validators.minLength(8)]),
-      confirmPassword: new FormControl('',[ Validators.required, PasswordMatchValidator])
+      password: new FormControl('', [Validators.required, Validators.minLength(8)]),
+      confirmPassword: new FormControl('', [Validators.required, PasswordMatchValidator])
     },
     // { validators: PasswordMatchValidator }
   )
@@ -74,14 +74,14 @@ export class ResetComponent implements OnInit {
     debugger
     this.userServices.resetPassword(data).subscribe({
       next: (res: any) => {
-        console.log('resetPassword res: ', res);
-        if (res.success) {
+        console.log('resetPassword res: ', res.body);
+        if (res.status === 200) {
           // this.callAlert('alert alert-success', 'Password Reset Success', res.message)
-this.alertService.getAlert('alert alert-success', 'Password Reset Success', res.message)
+          this.alertService.getAlert('alert alert-success', 'Password Reset Success', res.body.message)
 
         } else {
           // this.callAlert('alert alert-danger', 'Password Reset failed', res.message)
-this.alertService.getAlert('alert alert-danger', 'Password Reset failed', res.message)
+          this.alertService.getAlert('alert alert-danger', 'Password Reset failed', res.body.message)
 
         }
         setTimeout(() => {
@@ -93,7 +93,7 @@ this.alertService.getAlert('alert alert-danger', 'Password Reset failed', res.me
       },
       error: (err: any) => {
         // this.callAlert('alert alert-danger', 'Password Reset failed', err.message)
-this.alertService.getAlert('alert alert-danger', 'Password Reset failed', err.message)
+        this.alertService.getAlert('alert alert-danger', 'Password Reset failed', err.message)
 
       }
     })

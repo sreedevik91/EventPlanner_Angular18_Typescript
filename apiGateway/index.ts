@@ -8,6 +8,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware'
 import dotenv from 'dotenv'
 import morgan from 'morgan'
 import logger from './utils/logFile'
+import verifyToken from './middlewares/verifyToken'
 
 
 const app = express()
@@ -47,13 +48,22 @@ interface ProxyOptions {
     path: string;
     target?: string;
   }
-// here each object in the service array is destructured to path and target variables ao thet it could be used directly
+// here each object in the service array is destructured to path and target variables so that it could be used directly
 const createProxy=({path,target}:ProxyOptions)=>{
-    app.use(path,createProxyMiddleware({
-        target,
-        changeOrigin:true,
-        cookieDomainRewrite: 'localhost'
-    }))
+    if(path==='/'){
+        app.use(path,createProxyMiddleware({
+            target,
+            changeOrigin:true,
+            cookieDomainRewrite: 'localhost'
+        }))
+    }else{
+        app.use(path,verifyToken,createProxyMiddleware({
+            target,
+            changeOrigin:true,
+            cookieDomainRewrite: 'localhost'
+        }))
+    }
+    
 }
 
 services.forEach(createProxy)

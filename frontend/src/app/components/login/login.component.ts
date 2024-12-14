@@ -78,22 +78,21 @@ export class LoginComponent{
             this.userService.setLoggedUser(res.body.data)
 
           } else {
-            // this.callAlert("alert alert-danger", "Login Failed", res.message)
             this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
 
           }
         } else {
-          // debugger
-          // this.callAlert("alert alert-danger", "Login Failed!", res.message)
-          this.alertService.getAlert("alert alert-danger", "Login Failed!", res.message)
+          this.alertService.getAlert("alert alert-danger", "Login Failed!", res.body.message)
 
           this.router.navigateByUrl(`verifyEmail`)
         }
 
       },
       error: (error) => {
+        console.log(error.error.message);
+
         // this.callAlert("alert alert-danger", "Login Failed", error.message)
-        this.alertService.getAlert("alert alert-danger", "Login Failed", error.message)
+        this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
 
       }
     }
@@ -117,14 +116,14 @@ export class LoginComponent{
     this.userService.registerUser(this.registrationData).subscribe({
       next: (res: any) => {
         console.log('response from register user: ', res);
-        if (res.success) {
+        if (res.status===201) {
           // this.callAlert("alert alert-success", "Success!", res.message)
-          this.alertService.getAlert("alert alert-success", "Success!", res.message)
-          this.router.navigateByUrl(`/otp/${res.data._id}`)
+          this.alertService.getAlert("alert alert-success", "Success!", res.body.message)
+          this.router.navigateByUrl(`/otp/${res.body.data._id}`)
           // this.isLoginForm = true
         } else {
           // this.callAlert("alert alert-danger", "Failed!", res.message)
-          this.alertService.getAlert("alert alert-danger", "Failed!", res.message)
+          this.alertService.getAlert("alert alert-danger", "Failed!", res.body.message)
 
         }
         this.userRegistrationForm.reset()
@@ -145,13 +144,13 @@ export class LoginComponent{
     this.userService.sendResetEmail(emailData).subscribe({
       next: (res: any) => {
         console.log('send mail response: ', res);
-        if (res.success) {
+        if (res.status===200) {
           // this.callAlert('alert alert-success', 'Email sent', res.message)
-          this.alertService.getAlert('alert alert-success', 'Email sent', res.message)
+          this.alertService.getAlert('alert alert-success', 'Email sent', res.body.message)
 
         } else {
           // this.callAlert('alert alert-danger', 'Sent email failed', res.message)
-          this.alertService.getAlert('alert alert-danger', 'Sent email failed', res.message)
+          this.alertService.getAlert('alert alert-danger', 'Sent email failed', res.body.message)
 
         }
         this.emailForm.reset()

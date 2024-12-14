@@ -8,7 +8,7 @@ import { AlertService } from '../../services/alertService/alert.service';
 @Component({
   selector: 'app-submit-otp',
   standalone: true,
-  imports: [ReactiveFormsModule,AlertComponent],
+  imports: [ReactiveFormsModule, AlertComponent],
   templateUrl: './submit-otp.component.html',
   styleUrl: './submit-otp.component.css'
 })
@@ -54,8 +54,8 @@ export class SubmitOtpComponent implements OnInit {
     this.interval = setInterval(() => {
       if (this.timer > 0) {
         this.timer--
-      }else{
-        this.isOtpExpired=true
+      } else {
+        this.isOtpExpired = true
         clearInterval(this.interval)
       }
     }, 1000)
@@ -72,21 +72,19 @@ export class SubmitOtpComponent implements OnInit {
       }
       this.userService.verifyOtp(data).subscribe({
         next: (res: any) => {
-          console.log(res);
-          if(res.success){
+          console.log(res.body);
+          if (res.status === 200) {
             this.otpForm.reset()
             this.router.navigate(['login']);
-          }else{
-            // this.callAlert("alert alert-danger", "Login Failed", res.message)
-this.alertService.getAlert("alert alert-danger", "Login Failed", res.message)
+          } else {
+            this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
 
             this.router.navigateByUrl(`/otp/${this.id}`)
           }
         },
         error: (error) => {
           console.log(error);
-          // this.callAlert("alert alert-danger", "Login Failed", error.message)
-this.alertService.getAlert("alert alert-danger", "Login Failed", error.message)
+          this.alertService.getAlert("alert alert-danger", "Login Failed", error.message)
 
         }
       })
@@ -97,26 +95,25 @@ this.alertService.getAlert("alert alert-danger", "Login Failed", error.message)
     this.router.navigate(['login']);
   }
 
-  resendOtp(){
-    this.activatedRoute.params.subscribe((params)=>{
-      this.id=params['id']
+  resendOtp() {
+    this.activatedRoute.params.subscribe((params) => {
+      this.id = params['id']
     })
-    console.log('id to reset password: ',this.id);
-    
+    console.log('id to reset password: ', this.id);
+
     this.userService.resendOtp(this.id).subscribe({
-      next:(res:any)=>{
-        if(res.success){
+      next: (res: any) => {
+        if (res.status===200) {
           this.startTimer()
-         this.isOtpExpired=false
-        }else{
-          // this.callAlert("alert alert-danger", "Login Failed", res.message)
-this.alertService.getAlert("alert alert-danger", "Login Failed", res.message)
+          this.isOtpExpired = false
+        } else {
+          this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
 
         }
       },
-      error:(error)=>{
+      error: (error) => {
         // this.callAlert("alert alert-danger", "Login Failed", error.message)
-this.alertService.getAlert("alert alert-danger", "Login Failed", error.message)
+        this.alertService.getAlert("alert alert-danger", "Login Failed", error.message)
 
       }
     })

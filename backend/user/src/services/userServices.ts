@@ -222,7 +222,9 @@ class UserServices {
 
                 let user: IUserDb
                 if (isUser) {
+
                     user = isUser
+
                     // cookieData = await this.getToken(isUser)
                 } else {
                     user = await UserRepository.createUser(loginData)
@@ -235,8 +237,12 @@ class UserServices {
                     user: user.name,
                     role: user.role,
                     googleId: user.googleId,
-                    email: user.email
+                    email: user.email,
+                    isActive: user.isActive,
+                    isEmailVerified: user.isEmailVerified,
+                    isUserVerified: user.isUserVerified
                 }
+
 
                 let accessSecret = process.env.JWT_ACCESS_SECRET!
                 let refreshSecret = process.env.JWT_REFRESH_SECRET!
@@ -266,45 +272,55 @@ class UserServices {
                     console.log('user for login from db: ', user?.isEmailVerified, user);
 
                     if (user) {
-                        console.log('entered email verified loop ');
-                        if (user.isEmailVerified === true) {
-                            if (user.password && await bcrypt.compare(password, user.password)) {
-                                const payload: JwtPayload = {
-                                    id: user._id as string,
-                                    user: user.name,
-                                    role: user.role,
-                                    googleId: user.googleId,
-                                    email: user.email
+                        if (user.isActive) {
+                            console.log('entered email verified loop ');
+                            if (user.isEmailVerified === true) {
+                                if (user.password && await bcrypt.compare(password, user.password)) {
+                                    const payload: JwtPayload = {
+                                        id: user._id as string,
+                                        user: user.name,
+                                        role: user.role,
+                                        googleId: user.googleId,
+                                        email: user.email,
+                                        isActive: user.isActive,
+                                        isEmailVerified: user.isEmailVerified,
+                                        isUserVerified: user.isUserVerified
+                                    }
+
+                                    let accessSecret = process.env.JWT_ACCESS_SECRET!
+                                    let refreshSecret = process.env.JWT_REFRESH_SECRET!
+
+                                    const options: CookieOptions = {
+                                        httpOnly: true,
+                                        // maxAge: 86400,
+                                        secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
+                                        // sameSite: 'none'
+                                    }
+
+                                    let accessToken = await this.getToken(payload, accessSecret, '1m')
+                                    let refreshToken = await this.getToken(payload, refreshSecret, '10d')
+
+                                    let cookieData = { payload, accessToken, refreshToken, options }
+                                    console.log('sending login response from service to controller: emailVerified');
+
+                                    return { cookieData, success: true, emailVerified: true }
+
+                                } else {
+                                    console.log('sending login response from service to controller: emailVerified success fail');
+
+                                    return { success: false, emailVerified: true }
                                 }
-
-                                let accessSecret = process.env.JWT_ACCESS_SECRET!
-                                let refreshSecret = process.env.JWT_REFRESH_SECRET!
-
-                                const options: CookieOptions = {
-                                    httpOnly: true,
-                                    // maxAge: 86400,
-                                    secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
-                                    // sameSite: 'none'
-                                }
-
-                                let accessToken = await this.getToken(payload, accessSecret, '1m')
-                                let refreshToken = await this.getToken(payload, refreshSecret, '10d')
-
-                                let cookieData = { payload, accessToken, refreshToken, options }
-                                console.log('sending login response from service to controller: emailVerified');
-
-                                return { cookieData, success: true, emailVerified: true }
-
                             } else {
-                                console.log('sending login response from service to controller: emailVerified success fail');
+                                console.log('sending login response from service to controller: emailNotVerified success fail');
 
-                                return { success: false, emailVerified: true }
+                                return { success: false, emailVerified: false }
                             }
                         } else {
-                            console.log('sending login response from service to controller: emailNotVerified success fail');
+                            console.log('User account is blocked');
 
-                            return { success: false, emailVerified: false }
+                            return { success: false, emailVerified: true, message: 'Your account has been blocked. Contact admin for more details.' }
                         }
+
 
                     }
                 } else {
@@ -422,24 +438,17 @@ class UserServices {
 
     async getNewToken(refreshToken: string) {
 
-        // decoded token:  {
-        //     id: '6738f8c218960f422dbd066c',
-        //     user: 'Admin',
-        //     role: 'admin',
-        //     email: ' sreedevisooraj15@gmail.com',
-        //     iat: 1732400320,
-        //     exp: 1732401220
-        //   }
         try {
             let decoded: any = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
 
-            const { id, user, role, googleId, email } = decoded
-            const payload: JwtPayload = { id, user, role, googleId, email }
+            const { id, user, role, googleId, email, isActive, isEmailVerified, isUserVerified } = decoded
+            const payload: JwtPayload = { id, user, role, googleId, email, isActive, isEmailVerified, isUserVerified }
             let newToken = await this.getToken(payload, process.env.JWT_ACCESS_SECRET!, '1m')
             const options: CookieOptions = {
                 httpOnly: true,
                 // maxAge: 86400,
                 secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
+                // sameSite:'none'
             }
             if (newToken) {
                 return { success: true, accessToken: newToken, options, payload }
@@ -472,12 +481,29 @@ class UserServices {
         try {
             const user = await UserRepository.getUserById(userId)
             if (user) {
+                let blocked: boolean = false
                 user.isActive = !user.isActive
                 let res = await user.save()
                 console.log('updatedUserStatus: ', user, res);
 
                 if (res) {
-                    return { success: true, data: res, message: 'User status updated' }
+                    if (!user.isActive) {
+                        blocked = true
+                    }
+
+                    let content = user.isActive ?
+                        `<p>Glad to inform that your account with Dream Events has been activated.</p>
+                        <p>May your events get more memorable with us. Happy events!</p>
+                         `
+                        :
+                        `<p>Sorry to inform that your account with Dream Events has been blocked.</p>
+                        <p>Please contact admin for furthe details.</p>
+                         `
+
+                    let subject = user.isActive ? "Account Verified" : "Account Blocked"
+
+                    await this.sendMail(user.name, user.email, content, subject)
+                    return { success: true, data: res, blocked, message: 'User status updated' }
                 } else {
                     return { success: false, message: 'Could not updated user status' }
                 }
@@ -505,6 +531,20 @@ class UserServices {
 
     }
 
+    async getGoogleUser(email: string) {
+        try {
+            const user = await UserRepository.getUserByEmail(email)
+            if (user && user.isActive) {
+                return { success: true, data: user }
+            } else {
+                return { success: false, message: 'Your account has been blocked. Contact admin for more details.' }
+            }
+
+        } catch (error: any) {
+            console.log('Error from getUser: ', error.message);
+        }
+
+    }
     async getUsersCount() {
         try {
             const user = await UserRepository.getTotalUsers()
@@ -531,7 +571,7 @@ class UserServices {
                 await user.save()
                 let content = `
                 <p>Glad to inform that your account with Dream Events has been verified.</p>
-                <p>May youe events get more memorable with us. Happt events!</p>
+                <p>May your events get more memorable with us. Happy events!</p>
                `
                 let subject = "Account Verified"
                 await this.sendMail(user.name, user.email, content, subject)

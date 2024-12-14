@@ -19,44 +19,28 @@ export class GoogleAuthCallbackComponent implements OnInit {
 
 
   ngOnInit(): void {
-    // this.userService.handleGoogleSignin().subscribe({
-    //   next: (res: any) => {
-    //     console.log('response from google sign in: ',res);
-    //     if (res.success === true) {
-    //       this.router.navigateByUrl('dashboard')
-    //       this.userService.setLoggedUser(res.data)
-
-    //     } else {
-    //       // this.callAlert("alert alert-danger", "Login Failed", res.message)
-    //       this.alertService.getAlert("alert alert-danger", "Login Failed", res.message)
-    //       this.router.navigateByUrl('login')
-
-    //     }
-    //   },
-    //   error: (error) => {
-    //     this.alertService.getAlert("alert alert-danger", "Login Failed", error.message)
-    //   }
-    // })
-this.handleGoogleSignin()
+    this.handleGoogleSignin()
   }
 
   handleGoogleSignin() {
     this.userService.handleGoogleSignin().subscribe({
       next: (res: any) => {
-        console.log('response from google sign in: ',res);
-        if (res.success === true) {
+        console.log('response from google sign in: ', res.body);
+        if (res.status === 200) {
           this.router.navigateByUrl('dashboard')
-          this.userService.setLoggedUser(res.data)
+          this.userService.setLoggedUser(res.body.data)
 
         } else {
-          // this.callAlert("alert alert-danger", "Login Failed", res.message)
-          this.alertService.getAlert("alert alert-danger", "Login Failed", res.message)
+          this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
           this.router.navigateByUrl('login')
 
         }
       },
       error: (error) => {
-        this.alertService.getAlert("alert alert-danger", "Login Failed", error.message)
+        // console.log(error.error.message);
+        this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
+        this.router.navigateByUrl('login')
+
       }
     })
   }

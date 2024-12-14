@@ -11,12 +11,6 @@ class ServiceController{
 
             response?.success ? res.status(200).json(response) : res.status(400).json(response)
 
-            // if(response?.success){
-            //     res.status(200).json(response)
-            // }else{
-            //     res.status(400).json(response)
-            // }
-            
         } catch (error: any) {
             console.log('Error from getTotalServices controller: ', error.message);
             res.status(500).json(error.message)
@@ -129,7 +123,7 @@ class ServiceController{
             console.log('id to verify', req.params.id);
             const approveServiceResponse = await serviceServices.approveService(id)
             approveServiceResponse?.success ? res.status(200).json(approveServiceResponse) : res.status(400).json(approveServiceResponse)
-approveServiceResponse
+
         } catch (error: any) {
             console.log('Error from approveServiceResponse : ', error.message);
             res.status(500).json(error.message)

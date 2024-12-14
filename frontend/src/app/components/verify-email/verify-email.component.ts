@@ -14,25 +14,11 @@ import { AlertService } from '../../services/alertService/alert.service';
   styleUrl: './verify-email.component.css'
 })
 export class VerifyEmailComponent {
-  // class: string = ''
-  // message: string = ''
-  // alert: boolean = false
-  // text: string = ''
 
   activeRoute = inject(ActivatedRoute)
   userServices = inject(UserSrerviceService)
   router = inject(Router)
   alertService = inject(AlertService)
-
-  // callAlert(classValue: string, text: string, message: string) {
-  //   this.alert = true
-  //   this.class = classValue
-  //   this.text = text
-  //   this.message = message
-  //   setTimeout(() => {
-  //     this.alert = false
-  //   }, 2000)
-  // }
 
   verifyEmailForm: FormGroup = new FormGroup(
     {
@@ -45,23 +31,19 @@ export class VerifyEmailComponent {
     this.userServices.verifyUserEmail(this.verifyEmailForm.value).subscribe({
       next: (res: any) => {
         console.log('verify email response: ', res);
-        if (res.success) {
-          // this.callAlert('alert alert-success', 'Otp Sent', res.message)
-this.alertService.getAlert('alert alert-success', 'Success!', res.message)
+        if (res.status === 200) {
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
 
-          this.router.navigateByUrl(`/otp/${res.data._id}`)
+          this.router.navigateByUrl(`/otp/${res.body.data._id}`)
         } else {
-          // this.callAlert('alert alert-danger', 'Error', res.message)
-this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
 
         }
         this.verifyEmailForm.reset()
 
       },
       error: (error: any) => {
-        // this.callAlert("alert alert-danger", "Sent email Failed", error.message)
-this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
-
+        this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
 
       }
     })

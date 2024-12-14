@@ -5,7 +5,7 @@
             <p>Service Management</p>
         </div>
         <div class="col-md-4 text-end">
-            <app-button [btnClass]=" 'btn-dark' " (onBtnClick)="showModal()" (click)="isAddService=true">Add
+            <app-button [btnClass]=" 'btn-dark' " (onBtnClick)="onAddService()">Add
                 Service</app-button>
         </div>
     </div>
@@ -22,6 +22,7 @@
         </div> -->
         <div class="col-md-3">
             <app-button [btnClass]="'btn-dark mt-4 rounded-pill'" (onBtnClick)="onSearch()">Search</app-button>
+            <app-button [btnClass]="'btn-dark mt-4 ms-3 rounded-pill'" (onBtnClick)="onRefresh()">Refresh</app-button>
         </div>
         <div class="col-md-3 align-item-left mt-4 mb-4">
             <select formControlName="pageSize" (change)="onSearch()">
@@ -86,7 +87,7 @@
                             @if(item.isApproved){
                             Approved
                             }@else{
-                            -
+                            Approval Pending
                             }
                         </td>
                         <td>
@@ -187,20 +188,42 @@
                                 [Validation]="serviceForm.controls['events'].touched &&
                     serviceForm.controls['events'].errors ? serviceForm.controls['events'].errors : {}">
 
-                                @for (item of getEvents(); track $index) {
-                                <div style="border: 1px solid grey; border-radius: 20px; padding: 10px;"
-                                    class="d-flex flex-row">
-                                    <select class="form-select" [formControlName]="$index">
-                                        <option value="Marriage">Marriage</option>
-                                        <option value="Engagement">Engagement</option>
-                                        <option value="Birthday">Birthday</option>
-                                    </select>
-                                    <app-button [btnClass]="'btn-danger ms-2'" [btnTitle]="'Delete event'"
-                                        (onBtnClick)="closeEvent($index)">X</app-button>
-                                    <!-- <button type="button" (click)="closeEvent($index)"> close</button> -->
-                                </div>
-                                }
 
+    <!-- @for (item of getEvents(); track $index) {
+        <div style="border: 1px solid grey; border-radius: 20px; padding: 10px;"
+            class="d-flex flex-row">
+            @if(isAddService){
+                <select class="form-select" [formControlName]="$index">
+                    <option value="Marriage">Marriage</option>
+                    <option value="Engagement">Engagement</option>
+                    <option value="Birthday">Birthday</option>
+                </select>
+            }@else {
+                <select class="form-select" [formControlName]="$index">
+                    <option [value]="'Marriage'">Marriage</option>
+                    <option [value]="'Engagement'">Engagement</option>
+                    <option [value]="'Birthday'">Birthday</option>
+                </select>
+            }
+
+            <app-button [btnClass]="'btn-danger ms-2'" [btnTitle]="'Delete event'"
+                (onBtnClick)="closeEvent($index)">X</app-button>
+        </div>
+        } -->
+
+    @for (item of getEvents(); track $index) {
+        <div style="border: 1px solid grey; border-radius: 20px; padding: 10px;"
+            class="d-flex flex-row">
+            <select class="form-select" [formControlName]="$index">
+                <option [value]="'Marriage'">Marriage</option>
+                <option [value]="'Engagement'">Engagement</option>
+                <option [value]="'Birthday'">Birthday</option>
+            </select>
+            <app-button [btnClass]="'btn-danger ms-2'" [btnTitle]="'Delete event'"
+                (onBtnClick)="closeEvent($index)">X</app-button>
+        </div>
+        }
+                                
                             </app-form>
                         </div>
                         <app-button [btnClass]="'btn-dark m-3'" (onBtnClick)="addEvent()">Add Events</app-button>

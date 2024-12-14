@@ -20,7 +20,7 @@ class ServiceRepository implements IServiceRepository{
         return await Service.find().countDocuments()
     }
     async updateService(id:string,serviceData: Partial<IService>): Promise<IServiceDb | null> {
-        return await Service.findOneAndUpdate({_id:id},{$set:serviceData})
+        return await Service.findOneAndUpdate({_id:id},{$set:serviceData},{new:true})
     }
 }
 
