@@ -61,7 +61,7 @@ export interface IUser {
 export interface IService {
    _id: string;
     name: string;
-    events: string;
+    events: string[];
     provider:string;
     choices:IChoice[];
     createdAt: string;

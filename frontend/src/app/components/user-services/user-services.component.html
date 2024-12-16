@@ -1,1 +1,147 @@
-<p>user-services works!</p>
+<div class="container">
+    <div class="row">
+
+        <div class="col-md-12 p-2">
+            <h1 class="m-4 text-center">Wedding planning services</h1>
+            <p class="m-2">
+                "7X Weddings By Dev-Raj" is your one stop purveyor for all things related to designing, planning and
+                perfectly executing the most enchanting events. We offer all wedding planning services in India under
+                one
+                roof, saving you the time and trouble of coordinating between various agencies. Our wedding planning
+                packages are tailor made for each client taking into consideration their taste, preferences and budget.
+                We
+                guarantee “personal professionalism” meaning that when you choose us as your wedding event management
+                company, we will efficiently and seamlessly carry out all our duties and cater to the smallest of your
+                requirements so that each event reflects your family's heritage and traditions. Give us the privilege of
+                managing your wedding so you can enjoy it as a guest.
+            </p>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-9 p-2">
+                <h2 class="m-2">Decor and Design</h2>
+                <p class="m-2">
+                    As they say the first impression is the last impression, and the first thing that any guest notices
+                    at the wedding is the decoration and ambience, hence the primary focus of every event is the theme
+                    and suitable set up. Year after year we have been awarded the best wedding decoration title for our
+                    innovative and unique designs. We are the top wedding decorators in India because we have the most
+                    talented designers in our team and strong collaborations with quality vendors. With a combination of
+                    our inhouse team of experts and our tie-ups with competent agencies we are the most sought after
+                    wedding decoration service provider in India. All our events vibe differently from one other because
+                    each is specially curated keeping in mind the requirement and choice of individual clients.
+                </p>
+                <app-button [btnClass]="'btn-dark btn-sm rounded-pill m-2'" (onBtnClick)="getService('Decor')">Know
+                    More</app-button>
+
+            </div>
+            <div class="col-md-3 p-2">
+                <img src="https://7xweddings.com/images/services/design-and-decor.jpg" alt="" width="300" height="300">
+            </div>
+
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-3 p-2">
+                <img src="https://7xweddings.com/images/services/food-and-beverage.jpg" alt="" width="300" height="300">
+            </div>
+            <div class="col-md-9 p-2">
+                <h2 class="m-2">Food and Beverages</h2>
+                <p class="m-2">
+                    Food is an integral part of any celebration. It is a medium to spread joy and warmth, it can be a
+                    conversation starter or an ice breaker and a symbol of your culture and heritage. Every region of
+                    India has its own traditional wedding food and it is important to find a wedding caterer who
+                    understands the flavour of the regional cuisine. It is tricky to select the best wedding catering
+                    service without full knowledge of the industry hence it is best to use a wedding planner who can
+                    identify them for you. Indian wedding catering is very elaborate and complex, because each pre
+                    wedding function has a different significance and the food has to match the tone of the event. Hence
+                    it becomes necessary to have a different wedding caterer for each event who specialise in the
+                    cuisine required. Deciding the menu, holding food tasting and coordinating between various wedding
+                    caterers can be a daunting task and this all is taken care of by our team of experts.
+                </p>
+                <app-button [btnClass]="'btn-dark btn-sm rounded-pill m-2'" (onBtnClick)="getService('Catering')">Know
+                    More</app-button>
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-9 p-2">
+                <h2 class="m-2">Capture Events</h2>
+                <p class="m-2">
+                    Make every moment unforgettable with our Event Photography and Videography services. Whether it's a
+                    wedding, birthday, corporate event, or any special celebration, our professional photographers and
+                    videographers ensure that your precious memories are beautifully captured and preserved forever.
+                </p>
+                <app-button [btnClass]="'btn-dark btn-sm rounded-pill m-2'"
+                    (onBtnClick)="getService('Event Coverage')">Know More</app-button>
+
+            </div>
+            <div class="col-md-3 p-2">
+                <img src="https://framezhouse.com/wp-content/uploads/2024/06/Event-Photography.jpg" alt="" width="300"
+                    height="300">
+            </div>
+        </div>
+
+
+
+        <!-- Modal -->
+        <div class="modal" #serviceModal>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+
+                        <h1 class="modal-title fs-5 text-center" id="staticBackdropLabel">{{servicesName}}</h1>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="hideModal()"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <img src="" alt="">
+                            </div>
+
+                        </div>
+
+                        @for (item of services(); track $index) {
+                        @for (c of item.choices; track $index) {
+                        <div class="row border">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8">
+                                <p>{{c.choiceName}}</p>
+                                @if(servicesName!=='Catering'){
+                                    <p>{{c.choicePrice}}</p>
+                                }
+                            </div>
+                        </div>
+                        
+
+                        @if(servicesName==='Catering'){
+                        <div class="row border">
+
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8">
+                                <p>{{c.choiceType}}</p>
+                                <p>{{c.choicePrice}}</p>
+                            </div>
+
+                        </div>
+                        }
+                    }
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>

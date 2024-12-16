@@ -19,6 +19,8 @@ export class EventServicesComponent implements OnInit {
 
   ngOnInit(): void {
     this.userService.loggedUser$.subscribe((user) => {
+      console.log('logged user:', user);
+      
       this.role = user?.role!
     })
   }

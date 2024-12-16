@@ -6,6 +6,7 @@ import otpGenerator from 'otp-generator'
 import { IUser, IUserDb, JwtPayload, LoginData } from '../interfaces/userInterface'
 import UserRepository from '../repository/userRepository'
 import { CookieOptions } from 'express'
+import userRepository from '../repository/userRepository'
 
 dotenv.config()
 
@@ -442,19 +443,26 @@ class UserServices {
             let decoded: any = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
 
             const { id, user, role, googleId, email, isActive, isEmailVerified, isUserVerified } = decoded
-            const payload: JwtPayload = { id, user, role, googleId, email, isActive, isEmailVerified, isUserVerified }
-            let newToken = await this.getToken(payload, process.env.JWT_ACCESS_SECRET!, '1m')
-            const options: CookieOptions = {
-                httpOnly: true,
-                // maxAge: 86400,
-                secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
-                // sameSite:'none'
+            const userData=await userRepository.getUserById(id)
+            if(userData){
+                const payload: JwtPayload = { id:userData._id, user:userData.name, role:userData.role, googleId:userData.googleId, email:userData.email, isActive:userData.isActive, isEmailVerified:userData.isEmailVerified, isUserVerified:userData.isUserVerified }
+                let newToken = await this.getToken(payload, process.env.JWT_ACCESS_SECRET!, '1m')
+                // let newToken = await this.getToken(payload, process.env.JWT_ACCESS_SECRET!, '1m')
+                const options: CookieOptions = {
+                    httpOnly: true,
+                    // maxAge: 86400,
+                    secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
+                    // sameSite:'none'
+                }
+                if (newToken) {
+                    return { success: true, accessToken: newToken, options, payload }
+                } else {
+                    return { success: false, message: 'Could not refresh token' }
+                }
+            }else{
+                return { success: false, message: 'Could not get user details while refreshing token' }
             }
-            if (newToken) {
-                return { success: true, accessToken: newToken, options, payload }
-            } else {
-                return { success: false, message: 'Could not refresh token' }
-            }
+            
         } catch (error: any) {
             console.log('Error from getNewToken: ', error.message);
         }
