@@ -38,7 +38,6 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>
           }),
           catchError((refreshError) => {
             console.log('Entered refreshtoken catcherror');
-
             router.navigateByUrl('login')
             alert.getAlert("alert alert-danger", "Authentication failed", "Please try to login again")
             return throwError(() => refreshError)
@@ -50,13 +49,13 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>
           tap(() => {
             console.log('Entered user blocked interceptor');
             router.navigateByUrl('login')
-            alert.getAlert("alert alert-danger", "Authentication failed", "Please try to login again")
+            alert.getAlert("alert alert-danger", "Login failed", "Your account has been blocked. Contact admin for more details.")
           }),
           //After tap(), we use map() to ensure the final observable pipeline returns an HttpResponse to maintain the required type (HttpEvent<any>). This ensures the interceptor conforms to Angular's expectations.
           map(() => new HttpResponse({ status: 403 })),
           catchError((blockedError) => {
             router.navigateByUrl('login')
-            alert.getAlert("alert alert-danger", "Authentication failed", "Please try to login again")
+            alert.getAlert("alert alert-danger", "Login failed", "Your account has been blocked. Contact admin for more details.")
             return throwError(() => blockedError)
           })
         )

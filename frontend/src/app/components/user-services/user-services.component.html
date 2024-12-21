@@ -108,18 +108,18 @@
 
                         </div>
 
-                        @for (item of services(); track $index) {
+                        <!-- @for (item of services(); track $index) {
                         @for (c of item.choices; track $index) {
                         <div class="row border">
                             <div class="col-md-4"></div>
                             <div class="col-md-8">
                                 <p>{{c.choiceName}}</p>
                                 @if(servicesName!=='Catering'){
-                                    <p>{{c.choicePrice}}</p>
+                                <p>{{c.choicePrice}}</p>
                                 }
                             </div>
                         </div>
-                        
+
 
                         @if(servicesName==='Catering'){
                         <div class="row border">
@@ -127,15 +127,53 @@
                             <div class="col-md-4"></div>
                             <div class="col-md-8">
                                 <p>{{c.choiceType}}</p>
-                                <p>{{c.choicePrice}}</p>
+                                <p>₹ {{c.choicePrice}}</p>
                             </div>
 
                         </div>
                         }
-                    }
                         }
+                        } -->
 
+                        @for (item of serviceByName(); track $index) {
+                           
+                            <div class="row border">
+                                <div class="col-md-4"></div>
+                                <div class="col-md-8">
+                                    <p>{{item._id}}</p>
+                                    @if(item.choicesType.length===0){
+                                        @if(item.minPrice===item.maxPrice){
+                                            <p>Price:₹ {{item.minPrice}}</p>
 
+                                        }@else {
+                                            <p>Price range:₹ {{item.minPrice}} - ₹ {{item.maxPrice}}</p>
+                                        }
+                                    }
+                                </div>
+                            </div>
+    
+    
+                            @if(item.choicesType.length){
+                            <div class="row border">
+                                @for (type of item.choicesType; track $index) {
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-8">
+                                        <p>{{type}}</p>
+                                        @if(item.minPrice===item.maxPrice){
+                                            <p>Price:₹ {{item.minPrice}}</p>
+
+                                        }@else {
+                                            <p>Price range:₹ {{item.minPrice}} - ₹ {{item.maxPrice}}</p>
+                                        }
+                                    </div>
+                                }
+                                
+    
+                            </div>
+                            }
+                            }
+                            
+    
                     </div>
                 </div>
             </div>

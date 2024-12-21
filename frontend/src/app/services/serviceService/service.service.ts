@@ -35,7 +35,7 @@ export class ServiceService {
   }
 
   editService(data: any, id: string) {
-    return this.http.post(`${this.baseUrl}edit/${id}`,data, { observe: 'response' })
+    return this.http.post(`${this.baseUrl}edit/${id}`,{data}, { observe: 'response' })
   }
   editStatus(id: string) {
     return this.http.get(`${this.baseUrl}editStatus/${id}`, { observe: 'response' })
@@ -44,5 +44,9 @@ export class ServiceService {
   approveService(id: string) {
     return this.http.get(`${this.baseUrl}approveService/${id}`, { observe: 'response'  })
   }
+
+getServiceByName(name:string){
+  return this.http.get(`${this.baseUrl}getServiceByName/${name}`, { observe: 'response'  })
+}
 
 }

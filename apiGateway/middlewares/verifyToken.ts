@@ -3,6 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import { config } from 'dotenv'
 import { Request, Response, NextFunction } from 'express'
 import { match } from 'path-to-regexp'
+import { getUserByIdGrpcGateway } from '../grpc/grpcUserGatewayClient'
 
 
 config()
@@ -75,9 +76,12 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
             console.log('decoded token: ', decoded);
 
             const userId = decoded.id
-            // let user = await userRepository.getUserById(userId)
 
-            if (!decoded?.isActive) {
+            const user=await getUserByIdGrpcGateway(userId)
+            console.log('user from gateway: ', user);
+            
+
+            if (!user.isActive) {
                 res.status(403).json({ success: false, message: 'Account is blocked' })
                 return
             }

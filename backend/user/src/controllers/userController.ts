@@ -80,7 +80,31 @@ class UserController {
         try {
             const login = await UserServices.login(req.body)
             if (login) {
-                if (login.emailVerified) {
+                // if (login.emailVerified) {
+                //     if (login.success && login.cookieData) {
+                //         const cookie: CookieType = login.cookieData
+                //         // console.log('login cookie data: ',cookie);
+                //         const { payload, refreshToken, accessToken, options } = cookie
+                //         res.cookie('refreshToken', refreshToken, options)
+                //         res.cookie('accessToken', accessToken, options)
+                //         res.status(200).json({ success: true, emailVerified: true, message: 'Logged in success', data: payload })
+
+                //         console.log('sending login response from  controller to frontend: login success emailVerified success fail');
+
+                //     } else {
+
+                //         res.status(400).json({ success: false, emailVerified: true, message: login.message ? login.message : 'User not found.Invalid username or password' })
+                //         console.log('sending login response from  controller to frontend: login fail emailVerified success fail');
+
+                //     }
+                // } else {
+
+                //     res.status(400).json({ success: false, emailVerified: false, message: 'Email not verified' })
+                //     console.log('sending login response from  controller to frontend: login fail emailNotVerified success fail');
+
+                // }
+
+                // if (login.emailVerified) {
                     if (login.success && login.cookieData) {
                         const cookie: CookieType = login.cookieData
                         // console.log('login cookie data: ',cookie);
@@ -93,16 +117,26 @@ class UserController {
 
                     } else {
 
-                        res.status(400).json({ success: false, emailVerified: true, message: login.message ? login.message : 'User not found.Invalid username or password' })
-                        console.log('sending login response from  controller to frontend: login fail emailVerified success fail');
+                        if (login.emailNotVerified) {
+                            res.status(400).json({ success: false, emailNotVerified: true, message: 'Email not verified' })
+                        }else if(login.wrongCredentials){
+                            res.status(400).json({ success: false, message: login.message ? login.message : 'Invalid username or password' })
+                        }else if(login.blocked){
+                            res.status(403).json({ success: false, message: login.message ? login.message : 'Your account has been blocked. Contact admin for more details.'})
+                        }else if(login.noUser){
+                            res.status(400).json({ success: false,  message: login.message ? login.message : 'User not found'})
+                        }
+
+
 
                     }
-                } else {
+                // } else {
 
-                    res.status(400).json({ success: false, emailVerified: false, message: 'Email not verified' })
-                    console.log('sending login response from  controller to frontend: login fail emailNotVerified success fail');
+                //     res.status(400).json({ success: false, emailVerified: false, message: 'Email not verified' })
+                //     console.log('sending login response from  controller to frontend: login fail emailNotVerified success fail');
 
-                }
+                // }
+
 
             }
 

@@ -4,7 +4,7 @@
         <div class="col-md-8 text-dark fs-3 fw-bold">
             <p>Service Management</p>
         </div>
-        
+
     </div>
     <div class="row d-flex flex-row" [formGroup]="searchFilterForm">
         <!-- <form [formGroup]="searchFilterForm"> -->
@@ -65,13 +65,36 @@
                             }
                         </td>
                         <td>
-                            @for (choice of item.choices; track $index) {
+
+                            <p class="d-inline-flex gap-1">
+                                <!-- <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                See Options available
+                                </a> -->
+                                <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                    [attr.data-bs-target]="'#collapseExample'+ $index" aria-expanded="false"
+                                    [attr.aria-controls]="'collapseExample'+ $index">
+                                    See Options
+                                </button>
+                            </p>
+                            <div class="collapse" [id]="'collapseExample'+ $index">
+                                @for (choice of item.choices; track $index) {
+                                <div class="card card-body">
+                                    {{$index + 1}}<p>Name:{{choice.choiceName}}</p>
+                                    @if(choice.choiceType !==''){
+                                    <p>Type:{{choice.choiceType}}</p>
+                                    }
+                                    <p>Price:{{choice.choicePrice}}</p>
+                                </div>
+                                }
+                            </div>
+
+                            <!-- @for (choice of item.choices; track $index) {
                             <p>Name:{{choice.choiceName}}</p>
                             @if(choice.choiceType !==''){
                             <p>Type:{{choice.choiceType}}</p>
                             }
                             <p>Price:{{choice.choicePrice}}</p>
-                            }
+                            } -->
                         </td>
                         <td>
                             @if(item.isActive){
@@ -90,9 +113,11 @@
 
                         <td>
                             @if(item.isApproved){
-                            <app-button [btnTitle]="'Service Approved'" [disabled]="true"><i class="fa-regular fa-thumbs-up"></i></app-button>
+                            <app-button [btnTitle]="'Service Approved'" [disabled]="true"><i
+                                    class="fa-regular fa-thumbs-up"></i></app-button>
                             }@else {
-                            <app-button [btnTitle]="'Approve service'" (onBtnClick)="approveService(item._id)"><i class="fa-regular fa-thumbs-down"></i></app-button>
+                            <app-button [btnTitle]="'Approve service'" (onBtnClick)="approveService(item._id)"><i
+                                    class="fa-regular fa-thumbs-down"></i></app-button>
                             }
 
                             <!-- <i class="fa-solid fa-x"></i> -->
@@ -129,6 +154,6 @@
 
 
 
-    
+
 
 </section>

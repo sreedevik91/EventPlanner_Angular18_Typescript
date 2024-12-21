@@ -8,6 +8,7 @@ import { PasswordMatchValidator } from '../../shared/validators/formValidator';
 import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { ButtonComponent } from '../../shared/components/button/button.component';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 declare const google: any;
 
 @Component({
@@ -17,7 +18,7 @@ declare const google: any;
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent{
+export class LoginComponent {
 
   @ViewChild('modal') modal!: ElementRef
 
@@ -65,33 +66,56 @@ export class LoginComponent{
     // console.log(this.loginData);
 
     this.userService.userLogin(this.loginData).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         // debugger
         console.log(res);
         console.log(res.body);
         // console.log(res.body.emailVerified);
-        if (res.body.emailVerified) {
-          if (res.status === 200) {
-            console.log(this.router);
-            
-            this.router.navigateByUrl('dashboard')
-            this.userService.setLoggedUser(res.body.data)
+        // if (res.body.emailVerified) {
+        if (res.status === 200) {
+          console.log(this.router);
 
-          } else {
-            this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
+          this.router.navigateByUrl('dashboard')
+          this.userService.setLoggedUser(res.body.data)
 
-          }
-        } else {
-          this.alertService.getAlert("alert alert-danger", "Login Failed!", res.body.message)
-
-          this.router.navigateByUrl(`verifyEmail`)
         }
+        // else if (res.status === 400) {
+        //   if (res.body.emailNotVerified) {
+        //     this.alertService.getAlert("alert alert-danger", "Login Failed!", res.body.message)
+        //     this.router.navigateByUrl(`verifyEmail`)
+        //   } else {
+        //     this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
+        //   }
+
+        // } else if (res.status === 403) {
+        //   this.userService.userLogout().subscribe((res: HttpResponse<any>) => {
+        //     this.router.navigateByUrl('login')
+        //   })
+        //   this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
+
+        // }
+        // } else {
+        //   this.alertService.getAlert("alert alert-danger", "Login Failed!", res.body.message)
+
+        //   this.router.navigateByUrl(`verifyEmail`)
+        // }
 
       },
-      error: (error) => {
-        console.log(error.error.message);
+      error: (error: HttpErrorResponse) => {
+        console.log(error);
+        if (error.status === 400) {
+          if (error.error.emailNotVerified) {
+            this.alertService.getAlert("alert alert-danger", "Login Failed!", error.error.message)
+            this.router.navigateByUrl(`verifyEmail`)
+          } else {
+            this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
+          }
 
-        // this.callAlert("alert alert-danger", "Login Failed", error.message)
+        } else if (error.status === 403) {
+          this.router.navigateByUrl('login')
+          this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
+
+        }
         this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
 
       }
@@ -114,9 +138,9 @@ export class LoginComponent{
     this.registrationData = rest
     console.log(this.registrationData);
     this.userService.registerUser(this.registrationData).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         console.log('response from register user: ', res);
-        if (res.status===201) {
+        if (res.status === 201) {
           // this.callAlert("alert alert-success", "Success!", res.message)
           this.alertService.getAlert("alert alert-success", "Success!", res.body.message)
           this.router.navigateByUrl(`/otp/${res.body.data._id}`)
@@ -129,7 +153,7 @@ export class LoginComponent{
         this.userRegistrationForm.reset()
 
       },
-      error: (error) => {
+      error: (error: HttpErrorResponse) => {
         // this.callAlert("alert alert-danger", "Register User Failed", error.message)
         this.alertService.getAlert("alert alert-danger", "Register User Failed", error.message)
 
@@ -142,9 +166,9 @@ export class LoginComponent{
     console.log(emailData);
 
     this.userService.sendResetEmail(emailData).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         console.log('send mail response: ', res);
-        if (res.status===200) {
+        if (res.status === 200) {
           // this.callAlert('alert alert-success', 'Email sent', res.message)
           this.alertService.getAlert('alert alert-success', 'Email sent', res.body.message)
 
@@ -156,7 +180,7 @@ export class LoginComponent{
         this.emailForm.reset()
 
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         // this.callAlert("alert alert-danger", "Sent email Failed", error.message)
         this.alertService.getAlert("alert alert-danger", "Sent email Failed", error.message)
 

@@ -4,6 +4,7 @@ import nodemailer from 'nodemailer'
 import { config } from "dotenv";
 import axios from 'axios'
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
+import { log } from "console";
 
 config()
 
@@ -97,7 +98,7 @@ class ServiceServices {
     async getServices(params: any) {
 
         try {
-            const { serviceName,isApproved, provider, pageNumber, pageSize, sortBy, sortOrder } = params
+            const { serviceName, isApproved, provider, pageNumber, pageSize, sortBy, sortOrder } = params
             console.log('search filter params:', serviceName, provider, pageNumber, pageSize, sortBy, sortOrder);
             let filterQ: any = {}
             let sortQ: any = {}
@@ -133,7 +134,10 @@ class ServiceServices {
             console.log('skip: ', skip);
 
 
-            let data = await serviceRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
+            // let data = await serviceRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
+
+            let data = await serviceRepository.getAllServices(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+
             console.log('all service data filtered and sorted: ', data);
 
             if (data) {
@@ -211,6 +215,8 @@ class ServiceServices {
                 } else {
                     return { success: false, message: 'Could not updated service status' }
                 }
+            } else {
+                return { success: false, message: 'Could not find service details' }
             }
 
         } catch (error: any) {
@@ -272,92 +278,28 @@ class ServiceServices {
 
     }
 
-    // private async getProvider(id: string) {
-    //     try {
-    //         console.log('entered get provider 1');
+    async getServiceByName(name: string) {
+        try {
+            const service = await serviceRepository.getServiceByName(name)
+            console.log('getServiceByName response: ', service);
+            if (service) {
+                service.forEach(e => {
+                    e.events = Array.from(new Set(e.events))
+                    e.choicesType = Array.from(new Set(e.choicesType)).filter((e: any) => e !== null && e !== "")
+                })
 
-    //         // const providerResponse = await axios.get(`${process.env.USER_SERVICE_URL}/user/user/${id}`, { withCredentials: true })
-    //         // const providerResponse = await this.axiosInstance.get(`/user/user/${id}`)
-    //         // const providerResponse = await this.axiosInstance.get(`http://localhost:4000/user/user/${id}`)
+                console.log('getServiceByName response updated: ', service);
+                return { success: true, data: service }
+            } else {
+                return { success: false, message: 'Could not updated service status' }
+            }
+           
+        } catch (error: any) {
+            console.log('Error from getServiceByName service: ', error.message);
+        }
 
-    //         const providerResponse = await axios(`http://localhost:4000/user/user/${id}`, {
-    //             method: 'GET',
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             withCredentials: true
-    //         })
+    }
 
-
-    //         console.log('entered get provider 2');
-
-    //         const providerData = providerResponse.data
-    //         console.log('entered get provider 3');
-
-    //         console.log('provider received from user microservice: ', providerResponse, providerData);
-    //         return providerData
-
-    //     } catch (error: any) {
-
-    //         if (error.response && error.response.status === 401) {
-    //             console.log('entered get provider error ');
-    //             try {
-    //                 await this.refreshToken()
-    //                 // const retryProviderResponse = await axios.get(`${process.env.USER_SERVICE_URL}/user/user/${id}`, { withCredentials: true })
-    //                 // const retryProviderResponse = await this.axiosInstance.get(`/user/user/${id}`)
-
-    //                 // const retryProviderResponse = await this.axiosInstance.get(`http://localhost:4000/user/user/${id}`)
-
-    //                 const retryProviderResponse = await axios(`http://localhost:4000/user/user/${id}`, {
-    //                     method: 'GET',
-    //                     headers: {
-    //                         "Content-Type": "application/json",
-    //                     },
-    //                     withCredentials: true
-    //                 })
-
-    //                 const providerData = retryProviderResponse.data
-    //                 console.log('provider received from user microservice by refresh token: ', providerData);
-    //                 return providerData
-
-    //             } catch (error: any) {
-    //                 console.error('Error during token refresh or retry:', error.message);
-    //             }
-
-    //         }
-
-    //         console.log('catch error from get provider: ', error.message, error || 'Failed to fetch provider data.');
-
-    //     }
-    // }
-
-    // private async refreshToken() {
-    //     try {
-
-    //         console.log('Axios baseURL:', this.axiosInstance.defaults.baseURL);
-    //         console.log('Final URL:', `${this.axiosInstance.defaults.baseURL}/user/refreshToken`);
-
-    //         // const refreshToken = await axios.get(`${process.env.USER_SERVICE_URL}/user/refreshToken`, { withCredentials: true })
-
-    //         // let refreshToken = await this.axiosInstance.get(`/user/refreshToken`)
-    //         // let refreshToken = await this.axiosInstance.get(`http://localhost:4000/user/refreshToken`)
-
-    //         const refreshToken = await axios(`http://localhost:4000/user/refreshToken`, {
-    //             method: 'GET',
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             withCredentials: true
-    //         })
-
-    //         console.log('refreshToken response from service-services:', refreshToken);
-    //         return
-    //     } catch (error: any) {
-    //         console.log('Error from refreshToken: could not refresh token: - ', error.message);
-    //         return
-    //     }
-
-    // }
 
 }
 

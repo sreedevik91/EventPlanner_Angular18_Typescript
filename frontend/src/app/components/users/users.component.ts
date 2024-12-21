@@ -6,7 +6,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
-import { HttpParams } from '@angular/common/http';
+import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { IUser } from '../../model/interface/interface';
 
 @Component({
@@ -123,7 +123,7 @@ export class UsersComponent implements OnInit {
 
   getTotalUsers() {
     this.userServices.getUsersCount().subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         if (res.status===200) {
           this.totalUsers = res.body.data
           console.log('total users count: ', this.totalUsers);
@@ -133,7 +133,7 @@ export class UsersComponent implements OnInit {
           this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
         }
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.log(error);
         this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
       }
@@ -160,7 +160,7 @@ export class UsersComponent implements OnInit {
 
   getUsers(params: HttpParams) {
     this.userServices.getAllUsers(params).subscribe({
-      next: (res: any) => {
+      next: (res:HttpResponse<any>) => {
         if (res.status===200) {
           this.users$ = res.body.data
           this.users.set(res.body.data)
@@ -170,7 +170,7 @@ export class UsersComponent implements OnInit {
 
         }
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.log(error);
         this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
 
@@ -185,7 +185,7 @@ export class UsersComponent implements OnInit {
     console.log('user update data:', data);
 
     this.userServices.editUser(data, userId).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         if (res.status===200) {
           console.log('update user response: ', res.body.data);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
@@ -198,7 +198,7 @@ export class UsersComponent implements OnInit {
 
         }
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.log(error);
         this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
 
@@ -213,7 +213,7 @@ export class UsersComponent implements OnInit {
     // this.userFormObj.id=0
     console.log('create user data:', this.userForm.value);
     this.userServices.registerUser(data).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         if (res.status===200) {
           console.log('update user response: ', res.body.userData);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
@@ -226,7 +226,7 @@ export class UsersComponent implements OnInit {
 
         }
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.log(error);
         this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
 
@@ -237,13 +237,13 @@ export class UsersComponent implements OnInit {
 
   onEdit(userId: string) {
     this.userServices.getUserById(userId).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         this.userFormObj = res.body.data
         // console.log(this.userFormObj);
         this.initialiseUserForm()
         this.showModal()
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.log(error);
         this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
 
@@ -254,7 +254,7 @@ export class UsersComponent implements OnInit {
   setStatus(userId: string) {
     console.log(userId);
     this.userServices.editStatus(userId).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         console.log('edit status response: ', res);
         if (res.status===200) {
           this.getUsers(this.searchParams)
@@ -267,7 +267,7 @@ export class UsersComponent implements OnInit {
         }
 
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.log(error);
         this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
 
@@ -277,7 +277,7 @@ export class UsersComponent implements OnInit {
 
   verifyUser(userId: string) {
     this.userServices.verifyUser(userId).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         console.log('verify user response: ', res);
         if (res.status===200) {
           this.getUsers(this.searchParams)
@@ -290,7 +290,7 @@ export class UsersComponent implements OnInit {
         }
 
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.log(error);
         this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
 

@@ -25,6 +25,9 @@ app.use(cors({
 }))
 app.use(logger)
 
+app.use(express.static(path.join(__dirname, './public')));
+
+
 const writeStream = fs.createWriteStream(path.join(__dirname, './utils/data.log'), { flags: 'a' })
 
 // to create custom token eg: ':method'

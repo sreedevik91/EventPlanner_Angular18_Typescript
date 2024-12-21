@@ -10,6 +10,11 @@ export const Menus=[
         roles:['user','admin','provider']
     },
     {
+        path:'events',
+        text:'Events',
+        roles:['user','admin']
+    },
+    {
         path:'users',
         text:'Users',
         roles:['admin']

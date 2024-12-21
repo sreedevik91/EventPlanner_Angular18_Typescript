@@ -1,5 +1,7 @@
 import { Request, Response } from "express"
 import serviceServices from "../services/serviceServices"
+import { IChoice } from "../interfaces/serviceInterfaces";
+import fs from 'fs'
 
 
 class ServiceController{
@@ -26,8 +28,28 @@ class ServiceController{
             // const {name,provider,events,choices}= req.body
 
             console.log('new service to register: ',data);
+            const {name,img,events,provider,choices}=req.body
+
             
-            
+            // const buffer=Buffer.from(img.split(',')[1],'base64')
+            // console.log('img buffer: ',buffer);
+
+            // choices.forEach((e:IChoice)=>{
+            //     let buffer=Buffer.from(e.choiceImg.split(',')[1],'base64')
+            // console.log('choiceImg buffer: ',buffer);
+
+            // })
+
+            // const filePath = 'uploads/serviceImg';
+            // fs.writeFile(filePath, buffer, (err) => {
+            //   if (err) {
+            //     // return res.status(500).send('Error saving image');
+            //     console.log('writeFile error: ', err);
+                
+            //   }
+            //   res.send({ message: 'Image uploaded successfully', filePath });
+            // });
+
             const response=await serviceServices.addService(data)
             console.log('createService controller response: ',response);
             
@@ -126,6 +148,21 @@ class ServiceController{
 
         } catch (error: any) {
             console.log('Error from approveServiceResponse : ', error.message);
+            res.status(500).json(error.message)
+
+        }
+    }
+
+    async getServiceByName(req: Request, res: Response){
+        try {
+            const { name } = req.params
+            console.log('name to get service', req.params.name);
+            const getServiceByName = await serviceServices.getServiceByName(name)
+
+            getServiceByName?.success ? res.status(200).json(getServiceByName) : res.status(400).json(getServiceByName)
+
+        } catch (error: any) {
+            console.log('Error from getServiceByName : ', error.message);
             res.status(500).json(error.message)
 
         }

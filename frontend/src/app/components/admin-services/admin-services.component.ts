@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Service, ServiceSearchFilter } from '../../model/class/serviceClass';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ServiceService } from '../../services/serviceService/service.service';
-import { HttpParams } from '@angular/common/http';
+import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { AlertService } from '../../services/alertService/alert.service';
 import { IService } from '../../model/interface/interface';
@@ -57,7 +57,7 @@ export class AdminServicesComponent {
 
   getTotalServices() {
     this.serviceService.getTotalServices().subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         if (res.status === 200) {
           this.totalServices = res.body.data
         } else {
@@ -65,7 +65,7 @@ export class AdminServicesComponent {
           // this.alertService.getAlert("alert alert-danger", "Failed", res.body.message)
         }
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         // this.alertService.getAlert("alert alert-danger", "Register User Failed", error.message)
 
       }
@@ -113,17 +113,17 @@ export class AdminServicesComponent {
 
   getAllServices(params: HttpParams) {
     this.serviceService.getAllServices(params).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         if (res.status === 200) {
           this.services.set(res.body.data)
           console.log('all services: ', this.services());
     this.searchParams= new HttpParams()
         } else {
           console.log('could not get users');
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
         }
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.log(error);
         this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
       }
@@ -132,20 +132,20 @@ export class AdminServicesComponent {
 
   approveService(id: string) {
     this.serviceService.approveService(id).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         console.log('verify user response: ', res);
         if (res.status === 200) {
           this.getAllServices(this.searchParams)
 
-          this.alertService.getAlert('alert alert-success', 'Success!', res.message)
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
 
         } else {
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.message)
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
 
         }
 
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.log(error);
         this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
 
@@ -157,7 +157,7 @@ export class AdminServicesComponent {
 
   deleteService(id: string) {
     this.serviceService.deleteService(id).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<any>) => {
         if (res.status === 200) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
           this.getAllServices(this.searchParams)
@@ -166,7 +166,7 @@ export class AdminServicesComponent {
           this.alertService.getAlert("alert alert-danger", "Failed", res.body.message)
         }
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         this.alertService.getAlert("alert alert-danger", "Register User Failed", error.message)
 
       }

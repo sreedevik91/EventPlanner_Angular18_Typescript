@@ -10,16 +10,14 @@
         </div>
     </div>
     <div class="row d-flex flex-row" [formGroup]="searchFilterForm">
-        <!-- <form [formGroup]="searchFilterForm"> -->
+        <!-- <form> -->
         <div class="col-md-3">
             <label for=""> Name: </label><input type="text" class="form-control" formControlName="serviceName">
         </div>
         <div class="col-md-3">
             <label for=""> Provider: </label><input type="text" class="form-control" formControlName="provider">
         </div>
-        <!-- <div class="col-md-3">
-            <label for=""> Role: </label><input type="text" class="form-control" formControlName="role">
-        </div> -->
+
         <div class="col-md-3">
             <app-button [btnClass]="'btn-dark mt-4 rounded-pill'" (onBtnClick)="onSearch()">Search</app-button>
             <app-button [btnClass]="'btn-dark mt-4 ms-3 rounded-pill'" (onBtnClick)="onRefresh()">Refresh</app-button>
@@ -68,13 +66,37 @@
                             }
                         </td>
                         <td>
-                            @for (choice of item.choices; track $index) {
+
+                            <p class="d-inline-flex gap-1">
+                                <!-- <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                See Options available
+                                </a> -->
+                                <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                    [attr.data-bs-target]="'#collapseExample'+ $index" aria-expanded="false"
+                                    [attr.aria-controls]="'collapseExample'+ $index">
+                                    See Options
+                                </button>
+                            </p>
+                            <div class="collapse" [id]="'collapseExample'+ $index">
+                                @for (choice of item.choices; track $index) {
+                                <div class="card card-body">
+                                    {{$index + 1}}<p>Name:{{choice.choiceName}}</p>
+                                    @if(choice.choiceType !==''){
+                                    <p>Type:{{choice.choiceType}}</p>
+                                    }
+                                    <p>Price:{{choice.choicePrice}}</p>
+                                </div>
+                                }
+                            </div>
+
+                            <!-- @for (choice of item.choices; track $index) {
                             <p>Name:{{choice.choiceName}}</p>
                             @if(choice.choiceType !==''){
                             <p>Type:{{choice.choiceType}}</p>
                             }
                             <p>Price:{{choice.choicePrice}}</p>
-                            }
+                            } -->
+
                         </td>
                         <td>
                             @if(item.isActive){
@@ -183,102 +205,40 @@
                             </select>
                         </app-form>
 
+                        <!-- <app-form [label]=" 'Image of service:' " [tooltip]=" 'Select img' " [Validation]="serviceForm.controls['img'].touched &&
+                        serviceForm.controls['img'].errors ? serviceForm.controls['img'].errors : {}"> -->
+                       <!--===================================  -->
+                            <!-- <img [src]="serviceForm.controls['img'].value ? serviceForm.controls['img'].value : null" alt=""> -->
+
+                            <!-- <img [src]="serviceForm.controls['img'].value ? serviceForm.controls['img'].value : imgUrl" alt="" width="50" height="50">
+                        
+                            <input type="file" class="form-control" placeholder="Upload an image of your service" (change)="onImageUpload($event,'img')"> -->
+                       <!--===================================  -->
+
+                        <!-- </app-form> -->
+
                         <div id="events" formArrayName="events">
                             <app-form [label]=" 'Events for the selected service:' " [tooltip]=" 'Select Events' "
                                 [Validation]="serviceForm.controls['events'].touched &&
                     serviceForm.controls['events'].errors ? serviceForm.controls['events'].errors : {}">
 
 
-    <!-- @for (item of getEvents(); track $index) {
-        <div style="border: 1px solid grey; border-radius: 20px; padding: 10px;"
-            class="d-flex flex-row">
-            @if(isAddService){
-                <select class="form-select" [formControlName]="$index">
-                    <option value="Marriage">Marriage</option>
-                    <option value="Engagement">Engagement</option>
-                    <option value="Birthday">Birthday</option>
-                </select>
-            }@else {
-                <select class="form-select" [formControlName]="$index">
-                    <option [value]="'Marriage'">Marriage</option>
-                    <option [value]="'Engagement'">Engagement</option>
-                    <option [value]="'Birthday'">Birthday</option>
-                </select>
-            }
-
-            <app-button [btnClass]="'btn-danger ms-2'" [btnTitle]="'Delete event'"
-                (onBtnClick)="closeEvent($index)">X</app-button>
-        </div>
-        } -->
-
-    @for (item of getEvents(); track $index) {
-        <div style="border: 1px solid grey; border-radius: 20px; padding: 10px;"
-            class="d-flex flex-row">
-            <select class="form-select" [formControlName]="$index">
-                <option [value]="'Marriage'">Marriage</option>
-                <option [value]="'Engagement'">Engagement</option>
-                <option [value]="'Birthday'">Birthday</option>
-            </select>
-            <app-button [btnClass]="'btn-danger ms-2'" [btnTitle]="'Delete event'"
-                (onBtnClick)="closeEvent($index)">X</app-button>
-        </div>
-        }
-                                
-                            </app-form>
-                        </div>
-                        <app-button [btnClass]="'btn-dark m-3'" (onBtnClick)="addEvent()">Add Events</app-button>
-
-                        <!-- =============================================================================================  -->
-                        <!-- <div id="choices" formArrayName="choices">
-                            <app-form [label]=" 'Service options:' " [tooltip]=" 'Enter service option details' "
-                                [Validation]="serviceForm.controls['choices'].touched &&
-                    serviceForm.controls['choices'].errors ? serviceForm.controls['choices'].errors : {}">
-                                @for (item of getChoices(); track $index) {
-
-                                <div [formGroupName]="$index">
-                                    <div>
-                                        <app-form [label]=" 'Option Name:' " [tooltip]=" 'Enter option name' "
-                                            [Validation]="serviceForm.controls['item.choiceName'].touched &&
-                    serviceForm.controls['item.choiceName'].errors ? serviceForm.controls['item.choiceName'].errors : {}">
-
-                                            <select class="form-select" formControlName="choiceName"
-                                                (change)="getChoiceTypeOptions($index)">
-                                                @for (item of choice; track $index) {
-                                                <option [value]="item">{{item}}</option>
-                                                }
-                                            </select>
-                                        </app-form>
-
-
-                                        @if(isType){
-                                        <app-form [label]=" 'Option Type:' " [tooltip]=" 'Enter option type' "
-                                            [Validation]="serviceForm.controls['choiceType'].touched &&
-                    serviceForm.controls['choiceType'].errors ? serviceForm.controls['choiceType'].errors : {}">
-                                            <select class="form-select" formControlName="choiceType">
-                                                @for (i of type[$index]; track $index) {
-                                                <option [value]="i">{{i}}</option>
-                                                }
-                                            </select>
-                                        </app-form>
-
-                                        }
-                                        <app-form [label]=" 'Option Price:' " [tooltip]=" 'Enter option price' "
-                                        [Validation]="serviceForm.controls['choicePrice'].touched &&
-                serviceForm.controls['choicePrice'].errors ? serviceForm.controls['choicePrice'].errors : {}">
-                                            <input type="text" class="form-control" placeholder="Enter price of choice"
-                                                formControlName="choicePrice">
-
-                                        </app-form>
-                                    </div>
-                                    <button type="button" (click)="closeChoice($index)">Delete</button>
+                                @for (item of getEvents(); track $index) {
+                                <div style="border: 1px solid grey; border-radius: 20px; padding: 10px;"
+                                    class="d-flex flex-row">
+                                    <select class="form-select" [formControlName]="$index">
+                                        <option [value]="'Marriage'">Marriage</option>
+                                        <option [value]="'Engagement'">Engagement</option>
+                                        <option [value]="'Birthday'">Birthday</option>
+                                    </select>
+                                    <app-button [btnClass]="'btn-danger ms-2'" [btnTitle]="'Delete event'"
+                                        (onBtnClick)="closeEvent($index)">X</app-button>
                                 </div>
-
                                 }
 
                             </app-form>
-                        </div> -->
-
-                        <!-- =============================================================================================  -->
+                        </div>
+                        <app-button [btnClass]="'btn-dark m-3'" (onBtnClick)="addEvent()">Add Events</app-button>
 
 
                         <div id="choices" formArrayName="choices">
@@ -286,7 +246,7 @@
                                 [Validation]="serviceForm.controls['choices'].touched &&
                     serviceForm.controls['choices'].errors ? serviceForm.controls['choices'].errors : {}">
                                 @for (item of getChoices(); track $index) {
-                                <!-- @if(isAddService){ -->
+
                                 <div [formGroupName]="$index"
                                     style="border: 1px solid grey; border-radius: 20px; padding: 10px;">
 
@@ -305,8 +265,7 @@
                                                 }
                                             </select>
                                         </app-form>
-
-
+                                       
                                         @if(isType){
                                         <app-form [label]=" 'Option Type:' " [tooltip]=" 'Enter option type' ">
                                             <select class="form-select" formControlName="choiceType">
@@ -316,7 +275,32 @@
                                             </select>
                                         </app-form>
 
+                                        <!-- <app-form [label]=" 'Image of choice:' " [tooltip]=" 'Select img' "> -->
+                       <!--===================================  -->
+<!-- 
+                                            <img [src]="getChoiceImg($index)" alt="" width="50" height="50">
+
+                                            <input type="file" class="form-control"
+                                                placeholder="Upload an image of your choice"
+                                                (change)="onImageUpload($event,'choiceImg',$index)"> -->
+                       <!--===================================  -->
+
+                                        <!-- </app-form> -->
+
+                                        <!-- }@else{
+                                            <app-form [label]=" 'Image of choice:' " [tooltip]=" 'Select img' "> -->
+                       <!--===================================  -->
+
+                                                <!-- <img [src]="getChoiceImg($index)" alt="" width="50" height="50">
+                                                <input type="file" class="form-control"
+                                                    placeholder="Upload an image of your choice" -->
+                                                    (change)="onImageUpload($event,'choiceImg',$index)">
+                       <!--===================================  -->
+
+                                            <!-- </app-form> -->
                                         }
+
+
                                         <app-form [label]=" 'Option Price:' " [tooltip]=" 'Enter option price' ">
                                             <input type="number" class="form-control"
                                                 placeholder="Enter price of choice" formControlName="choicePrice">
@@ -325,57 +309,7 @@
 
 
                                     </div>
-
-                                    <!-- <button type="button" (click)="closeChoice($index)">Delete</button> -->
                                 </div>
-                                <!-- } -->
-
-
-                                <!-- <div [formGroupName]="$index"
-                                    style="border: 1px solid grey; border-radius: 20px; padding: 10px;">
-                                    @for (item of serviceFromObj.choices; track $index) { 
-                                    <div class="d-flex justify-content-end mt-0">
-
-                                        <app-button [btnClass]="'btn-danger'"
-                                            (onBtnClick)="closeChoice($index)">X</app-button>
-                                    </div>
-                                    <div class="mt-1 mb-4">
-                                       
-                                        <app-form [label]=" 'Option Name:' " [tooltip]=" 'Enter option name' ">
-
-                                            <select class="form-select" formControlName="choiceName">
-                                               
-                                                <option [value]="item.choiceName">{{item.choiceName}}</option>
-                                                @for (item of choice; track $index) {
-                                                    <option [value]="item">{{item}}</option>
-                                                    }
-                                              
-                                            </select>
-                                        </app-form>
-
-
-                                        @if(item.choiceType){
-                                        <app-form [label]=" 'Option Type:' " [tooltip]=" 'Enter option type' ">
-                                            <select class="form-select" formControlName="choiceType">
-                                              
-                                                <option [value]="item.choiceType">{{item.choiceType}}</option>
-
-                                                
-                                            </select>
-                                        </app-form>
-
-                                        }
-                                        <app-form [label]=" 'Option Price:' " [tooltip]=" 'Enter option price' ">
-                                            <input type="number" class="form-control"
-                                                placeholder="Enter price of choice" [value]="item.choicePrice" formControlName="choicePrice">
-
-                                        </app-form>
-
-
-                                    </div>
-                                }
-                                </div> -->
-
 
                                 }
 

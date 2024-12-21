@@ -11,7 +11,9 @@ const userProto: any = grpc.loadPackageDefinition(packageDefinition).user;
 
 // Implement the gRPC service
 async function GetUser(call: any, callback: any) {
-  const user =await userRepository.getUserById(call.request.id)
+  try {
+    const user =await userRepository.getUserById(call.request.id)
+
   if (user) {
     callback(null, user);
   } else {
@@ -20,6 +22,13 @@ async function GetUser(call: any, callback: any) {
       message: 'User not found',
     });
   }
+  } catch (error) {
+    callback({
+      code: grpc.status.INTERNAL,
+      message: 'An internal error occurred',
+    });
+  }
+  
 }
 
 export default function startGrpcServer() {
@@ -35,5 +44,8 @@ export default function startGrpcServer() {
         resolve();
       }
     );
+
+    // Use grpc.ServerCredentials.createSsl() with valid certificates for production environments to encrypt communication.
+
   });
 }

@@ -7,6 +7,7 @@ import { IUser, IUserDb, JwtPayload, LoginData } from '../interfaces/userInterfa
 import UserRepository from '../repository/userRepository'
 import { CookieOptions } from 'express'
 import userRepository from '../repository/userRepository'
+import { credentials } from '@grpc/grpc-js'
 
 dotenv.config()
 
@@ -189,7 +190,7 @@ class UserServices {
 
     }
 
-    async register(userData: IUser) {
+    async register(userData: IUserDb) {
         try {
             if (userData.username) {
                 const isUser = await UserRepository.getUserByUsername(userData.username)
@@ -271,8 +272,12 @@ class UserServices {
                     const user = await UserRepository.getUserByUsername(username)
 
                     console.log('user for login from db: ', user?.isEmailVerified, user);
+if (user===null){
+    console.log('sending login response from service to controller: user not found');
 
-                    if (user) {
+    return { success: false,noUser: true, message: 'Sorry ! User not found, Please create your account.' }
+}else{
+                    // if (user) {
                         if (user.isActive) {
                             console.log('entered email verified loop ');
                             if (user.isEmailVerified === true) {
@@ -302,40 +307,39 @@ class UserServices {
                                     let refreshToken = await this.getToken(payload, refreshSecret, '10d')
 
                                     let cookieData = { payload, accessToken, refreshToken, options }
-                                    console.log('sending login response from service to controller: emailVerified');
+                                    // console.log('sending login response from service to controller: emailVerified');
 
                                     return { cookieData, success: true, emailVerified: true }
 
                                 } else {
-                                    console.log('sending login response from service to controller: emailVerified success fail');
+                                    // console.log('sending login response from service to controller: emailVerified success fail');
 
-                                    return { success: false, emailVerified: true }
+                                    return { success: false, wrongCredentials: true, message:'Invalid username or password' }
                                 }
                             } else {
-                                console.log('sending login response from service to controller: emailNotVerified success fail');
+                                // console.log('sending login response from service to controller: emailNotVerified success fail');
 
-                                return { success: false, emailVerified: false }
+                                return { success: false, emailNotVerified: true, message:'Your email is not verified' }
                             }
                         } else {
-                            console.log('User account is blocked');
+                            // console.log('User account is blocked');
 
-                            return { success: false, emailVerified: true, message: 'Your account has been blocked. Contact admin for more details.' }
+                            return { success: false, blocked: true, message: 'Your account has been blocked. Contact admin for more details.' }
                         }
 
 
                     }
-                } else {
+                // } else {
 
-                    console.log('sending login response from service to controller: user not found');
+                //     console.log('sending login response from service to controller: user not found');
 
-                    return { success: false, message: 'user not found' }
-                }
-
+                //     return { success: false,emailVerified: false, message: 'user not found' }
+                // }
+ }
             }
         } catch (error: any) {
             console.log('Error from userService login: ', error.message);
         }
-
 
     }
 
@@ -424,7 +428,8 @@ class UserServices {
             console.log('skip: ', skip);
 
 
-            let data = await UserRepository.getAllUsers(filterQ, sortQ, Number(pageSize), skip)
+            // let data = await UserRepository.getAllUsers(filterQ, sortQ, Number(pageSize), skip)
+            let data = await UserRepository.getAllUsers(filterQ, {sort:sortQ, limit:Number(pageSize), skip})
 
             if (data) {
                 return { success: true, data }
@@ -526,6 +531,9 @@ class UserServices {
     async getUser(id: string) {
         try {
             const user = await UserRepository.getUserById(id)
+
+            // if (user?.isActive) {}
+
             if (user) {
 
                 return { success: true, data: user }

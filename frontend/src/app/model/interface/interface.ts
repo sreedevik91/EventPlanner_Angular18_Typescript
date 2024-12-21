@@ -26,6 +26,7 @@ export interface ILoggedUserData {
     role: string;
     username: string;
     email: string;
+    isActive:boolean;
 }
 
 export interface INewServiceData {

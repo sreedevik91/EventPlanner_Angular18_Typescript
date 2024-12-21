@@ -15,4 +15,5 @@ message UserResponse {
   string id = 1;     // User ID
   string name = 2;   // User Name
   string email = 3;  // User Email
+  bool isActive = 4;
 }
