@@ -6,6 +6,7 @@ import { IService } from '../../model/interface/interface';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { IChoice } from '../../model/class/serviceClass';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
   selector: 'app-user-services',
@@ -33,6 +34,8 @@ export class UserServicesComponent implements OnInit {
   serviceChoices = new Set<string>()
   servicePrizeRange: string = ''
 
+  serviceImgUrl=environment.serviceImgUrl
+  serviceImg:string=''
 
   ngOnInit(): void {
     this.onLoad()
@@ -102,6 +105,7 @@ export class UserServicesComponent implements OnInit {
         if (res.status === 200) {
           console.log('getServiceByName response: ', res.body.data);
           this.serviceByName.set(res.body.data)
+          this.serviceImg=res.body.data[0].img[0]
           this.showModal()
         } else {
           console.log(res.body.message);

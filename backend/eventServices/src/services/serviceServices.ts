@@ -1,4 +1,4 @@
-import { IService, IServiceDb } from "../interfaces/serviceInterfaces"
+import { IChoice, IService, IServiceDb } from "../interfaces/serviceInterfaces"
 import serviceRepository from "../repository/serviceRepository"
 import nodemailer from 'nodemailer'
 import { config } from "dotenv";
@@ -83,6 +83,8 @@ class ServiceServices {
 
             const data = await serviceRepository.createService(serviceData)
 
+            console.log('addService data: ', serviceData);
+
             console.log('addService service response: ', data);
             if (data) {
                 return { success: true, data: data }
@@ -138,7 +140,7 @@ class ServiceServices {
 
             let data = await serviceRepository.getAllServices(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
-            console.log('all service data filtered and sorted: ', data);
+            // console.log('all service data filtered and sorted: ', data);
 
             if (data) {
                 return { success: true, data }
@@ -205,13 +207,16 @@ class ServiceServices {
         // provider making the service active or block
         try {
             const service = await serviceRepository.getServiceById(id)
-            if (service) {
-                service.isActive = !service.isActive
-                let res = await service.save()
-                console.log('editStatus service: ', service, res);
 
-                if (res) {
-                    return { success: true, data: res, message: 'Service status updated' }
+            if (service) {
+                // service.isActive = !service.isActive
+            const serviceUpdated = await serviceRepository.updateService(id,{isActive:!service.isActive})
+
+                // let res = await service.save()
+                console.log('editStatus service: ', service, serviceUpdated);
+
+                if (serviceUpdated) {
+                    return { success: true, data: serviceUpdated, message: 'Service status updated' }
                 } else {
                     return { success: false, message: 'Could not updated service status' }
                 }
@@ -229,21 +234,23 @@ class ServiceServices {
 
         try {
             // const { email } = data
-            const service = await serviceRepository.getServiceById(id)
+            // const service = await serviceRepository.getServiceById(id)
+            const serviceApproved = await serviceRepository.updateService(id,{isApproved:true})
+
 
             // if (service) {
             //     let providerData = await getUserByIdGrpc(service?.provider)
             //     console.log('provider while admin approving the service: ', providerData);
             // }
 
-            if (service) {
-                service.isApproved = true
-                const updatedService = await service.save()
-                console.log('updatedService data:', updatedService);
+            if (serviceApproved) {
+                // service.isApproved = true
+                // const updatedService = await service.save()
+                console.log('updatedService data:', serviceApproved);
 
-                let status = updatedService.isApproved ? 'approved' : 'pending for approval'
+                let status = serviceApproved.isApproved ? 'approved' : 'pending for approval'
 
-                let providerId = updatedService.provider
+                let providerId = serviceApproved.provider
 
                 // USER_SERVICE_URL='http://localhost:4000/user/'
                 // let url = `${process.env.USER_SERVICE_URL}/user/user/${providerId}`
@@ -266,7 +273,7 @@ class ServiceServices {
                 // let provider = providerData.data
                 await this.sendMail(providerData.name, providerData.email, content, subject)
 
-                return { success: true, message: 'service approved', data: service }
+                return { success: true, message: 'service approved', data: serviceApproved }
             } else {
                 return { success: false, message: 'could not approve service' }
 
@@ -284,8 +291,12 @@ class ServiceServices {
             console.log('getServiceByName response: ', service);
             if (service) {
                 service.forEach(e => {
+                    e.img = Array.from(new Set(e.img))
                     e.events = Array.from(new Set(e.events))
                     e.choicesType = Array.from(new Set(e.choicesType)).filter((e: any) => e !== null && e !== "")
+                    e.choiceImg = Array.from(new Set(e.choiceImg))
+                    // e.choices.forEach((e:IChoice)=>console.log(e)
+                    // )
                 })
 
                 console.log('getServiceByName response updated: ', service);

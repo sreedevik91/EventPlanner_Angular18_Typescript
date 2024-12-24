@@ -78,6 +78,11 @@ export class LoginComponent {
           this.router.navigateByUrl('dashboard')
           this.userService.setLoggedUser(res.body.data)
 
+        } else {
+          console.log(res.body.message);
+
+          this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
+
         }
         // else if (res.status === 400) {
         //   if (res.body.emailNotVerified) {
@@ -104,19 +109,24 @@ export class LoginComponent {
       error: (error: HttpErrorResponse) => {
         console.log(error);
         if (error.status === 400) {
+    
           if (error.error.emailNotVerified) {
             this.alertService.getAlert("alert alert-danger", "Login Failed!", error.error.message)
             this.router.navigateByUrl(`verifyEmail`)
           } else {
             this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
-          }
+          } 
 
         } else if (error.status === 403) {
           this.router.navigateByUrl('login')
           this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
 
         }
-        this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
+        else {
+          // this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
+          console.log('login error:', error.error.message);
+
+        }
 
       }
     }

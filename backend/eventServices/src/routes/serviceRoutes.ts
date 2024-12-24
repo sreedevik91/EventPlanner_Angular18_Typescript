@@ -13,7 +13,7 @@ serviceRoute.use(cookieParser())
 serviceRoute.use(express.json({limit:'50mb'}))
 // serviceRoute.use('../public', express.static(path.join(__dirname, 'public')));
 // serviceRoute.use(express.static(path.join(__dirname, 'public')));
-// serviceRoute.use(express.static('public'));
+serviceRoute.use('/uploads',express.static('src/public'));
 serviceRoute.use(bodyParser.urlencoded({limit:'50mb',extended:true}))
 serviceRoute.use(cors())
 
@@ -25,7 +25,8 @@ const Storage=multer.diskStorage({
     },
     filename:function(req,file,cb){
     
-        const name=Date.now()+'-'+file.originalname
+        // const name=Date.now()+'_'+file.originalname
+        const name=`${Date.now()}_${file.originalname}`
         cb(null,name)
     }
 })
@@ -38,7 +39,7 @@ router.get('/delete/:id',serviceController.deleteService)
 router.get('/service/:id',serviceController.getServiceById)
 router.post('/addService',upload.fields([{name:'img'},{name:'choiceImg'}]),serviceController.createService)
 // router.post('/addService',upload.single('img'),serviceController.createService)
-router.post('/edit/:id',serviceController.editService)
+router.post('/edit/:id',upload.fields([{name:'img'},{name:'choiceImg'}]),serviceController.editService)
 router.get('/editStatus/:id',serviceController.editStatus)
 router.get('/approveService/:id',serviceController.approveService)
 router.get('/getServiceByName/:name',serviceController.getServiceByName)

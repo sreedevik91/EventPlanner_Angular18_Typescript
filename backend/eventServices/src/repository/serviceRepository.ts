@@ -42,15 +42,20 @@ class ServiceRepository extends BaseRepository<IService> {
             {$project:{
                 name:'$name',
                 events:'$events',
-                choices:'$choices'
+                choices:'$choices',
+                img:'$img'
             }},
             {$unwind:'$events'},
             {$group:{
                 _id:'$choices.choiceName',
                 maxPrice:{$max:'$choices.choicePrice'},
                 minPrice:{$min:'$choices.choicePrice'},
+                img:{$push:'$img'},
                 events:{$push:'$events'},
                 choicesType:{$push:'$choices.choiceType'},
+                choiceImg:{$push:'$choices.choiceImg'},
+                // choices:{$push:{choiceName:'$choices.choiceName',choiceType:'$choices.choiceType',choicePrice:'$choices.choicePrice',choiceImg:'$choices.choiceImg'}},
+
             }}
 
         ])

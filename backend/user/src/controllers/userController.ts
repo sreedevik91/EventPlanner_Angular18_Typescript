@@ -120,9 +120,9 @@ class UserController {
                         if (login.emailNotVerified) {
                             res.status(400).json({ success: false, emailNotVerified: true, message: 'Email not verified' })
                         }else if(login.wrongCredentials){
-                            res.status(400).json({ success: false, message: login.message ? login.message : 'Invalid username or password' })
+                            res.status(400).json({ success: false,wrongCredentials:true, message: login.message ? login.message : 'Invalid username or password' })
                         }else if(login.blocked){
-                            res.status(403).json({ success: false, message: login.message ? login.message : 'Your account has been blocked. Contact admin for more details.'})
+                            res.status(403).json({ success: false,blocked:true, message: login.message ? login.message : 'Your account has been blocked. Contact admin for more details.'})
                         }else if(login.noUser){
                             res.status(400).json({ success: false,  message: login.message ? login.message : 'User not found'})
                         }

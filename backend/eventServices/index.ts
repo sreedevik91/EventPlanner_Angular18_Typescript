@@ -16,8 +16,8 @@ connectDb()
 //     credentials: true,
 // }));
 
-app.use(express.static(path.join(__dirname, './src/public')));
-console.log('imagePath from service index.ts:', path.join(__dirname, './src/public'));
+// app.use(express.static(path.join(__dirname, './src/public')));
+// console.log('imagePath from service index.ts:', path.join(__dirname, './src/public'));
 
 // app.use(express.static('public'));
 

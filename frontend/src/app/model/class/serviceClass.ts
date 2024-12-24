@@ -1,31 +1,7 @@
-// export class Service {
-//     _id:string;
-//     name: string;
-//     img:string;
-//     events: string[];
-//     provider: string;
-//     choices: IChoice[];
-
-//     constructor(){
-//         this._id=''
-//         this.name=''
-//         this.img=''
-//         this.events=[]
-//         this.provider=''
-//         this.choices=[{choiceName:'',choicePrice:0,choiceType:'',choiceImg:''}]
-//     }
-// }
-
-// export interface IChoice {
-//     choiceName: string;
-//     choiceType: string;
-//     choicePrice: number;
-//     choiceImg:string;
-// }
-
 export class Service {
     _id:string;
     name: string;
+    img:string;
     events: string[];
     provider: string;
     choices: IChoice[];
@@ -33,9 +9,10 @@ export class Service {
     constructor(){
         this._id=''
         this.name=''
+        this.img=''
         this.events=[]
         this.provider=''
-        this.choices=[{choiceName:'',choicePrice:0,choiceType:''}]
+        this.choices=[{choiceName:'',choicePrice:0,choiceType:'',choiceImg:''}]
     }
 }
 
@@ -43,7 +20,36 @@ export interface IChoice {
     choiceName: string;
     choiceType: string;
     choicePrice: number;
+    choiceImg:string;
 }
+
+
+
+
+
+
+
+// export class Service {
+//     _id:string;
+//     name: string;
+//     events: string[];
+//     provider: string;
+//     choices: IChoice[];
+
+//     constructor(){
+//         this._id=''
+//         this.name=''
+//         this.events=[]
+//         this.provider=''
+//         this.choices=[{choiceName:'',choicePrice:0,choiceType:''}]
+//     }
+// }
+
+// export interface IChoice {
+//     choiceName: string;
+//     choiceType: string;
+//     choicePrice: number;
+// }
 
 
 

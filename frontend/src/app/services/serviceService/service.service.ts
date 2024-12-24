@@ -17,7 +17,7 @@ export class ServiceService {
     return this.http.get(`${this.baseUrl}totalService`, { observe: 'response' })
   }
 
-  createService(data: INewServiceData) {
+  createService(data: FormData) {
     return this.http.post(`${this.baseUrl}addService`, data, { observe: 'response' })
   }
 
@@ -34,8 +34,8 @@ export class ServiceService {
     return this.http.get(`${this.baseUrl}service/${id}`, { observe: 'response' })
   }
 
-  editService(data: any, id: string) {
-    return this.http.post(`${this.baseUrl}edit/${id}`,{data}, { observe: 'response' })
+  editService(data: FormData, id: string) {
+    return this.http.post(`${this.baseUrl}edit/${id}`,data, { observe: 'response' })
   }
   editStatus(id: string) {
     return this.http.get(`${this.baseUrl}editStatus/${id}`, { observe: 'response' })

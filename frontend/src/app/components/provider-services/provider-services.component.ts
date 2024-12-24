@@ -10,6 +10,8 @@ import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { Catering, Decor, EventCoverage } from '../../model/eventServicesOptions';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
+import { environment } from '../../../environments/environment.development';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-provider-services',
@@ -44,8 +46,10 @@ export class ProviderServicesComponent implements OnInit {
   isType: boolean = false
   providerId: string = ''
 
-imgUrl: string | ArrayBuffer | null=''
-choiceImageUrl:( string | ArrayBuffer | null )[]=[]
+  serviceImgUrl: string = environment.serviceImgUrl
+
+  imgUrl: string | ArrayBuffer | null = ''
+  choiceImageUrl: (string | ArrayBuffer | null)[] = []
 
   constructor() {
     this.initialiseServiceForm()
@@ -63,11 +67,40 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
     this.getAllServices(this.searchParams)
   }
 
+  initialiseServiceForm() {
+    this.serviceForm = new FormGroup({
+      _id: new FormControl(this.serviceFromObj._id),
+      name: new FormControl(this.serviceFromObj.name, [Validators.required]),
+      img: new FormControl(this.serviceFromObj.img || null, [Validators.required]),
+      provider: new FormControl(this.serviceFromObj.provider, [Validators.required]),
+      events: this.isAddService ? new FormArray([
+        new FormControl(this.serviceFromObj.events, [Validators.required])
+      ])
+        :
+        new FormArray(
+          this.serviceFromObj.events.map((event) => {
+            return new FormControl(event, [Validators.required])
+          })
+        ),
+      choices: new FormArray(
+        (this.serviceFromObj.choices).map((choice) => {
+          return new FormGroup({
+            choiceName: new FormControl(choice.choiceName, [Validators.required]),
+            choiceType: new FormControl(choice.choiceType, [Validators.required]),
+            choicePrice: new FormControl(choice.choicePrice === 0 ? null : choice.choicePrice, [Validators.required]),
+            choiceImg: new FormControl(choice.choiceImg || null, [Validators.required]),
+          })
+        })
+
+      )
+    })
+  }
+
+
   // initialiseServiceForm() {
   //   this.serviceForm = new FormGroup({
   //     _id: new FormControl(this.serviceFromObj._id),
   //     name: new FormControl(this.serviceFromObj.name, [Validators.required]),
-  //     img: new FormControl(this.serviceFromObj.img || null, [Validators.required]),
   //     provider: new FormControl(this.serviceFromObj.provider, [Validators.required]),
   //     // events: new FormArray([
   //     //   new FormControl(this.serviceFromObj.events, [Validators.required])
@@ -87,44 +120,12 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
   //           choiceName: new FormControl(choice.choiceName, [Validators.required]),
   //           choiceType: new FormControl(choice.choiceType, [Validators.required]),
   //           choicePrice: new FormControl(choice.choicePrice === 0 ? null : choice.choicePrice, [Validators.required]),
-  //           choiceImg: new FormControl(choice.choiceImg || null, [Validators.required]),
   //         })
   //       })
 
   //     )
   //   })
   // }
-
-
-  initialiseServiceForm() {
-    this.serviceForm = new FormGroup({
-      _id: new FormControl(this.serviceFromObj._id),
-      name: new FormControl(this.serviceFromObj.name, [Validators.required]),
-      provider: new FormControl(this.serviceFromObj.provider, [Validators.required]),
-      // events: new FormArray([
-      //   new FormControl(this.serviceFromObj.events, [Validators.required])
-      // ]),
-      events: this.isAddService ? new FormArray([
-        new FormControl(this.serviceFromObj.events, [Validators.required])
-      ])
-        :
-        new FormArray(
-          this.serviceFromObj.events.map((event) => {
-            return new FormControl(event, [Validators.required])
-          })
-        ),
-      choices: new FormArray(
-        (this.serviceFromObj.choices).map((choice) => {
-          return new FormGroup({
-            choiceName: new FormControl(choice.choiceName, [Validators.required]),
-            choiceType: new FormControl(choice.choiceType, [Validators.required]),
-            choicePrice: new FormControl(choice.choicePrice === 0 ? null : choice.choicePrice, [Validators.required]),
-          })
-        })
-
-      )
-    })
-  }
 
 
 
@@ -158,9 +159,9 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
   getEvents() {
     const events = (<FormArray>this.serviceForm.get('events'))['controls']
 
-    console.log('events array: ', events.forEach((e) => {
-      console.log(e);
-    }));
+    // console.log('events array: ', events.forEach((e) => {
+    //   console.log(e);
+    // }));
 
     return events
   }
@@ -175,17 +176,18 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
 
   getChoices() {
     const choices = ((<FormArray>this.serviceForm.get('choices'))['controls'])
-    console.log('choices array: ', choices);
-
+    // console.log('choices array: ', choices);
     return choices
   }
 
   getChoiceImg(index: number) {
 
     const choiceControl = (<FormArray>this.serviceForm.get('choices')).at(index)
-    console.log('choiceControl array: ', choiceControl);
+    // console.log('choiceControl array: ', choiceControl);
+    // console.log('choice images: ', choiceControl?.get('choiceImg')?.value);
 
-    return choiceControl?.get('choiceImg')?.value ? choiceControl?.get('choiceImg')?.value : this.choiceImageUrl[index]
+
+    return choiceControl?.get('choiceImg')?.value ? this.serviceImgUrl + choiceControl?.get('choiceImg')?.value : null
 
     // return this.choiceImageUrl[index]
 
@@ -212,6 +214,7 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
     const choiceControl = <FormArray>this.serviceForm.get('choices')
     const choiceGroup = choiceControl.at(index)
     const value = choiceGroup.value.choiceName
+    // console.log('getChoiceTypeOptions value:', value);
 
     if (value === 'Menu') {
       this.type[index] = Catering.menuTypes
@@ -220,8 +223,20 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
     }
   }
 
+  getChoiceTypes(index: number) {
+    const choiceControl = <FormArray>this.serviceForm.get('choices')
+    const choiceGroup = choiceControl.at(index)
+    const value = choiceGroup.value.choiceType
+    let typesArr = new Set(this.type[index])
+    typesArr.add(value)
+    console.log('getChoiceTypes Array:', Array.from(typesArr));
+
+    return Array.from(typesArr)
+
+  }
+
   onImageUpload(event: Event, controlName: string, index?: number) {
-    console.log('onImageUpload: ', event);
+    // console.log('onImageUpload: ', event);
     const input = <HTMLInputElement>event.target
     if (input.files && input.files.length > 0) {
       const file = input.files[0]
@@ -229,20 +244,22 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
 
       let reader = new FileReader
       reader.readAsDataURL(file)
-      reader.onload = (event:Event) => {
-        imageurl =(<FileReader> event.target).result
+      reader.onload = (event: Event) => {
+        imageurl = (<FileReader>event.target).result
         if (controlName === 'img') {
-          this.serviceForm.get('img')?.setValue(imageurl)
-          this.imgUrl=imageurl
+          // this.serviceForm.get('img')?.setValue(imageurl)
+          this.serviceForm.get('img')?.setValue(file)
+          this.imgUrl = imageurl
         } else if (controlName === 'choiceImg' && index !== undefined) {
           const choiceArray = <FormArray>this.serviceForm.get('choices')
           const choiceGroup = choiceArray.at(index)
-          choiceGroup.get('choiceImg')?.setValue(imageurl)
-          this.choiceImageUrl[index]=imageurl
+          // choiceGroup.get('choiceImg')?.setValue(imageurl)
+          choiceGroup.get('choiceImg')?.setValue(file)
+          this.choiceImageUrl[index] = imageurl
 
         }
       }
-     
+
     }
   }
 
@@ -306,7 +323,7 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
       next: (res: HttpResponse<any>) => {
         if (res.status === 200) {
           this.services.set(res.body.data)
-          console.log('total services: ', this.services());
+          // console.log('total services: ', this.services());
         } else {
           console.log('could not get users');
           this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
@@ -333,6 +350,10 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
           console.log('update form data: ', this.serviceFromObj);
           this.initialiseServiceForm()
           this.getChoiceOptions()
+
+          const choicesArray = <FormArray>this.serviceForm.get('choices');
+          choicesArray.controls.forEach((_, index) => this.getChoiceTypeOptions(index));
+        
           this.showModal()
         } else {
           this.alertService.getAlert("alert alert-danger", "Failed", res.body.message)
@@ -370,13 +391,36 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
   }
 
   saveService() {
-    console.log(this.serviceForm.errors);
+    // console.log(this.serviceForm.errors);
     this.serviceForm.get('provider')?.setValue(this.providerId)
-    console.log(this.serviceForm.value);
+    // console.log(this.serviceForm.value);
     const { _id, ...rest } = this.serviceForm.value
-    console.log('data to add new service: ', rest);
+    // console.log('data to add new service: ', rest);
 
-    this.serviceService.createService(rest).subscribe({
+    const formData = new FormData()
+
+    formData.append('name', this.serviceForm.get('name')?.value)
+    formData.append('provider', this.serviceForm.get('provider')?.value)
+    formData.append('events', JSON.stringify(this.serviceForm.get('events')?.value))
+    formData.append('img', this.serviceForm.get('img')?.value)
+
+    let choices = this.serviceForm.get('choices')?.value || []
+    // formData.append('choices',[])
+    choices = choices.map((choice: any, index: number) => {
+      const newChoices = {
+        choiceName: choice.choiceName,
+        choiceType: choice.choiceType || '',
+        choicePrice: choice.choicePrice,
+        choiceImg: choice.choiceImg.name || ""
+      }
+      formData.append(`choiceImg`, choice.choiceImg)
+      return newChoices
+    })
+
+    formData.append('choices', JSON.stringify(choices))
+    console.log('data to add new service: ', formData);
+
+    this.serviceService.createService(formData).subscribe({
       next: (res: HttpResponse<any>) => {
         if (res.status === 200) {
           this.hideModal()
@@ -395,14 +439,42 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
   }
 
   editService(id: string) {
-    console.log('id to edit user: ', id);
+    // console.log('id to edit user: ', id);
     let { _id, ...rest } = this.serviceForm.value
     let data = rest
     console.log('user update data:', data);
 
-    this.serviceService.editService(data, id).subscribe({
+    const formData = new FormData()
+
+    formData.append('name', this.serviceForm.get('name')?.value)
+    formData.append('provider', this.serviceForm.get('provider')?.value)
+    formData.append('events', JSON.stringify(this.serviceForm.get('events')?.value))
+    formData.append('img', this.serviceForm.get('img')?.value || '')
+
+    let choices = this.serviceForm.get('choices')?.value || []
+    // formData.append('choices',[])
+    choices = choices.map((choice: any, index: number) => {
+      const newChoices = {
+        choiceName: choice.choiceName,
+        choiceType: choice.choiceType || '',
+        choicePrice: choice.choicePrice,
+        choiceImg: choice.choiceImg.name
+      }
+      formData.append(`choiceImg`, choice.choiceImg)
+      return newChoices
+    })
+
+    formData.append('choices', JSON.stringify(choices))
+
+    // console.log('data to edit service: ', formData);
+    formData.forEach((value, key) => {
+      console.log(key, value);
+    });
+
+    // debugger
+
+    this.serviceService.editService(formData, id).subscribe({
       next: (res: HttpResponse<any>) => {
-        debugger
         if (res.status === 200) {
           console.log('update user response: ', res.body);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body.message || 'Service updated')
@@ -465,8 +537,8 @@ choiceImageUrl:( string | ArrayBuffer | null )[]=[]
   hideModal() {
     this.formModal.nativeElement.style.display = 'none'
     this.isAddService = true
-    this.imgUrl=''
-    this.choiceImageUrl=[]
+    this.imgUrl = ''
+    this.choiceImageUrl = []
     this.serviceForm.reset()
     this.serviceFromObj = new Service()
     this.initialiseServiceForm()

@@ -55,7 +55,7 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>
           map(() => new HttpResponse({ status: 403 })),
           catchError((blockedError) => {
             router.navigateByUrl('login')
-            alert.getAlert("alert alert-danger", "Login failed", "Your account has been blocked. Contact admin for more details.")
+            alert.getAlert("alert alert-danger", "", blockedError)
             return throwError(() => blockedError)
           })
         )

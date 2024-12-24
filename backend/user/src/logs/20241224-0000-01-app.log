@@ -1,0 +1,14 @@
+POST /login 200 [23/Dec/2024:13:01:21 +0000] - 1083.762 ms localhost
+GET /refreshToken 200 [23/Dec/2024:13:02:25 +0000] - 34.338 ms localhost
+GET /refreshToken 304 [23/Dec/2024:13:02:25 +0000] - 13.905 ms localhost
+POST /login 200 [23/Dec/2024:13:07:34 +0000] - 360.091 ms localhost
+POST /login 200 [23/Dec/2024:13:11:58 +0000] - 336.702 ms localhost
+POST /login 200 [23/Dec/2024:13:26:50 +0000] - 124.695 ms localhost
+POST /login 200 [23/Dec/2024:14:02:54 +0000] - 326.932 ms localhost
+GET /refreshToken 304 [23/Dec/2024:14:17:12 +0000] - 18.243 ms localhost
+GET /refreshToken 304 [23/Dec/2024:14:17:12 +0000] - 10.358 ms localhost
+POST /login 200 [23/Dec/2024:16:14:55 +0000] - 158.183 ms localhost
+GET /refreshToken 304 [23/Dec/2024:16:17:21 +0000] - 21.696 ms localhost
+POST /login 200 [23/Dec/2024:16:32:49 +0000] - 174.327 ms localhost
+POST /login 200 [23/Dec/2024:16:37:35 +0000] - 102.194 ms localhost
+POST /login 200 [23/Dec/2024:16:42:48 +0000] - 157.540 ms localhost

@@ -1,24 +1,8 @@
 import { DeleteResult , Document} from "mongoose";
 
-// export interface IService extends Document {
-//     name: string;
-//     img:string;
-//     events: string[];
-//     provider: string;
-//     choices: IChoice[];
-//     isApproved: boolean;
-//     isActive: boolean;
-// }
-// export interface IChoice {
-//     choiceName: string;
-//     choiceType: string;
-//     choicePrice: number;
-//     choiceImg:string;
-// }
-
-
 export interface IService extends Document {
     name: string;
+    img:string;
     events: string[];
     provider: string;
     choices: IChoice[];
@@ -29,7 +13,23 @@ export interface IChoice {
     choiceName: string;
     choiceType: string;
     choicePrice: number;
+    choiceImg:string;
 }
+
+
+// export interface IService extends Document {
+//     name: string;
+//     events: string[];
+//     provider: string;
+//     choices: IChoice[];
+//     isApproved: boolean;
+//     isActive: boolean;
+// }
+// export interface IChoice {
+//     choiceName: string;
+//     choiceType: string;
+//     choicePrice: number;
+// }
 
 
 export interface IServiceDb extends IService,Document {
