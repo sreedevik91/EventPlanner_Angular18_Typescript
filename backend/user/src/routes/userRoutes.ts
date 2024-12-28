@@ -26,29 +26,29 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
 router.get('/auth/google/callback',passport.authenticate('google'), userController.googleLogin)
 
 router.post('/register',userController.registerUser)
-router.post('/verifyEmail',userController.verifyEmail)
+router.post('/email/verify',userController.verifyEmail)
 router.post('/login',userController.userLogin)
-router.post('/sendResetEmail',userController.sendResetEmail)
-router.post('/resetPassword',userController.resetPassword)
-router.post('/verifyOtp',userController.verifyOtp)
-router.get('/sendOtp/:id',userController.resendOtp)
-router.get('/refreshToken',userController.refreshToken)
-
-// router.get('/users',verifyToken,userController.getAllUsers)
-// router.get('/usersCount',verifyToken,userController.getUsersCount)
-// router.post('/verifyUser',verifyToken,userController.verifyUser)
-// router.get('/user/:id',verifyToken,userController.getUser)
-// router.get('/data',verifyToken,userController.getGoogleUser)
-// router.post('/edit/:userId',verifyToken,userController.editUser)
-// router.post('/editStatus',verifyToken,userController.editStatus)
-
+router.post('/password/resetEmail',userController.sendResetEmail)
+router.post('/password/reset',userController.resetPassword)
+router.post('/otp/verify',userController.verifyOtp)
+router.get('/otp/:id',userController.resendOtp)
+router.get('/token/refresh',userController.refreshToken)
 router.get('/users',userController.getAllUsers)
-router.get('/usersCount',userController.getUsersCount)
-router.post('/verifyUser',userController.verifyUser)
-router.get('/user/:id',userController.getUser)
+router.get('/users/count',userController.getUsersCount)
+
+// router.post('/verifyUser',userController.verifyUser)
+router.patch('/verify',userController.verifyUser)
+
+router.get('/:id',userController.getUser)
 router.get('/data',userController.getGoogleUser)
-router.post('/edit/:userId',userController.editUser)
-router.post('/editStatus',userController.editStatus)
+
+// router.post('/editStatus',userController.editStatus)
+router.patch('/status',userController.editStatus)
+
+// router.post('/edit/:userId',userController.editUser)
+router.patch('/:userId',userController.editUser)
+
+
 
 router.get('/logout',userController.userLogout)
 

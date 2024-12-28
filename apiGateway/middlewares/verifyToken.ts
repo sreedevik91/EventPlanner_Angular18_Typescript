@@ -34,14 +34,14 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
 
     const publicRoutes = [
         '/',
-        '/verifyEmail',
+        '/email/verify',
         '/login',
         '/register',
-        '/sendResetEmail',
-        '/resetPassword',
-        '/verifyOtp',
-        '/sendOtp/:id',
-        '/refreshToken',
+        '/password/resetEmail',
+        '/password/reset',
+        '/otp/verify',
+        '/otp/:id',
+        '/token/refresh',
         '/logout',
     ]
 

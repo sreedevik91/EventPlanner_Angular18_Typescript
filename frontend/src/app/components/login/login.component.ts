@@ -66,7 +66,7 @@ export class LoginComponent {
     // console.log(this.loginData);
 
     this.userService.userLogin(this.loginData).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         // debugger
         console.log(res);
         console.log(res.body);
@@ -76,12 +76,12 @@ export class LoginComponent {
           console.log(this.router);
 
           this.router.navigateByUrl('dashboard')
-          this.userService.setLoggedUser(res.body.data)
+          this.userService.setLoggedUser(res.body?.data)
 
         } else {
-          console.log(res.body.message);
+          console.log(res.body?.message);
 
-          this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
+          this.alertService.getAlert("alert alert-danger", "Login Failed", res.body?.message ? res.body?.message : '')
 
         }
         // else if (res.status === 400) {
@@ -109,7 +109,6 @@ export class LoginComponent {
       error: (error: HttpErrorResponse) => {
         console.log(error);
         if (error.status === 400) {
-    
           if (error.error.emailNotVerified) {
             this.alertService.getAlert("alert alert-danger", "Login Failed!", error.error.message)
             this.router.navigateByUrl(`verifyEmail`)
@@ -123,7 +122,7 @@ export class LoginComponent {
 
         }
         else {
-          // this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
+          this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
           console.log('login error:', error.error.message);
 
         }
@@ -148,16 +147,16 @@ export class LoginComponent {
     this.registrationData = rest
     console.log(this.registrationData);
     this.userService.registerUser(this.registrationData).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         console.log('response from register user: ', res);
         if (res.status === 201) {
           // this.callAlert("alert alert-success", "Success!", res.message)
-          this.alertService.getAlert("alert alert-success", "Success!", res.body.message)
-          this.router.navigateByUrl(`/otp/${res.body.data._id}`)
+          this.alertService.getAlert("alert alert-success", "Success!", res.body?.message ? res.body?.message : '')
+          this.router.navigateByUrl(`/otp/${res.body?.data._id}`)
           // this.isLoginForm = true
         } else {
           // this.callAlert("alert alert-danger", "Failed!", res.message)
-          this.alertService.getAlert("alert alert-danger", "Failed!", res.body.message)
+          this.alertService.getAlert("alert alert-danger", "Failed!", res.body?.message!)
 
         }
         this.userRegistrationForm.reset()
@@ -165,7 +164,7 @@ export class LoginComponent {
       },
       error: (error: HttpErrorResponse) => {
         // this.callAlert("alert alert-danger", "Register User Failed", error.message)
-        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.message)
+        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
 
       }
     })
@@ -176,15 +175,15 @@ export class LoginComponent {
     console.log(emailData);
 
     this.userService.sendResetEmail(emailData).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         console.log('send mail response: ', res);
         if (res.status === 200) {
           // this.callAlert('alert alert-success', 'Email sent', res.message)
-          this.alertService.getAlert('alert alert-success', 'Email sent', res.body.message)
+          this.alertService.getAlert('alert alert-success', 'Email sent', res.body?.message ? res.body?.message : '')
 
         } else {
           // this.callAlert('alert alert-danger', 'Sent email failed', res.message)
-          this.alertService.getAlert('alert alert-danger', 'Sent email failed', res.body.message)
+          this.alertService.getAlert('alert alert-danger', 'Sent email failed', res.body?.message ? res.body?.message : '')
 
         }
         this.emailForm.reset()
@@ -192,7 +191,7 @@ export class LoginComponent {
       },
       error: (error: HttpErrorResponse) => {
         // this.callAlert("alert alert-danger", "Sent email Failed", error.message)
-        this.alertService.getAlert("alert alert-danger", "Sent email Failed", error.message)
+        this.alertService.getAlert("alert alert-danger", "Sent email Failed", error.error.message)
 
 
       }

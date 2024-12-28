@@ -6,6 +6,8 @@ import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { PasswordMatchValidator } from '../../shared/validators/formValidator';
 import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { IResponse } from '../../model/interface/interface';
 
 @Component({
   selector: 'app-reset',
@@ -73,15 +75,15 @@ export class ResetComponent implements OnInit {
     // console.log('resetData: ', resetData, data);
     debugger
     this.userServices.resetPassword(data).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<IResponse>) => {
         console.log('resetPassword res: ', res.body);
         if (res.status === 200) {
           // this.callAlert('alert alert-success', 'Password Reset Success', res.message)
-          this.alertService.getAlert('alert alert-success', 'Password Reset Success', res.body.message)
+          this.alertService.getAlert('alert alert-success', 'Password Reset Success', res.body?.message || '')
 
         } else {
           // this.callAlert('alert alert-danger', 'Password Reset failed', res.message)
-          this.alertService.getAlert('alert alert-danger', 'Password Reset failed', res.body.message)
+          this.alertService.getAlert('alert alert-danger', 'Password Reset failed', res.body?.message || '')
 
         }
         setTimeout(() => {
@@ -91,9 +93,9 @@ export class ResetComponent implements OnInit {
         }, 1500)
         this.resetForm.reset()
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         // this.callAlert('alert alert-danger', 'Password Reset failed', err.message)
-        this.alertService.getAlert('alert alert-danger', 'Password Reset failed', err.message)
+        this.alertService.getAlert('alert alert-danger', 'Password Reset failed',  err.error.message)
 
       }
     })

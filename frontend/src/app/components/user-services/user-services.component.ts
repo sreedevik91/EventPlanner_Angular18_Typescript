@@ -2,7 +2,7 @@ import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angul
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ServiceService } from '../../services/serviceService/service.service';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
-import { IService } from '../../model/interface/interface';
+import { IResponse, IService } from '../../model/interface/interface';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { IChoice } from '../../model/class/serviceClass';
@@ -48,17 +48,17 @@ export class UserServicesComponent implements OnInit {
 
   getAllServices(params: HttpParams) {
     this.serviceServices.getAllServices(params).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
-          console.log('getAllServices response', res.body.data);
-          this.services.set(res.body.data)
+          console.log('getAllServices response', res.body?.data);
+          this.services.set(res.body?.data)
         } else {
-          console.log(res.body.message);
-          // this.alertService.getAlert("alert alert-danger", "Failed", res.body.message)
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')
         }
       },
       error: (error: HttpErrorResponse) => {
-        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.message)
+        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
 
       }
     })
@@ -101,21 +101,21 @@ export class UserServicesComponent implements OnInit {
     // })
 
     this.serviceServices.getServiceByName(name).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
-          console.log('getServiceByName response: ', res.body.data);
-          this.serviceByName.set(res.body.data)
-          this.serviceImg=res.body.data[0].img[0]
+          console.log('getServiceByName response: ', res.body?.data);
+          this.serviceByName.set(res.body?.data)
+          this.serviceImg=res.body?.data[0].img[0]
           this.showModal()
         } else {
-          console.log(res.body.message);
-          // this.alertService.getAlert("alert alert-danger", "Failed", res.body.message)
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')
         }
 
       },
       error: (error: HttpErrorResponse) => {
-        // this.alertService.getAlert("alert alert-danger", "Register User Failed", error.message)
-        console.log('getServiceByName error: ', error.message);
+        this.alertService.getAlert("alert alert-danger", "Register User Failed",  error.error.message)
+        console.log('getServiceByName error: ', error.error.message);
 
       }
     })

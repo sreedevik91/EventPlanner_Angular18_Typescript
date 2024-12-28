@@ -27,13 +27,27 @@ export const authGuard: CanActivateFn = (route, state) => {
 
 
     map((user) => {
-      if (!user?.isActive) {
-        router.navigateByUrl('/login');  // Redirect to login if not authenticated
-        alert.getAlert("alert alert-danger", "Account Blocked", "Your account has been blocked. Contact admin for more details.")
-        return false;  // Block route activation
+      if(user){
+        if (!user.isActive){
+          router.navigateByUrl('/login');  // Redirect to login if not authenticated
+          alert.getAlert("alert alert-danger", "Account Blocked", "Your account has been blocked. Contact admin for more details.")
+          return false;  // Block route activation  
+        }else{
+          console.log('authguard: ', user);
+          return true;  
+        }
       }
-      console.log('authguard: ', user);
-      return true;  // User is authenticated, allow route activation
+
+      router.navigateByUrl('/login'); 
+      return false; 
+
+      // if (!user?.isActive) {
+      //   router.navigateByUrl('/login');  // Redirect to login if not authenticated
+      //   alert.getAlert("alert alert-danger", "Account Blocked", "Your account has been blocked. Contact admin for more details.")
+      //   return false;  // Block route activation
+      // }
+      // console.log('authguard: ', user);
+      // return true;  // User is authenticated, allow route activation
     }),
     catchError((error) => {
       router.navigateByUrl('login') 

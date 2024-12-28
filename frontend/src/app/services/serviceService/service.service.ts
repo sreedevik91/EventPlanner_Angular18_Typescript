@@ -14,11 +14,11 @@ export class ServiceService {
   constructor() { }
 
   getTotalServices() {
-    return this.http.get(`${this.baseUrl}totalService`, { observe: 'response' })
+    return this.http.get(`${this.baseUrl}services/count`, { observe: 'response' })
   }
 
   createService(data: FormData) {
-    return this.http.post(`${this.baseUrl}addService`, data, { observe: 'response' })
+    return this.http.post(`${this.baseUrl}new`, data, { observe: 'response' })
   }
 
   getAllServices(params: HttpParams) {
@@ -27,26 +27,27 @@ export class ServiceService {
   }
 
   deleteService(id: string) {
-    return this.http.get(`${this.baseUrl}delete/${id}`, { observe: 'response' })
+    return this.http.delete(`${this.baseUrl}${id}`, { observe: 'response' })
   }
 
   getServiceById(id: string) {
-    return this.http.get(`${this.baseUrl}service/${id}`, { observe: 'response' })
+    return this.http.get(`${this.baseUrl}${id}`, { observe: 'response' })
   }
 
   editService(data: FormData, id: string) {
-    return this.http.post(`${this.baseUrl}edit/${id}`,data, { observe: 'response' })
+    return this.http.patch(`${this.baseUrl}${id}`, data, { observe: 'response' })
   }
   editStatus(id: string) {
-    return this.http.get(`${this.baseUrl}editStatus/${id}`, { observe: 'response' })
+    // return this.http.get(`${this.baseUrl}editStatus/${id}`, { observe: 'response' })
+    return this.http.patch(`${this.baseUrl}status`, { id }, { observe: 'response' })
   }
 
   approveService(id: string) {
-    return this.http.get(`${this.baseUrl}approveService/${id}`, { observe: 'response'  })
+    return this.http.patch(`${this.baseUrl}approve`, { id }, { observe: 'response' })
   }
 
-getServiceByName(name:string){
-  return this.http.get(`${this.baseUrl}getServiceByName/${name}`, { observe: 'response'  })
-}
+  getServiceByName(name: string) {
+    return this.http.get(`${this.baseUrl}${name}`, { observe: 'response' })
+  }
 
 }

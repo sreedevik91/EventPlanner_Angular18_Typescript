@@ -43,11 +43,11 @@ export class UserSrerviceService {
   }
 
   sendResetEmail(data: any) {
-    return this.http.post(`${this.baseUrl}sendResetEmail`, data, { observe: 'response' })
+    return this.http.post(`${this.baseUrl}password/resetEmail`, data, { observe: 'response' })
   }
 
   resetPassword(data: any) {
-    return this.http.post(`${this.baseUrl}resetPassword`, data, { observe: 'response' })
+    return this.http.post(`${this.baseUrl}password/reset`, data, { observe: 'response' })
   }
 
   userLogout() {
@@ -56,19 +56,20 @@ export class UserSrerviceService {
   }
 
   verifyOtp(data: any) {
-    return this.http.post(`${this.baseUrl}verifyOtp`, data, { observe: 'response' })
+    return this.http.post(`${this.baseUrl}otp/verify`, data, { observe: 'response' })
   }
 
   verifyUserEmail(data: any) {
-    return this.http.post(`${this.baseUrl}verifyEmail`, data,  { observe: 'response' })
+    return this.http.post(`${this.baseUrl}email/verify`, data,  { observe: 'response' })
   }
 
   verifyUser(id: string) {
-    return this.http.post(`${this.baseUrl}verifyUser`, { id },  { observe: 'response' })
+    // return this.http.post(`${this.baseUrl}verifyUser`, { id },  { observe: 'response' })
+    return this.http.patch(`${this.baseUrl}verify`, { id },  { observe: 'response' })
   }
 
   resendOtp(id: string) {
-    return this.http.get(`${this.baseUrl}sendOtp/${id}`, { observe: 'response' })
+    return this.http.get(`${this.baseUrl}otp/${id}`, { observe: 'response' })
   }
 
   getAllUsers(params: any) {
@@ -78,24 +79,26 @@ export class UserSrerviceService {
 
   getUsersCount() {
     // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
-    return this.http.get(`${this.baseUrl}usersCount`, { observe: 'response' })
+    return this.http.get(`${this.baseUrl}users/count`, { observe: 'response' })
   }
 
   getUserById(id: string) {
     // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
-    return this.http.get(`${this.baseUrl}user/${id}`, { observe: 'response' })
+    return this.http.get(`${this.baseUrl}${id}`, { observe: 'response' })
   }
 
   refreshToken() {
-    return this.http.get(`${this.baseUrl}refreshToken`, { observe: 'response' })
+    return this.http.get(`${this.baseUrl}token/refresh`, { observe: 'response' })
   }
 
   editUser(data: any, id: string) {
-    return this.http.post(`${this.baseUrl}edit/${id}`, { data }, { observe: 'response' })
+    // return this.http.post(`${this.baseUrl}edit/${id}`, { data }, { observe: 'response' })
+    return this.http.patch(`${this.baseUrl}${id}`, { data }, { observe: 'response' })
   }
 
   editStatus(id: string) {
-    return this.http.post(`${this.baseUrl}editStatus`, { id }, { observe: 'response' })
+    // return this.http.post(`${this.baseUrl}editStatus`, { id }, { observe: 'response' })
+    return this.http.patch(`${this.baseUrl}status`, { id }, { observe: 'response' })
   }
 
 }

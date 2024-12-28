@@ -15,9 +15,12 @@ export interface ILoginData {
 }
 
 export interface IResponse {
-    success: boolean;
+    success?: boolean;
     message?: string;
     data?: any;
+    emailVerified?: boolean;
+    wrongCredentials?:boolean;
+    blocked?:boolean;
 }
 
 export interface ILoggedUserData {

@@ -33,16 +33,21 @@ const Storage=multer.diskStorage({
 
 const upload=multer({storage:Storage})
 
-router.get('/totalService',serviceController.getTotalServices)
+router.get('/services/count',serviceController.getTotalServices)
 router.get('/services',serviceController.getAllServices)
-router.get('/delete/:id',serviceController.deleteService) 
-router.get('/service/:id',serviceController.getServiceById)
-router.post('/addService',upload.fields([{name:'img'},{name:'choiceImg'}]),serviceController.createService)
-// router.post('/addService',upload.single('img'),serviceController.createService)
-router.post('/edit/:id',upload.fields([{name:'img'},{name:'choiceImg'}]),serviceController.editService)
-router.get('/editStatus/:id',serviceController.editStatus)
-router.get('/approveService/:id',serviceController.approveService)
-router.get('/getServiceByName/:name',serviceController.getServiceByName)
+router.delete('/:id',serviceController.deleteService) 
+router.get('/:id',serviceController.getServiceById)
+router.post('/new',upload.fields([{name:'img'},{name:'choiceImg'}]),serviceController.createService)
+// router.get('/editStatus/:id',serviceController.editStatus)
+
+// while using patch method,more specific routes should come before general ones:
+router.patch('/status',serviceController.editStatus)
+// router.get('/approveService/:id',serviceController.approveService)
+router.patch('/approve',serviceController.approveService)
+
+router.patch('/:id',upload.fields([{name:'img'},{name:'choiceImg'}]),serviceController.editService)
+
+router.get('/:name',serviceController.getServiceByName)
 
 
 serviceRoute.use(router)

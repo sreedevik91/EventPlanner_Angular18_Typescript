@@ -3,6 +3,8 @@ import { UserSrerviceService } from '../../services/userService/user-srervice.se
 import { Router } from '@angular/router';
 import { AlertService } from '../../services/alertService/alert.service';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
+import { HttpResponse } from '@angular/common/http';
+import { IResponse } from '../../model/interface/interface';
 
 @Component({
   selector: 'app-google-auth-callback',
@@ -24,14 +26,14 @@ export class GoogleAuthCallbackComponent implements OnInit {
 
   handleGoogleSignin() {
     this.userService.handleGoogleSignin().subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<IResponse>) => {
         console.log('response from google sign in: ', res.body);
         if (res.status === 200) {
           this.router.navigateByUrl('dashboard')
-          this.userService.setLoggedUser(res.body.data)
+          this.userService.setLoggedUser(res.body?.data)
 
         } else {
-          this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
+          this.alertService.getAlert("alert alert-danger", "Login Failed", res.body?.message ? res.body?.message : '')
           this.router.navigateByUrl('login')
 
         }

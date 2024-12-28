@@ -1,10 +1,10 @@
 import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { Service, ServiceSearchFilter } from '../../model/class/serviceClass';
+import { IChoice, Service, ServiceSearchFilter } from '../../model/class/serviceClass';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
-import { ILoggedUserData, IService } from '../../model/interface/interface';
+import { ILoggedUserData, IResponse, IService } from '../../model/interface/interface';
 import { ServiceService } from '../../services/serviceService/service.service';
 import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
@@ -45,6 +45,7 @@ export class ProviderServicesComponent implements OnInit {
   type: string[][] = []
   isType: boolean = false
   providerId: string = ''
+  provider: string = ''
 
   serviceImgUrl: string = environment.serviceImgUrl
 
@@ -52,13 +53,15 @@ export class ProviderServicesComponent implements OnInit {
   choiceImageUrl: (string | ArrayBuffer | null)[] = []
 
   constructor() {
+
+  }
+  ngOnInit(): void {
     this.initialiseServiceForm()
     this.getTotalServices()
     this.initialiseSearchFilterForm()
-  }
-  ngOnInit(): void {
     this.userService.loggedUser$.subscribe((user: any) => {
       this.providerId = user.id
+      this.provider = user.user
       console.log(this.providerId, user);
 
     })
@@ -265,16 +268,16 @@ export class ProviderServicesComponent implements OnInit {
 
   getTotalServices() {
     this.serviceService.getTotalServices().subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
-          this.totalServices = res.body.data
+          this.totalServices = res.body?.data
         } else {
-          console.log(res.body.message);
-          // this.alertService.getAlert("alert alert-danger", "Failed", res.body.message)
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
         }
       },
       error: (error: HttpErrorResponse) => {
-        // this.alertService.getAlert("alert alert-danger", "Register User Failed", error.message)
+        this.alertService.getAlert("alert alert-danger", "Register User Failed",  error.error.message)
 
       }
     })
@@ -320,18 +323,19 @@ export class ProviderServicesComponent implements OnInit {
 
   getAllServices(params: HttpParams) {
     this.serviceService.getAllServices(params).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
-          this.services.set(res.body.data)
+          // this.totalServices=res.body.data.length
+          this.services.set(res.body?.data)
           // console.log('total services: ', this.services());
         } else {
           console.log('could not get users');
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body?.message ? res.body?.message : '')
         }
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
-        this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
+        this.alertService.getAlert('alert alert-danger', 'Failed!',  error.error.message)
       }
     })
   }
@@ -344,24 +348,24 @@ export class ProviderServicesComponent implements OnInit {
   onEdit(id: string) {
     this.isAddService = false
     this.serviceService.getServiceById(id).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
-          this.serviceFromObj = res.body.data
+          this.serviceFromObj = res.body?.data
           console.log('update form data: ', this.serviceFromObj);
           this.initialiseServiceForm()
           this.getChoiceOptions()
 
           const choicesArray = <FormArray>this.serviceForm.get('choices');
           choicesArray.controls.forEach((_, index) => this.getChoiceTypeOptions(index));
-        
+
           this.showModal()
         } else {
-          this.alertService.getAlert("alert alert-danger", "Failed", res.body.message)
+          this.alertService.getAlert("alert alert-danger", "Failed",res.body?.message ? res.body?.message : '')
         }
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
-        this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
+        this.alertService.getAlert('alert alert-danger', 'Failed!',  error.error.message)
       }
     })
   }
@@ -369,22 +373,22 @@ export class ProviderServicesComponent implements OnInit {
   setStatus(id: string) {
     console.log(id);
     this.serviceService.editStatus(id).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
         if (res.status === 200) {
           this.getAllServices(this.searchParams)
 
-          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : '')
 
         } else {
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body?.message ? res.body?.message : '')
 
         }
 
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
-        this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
+        this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
 
       }
     })
@@ -411,7 +415,7 @@ export class ProviderServicesComponent implements OnInit {
         choiceName: choice.choiceName,
         choiceType: choice.choiceType || '',
         choicePrice: choice.choicePrice,
-        choiceImg: choice.choiceImg.name || ""
+        choiceImg: choice.choiceImg
       }
       formData.append(`choiceImg`, choice.choiceImg)
       return newChoices
@@ -421,17 +425,18 @@ export class ProviderServicesComponent implements OnInit {
     console.log('data to add new service: ', formData);
 
     this.serviceService.createService(formData).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
           this.hideModal()
+          this.getTotalServices()
           this.getAllServices(this.searchParams)
-          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
+          this.alertService.getAlert('alert alert-success', 'Success!',res.body?.message ? res.body?.message : '')
         } else {
-          this.alertService.getAlert("alert alert-danger", "Failed", res.body.message)
+          this.alertService.getAlert("alert alert-danger", "Failed",res.body?.message ? res.body?.message : '')
         }
       },
       error: (error: HttpErrorResponse) => {
-        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.message)
+        this.alertService.getAlert("alert alert-danger", "Register User Failed",  error.error.message)
 
       }
     })
@@ -439,26 +444,39 @@ export class ProviderServicesComponent implements OnInit {
   }
 
   editService(id: string) {
-    // console.log('id to edit user: ', id);
+
+    // console.log('service data to edit: ', this.serviceFromObj);
     let { _id, ...rest } = this.serviceForm.value
     let data = rest
-    console.log('user update data:', data);
+    console.log('updated service data:', data);
 
     const formData = new FormData()
 
     formData.append('name', this.serviceForm.get('name')?.value)
     formData.append('provider', this.serviceForm.get('provider')?.value)
     formData.append('events', JSON.stringify(this.serviceForm.get('events')?.value))
-    formData.append('img', this.serviceForm.get('img')?.value || '')
+    formData.append('img', this.serviceForm.get('img')?.value || data.img)
+
+    let choiceName: string = ''
+    let choiceType: string = ''
+    let choicePrice: number = 0
+    let choiceImg: string = ''
+
+    data.choices.forEach((choice: IChoice) => {
+        choiceName = choice.choiceName || choiceName,
+        choiceType = choice.choiceType || choiceType,
+        choicePrice = choice.choicePrice || choicePrice,
+        choiceImg = choice.choiceImg || choiceImg
+    })
 
     let choices = this.serviceForm.get('choices')?.value || []
     // formData.append('choices',[])
-    choices = choices.map((choice: any, index: number) => {
+    choices = choices.map((choice: IChoice, index: number) => {
       const newChoices = {
         choiceName: choice.choiceName,
         choiceType: choice.choiceType || '',
         choicePrice: choice.choicePrice,
-        choiceImg: choice.choiceImg.name
+        choiceImg: choice.choiceImg
       }
       formData.append(`choiceImg`, choice.choiceImg)
       return newChoices
@@ -466,7 +484,7 @@ export class ProviderServicesComponent implements OnInit {
 
     formData.append('choices', JSON.stringify(choices))
 
-    // console.log('data to edit service: ', formData);
+    console.log('edited service data: ', formData);
     formData.forEach((value, key) => {
       console.log(key, value);
     });
@@ -474,21 +492,22 @@ export class ProviderServicesComponent implements OnInit {
     // debugger
 
     this.serviceService.editService(formData, id).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
           console.log('update user response: ', res.body);
-          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message || 'Service updated')
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || 'Service updated')
           this.hideModal()
+          this.getTotalServices()
           this.getAllServices(this.searchParams)
         } else {
-          console.log('could not get service', res.body.message || '');
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message || '')
+          console.log('could not get service', res.body?.message || '');
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body?.message || '')
 
         }
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
-        this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
+        this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
 
       }
     })
@@ -496,18 +515,18 @@ export class ProviderServicesComponent implements OnInit {
 
   deleteService(id: string) {
     this.serviceService.deleteService(id).subscribe({
-      next: (res: HttpResponse<any>) => {
+      next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
-          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
           this.getTotalServices()
           this.getAllServices(this.searchParams)
         } else {
-          console.log(res.body.message);
-          this.alertService.getAlert("alert alert-danger", "Failed", res.body.message)
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')
         }
       },
       error: (error: HttpErrorResponse) => {
-        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.message)
+        this.alertService.getAlert("alert alert-danger", "Delete Service Failed", error.error.message)
 
       }
     })

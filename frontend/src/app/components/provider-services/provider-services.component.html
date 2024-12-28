@@ -59,7 +59,7 @@
                     <tr>
                         <th scope="row">{{$index + 1}}</th>
                         <td>{{item.name}}</td>
-                        <td>{{item.provider}}</td>
+                        <td>{{provider}}</td>
                         <td>
                             @for (event of item.events; track $index) {
                             <p>{{event}}</p>
@@ -207,13 +207,16 @@
 
                         <app-form [label]=" 'Image of service:' " [tooltip]=" 'Select img' " [Validation]="serviceForm.controls['img'].touched &&
                         serviceForm.controls['img'].errors ? serviceForm.controls['img'].errors : {}">
-                       <!--===================================  -->
-                            <!-- <img [src]="serviceForm.controls['img'].value ? serviceForm.controls['img'].value : null" alt="" width="50" height="50"> -->
+                            <!--===================================  -->
 
-                            <img [src]="serviceForm.controls['img'].value ? serviceImgUrl + serviceForm.controls['img'].value : imgUrl" alt="" width="50" height="50">
-                        
-                            <input type="file" class="form-control" placeholder="Upload an image of your service" (change)="onImageUpload($event,'img')">
-                       <!--===================================  -->
+                            <!-- <img [src]="serviceForm.controls['img'].value ? serviceImgUrl + serviceForm.controls['img'].value : imgUrl" alt="" width="50" height="50"> -->
+
+                            <img [src]="imgUrl? imgUrl : serviceImgUrl + serviceForm.controls['img'].value " alt=""
+                                width="50" height="50">
+
+                            <input type="file" class="form-control" placeholder="Upload an image of your service"
+                                (change)="onImageUpload($event,'img')">
+                            <!--===================================  -->
 
                         </app-form>
 
@@ -265,7 +268,7 @@
                                                 }
                                             </select>
                                         </app-form>
-                                       
+
                                         @if(isType){
                                         <app-form [label]=" 'Option Type:' " [tooltip]=" 'Enter option type' ">
                                             <select class="form-select" formControlName="choiceType">
@@ -281,29 +284,34 @@
                                         </app-form>
 
                                         <app-form [label]=" 'Image of choice:' " [tooltip]=" 'Select img' ">
-                       <!--===================================  -->
+                                            <!--===================================  -->
 
-                                            <img [src]="getChoiceImg($index)" alt="" width="50" height="50">
+                                            <!-- <img [src]="getChoiceImg($index)" alt="" width="50" height="50"> -->
+
+                                            <img [src]="choiceImageUrl[$index] ? choiceImageUrl[$index] : getChoiceImg($index)" alt="" width="50" height="50">
 
                                             <input type="file" class="form-control"
                                                 placeholder="Upload an image of your choice"
                                                 (change)="onImageUpload($event,'choiceImg',$index)">
 
-                       <!--===================================  -->
+                                            <!--===================================  -->
 
                                         </app-form>
 
                                         }@else{
-                                            <app-form [label]=" 'Image of choice:' " [tooltip]=" 'Select img' ">
-                       <!--===================================  -->
+                                        <app-form [label]=" 'Image of choice:' " [tooltip]=" 'Select img' ">
+                                            <!--===================================  -->
 
-                                                <img [src]="getChoiceImg($index)" alt="" width="50" height="50">
-                                                <input type="file" class="form-control"
-                                                    placeholder="Upload an image of your choice"
-                                                    (change)="onImageUpload($event,'choiceImg',$index)">
-                       <!--===================================  -->
+                                            <!-- <img [src]="getChoiceImg($index)" alt="" width="50" height="50"> -->
 
-                                            </app-form>
+                                            <img [src]="choiceImageUrl[$index] ? choiceImageUrl[$index] : getChoiceImg($index)" alt="" width="50" height="50">
+
+                                            <input type="file" class="form-control"
+                                                placeholder="Upload an image of your choice"
+                                                (change)="onImageUpload($event,'choiceImg',$index)">
+                                            <!--===================================  -->
+
+                                        </app-form>
                                         }
 
 

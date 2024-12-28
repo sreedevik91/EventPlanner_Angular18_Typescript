@@ -5,6 +5,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { IResponse } from '../../model/interface/interface';
 
 @Component({
   selector: 'app-verify-email',
@@ -29,21 +31,21 @@ export class VerifyEmailComponent {
   verifyEmail() {
     debugger
     this.userServices.verifyUserEmail(this.verifyEmailForm.value).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<IResponse>) => {
         console.log('verify email response: ', res);
         if (res.status === 200) {
-          this.alertService.getAlert('alert alert-success', 'Success!', res.body.message)
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
 
-          this.router.navigateByUrl(`/otp/${res.body.data._id}`)
+          this.router.navigateByUrl(`/otp/${res.body?.data._id}`)
         } else {
-          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body.message)
+          this.alertService.getAlert('alert alert-danger', 'Failed!', res.body?.message || '')
 
         }
         this.verifyEmailForm.reset()
 
       },
-      error: (error: any) => {
-        this.alertService.getAlert('alert alert-danger', 'Failed!', error.message)
+      error: (error: HttpErrorResponse) => {
+        this.alertService.getAlert('alert alert-danger', 'Failed!',  error.error.message)
 
       }
     })

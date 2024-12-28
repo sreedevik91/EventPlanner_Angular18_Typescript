@@ -111,20 +111,20 @@ class ServiceController {
             // const { data } = req.body
             console.log('service details to update: ', id, req.body);
 
-            const { name, events, provider, choices } = req.body
+            const { name,img, events, provider, choices } = req.body
 
             const files: any = req.files
-            let img = files?.img ? files?.img[0].filename : ''
+            let imgNew = files?.img ? files?.img[0].filename : img
             let choicesWithImg = JSON.parse(choices).map((choice: any, index: number) => {
                 return {
                     ...choice,
-                    choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : ''
+                    choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : choice.choiceImg
                 }
             })
 
             const newData = {
                 name,
-                img,
+                img:imgNew,
                 events: JSON.parse(events),
                 provider,
                 choices: choicesWithImg
@@ -143,7 +143,7 @@ class ServiceController {
 
     async editStatus(req: Request, res: Response) {
         try {
-            const { id } = req.params
+            const { id } = req.body
             // console.log('id to edit user',id);
 
             const newStatusResponse = await serviceServices.editStatus(id)
@@ -158,8 +158,8 @@ class ServiceController {
 
     async approveService(req: Request, res: Response) {
         try {
-            const { id } = req.params
-            console.log('id to verify', req.params.id);
+            const { id } = req.body
+            console.log('id to verify', req.body);
             const approveServiceResponse = await serviceServices.approveService(id)
             approveServiceResponse?.success ? res.status(200).json(approveServiceResponse) : res.status(400).json(approveServiceResponse)
 

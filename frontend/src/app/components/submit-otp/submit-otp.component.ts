@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertService } from '../../services/alertService/alert.service';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { IResponse } from '../../model/interface/interface';
 
 @Component({
   selector: 'app-submit-otp',
@@ -71,20 +73,20 @@ export class SubmitOtpComponent implements OnInit {
         otp: otpFormValue.otp
       }
       this.userService.verifyOtp(data).subscribe({
-        next: (res: any) => {
+        next: (res: HttpResponse<IResponse>) => {
           console.log(res.body);
           if (res.status === 200) {
             this.otpForm.reset()
             this.router.navigate(['login']);
           } else {
-            this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
+            this.alertService.getAlert("alert alert-danger", "Login Failed", res.body?.message || '')
 
             this.router.navigateByUrl(`/otp/${this.id}`)
           }
         },
-        error: (error) => {
+        error: (error:HttpErrorResponse) => {
           console.log(error);
-          this.alertService.getAlert("alert alert-danger", "Login Failed", error.message)
+          this.alertService.getAlert("alert alert-danger", "Login Failed",  error.error.message)
 
         }
       })
@@ -102,12 +104,12 @@ export class SubmitOtpComponent implements OnInit {
     console.log('id to reset password: ', this.id);
 
     this.userService.resendOtp(this.id).subscribe({
-      next: (res: any) => {
+      next: (res: HttpResponse<IResponse>) => {
         if (res.status===200) {
           this.startTimer()
           this.isOtpExpired = false
         } else {
-          this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
+          this.alertService.getAlert("alert alert-danger", "Login Failed", res.body?.message || '')
 
         }
       },

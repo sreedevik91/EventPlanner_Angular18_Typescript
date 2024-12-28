@@ -12,7 +12,6 @@ class UserController {
 
             isUser?.success ? res.status(201).json(isUser) : res.status(400).json(isUser)
 
-
         } catch (error: any) {
             console.log('Error from Register User: ', error.message);
             res.status(500).json(error.message)
