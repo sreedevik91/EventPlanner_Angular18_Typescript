@@ -287,10 +287,11 @@ class ServiceServices {
 
     async getServiceByName(name: string) {
         try {
-            const service = await serviceRepository.getServiceByName(name)
-            console.log('getServiceByName response: ', service);
-            if (service) {
-                service.forEach(e => {
+            const aggregatedServiceData = await serviceRepository.getServiceByName(name)
+            const allServicesByName=await serviceRepository.getAllServiceByName(name)
+            console.log('getServiceByName response: ', aggregatedServiceData);
+            if (aggregatedServiceData && allServicesByName) {
+                aggregatedServiceData.forEach(e => {
                     e.img = Array.from(new Set(e.img))
                     e.events = Array.from(new Set(e.events))
                     e.choicesType = Array.from(new Set(e.choicesType)).filter((e: any) => e !== null && e !== "")
@@ -298,9 +299,10 @@ class ServiceServices {
                     // e.choices.forEach((e:IChoice)=>console.log(e)
                     // )
                 })
-
-                console.log('getServiceByName response updated: ', service);
-                return { success: true, data: service }
+            
+                console.log('getServiceByName aggregatedServiceData: ', aggregatedServiceData);
+                console.log('getServiceByName allServicesByName: ', allServicesByName);
+                return { success: true, data: aggregatedServiceData, extra: allServicesByName}
             } else {
                 return { success: false, message: 'Could not updated service status' }
             }

@@ -52,9 +52,8 @@ export class ProviderServicesComponent implements OnInit {
   imgUrl: string | ArrayBuffer | null = ''
   choiceImageUrl: (string | ArrayBuffer | null)[] = []
 
-  constructor() {
-
-  }
+  constructor() { }
+  
   ngOnInit(): void {
     this.initialiseServiceForm()
     this.getTotalServices()
@@ -92,6 +91,7 @@ export class ProviderServicesComponent implements OnInit {
             choiceType: new FormControl(choice.choiceType, [Validators.required]),
             choicePrice: new FormControl(choice.choicePrice === 0 ? null : choice.choicePrice, [Validators.required]),
             choiceImg: new FormControl(choice.choiceImg || null, [Validators.required]),
+            choiceImgCategory: new FormControl(choice.choiceImgCategory, [Validators.required]),
           })
         })
 
@@ -258,6 +258,10 @@ export class ProviderServicesComponent implements OnInit {
           const choiceGroup = choiceArray.at(index)
           // choiceGroup.get('choiceImg')?.setValue(imageurl)
           choiceGroup.get('choiceImg')?.setValue(file)
+          // let fileNameCategory=choiceGroup.get('choiceName')?.value
+          let fileNameCategory=file.name || ''
+          choiceGroup.get('choiceImgCategory')?.setValue(fileNameCategory)
+
           this.choiceImageUrl[index] = imageurl
 
         }
@@ -415,7 +419,9 @@ export class ProviderServicesComponent implements OnInit {
         choiceName: choice.choiceName,
         choiceType: choice.choiceType || '',
         choicePrice: choice.choicePrice,
-        choiceImg: choice.choiceImg
+        choiceImg: choice.choiceImg,
+        choiceImgCategory: choice.choiceImgCategory
+
       }
       formData.append(`choiceImg`, choice.choiceImg)
       return newChoices
@@ -423,6 +429,9 @@ export class ProviderServicesComponent implements OnInit {
 
     formData.append('choices', JSON.stringify(choices))
     console.log('data to add new service: ', formData);
+    formData.forEach((value, key) => {
+      console.log(key, value);
+    });
 
     this.serviceService.createService(formData).subscribe({
       next: (res: HttpResponse<IResponse>) => {
@@ -457,18 +466,6 @@ export class ProviderServicesComponent implements OnInit {
     formData.append('events', JSON.stringify(this.serviceForm.get('events')?.value))
     formData.append('img', this.serviceForm.get('img')?.value || data.img)
 
-    let choiceName: string = ''
-    let choiceType: string = ''
-    let choicePrice: number = 0
-    let choiceImg: string = ''
-
-    data.choices.forEach((choice: IChoice) => {
-        choiceName = choice.choiceName || choiceName,
-        choiceType = choice.choiceType || choiceType,
-        choicePrice = choice.choicePrice || choicePrice,
-        choiceImg = choice.choiceImg || choiceImg
-    })
-
     let choices = this.serviceForm.get('choices')?.value || []
     // formData.append('choices',[])
     choices = choices.map((choice: IChoice, index: number) => {
@@ -476,7 +473,8 @@ export class ProviderServicesComponent implements OnInit {
         choiceName: choice.choiceName,
         choiceType: choice.choiceType || '',
         choicePrice: choice.choicePrice,
-        choiceImg: choice.choiceImg
+        choiceImg: choice.choiceImg,
+        choiceImgCategory: choice.choiceImgCategory
       }
       formData.append(`choiceImg`, choice.choiceImg)
       return newChoices
@@ -507,7 +505,7 @@ export class ProviderServicesComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
-        this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
+        this.alertService.getAlert('alert alert-danger', 'Failed!', error.error?.message || error.statusText)
 
       }
     })

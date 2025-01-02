@@ -31,16 +31,19 @@ router.post('/login',userController.userLogin)
 router.post('/password/resetEmail',userController.sendResetEmail)
 router.post('/password/reset',userController.resetPassword)
 router.post('/otp/verify',userController.verifyOtp)
+
+
+// router.post('/verifyUser',userController.verifyUser)
+router.patch('/verify',userController.verifyUser)
+
+router.get('/logout',userController.userLogout)
+router.get('/data',userController.getGoogleUser)
 router.get('/otp/:id',userController.resendOtp)
 router.get('/token/refresh',userController.refreshToken)
 router.get('/users',userController.getAllUsers)
 router.get('/users/count',userController.getUsersCount)
 
-// router.post('/verifyUser',userController.verifyUser)
-router.patch('/verify',userController.verifyUser)
-
 router.get('/:id',userController.getUser)
-router.get('/data',userController.getGoogleUser)
 
 // router.post('/editStatus',userController.editStatus)
 router.patch('/status',userController.editStatus)
@@ -50,7 +53,6 @@ router.patch('/:userId',userController.editUser)
 
 
 
-router.get('/logout',userController.userLogout)
 
 userRouter.use(router)
 

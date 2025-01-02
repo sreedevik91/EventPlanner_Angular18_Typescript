@@ -39,36 +39,9 @@ app.use(morgan(':method :url :status [:date[clf]] - :response-time ms :host', { 
 const services = [
     { path: '/user', target: process.env.USER_SERVICE },
     { path: '/service', target: process.env.SERVICES_SERVICE },
+    { path: '/event', target: process.env.EVENT_SERVICE },
     { path: '/', target: process.env.FRONTEND },
 ]
-
-
-// const publicRoutes = [
-//     'user/register',
-//     'user/verifyEmail',
-//     'user/login',
-//     'user/sendResetEmail',
-//     'user/resetPassword',
-//     'user/verifyOtp',
-//     'user/sendOtp/:id',
-//     'user/refreshToken',
-//     'user/logout',
-// ]
-
-// const isPublicRoute = (urlPath: string) => {
-//     return publicRoutes.some(route => {
-//         let matchValue = match(route, { decode: decodeURIComponent })
-//         return matchValue(urlPath)
-//     })
-// }
-// console.log('isPublicRoute', isPublicRoute(req.path));
-
-// const createProxy=(service)=>{
-//     app.use(service.path,createProxyMiddleware({
-//         target:service.target,
-//         changeOrigin:true
-//     }))
-// }
 
 interface ProxyOptions {
     path: string;
@@ -89,31 +62,6 @@ const createProxy = ({ path, target }: ProxyOptions) => {
             cookieDomainRewrite: 'localhost'
         }))
     }
-
-
-
-// if (path==='/'){
-//     app.use(path,createProxyMiddleware({
-//                 target,
-//                 changeOrigin:true,
-//                 cookieDomainRewrite: 'localhost'
-//             }))
-// }else{
-//     app.use(path, (req, res, next) => {
-//         if (isPublicRoute(req.path)) {
-//             return next()
-//         }
-//         return verifyToken(req, res, next)
-//     })
-
-
-//     app.use(path, createProxyMiddleware({
-//         target,
-//         changeOrigin: true,
-//         cookieDomainRewrite: 'localhost'
-//     }))
-// }
-   
 
 }
 

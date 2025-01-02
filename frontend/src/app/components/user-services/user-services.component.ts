@@ -7,6 +7,7 @@ import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { IChoice } from '../../model/class/serviceClass';
 import { environment } from '../../../environments/environment.development';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-services',
@@ -21,6 +22,8 @@ export class UserServicesComponent implements OnInit {
 
   serviceServices = inject(ServiceService)
   alertService = inject(AlertService)
+
+  router=inject(Router)
 
   searchParams = new HttpParams()
 
@@ -66,47 +69,19 @@ export class UserServicesComponent implements OnInit {
 
   getService(name: string) {
     this.servicesName = name
-    // this.searchParams = this.searchParams.set('serviceName', name)
-    //   .set('isApproved', true)
-    // this.getAllServices(this.searchParams)
-    // let values = this.services()
-    // values.forEach(e => {
-    //   let events = e.events
-    //   events.forEach(element => {
-    //     this.serviceEvents.add(element)
-    //   });
-    //   let choices = e.choices
-    //   choices.forEach(elem => {
-    //     this.serviceChoicesDb.push(elem)
-    //   })
-    //   // let min:any=0
-    //   // let max:number=0
-    //   let min = this.serviceChoicesDb.forEach((val) => {
-    //     this.serviceChoices.add(val.choiceName)
-    //     let arr = []
-    //     arr.push(val.choicePrice)
-    //     let minValue = arr.sort((a, b) => a - b)
-    //     //  let mini=Math.min(Number(val.choicePrice))
-    //     return minValue[0]
-    //   })
-    //   let max = this.serviceChoicesDb.forEach((val) => {
-    //     let arr = []
-    //     arr.push(val.choicePrice)
-    //     let maxValue = arr.sort((a, b) => b - a)
-    //     //  let mini=Math.min(Number(val.choicePrice))
-    //     return maxValue[0]
-    //   })
-    //   this.servicePrizeRange = `₹ ${min}-${max}`
-    //   this.showModal()
-    // })
-
+    
     this.serviceServices.getServiceByName(name).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
           console.log('getServiceByName response: ', res.body?.data);
           this.serviceByName.set(res.body?.data)
           this.serviceImg=res.body?.data[0].img[0]
-          this.showModal()
+          // this.showModal()
+          // this.services.set(res.body?.extra)
+          const extra=this.services().filter(e=>e.name===name)
+          console.log('user service extra: ',extra);
+          
+          this.router.navigate(['services/details'],{queryParams:{data:JSON.stringify(extra),service:name}})
         } else {
           console.log(res.body?.message);
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')

@@ -12,7 +12,7 @@ export class Service {
         this.img=''
         this.events=[]
         this.provider=''
-        this.choices=[{choiceName:'',choicePrice:0,choiceType:'',choiceImg:''}]
+        this.choices=[{choiceName:'',choicePrice:0,choiceType:'',choiceImg:'',choiceImgCategory:''}]
     }
 }
 
@@ -21,6 +21,7 @@ export interface IChoice {
     choiceType: string;
     choicePrice: number;
     choiceImg:string;
+    choiceImgCategory:string;
 }
 
 

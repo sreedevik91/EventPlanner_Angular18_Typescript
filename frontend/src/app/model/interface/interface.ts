@@ -18,9 +18,10 @@ export interface IResponse {
     success?: boolean;
     message?: string;
     data?: any;
+    extra?: any;
     emailVerified?: boolean;
-    wrongCredentials?:boolean;
-    blocked?:boolean;
+    wrongCredentials?: boolean;
+    blocked?: boolean;
 }
 
 export interface ILoggedUserData {
@@ -29,7 +30,7 @@ export interface ILoggedUserData {
     role: string;
     username: string;
     email: string;
-    isActive:boolean;
+    isActive: boolean;
 }
 
 export interface INewServiceData {
@@ -63,11 +64,12 @@ export interface IUser {
 }
 
 export interface IService {
-   _id: string;
+    _id: string;
     name: string;
+    img: string;
     events: string[];
-    provider:string;
-    choices:IChoice[];
+    provider: string;
+    choices: IChoice[];
     createdAt: string;
     updatedAt: string;
     __v: number;
@@ -79,6 +81,23 @@ interface IChoice {
     choiceName: string;
     choiceType: string;
     choicePrice: number;
+    choiceImg: string;
+}
+
+export interface IEvent {
+    _id: string;
+    name: string;
+    img: string;
+    services: IEventService[];
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+    isActive: boolean;
+}
+
+interface IEventService {
+    serviceId: string;
+    providerId: string;
 }
 
 export interface IAlert {
@@ -88,7 +107,7 @@ export interface IAlert {
     alertMessage: string;
 }
 
-export interface ISearchFilter{
+export interface ISearchFilter {
     userName?: string;
     userStatus?: string;
     role?: string;
@@ -96,4 +115,10 @@ export interface ISearchFilter{
     pageSize: string;
     sortBy: string;
     sortOrder: string;
+}
+
+export interface IEventServiceResponse {
+    provider:string;
+    providerId:string;
+    services:string[];
 }

@@ -23,7 +23,6 @@ export class ServiceService {
 
   getAllServices(params: HttpParams) {
     return this.http.get(`${this.baseUrl}services`, { observe: 'response', params })
-
   }
 
   deleteService(id: string) {
@@ -37,6 +36,7 @@ export class ServiceService {
   editService(data: FormData, id: string) {
     return this.http.patch(`${this.baseUrl}${id}`, data, { observe: 'response' })
   }
+  
   editStatus(id: string) {
     // return this.http.get(`${this.baseUrl}editStatus/${id}`, { observe: 'response' })
     return this.http.patch(`${this.baseUrl}status`, { id }, { observe: 'response' })
@@ -47,7 +47,7 @@ export class ServiceService {
   }
 
   getServiceByName(name: string) {
-    return this.http.get(`${this.baseUrl}${name}`, { observe: 'response' })
+    return this.http.get(`${this.baseUrl}name/${name}`, { observe: 'response' })
   }
 
 }

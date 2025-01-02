@@ -1,0 +1,58 @@
+<div class="container">
+    <div class="row">
+
+        <div class="col-md-12 p-2">
+            <div class="m-3"><h6>{{service}}</h6></div>
+
+            <div class="row">
+                @for (item of servicesByName(); track $index) {
+                <div class="col-md-4">
+                    <div class="card" style="width: 20rem;">
+                        <img [src]="serviceImgUrl+item.img" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">{{item.name}}</h5>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5> Available for: </h5>
+                                    @for (event of item.events; track $index) {
+                                    <h6>* {{event}}</h6>
+                                    }
+                                </div>
+                                <h5>Options</h5>
+
+                                <ul class="list-group list-group-flush">
+                                    @for (choice of item.choices; track $index) {
+                                    <li class="list-group-item">
+
+                                        <div class="row border">
+                                            <div class="col-md-4 mt-3 mb-3">
+                                                <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
+                                                    width="100%" height="20">
+                                            </div>
+                                            <div class="col-md-8  mt-3 mb-3 p-3">
+                                                <h6>{{choice.choiceName}}</h6>
+                                                @if(choice.choiceType){
+                                                <h6>{{choice.choiceType}}</h6>
+                                                }
+                                                <h6>{{choice.choicePrice}}</h6>
+                                            </div>
+                                        </div>
+
+                                    </li>
+                                    }
+
+
+                                </ul>
+                            </div>
+
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
