@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Events, EventSearchFilter, IEventService } from '../../model/class/eventClass';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
@@ -18,7 +18,7 @@ import { FormComponent } from '../../shared/components/form/form.component';
   templateUrl: './admin-events.component.html',
   styleUrl: './admin-events.component.css'
 })
-export class AdminEventsComponent {
+export class AdminEventsComponent implements OnInit  {
 
   eventFromObj: Events = new Events()
   searchFilterFormObj: EventSearchFilter = new EventSearchFilter()
@@ -171,12 +171,13 @@ export class AdminEventsComponent {
   }
 
   getAllEvents(params: HttpParams) {
+    // debugger
     this.eventService.getAllEvents(params).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
           // this.totalEvents=res.body.data.length
           this.events.set(res.body?.data)
-          // console.log('total services: ', this.services());
+          console.log('events: ', this.events());
         } else {
           console.log('could not get users');
           this.alertService.getAlert('alert alert-danger', 'Failed!', res.body?.message ? res.body?.message : '')

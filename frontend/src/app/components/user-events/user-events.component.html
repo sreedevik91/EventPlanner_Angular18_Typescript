@@ -1,1 +1,83 @@
-<p>user-events works!</p>
+<div class="container">
+    <div class="row">
+<app-alert></app-alert>
+        <div class="col-md-12 p-2">
+            <h1 class="m-4 text-center">Events</h1>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-9 p-2">
+                <h2 class="m-2 subtitle">Weddings</h2>
+                <p class="m-2">
+
+                    <i>Create the magical day you've always dreamed of!</i>
+
+                    At <strong><i>Dream Events</i></strong>, we specialize in turning your wedding vision into a
+                    breathtaking reality. From stunning venue setups and floral arrangements to seamless coordination
+                    and personal touches, we ensure every detail reflects your love story. Whether you're planning an
+                    intimate ceremony or a grand celebration, our dedicated team is here to make your big day
+                    unforgettable. Let's create timeless memories together.
+                </p>
+                <app-button [btnClass]="'btn-dark btn-sm rounded-pill m-2'" (onBtnClick)="getEventService('Marriage')">Know
+                    More</app-button>
+
+            </div>
+            <div class="col-md-3 p-2">
+                <img src="https://i.ytimg.com/vi/Wuod2zevTxY/hqdefault.jpg" alt="" width="300" height="300">
+            </div>
+
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-3 p-2">
+                <img src="https://7xweddings.com/images/services/food-and-beverage.jpg" alt="" width="300" height="300">
+            </div>
+            <div class="col-md-9 p-2">
+                <h2 class="m-2 subtitle">Engagements</h2>
+                <p class="m-2">
+
+                    <i>Create the magical day you've always dreamed of!</i>
+
+                    An engagement is a cherished milestone, and we're here to make it extraordinary. Whether you dream
+                    of a cozy gathering with close family or a lively party with friends, we offer tailored planning
+                    services to suit your style. From elegant decor to delightful catering and entertainment, we’ll
+                    handle it all, leaving you free to enjoy every magical moment with your loved ones. Start your
+                    journey to forever with us!
+
+                </p>
+                <app-button [btnClass]="'btn-dark btn-sm rounded-pill m-2'"
+                    (onBtnClick)="getEventService('Engagement')">Know
+                    More</app-button>
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-9 p-2">
+                <h2 class="m-2 subtitle">Birthdays</h2>
+                <p class="m-2">
+
+                    <i>Make every birthday an unforgettable celebration!</i>
+
+                    Every birthday is special, and we are here to make yours shine. Whether it's a themed party for
+                    kids, a milestone celebration, or a stylish soirée, we create events that leave lasting impressions.
+                    From unique decorations and entertainment to delicious cakes and customized activities, we'll make
+                    sure your birthday is one to remember. Let's make your special day a fun-filled experience for
+                    everyone!
+                </p>
+                <app-button [btnClass]="'btn-dark btn-sm rounded-pill m-2'"
+                    (onBtnClick)="getEventService('Birthday')">Know More</app-button>
+
+            </div>
+            <div class="col-md-3 p-2">
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/027/945/125/small_2x/magical-moments-birthday-cake-and-colorful-balloons-generative-ai-photo.jpg" alt="" width="300"
+                    height="300">
+            </div>
+        </div>
+
+
+    </div>
+</div>

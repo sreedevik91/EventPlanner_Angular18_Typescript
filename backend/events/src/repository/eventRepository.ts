@@ -35,33 +35,10 @@ class EventRepository extends BaseRepository<IEvent> {
         return await Event.find().countDocuments()
     }
 
-    // async getServiceByName(name: string):Promise<any[]> {
-    //     let service =await Event.aggregate([
-    //         {$match:{name:name}}, // check with isApproved:true,isActive:true as well after testing
-    //         {$unwind:'$choices'},
-    //         {$project:{
-    //             name:'$name',
-    //             events:'$events',
-    //             choices:'$choices',
-    //             img:'$img'
-    //         }},
-    //         {$unwind:'$events'},
-    //         {$group:{
-    //             _id:'$choices.choiceName',
-    //             maxPrice:{$max:'$choices.choicePrice'},
-    //             minPrice:{$min:'$choices.choicePrice'},
-    //             img:{$push:'$img'},
-    //             events:{$push:'$events'},
-    //             choicesType:{$push:'$choices.choiceType'},
-    //             choiceImg:{$push:'$choices.choiceImg'},
-    //             // choices:{$push:{choiceName:'$choices.choiceName',choiceType:'$choices.choiceType',choicePrice:'$choices.choicePrice',choiceImg:'$choices.choiceImg'}},
-
-    //         }}
-
-    //     ])
-
-    //     return service
-    // }
+    async getEventByName(name: string):Promise<any[]> {
+        let service =await Event.find({name})
+        return service
+    }
 
 }
 

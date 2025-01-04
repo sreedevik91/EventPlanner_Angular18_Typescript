@@ -8,16 +8,23 @@ import { AppError } from "../utils/appError";
 
 class EventController {
 
-    async getTotalEvents(req: Request, res: Response) {
+    async getTotalEvents(req: Request, res: Response, next:NextFunction) {
         try {
             const response = await eventServices.totalEvents()
             console.log('getTotalServices controller response: ', response);
 
-            response?.success ? res.status(200).json(response) : res.status(400).json(response)
+            if(!response || !response.success){
+                return next(new AppError(response?.message || 'Some error occured while processing the data', 400))
+            }
+
+            // response?.success ? res.status(200).json(response) : res.status(400).json(response)
+            res.status(200).json(response) 
 
         } catch (error: any) {
             console.log('Error from getTotalServices controller: ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            next(new AppError(error.message,500))
+
         }
 
     }
@@ -59,50 +66,68 @@ class EventController {
     }
 
 
-    async getAllEvents(req: Request, res: Response) {
+    async getAllEvents(req: Request, res: Response, next:NextFunction) {
 
         try {
             let services = await eventServices.getEvents(req.query)
-            services?.success ? res.status(200).json(services) : res.status(400).json(services)
 
+            if(!services || !services.success){
+                return next(new AppError(services?.message || 'Some error occured while processing the data', 400))
+            }
+
+            // services?.success ? res.status(200).json(services) : res.status(400).json(services)
+            res.status(200).json(services)
         } catch (error: any) {
             console.log('Error from getAllServices : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            next(new AppError(error.message,500))
 
         }
 
     }
 
 
-    async deleteEvent(req: Request, res: Response) {
+    async deleteEvent(req: Request, res: Response, next:NextFunction) {
 
         try {
             let deleteServices = await eventServices.deleteEvent(req.params.id)
-            deleteServices?.success ? res.status(200).json(deleteServices) : res.status(400).json(deleteServices)
 
+            if(!deleteServices || !deleteServices.success){
+                return next(new AppError(deleteServices?.message || 'Some error occured while processing the data', 400))
+            }
+
+            // deleteServices?.success ? res.status(200).json(deleteServices) : res.status(400).json(deleteServices)
+            res.status(200).json(deleteServices) 
         } catch (error: any) {
             console.log('Error from deleteEvent : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            next(new AppError(error.message,500))
 
         }
 
     }
 
-    async getEventById(req: Request, res: Response) {
+    async getEventById(req: Request, res: Response, next:NextFunction) {
 
         try {
             let services = await eventServices.getEventById(req.params.id)
-            services?.success ? res.status(200).json(services) : res.status(400).json(services)
 
+            if(!services || !services.success){
+                return next(new AppError(services?.message || 'Some error occured while processing the data', 400))
+            }
+
+            // services?.success ? res.status(200).json(services) : res.status(400).json(services)
+            res.status(200).json(services) 
         } catch (error: any) {
             console.log('Error from getEventById : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            next(new AppError(error.message,500))
 
         }
 
     }
 
-    async editEvent(req: Request, res: Response) {
+    async editEvent(req: Request, res: Response, next:NextFunction) {
 
         try {
             const { id } = req.params
@@ -127,27 +152,37 @@ class EventController {
             }
 
             const newServiceResponse = await eventServices.editEvent(id, newData)
-            newServiceResponse?.success ? res.status(200).json(newServiceResponse) : res.status(400).json(newServiceResponse)
 
+            if(!newServiceResponse || !newServiceResponse.success){
+                return next(new AppError(newServiceResponse?.message || 'Some error occured while processing the data', 400))
+            }
+
+            // newServiceResponse?.success ? res.status(200).json(newServiceResponse) : res.status(400).json(newServiceResponse)
+            res.status(200).json(newServiceResponse) 
         } catch (error: any) {
             console.log('Error from edit service : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            next(new AppError(error.message,500))
 
         }
 
     }
 
-    async editStatus(req: Request, res: Response) {
+    async editStatus(req: Request, res: Response, next:NextFunction) {
         try {
             const { id } = req.body
             // console.log('id to edit user',id);
 
             const newStatusResponse = await eventServices.editStatus(id)
-            newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
-
+            if(!newStatusResponse || !newStatusResponse.success){
+                return next(new AppError(newStatusResponse?.message || 'Some error occured while processing the data', 400))
+            }
+            // newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
+            res.status(200).json(newStatusResponse) 
         } catch (error: any) {
             console.log('Error from edit status : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            next(new AppError(error.message,500))
 
         }
     }
@@ -162,8 +197,27 @@ class EventController {
                 return next(new AppError(getServiceByName?.message || 'Some error occured while processing the data', 400))
             }
             // getServiceByName?.success ? res.status(200).json(getServiceByName) : res.status(400).json(getServiceByName)
+            res.status(200).json(getServiceByName) 
 
-            res.status(200).json(getServiceByName)
+        } catch (error: any) {
+            // console.log('Error from getEventServiceByName : ', error.message);
+            // res.status(500).json(error.message)
+            next(new AppError(error.message || 'Internal server error',500))
+        }
+    }
+
+    async getEventsByName(req: Request, res: Response, next:NextFunction){
+        try {
+            const { name } = req.params
+            console.log('event name to get all events: ', req.params.name);
+            const getEventsByName = await eventServices.getEventsByName(name)
+
+            if(!getEventsByName || !getEventsByName.success){
+                return next(new AppError(getEventsByName?.message || 'Some error occured while processing the data', 400))
+            }
+            // getEventsByName?.success ? res.status(200).json(getEventsByName) : res.status(400).json(getServiceByName)
+
+            res.status(200).json(getEventsByName)
 
         } catch (error: any) {
             // console.log('Error from getEventServiceByName : ', error.message);

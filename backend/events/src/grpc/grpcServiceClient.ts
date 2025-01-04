@@ -15,7 +15,7 @@ const client=new serviceProto.ServiceDetails(
   grpc.credentials.createInsecure()
 )
 
-// export const getServicesByName=(name:string):Promise<IGetAvailableServicesResponse[]>=>{
+// export const getServicesByEventNameGrpc=(name:string):Promise<IGetAvailableServicesResponse[]>=>{
 // return new Promise((resolve,reject)=>{
 //   client.GetAvailableServices({serviceName:name}, (err: grpc.ServiceError, response: IGetAvailableServicesResponse[]) => {
 //     if (err) {
@@ -27,7 +27,7 @@ const client=new serviceProto.ServiceDetails(
 // })
 // }
 
-export const getServicesByName=(name:string):Promise<any>=>{
+export const getServicesByEventNameGrpc=(name:string):Promise<any>=>{
   return new Promise((resolve,reject)=>{
     client.GetAvailableServices({serviceName:name}, (err: grpc.ServiceError, response: any) => {
       if (err) {

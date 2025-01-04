@@ -36,6 +36,7 @@ const upload=multer({storage:Storage})
 router.get('/events/count',eventController.getTotalEvents)
 router.get('/events',eventController.getAllEvents)
 router.get('/service/:name',eventController.getEventServiceByName)
+router.get('/events/:name',eventController.getEventsByName)
 
 router.get('/:id',eventController.getEventById)
 

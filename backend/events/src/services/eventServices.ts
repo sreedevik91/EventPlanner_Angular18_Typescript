@@ -2,7 +2,7 @@ import { IEvent, IEventServices, IEventDb } from "../interfaces/eventInterfaces"
 import eventRepository from "../repository/eventRepository";
 import nodemailer from 'nodemailer'
 import { config } from "dotenv";
-import { getServicesByName } from "../grpc/grpcServiceClient";
+import { getServicesByEventNameGrpc } from "../grpc/grpcServiceClient";
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
 
 config()
@@ -71,6 +71,7 @@ class EventServices {
     }
 
     async addEvent(eventData: Partial<IEvent>) {
+
         try {
 
             const data = await eventRepository.createEvent(eventData)
@@ -90,12 +91,6 @@ class EventServices {
     }
 
     async getEvents(params: any) {
-        // eventName: new FormControl(this.searchFilterFormObj.eventName),
-        // isActive: new FormControl(this.searchFilterFormObj.isActive),
-        // pageNumber: new FormControl(this.searchFilterFormObj.pageNumber),
-        // pageSize: new FormControl(this.searchFilterFormObj.pageSize),
-        // sortBy: new FormControl(this.searchFilterFormObj.sortBy),
-        // sortOrder: n
 
         try {
             const { eventName, isActive, pageNumber, pageSize, sortBy, sortOrder } = params
@@ -107,7 +102,7 @@ class EventServices {
                 filterQ.name = { $regex: `.*${eventName}.*`, $options: 'i' }
                 // { $regex: `.*${search}.*`, $options: 'i' } 
             }
-        
+
             if (sortOrder !== undefined && sortBy !== undefined) {
                 let order = sortOrder === 'asc' ? 1 : -1
                 if (sortBy === 'name') { sortQ.name = order }
@@ -131,7 +126,7 @@ class EventServices {
 
             let data = await eventRepository.getAllEvents(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
-            // console.log('all service data filtered and sorted: ', data);
+            console.log('all service data filtered and sorted: ', data);
 
             if (data) {
                 return { success: true, data }
@@ -221,7 +216,7 @@ class EventServices {
 
     async getServiceByName(name: string) {
         try {
-            const service = await getServicesByName(name)
+            const service = await getServicesByEventNameGrpc(name)
             console.log('getServiceByName response: ', service.serviceData);
             if (service) {
 
@@ -270,6 +265,41 @@ class EventServices {
         }
 
     }
+
+    async getEventsByName(name: string) {
+        try {
+            // const service = await getServicesByNameGrpc(name)
+            const events: IEventDb[] = await eventRepository.getEventByName(name)
+
+            console.log('getServiceByName response: ', events);
+
+            const services = await getServicesByEventNameGrpc(name)
+            console.log(`Decor services for ${name}: `, services);
+
+            let servicesObj: any = {}
+            if (events && services) {
+                services.serviceData.forEach((service:any) => {
+                   let serviceName=service.name
+                        if (!(serviceName in servicesObj)) {
+                            servicesObj[serviceName] = []
+                        }
+                        servicesObj[serviceName].push(service)
+
+                })
+               
+                console.log(`sorted services for ${name}: `, servicesObj);
+
+                return { success: true, data: events, extra: servicesObj }
+            } else {
+                return { success: false, message: 'Could not get event service' }
+            }
+
+        } catch (error: any) {
+            console.log('Error from getServiceByName service: ', error, error.message);
+        }
+
+    }
+
 
 
 }

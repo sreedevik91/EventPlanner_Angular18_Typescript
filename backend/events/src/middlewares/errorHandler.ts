@@ -3,7 +3,7 @@ import { AppError } from "../utils/appError"
 
 export const errorHandler = (error: AppError, req: Request, res: Response, next: NextFunction) => {
 
-    console.log('Errors: ', error.stack);
+    console.log('Errors: ', error, error.stack);
 
     const statusCode = error.status || 500
     const message = error.message || 'Internal Server Error'

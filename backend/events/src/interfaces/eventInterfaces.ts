@@ -3,7 +3,8 @@ import { DeleteResult , Document} from "mongoose";
 export interface IEvent extends Document {
     name: string;
     img:string;
-    services:IEventServices[];
+    // services:IEventServices[];
+    services:string[];
     isActive: boolean;
 }
 export interface IEventServices {
@@ -41,34 +42,34 @@ export interface IEventRepository{
 }
 
 
-// export interface IGetAvailableServicesResponse {
-//     serviceList: Array<{
-//       id: string;
-//       name: string;
-//       provider: string;
-//       img: string;
-//       events: string[];
-//       choices: Array<{
-//         choiceName: string;
-//         choiceType: string;
-//         choicePrice: number;
-//         choiceImg: string;
-//       }>;
-//     }>;
-//   }
-
 export interface IGetAvailableServicesResponse {
- 
-    id: string;
-    name: string;
-    provider: string;
-    img: string;
-    events: string[];
-    choices: Array<{
-      choiceName: string;
-      choiceType: string;
-      choicePrice: number;
-      choiceImg: string;
+    serviceList: Array<{
+      id: string;
+      name: string;
+      provider: string;
+      img: string;
+      events: string[];
+      choices: Array<{
+        choiceName: string;
+        choiceType: string;
+        choicePrice: number;
+        choiceImg: string;
+      }>;
     }>;
+  }
+
+// export interface IGetAvailableServicesResponse {
+ 
+//     id: string;
+//     name: string;
+//     provider: string;
+//     img: string;
+//     events: string[];
+//     choices: Array<{
+//       choiceName: string;
+//       choiceType: string;
+//       choicePrice: number;
+//       choiceImg: string;
+//     }>;
   
-}
+// }

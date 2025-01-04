@@ -12,6 +12,7 @@ import { GoogleAuthCallbackComponent } from './components/google-auth-callback/g
 import { EventServicesComponent } from './components/event-services/event-services.component';
 import { EventsComponent } from './components/events/events.component';
 import { UserServiceDetailsComponent } from './components/user-service-details/user-service-details.component';
+import { UserEventDetailsComponent } from './components/user-event-details/user-event-details.component';
 
 export const routes: Routes = [
     {
@@ -66,6 +67,11 @@ export const routes: Routes = [
             {
                 path:'services/details',
                 component:UserServiceDetailsComponent,
+                canActivate:[authGuard]
+            },
+            {
+                path:'events/details',
+                component:UserEventDetailsComponent,
                 canActivate:[authGuard]
             },
            

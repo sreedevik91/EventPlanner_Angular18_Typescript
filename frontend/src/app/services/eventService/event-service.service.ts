@@ -22,11 +22,16 @@ export class EventServiceService {
   }
 
   getAllEvents(params: HttpParams) {
+    // debugger
     return this.http.get(`${this.baseUrl}events`, { observe: 'response', params })
   }
 
   getEventById(id: string) {
     return this.http.get(`${this.baseUrl}${id}`, { observe: 'response' })
+  }
+
+  getEventByName(name: string) {
+    return this.http.get(`${this.baseUrl}events/${name}`, { observe: 'response' })
   }
 
   getServicesByName(name: string) {
