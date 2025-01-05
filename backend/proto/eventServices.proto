@@ -4,6 +4,7 @@ package service;
 
 service ServiceDetails{
     rpc GetAvailableServices(AvailableServiceRequest) returns (AvailableServiceResponse);
+    rpc GetAvailableServicesByProvider(ServiceByProviderRequest) returns (AvailableServiceResponse);
 }
 
 message AvailableServiceRequest{
@@ -12,6 +13,10 @@ message AvailableServiceRequest{
 
 message AvailableServiceResponse{
     repeated service serviceData=1;
+}
+
+message ServiceByProviderRequest{
+    string providerId=1;
 }
 
 message service{

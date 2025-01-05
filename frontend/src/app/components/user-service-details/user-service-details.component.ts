@@ -2,11 +2,12 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IService } from '../../model/interface/interface';
 import { environment } from '../../../environments/environment.development';
+import { ButtonComponent } from '../../shared/components/button/button.component';
 
 @Component({
   selector: 'app-user-service-details',
   standalone: true,
-  imports: [],
+  imports: [ButtonComponent],
   templateUrl: './user-service-details.component.html',
   styleUrl: './user-service-details.component.css'
 })
@@ -26,5 +27,8 @@ ngOnInit(): void {
     this.servicesByName.set(JSON.parse(params['data']))
   })
 }
-
+bookService(id:string){
+  console.log('id to book service: ', id);
+  
+}
 }

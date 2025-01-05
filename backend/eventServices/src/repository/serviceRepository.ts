@@ -39,6 +39,10 @@ class ServiceRepository extends BaseRepository<IService> {
         return await Service.find({events:{$in:[name]}})
     }
 
+    async getAllServiceByProvider(id: string):Promise<any[]> {
+        return await Service.find({provider:id})
+    }
+
     async getServiceByName(name: string):Promise<any[]> {
         let service =await Service.aggregate([
             {$match:{name:name}}, // check with isApproved:true,isActive:true as well after testing

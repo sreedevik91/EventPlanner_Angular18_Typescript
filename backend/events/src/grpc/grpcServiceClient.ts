@@ -38,3 +38,15 @@ export const getServicesByEventNameGrpc=(name:string):Promise<any>=>{
     })
   })
   }
+
+  export const getServicesByProviderGrpc=(id:string):Promise<any>=>{
+    return new Promise((resolve,reject)=>{
+      client.GetAvailableServicesByProvider({providerId:id}, (err: grpc.ServiceError, response: any) => {
+        if (err) {
+          reject(new Error(`Failed to fetch services: ${err.message}`));
+        } else {
+          resolve(response);
+        }
+      })
+    })
+    }
