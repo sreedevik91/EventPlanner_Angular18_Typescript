@@ -35,6 +35,10 @@ class ServiceRepository extends BaseRepository<IService> {
         return await Service.find().countDocuments()
     }
 
+async getServiceByProvider(providerId:string):Promise<IService | null>{
+    return await Service.findOne({provider:providerId})
+}
+
     async getServiceByName(name: string):Promise<any[]> {
         let service =await Service.aggregate([
             {$match:{name:name}}, // check with isApproved:true,isActive:true as well after testing

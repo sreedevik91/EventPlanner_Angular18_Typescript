@@ -11,3 +11,5 @@ GET /users?pageNumber=3&pageSize=2 304 [28/Dec/2024:17:56:23 +0000] - 10.130 ms 
 GET /users/count 200 [28/Dec/2024:17:56:23 +0000] - 6.661 ms localhost
 GET /users?pageNumber=4&pageSize=2 200 [28/Dec/2024:17:56:28 +0000] - 8.039 ms localhost
 GET /users?pageNumber=1&pageSize=2 304 [28/Dec/2024:17:56:32 +0000] - 8.130 ms localhost
+POST /login 200 [05/Jan/2025:09:50:56 +0000] - 766.650 ms localhost
+GET /token/refresh 200 [05/Jan/2025:09:53:25 +0000] - 20.680 ms localhost
