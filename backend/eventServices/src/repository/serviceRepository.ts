@@ -39,6 +39,10 @@ class ServiceRepository extends BaseRepository<IService> {
         return await Service.find({events:{$in:[name]}})
     }
 
+    async getServiceByProvider(name: string,providerId:string):Promise<IService | null> {
+        return await Service.findOne({name,provider:providerId})
+    }
+
     async getAllServiceByProvider(id: string):Promise<any[]> {
         return await Service.find({provider:id})
     }

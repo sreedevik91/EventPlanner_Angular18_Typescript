@@ -8,6 +8,7 @@ import { AlertService } from '../../services/alertService/alert.service';
 import { IChoice } from '../../model/class/serviceClass';
 import { environment } from '../../../environments/environment.development';
 import { Router } from '@angular/router';
+import { DataService } from '../../services/dataService/data.service';
 
 @Component({
   selector: 'app-user-services',
@@ -22,6 +23,7 @@ export class UserServicesComponent implements OnInit {
 
   serviceServices = inject(ServiceService)
   alertService = inject(AlertService)
+  dataService = inject(DataService)
 
   router=inject(Router)
 
@@ -80,8 +82,9 @@ export class UserServicesComponent implements OnInit {
           // this.services.set(res.body?.extra)
           const extra=this.services().filter(e=>e.name===name)
           console.log('user service extra: ',extra);
-          
-          this.router.navigate(['services/details'],{queryParams:{data:JSON.stringify(extra),service:name}})
+          this.dataService.setServiceData(name,extra)
+          // this.router.navigate(['services/details'],{queryParams:{data:JSON.stringify(extra),service:name}})
+          this.router.navigate(['services/details'])
         } else {
           console.log(res.body?.message);
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')

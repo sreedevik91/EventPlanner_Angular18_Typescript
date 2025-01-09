@@ -1,3 +1,5 @@
+import { IAddress } from "../class/bookingClass";
+
 export interface IRegisterData {
     name: string;
     email: string;
@@ -118,7 +120,30 @@ export interface ISearchFilter {
 }
 
 export interface IEventServiceResponse {
-    provider:string;
-    providerId:string;
-    services:string[];
+    provider: string;
+    providerId: string;
+    services: string[];
+}
+
+export interface IBookedServices {
+    // serviceId: string;
+    // providerId: string;
+    choiceName: string;
+    choiceType: string;
+    choicePrice: string;
+}
+
+export interface IBooking {
+    _id: string;
+    // userId: string;
+    user: string;
+    event?: string;
+    service?: string;
+    serviceId?: string;
+    providerId?: string;
+    eventId?: string;
+    services: IBookedServices[];
+    deliveryDate: Date;
+    venue: IAddress;
+    totalCount: number;
 }

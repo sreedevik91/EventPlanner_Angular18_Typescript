@@ -78,21 +78,63 @@ class ServiceServices {
 
     }
 
-    async addService(serviceData: Partial<IService>) {
+    async addService(newServiceData: Partial<IService>) {
         try {
 
+            console.log('addService data: ', newServiceData);
 
+            const providerId = newServiceData.provider || ''
+            const serviceName = newServiceData.name || ''
+            const service = await serviceRepository.getServiceByProvider(serviceName,providerId)
+            console.log('existing service data: ', service);
 
-            const data = await serviceRepository.createService(serviceData)
+            if (service) {
+                newServiceData.events?.forEach(event => {
+                    if (!service.events.includes(event)) {
+                        service.events.push(event)
+                    }
+                })
 
-            console.log('addService data: ', serviceData);
+                newServiceData.events = service.events
 
-            console.log('addService service response: ', data);
-            if (data) {
-                return { success: true, data: data }
+                newServiceData.choices?.forEach(newChoice => {
+                    service.choices.forEach(choice => {
+                        if (newChoice.choiceName === choice.choiceName) {
+                            choice.choicePrice = newChoice.choicePrice
+                            choice.choiceImg = newChoice.choiceImg || choice.choiceImg
+                            choice.choiceType = newChoice.choiceType || choice.choiceType
+                        }
+                    })
+                })
+                newServiceData.choices = service.choices
+                console.log('addService existing service final data to update: ', newServiceData);
+
+                const updatedService = await serviceRepository.updateService(service.id, newServiceData)
+
+                console.log('addService existing service update response: ', newServiceData);
+
+                return updatedService ? { success: true, data: updatedService, message: 'Service updated with details given'} : { success: false, message: 'Could not update the service' }
             } else {
-                return { success: false, message: 'Could not create service' }
+                const data = await serviceRepository.createService(newServiceData)
+
+                console.log('addService service response: ', data);
+                if (data) {
+                    return { success: true, data: data,message: 'New service details added' }
+                } else {
+                    return { success: false, message: 'Could not create service' }
+                }
             }
+
+            // const data = await serviceRepository.createService(serviceData)
+
+            // console.log('addService data: ', serviceData);
+
+            // console.log('addService service response: ', data);
+            // if (data) {
+            //     return { success: true, data: data }
+            // } else {
+            //     return { success: false, message: 'Could not create service' }
+            // }
         } catch (error: any) {
             console.log('Error from addService service: ', error.message);
         }

@@ -38,8 +38,9 @@ app.use(morgan(':method :url :status [:date[clf]] - :response-time ms :host', { 
 
 const services = [
     { path: '/user', target: process.env.USER_SERVICE },
-    { path: '/service', target: process.env.SERVICES_SERVICE },
+    { path: '/service', target: process.env.SERVICES_SERVICE }, 
     { path: '/event', target: process.env.EVENT_SERVICE },
+    { path: '/booking', target: process.env.BOOKING_SERVICE },
     { path: '/', target: process.env.FRONTEND },
 ]
 
