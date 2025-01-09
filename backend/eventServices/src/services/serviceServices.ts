@@ -82,8 +82,25 @@ class ServiceServices {
         try {
             console.log('addService data: ', newServiceData);
 
+
+            // const providerId = newServiceData.provider || ''
+            // const service = await serviceRepository.getServiceByProvider(providerId)
+
+            // if (service) {
+            //     newServiceData.events?.forEach(event => {
+            //         if (!service.events.includes(event)) {
+            //             service.events.push(event)
+            //         }
+            //     })
+            //     newServiceData.events = service.events
+
+
+            console.log('addService data: ', newServiceData);
+
             const providerId = newServiceData.provider || ''
-            const service = await serviceRepository.getServiceByProvider(providerId)
+            const serviceName = newServiceData.name || ''
+            const service = await serviceRepository.getServiceByProvider(serviceName,providerId)
+            console.log('existing service data: ', service);
 
             if (service) {
                 newServiceData.events?.forEach(event => {
@@ -91,7 +108,9 @@ class ServiceServices {
                         service.events.push(event)
                     }
                 })
+
                 newServiceData.events = service.events
+
 
                 newServiceData.choices?.forEach(newChoice => {
                     service.choices.forEach(choice => {
@@ -109,17 +128,37 @@ class ServiceServices {
 
                 console.log('addService existing service update response: ', newServiceData);
 
-                return updatedService ? { success: true, data: updatedService } : { success: false, message: 'Could not update the service' }
+
+                // return updatedService ? { success: true, data: updatedService } : { success: false, message: 'Could not update the service' }
+
+                return updatedService ? { success: true, data: updatedService, message: 'Service updated with details given'} : { success: false, message: 'Could not update the service' }
+
             } else {
                 const data = await serviceRepository.createService(newServiceData)
 
                 console.log('addService service response: ', data);
                 if (data) {
-                    return { success: true, data: data }
+
+                    // return { success: true, data: data }
+
+                    return { success: true, data: data,message: 'New service details added' }
+
                 } else {
                     return { success: false, message: 'Could not create service' }
                 }
             }
+
+
+            // const data = await serviceRepository.createService(serviceData)
+
+            // console.log('addService data: ', serviceData);
+
+            // console.log('addService service response: ', data);
+            // if (data) {
+            //     return { success: true, data: data }
+            // } else {
+            //     return { success: false, message: 'Could not create service' }
+            // }
 
         } catch (error: any) {
             console.log('Error from addService service: ', error.message);
@@ -317,10 +356,11 @@ class ServiceServices {
 
     async getServiceByName(name: string) {
         try {
-            const service = await serviceRepository.getServiceByName(name)
-            console.log('getServiceByName response: ', service);
-            if (service) {
-                service.forEach(e => {
+            const aggregatedServiceData = await serviceRepository.getServiceByName(name)
+            const allServicesByName=await serviceRepository.getAllServiceByName(name)
+            console.log('getServiceByName response: ', aggregatedServiceData);
+            if (aggregatedServiceData && allServicesByName) {
+                aggregatedServiceData.forEach(e => {
                     e.img = Array.from(new Set(e.img))
                     e.events = Array.from(new Set(e.events))
                     e.choicesType = Array.from(new Set(e.choicesType)).filter((e: any) => e !== null && e !== "")
@@ -328,9 +368,10 @@ class ServiceServices {
                     // e.choices.forEach((e:IChoice)=>console.log(e)
                     // )
                 })
-
-                console.log('getServiceByName response updated: ', service);
-                return { success: true, data: service }
+            
+                console.log('getServiceByName aggregatedServiceData: ', aggregatedServiceData);
+                console.log('getServiceByName allServicesByName: ', allServicesByName);
+                return { success: true, data: aggregatedServiceData, extra: allServicesByName}
             } else {
                 return { success: false, message: 'Could not updated service status' }
             }

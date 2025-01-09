@@ -23,8 +23,6 @@ class ServiceController {
     async createService(req: Request, res: Response) {
 
         try {
-
-
             // const {name,provider,events,choices}= req.body
             console.log('new service to register from angular: ', req.body);
 
@@ -33,10 +31,21 @@ class ServiceController {
             const files: any = req.files
             let img = files?.img ? files?.img[0].filename : ''
             let choicesWithImg = JSON.parse(choices).map((choice: any, index: number) => {
-                return {
-                    ...choice,
-                    choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : ''
-                }
+                const choiceImgFile = files?.choiceImg
+                console.log('choiceImgFileName: ', files?.choiceImg[index]?.filename);
+                const { choiceImgCategory, ...rest } = choice
+                choiceImgFile.forEach((img: any) => {
+                    if (choiceImgCategory === img.originalname) {
+                        rest.choiceImg = img.filename
+                    }
+                })
+                
+                // return {
+                //     ...rest,
+                //     choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : ''
+                // }
+
+                return rest
             })
 
             const data = {
@@ -111,20 +120,37 @@ class ServiceController {
             // const { data } = req.body
             console.log('service details to update: ', id, req.body);
 
-            const { name,img, events, provider, choices } = req.body
+            const { name, img, events, provider, choices } = req.body
 
             const files: any = req.files
+            console.log('service images to update: ', files);
+            console.log('service choices to update: ', JSON.parse(choices));
+
             let imgNew = files?.img ? files?.img[0].filename : img
             let choicesWithImg = JSON.parse(choices).map((choice: any, index: number) => {
-                return {
-                    ...choice,
-                    choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : choice.choiceImg
-                }
+                const choiceImgFile = files?.choiceImg
+                console.log('choiceImgFileName: ', files?.choiceImg[index]?.filename);
+                const { choiceImgCategory, ...rest } = choice
+                choiceImgFile.forEach((img: any) => {
+                    if (choiceImgCategory === img.originalname) {
+                        rest.choiceImg = img.filename
+                    }
+                })
+                // return {
+                //     ...rest,
+                //     // choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : choice.choiceImg
+                //     // choiceImg: files?.choiceImg[index]?.filename ? files?.choiceImg[index]?.filename : choice.choiceImg
+
+                //     choiceImg: choice.choiceName === choiceImgCategory ? files?.choiceImg[index].filename : choice.choiceImg
+                // }
+
+                return rest
             })
+            console.log('choicesWithImg: ', choicesWithImg);
 
             const newData = {
                 name,
-                img:imgNew,
+                img: imgNew,
                 events: JSON.parse(events),
                 provider,
                 choices: choicesWithImg
@@ -134,7 +160,7 @@ class ServiceController {
             newServiceResponse?.success ? res.status(200).json(newServiceResponse) : res.status(400).json(newServiceResponse)
 
         } catch (error: any) {
-            console.log('Error from edit service : ', error.message);
+            console.log('Error from edit service : ', error, error.message);
             res.status(500).json(error.message)
 
         }

@@ -35,7 +35,7 @@ const upload=multer({storage:Storage})
 
 router.get('/services/count',serviceController.getTotalServices)
 router.get('/services',serviceController.getAllServices)
-router.delete('/:id',serviceController.deleteService) 
+router.get('/name/:name',serviceController.getServiceByName)
 router.get('/:id',serviceController.getServiceById)
 router.post('/new',upload.fields([{name:'img'},{name:'choiceImg'}]),serviceController.createService)
 // router.get('/editStatus/:id',serviceController.editStatus)
@@ -47,8 +47,8 @@ router.patch('/approve',serviceController.approveService)
 
 router.patch('/:id',upload.fields([{name:'img'},{name:'choiceImg'}]),serviceController.editService)
 
-router.get('/:name',serviceController.getServiceByName)
 
+router.delete('/:id',serviceController.deleteService) 
 
 serviceRoute.use(router)
 export default serviceRoute 

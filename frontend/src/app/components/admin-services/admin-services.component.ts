@@ -3,7 +3,6 @@ import { Service, ServiceSearchFilter } from '../../model/class/serviceClass';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ServiceService } from '../../services/serviceService/service.service';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
-import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { AlertService } from '../../services/alertService/alert.service';
 import { IResponse, IService } from '../../model/interface/interface';
 import { ButtonComponent } from '../../shared/components/button/button.component';
@@ -25,7 +24,6 @@ export class AdminServicesComponent {
   searchParams = new HttpParams()
 
   serviceService = inject(ServiceService)
-  userService = inject(UserSrerviceService)
   alertService = inject(AlertService)
 
   currentPage: number = Number(this.searchFilterFormObj.pageNumber)

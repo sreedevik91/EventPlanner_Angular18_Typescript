@@ -1,0 +1,71 @@
+<div class="container">
+    <div class="row">
+
+        <div class="col-md-12 p-2">
+
+            <div class="row">
+                @for (item of serviceNames ; track $index) {
+
+                <div class="m-3">
+                    <h1>{{item}}</h1>
+                </div><br>
+                <hr>
+
+                @for (services of services()[item]; track $index) {
+
+                <div class="col-md-4">
+                    <div class="card" style="width: 20rem;">
+                        <img [src]="serviceImgUrl+services.img" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <!-- <h5 class="card-title">{{services.name}}</h5> -->
+
+                            <div class="card">
+                                <!-- <div class="card-header">
+                                    <h4> Available for: </h4>
+                                    @for (event of services.events; track $index) {
+                                    <h6>* {{event}}</h6>
+                                    }
+                                </div> -->
+                                <h5>Options</h5>
+                                <hr>
+
+                                <ul class="list-group list-group-flush">
+                                    @for (choice of services.choices; track $index) {
+                                    <li class="list-group-item">
+
+                                        <div class="row border">
+                                            <div class="col-md-4 mt-2 p-2">
+                                                <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
+                                                    width="100%" height="20">
+                                            </div>
+                                            <div class="col-md-7 mt-2 p-2">
+                                                <h6>{{choice.choiceName}}</h6>
+                                                @if(choice.choiceType){
+                                                <h6>{{choice.choiceType}}</h6>
+                                                }
+                                                <h6>{{choice.choicePrice}}</h6>
+                                            </div>
+                                        </div>
+
+                                    </li>
+                                    }
+
+
+                                </ul>
+                            </div>
+                            <app-button [btnClass]=" 'btn-dark btn-sm rounded-pill m-2' " (onBtnClick)="bookEvent(services.id,services.provider)">Book Now</app-button>
+
+                            <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+                        </div>
+                    </div>
+                </div>
+
+                }
+                <br>
+                <hr>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>

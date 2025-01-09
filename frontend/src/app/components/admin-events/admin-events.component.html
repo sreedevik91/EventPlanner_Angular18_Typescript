@@ -1,0 +1,215 @@
+<section class="container mt-4 p-3">
+
+    <div class="row mb-2">
+        <div class="col-md-8 text-dark fs-3 fw-bold">
+            <p>Service Management</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <app-button [btnClass]=" 'btn-dark' " (onBtnClick)="showModal()" (click)="isAddEvent=true">Add Event</app-button>
+        </div>
+    </div>
+    <div class="row d-flex flex-row" [formGroup]="searchFilterForm">
+        <!-- <form [formGroup]="searchFilterForm"> -->
+        <div class="col-md-3">
+            <label for=""> Name: </label><input type="text" class="form-control" formControlName="eventName">
+        </div>
+        <!-- <div class="col-md-3">
+            <label for=""> Status: </label><input type="text" class="form-control" formControlName="isActive">
+        </div> -->
+        <!-- <div class="col-md-3">
+            <label for=""> Role: </label><input type="text" class="form-control" formControlName="role">
+        </div> -->
+        <div class="col-md-3">
+            <app-button [btnClass]="'btn-dark mt-4 rounded-pill'" (onBtnClick)="onSearch()">Search</app-button>
+            <app-button [btnClass]="'btn-dark mt-4 ms-3 rounded-pill'" (onBtnClick)="onRefresh()">Refresh</app-button>
+        </div>
+        <div class="col-md-3 align-item-left mt-4 mb-4">
+            <select formControlName="pageSize" (change)="onSearch()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <!-- </form> -->
+    </div>
+    <div>
+        <app-alert></app-alert>
+    </div>
+    <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Events</h6>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Sl.No</th>
+                        <th scope="col" role="button" (click)="onSort('name')">Name</th>
+                        <th scope="col" role="button" (click)="onSort('provider')">Events</th>
+                        <th scope="col" role="button" (click)="onSort('isActive')">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (item of events(); track $index) {
+                    <tr>
+                        <th scope="row">{{$index + 1}}</th>
+                        <td>{{item.name}}</td>
+                        <td>
+                            @for (event of item.services; track $index) {
+                            <p>{{event}}</p>
+                            }
+                        </td>
+
+                        <td>
+                            @if(item.isActive){
+                            Active
+                            }@else{
+                            Blocked
+                            }
+                        </td>
+
+
+                        <td>
+                            <app-button (onBtnClick)="onEdit(item._id)" [btnTitle]="'Edit Event'"><i
+                                    class="fa-solid fa-pen-to-square"></i></app-button>
+
+                            <app-button (onBtnClick)="setStatus(item._id)"
+                                [btnTitle]="item.isActive ? 'Disable Event' : 'Activate Event' ">
+                                @if(item.isActive){
+                                <i class="fa-solid fa-eye"></i>
+                                } @else {
+                                <i class="fa-solid fa-eye-slash"></i>
+                                }
+                            </app-button>
+                            <app-button [btnTitle]="'Delete Service'" (onBtnClick)="deleteEvent(item._id)"><i
+                                class="fa-solid fa-trash-can"></i></app-button>
+
+                        </td>
+                    </tr>
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+
+        <nav>
+            <ul class="pagination">
+                <li class="page-item" [class.disabled]="currentPage===1">
+                    <a class="page-link" role="button" (click)="onPageChange(currentPage-1)">Previous</a>
+                </li>
+                @for (item of getTotalPages(); track $index) {
+                <li class="page-item">
+                    <a class="page-link" [class.active]="currentPage===item" role="button"
+                        (click)="onPageChange(item)">{{item}}</a>
+                </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" role="button" [class.disabled]="currentPage===getLastpage()"
+                        (click)="onPageChange(currentPage+1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+
+    <!-- Modal -->
+    <div class="modal" #modal>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    @if(isAddEvent){
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add User</h1>
+                    }@else {
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit User</h1>
+                    }
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="hideModal()"></button>
+                </div>
+                <div class="modal-body">
+
+
+                    <form [formGroup]="eventForm">
+
+                        <app-form [label]=" 'Name of event:' " [tooltip]=" 'Select Event' " [Validation]="eventForm.controls['name'].touched &&
+                    eventForm.controls['name'].errors ? eventForm.controls['name'].errors : {}">
+                            <select class="form-select" formControlName="name" (change)="getEventServices($event)">
+                                @for (item of eventOptions; track $index) {
+                                    <option [value]="item">{{item}}</option>
+                                }
+                                <!-- <option value="Catering">Catering</option>
+                                <option value="Decor">Decor</option>
+                                <option value="Event Coverage">Event Coverage</option> -->
+                            </select>
+                        </app-form>
+
+                        <app-form [label]=" 'Image of service:' " [tooltip]=" 'Select img' " [Validation]="eventForm.controls['img'].touched &&
+                        eventForm.controls['img'].errors ? eventForm.controls['img'].errors : {}">
+                            <!--===================================  -->
+
+                            <!-- <img [src]="eventForm.controls['img'].value ? eventImgUrl + eventForm.controls['img'].value : imgUrl" alt="" width="50" height="50"> -->
+
+                            <img [src]="imgUrl? imgUrl : eventImgUrl + eventForm.controls['img'].value " alt=""
+                                width="50" height="50">
+
+                            <input type="file" class="form-control" placeholder="Upload an image of your service"
+                                (change)="onImageUpload($event)">
+                            <!--===================================  -->
+
+                        </app-form>
+
+                        <div id="services" formArrayName="services">
+                            <app-form [label]=" 'Service options:' " [tooltip]=" 'Enter service option details' "
+                                [Validation]="eventForm.controls['services'].touched &&
+                    eventForm.controls['services'].errors ? eventForm.controls['services'].errors : {}">
+                                @for (item of eventServicesList(); track $index) {
+                                    <div>
+                                    <!-- @for (service of item.services; track $index) {
+                                        <div>
+                                            <input type="checkbox" (change)="setServiceValues($event,item.providerId,service)"
+                                            [value]="service">
+                                            <label for="">{{service}} <small>provided by {{item.provider}}</small></label>
+                                        </div>
+                                    
+                                    } -->
+
+                                    <div>
+                                        <input type="checkbox" (change)="setServiceValues($event, item)"
+                                        [value]="item" [checked]="isServiceChecked(item)">
+                                        <label for="">{{item}} </label>
+                                    </div>
+                                </div>
+                                }
+
+                            </app-form>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-block">
+
+                            @if(isAddEvent){
+                            <app-button [btnClass]=" 'btn-success m-3' " (onBtnClick)="saveEvent()">Save
+                                Service</app-button>
+                            }@else {
+                            <app-button [btnClass]=" 'btn-success m-3' "
+                                (onBtnClick)="editEvent(eventForm.controls['_id'].value)">Update
+                                Service</app-button>
+                            }
+
+                            <app-button [btnClass]=" 'btn-info m-3' " (onBtnClick)="hideModal()">Cancel</app-button>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</section>

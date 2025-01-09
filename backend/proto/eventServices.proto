@@ -1,0 +1,46 @@
+syntax="proto3";
+
+package service;
+
+service ServiceDetails{
+    rpc GetAvailableServices(AvailableServiceRequest) returns (AvailableServiceResponse);
+    rpc GetAvailableServicesByProvider(ServiceByProviderRequest) returns (AvailableServiceResponse);
+    rpc GetAvailableServiceByProviderAndName(ServiceRequest) returns (ServiceResponse);
+}
+
+message serviceType{
+    string id=1;
+    string name=2;
+    string provider=3;
+    string img=4;
+    repeated string events=5;
+    repeated choice choices=6;
+}
+
+message AvailableServiceRequest{
+    string serviceName=1;
+}
+
+message AvailableServiceResponse{
+    repeated serviceType serviceData=1;
+}
+
+message ServiceByProviderRequest{
+    string providerId=1;
+}
+
+message choice{
+    string choiceName=1;
+    string choiceType=2;
+    int32 choicePrice=3;
+    string choiceImg=4;
+}
+
+message ServiceRequest{
+    string serviceName=1;
+    string providerId=2;
+}
+
+message ServiceResponse{
+    serviceType serviceDetails=1;
+}
