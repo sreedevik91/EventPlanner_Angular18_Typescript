@@ -14,3 +14,6 @@ POST /login 200 [09/Jan/2025:19:13:56 +0000] - 110.392 ms localhost
 POST /login 200 [09/Jan/2025:19:17:56 +0000] - 131.528 ms localhost
 POST /login 200 [09/Jan/2025:19:23:49 +0000] - 113.438 ms localhost
 GET /token/refresh 304 [09/Jan/2025:19:25:11 +0000] - 9.179 ms localhost
+POST /login 200 [09/Jan/2025:19:31:46 +0000] - 114.202 ms localhost
+POST /login 200 [09/Jan/2025:19:37:26 +0000] - 112.170 ms localhost
+GET /token/refresh 304 [09/Jan/2025:19:39:00 +0000] - 12.314 ms localhost
