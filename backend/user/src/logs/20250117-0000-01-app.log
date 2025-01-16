@@ -1,0 +1,2 @@
+POST /register 400 [16/Jan/2025:13:16:58 +0000] - 764.985 ms localhost
+POST /register 201 [16/Jan/2025:13:18:47 +0000] - 5010.310 ms localhost
