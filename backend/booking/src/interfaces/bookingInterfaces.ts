@@ -1,13 +1,15 @@
 import { Date, Document} from "mongoose";
 
 export interface IBooking extends Document {
-    // userId:string;
+    userId:string;
     user:string;
     serviceId?: string;
     providerId?: string;
     service?: string;
+    img:string;
     eventId?:string;
     event?:string;
+    style?:string;
     services:IBookedServices[];
     deliveryDate:Date;
     venue: IAddress;
@@ -17,11 +19,13 @@ export interface IBooking extends Document {
 }
 export interface IBookedServices {
     // serviceId: string;
-    // providerId: string;
+    _id?:string,
+    providerId?: string;
     serviceName:string;
     providerName:string;
     serviceChoiceName:string;
-    serviceChoiceAmount:string;
+    serviceChoiceType:string;
+    serviceChoiceAmount:number;
 }
 
 interface IAddress{
@@ -31,6 +35,13 @@ interface IAddress{
   district:string;
   state:string;
   pbNo:number;
+}
+
+export interface IEvent {
+  _id:string;     
+  name:string;   
+  services:string[]; 
+  isActive:string;
 }
 
 export interface IBookingDb extends IBooking,Document {
@@ -51,6 +62,13 @@ export interface IGetAvailableServicesResponse {
         choiceImg: string;
       }>;
     }>;
+  }
+
+  export interface IChoice{
+    choiceName: string;
+        choiceType: string;
+        choicePrice: number;
+        choiceImg: string;
   }
 
 // export interface IGetAvailableServicesResponse {

@@ -39,7 +39,7 @@ class ServiceController {
                         rest.choiceImg = img.filename
                     }
                 })
-                
+
                 // return {
                 //     ...rest,
                 //     choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : ''
@@ -126,26 +126,36 @@ class ServiceController {
             console.log('service images to update: ', files);
             console.log('service choices to update: ', JSON.parse(choices));
 
-            let imgNew = files?.img ? files?.img[0].filename : img
-            let choicesWithImg = JSON.parse(choices).map((choice: any, index: number) => {
-                const choiceImgFile = files?.choiceImg
-                console.log('choiceImgFileName: ', files?.choiceImg[index]?.filename);
-                const { choiceImgCategory, ...rest } = choice
-                choiceImgFile.forEach((img: any) => {
-                    if (choiceImgCategory === img.originalname) {
-                        rest.choiceImg = img.filename
-                    }
+            let choicesWithImg = []
+            let imgNew = ''
+
+            if (files && Object.keys(files).length >0) {
+                imgNew = files?.img ? files?.img[0].filename : img
+                choicesWithImg = JSON.parse(choices).map((choice: any, index: number) => {
+                    const choiceImgFile = files?.choiceImg
+                    console.log('choiceImgFileName: ', files?.choiceImg[index]?.filename);
+                    const { choiceImgCategory, ...rest } = choice
+                    choiceImgFile.forEach((img: any) => {
+                        if (choiceImgCategory === img.originalname) {
+                            rest.choiceImg = img.filename
+                        }
+                    })
+                    // return {
+                    //     ...rest,
+                    //     // choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : choice.choiceImg
+                    //     // choiceImg: files?.choiceImg[index]?.filename ? files?.choiceImg[index]?.filename : choice.choiceImg
+
+                    //     choiceImg: choice.choiceName === choiceImgCategory ? files?.choiceImg[index].filename : choice.choiceImg
+                    // }
+
+                    return rest
                 })
-                // return {
-                //     ...rest,
-                //     // choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : choice.choiceImg
-                //     // choiceImg: files?.choiceImg[index]?.filename ? files?.choiceImg[index]?.filename : choice.choiceImg
+            } else {
+                imgNew = img
+                choicesWithImg = JSON.parse(choices)
+            }
 
-                //     choiceImg: choice.choiceName === choiceImgCategory ? files?.choiceImg[index].filename : choice.choiceImg
-                // }
 
-                return rest
-            })
             console.log('choicesWithImg: ', choicesWithImg);
 
             const newData = {

@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import bookingServices from "../services/bookingServices";
 import { IBookedServices } from "../interfaces/bookingInterfaces";
-
 import fs from 'fs'
 import { AppError } from "../utils/appError";
 
@@ -57,16 +56,16 @@ class EventController {
     async getAllBookings(req: Request, res: Response, next:NextFunction) {
 
         try {
-            let services = await bookingServices.getBookings(req.query)
+            let bookings = await bookingServices.getBookings(req.query)
 
-            if(!services || !services.success){
-                return next(new AppError(services?.message || 'Some error occured while processing the data', 400))
+            if(!bookings || !bookings.success){
+                return next(new AppError(bookings?.message || 'Some error occured while processing the data', 400))
             }
 
-            // services?.success ? res.status(200).json(services) : res.status(400).json(services)
-            res.status(200).json(services)
+            // services?.success ? res.status(200).json(bookings) : res.status(400).json(bookings)
+            res.status(200).json(bookings)
         } catch (error: any) {
-            console.log('Error from getAllServices : ', error.message);
+            console.log('Error from getAllBookings : ', error.message);
             // res.status(500).json(error.message)
             next(new AppError(error.message,500))
 
@@ -79,6 +78,29 @@ class EventController {
 
         try {
             let deleteServices = await bookingServices.deleteBooking(req.params.id)
+
+            if(!deleteServices || !deleteServices.success){
+                return next(new AppError(deleteServices?.message || 'Some error occured while processing the data', 400))
+            }
+
+            // deleteServices?.success ? res.status(200).json(deleteServices) : res.status(400).json(deleteServices)
+            res.status(200).json(deleteServices) 
+        } catch (error: any) {
+            console.log('Error from deleteEvent : ', error.message);
+            // res.status(500).json(error.message)
+            next(new AppError(error.message,500))
+
+        }
+
+    }
+ 
+    async deleteBookedServices(req: Request, res: Response, next:NextFunction) {
+
+        try {
+
+            const {bookingId,serviceName,serviceId}= req.params
+
+            let deleteServices = await bookingServices.deleteBookedServices(bookingId,serviceName,serviceId)
 
             if(!deleteServices || !deleteServices.success){
                 return next(new AppError(deleteServices?.message || 'Some error occured while processing the data', 400))
@@ -114,6 +136,26 @@ class EventController {
         }
 
     }
+
+    async getBookingByUserId(req: Request, res: Response, next:NextFunction) {
+
+        try {
+            let bookingsByUserId = await bookingServices.getBookingByUserId(req.params.id)
+
+            if(!bookingsByUserId || !bookingsByUserId.success){
+                return next(new AppError(bookingsByUserId?.message || 'Some error occured while processing the data', 400))
+            }
+
+            res.status(200).json(bookingsByUserId) 
+        } catch (error: any) {
+            console.log('Error from getEventById : ', error.message);
+            // res.status(500).json(error.message)
+            next(new AppError(error.message,500))
+
+        }
+
+    }
+
 
     async editBooking(req: Request, res: Response, next:NextFunction) {
 
@@ -194,18 +236,17 @@ class EventController {
         }
     }
 
-    async getBookingsByName(req: Request, res: Response, next:NextFunction){
+    async getAllEvents(req: Request, res: Response, next:NextFunction){
         try {
-            const { name } = req.params
-            console.log('event name to get all events: ', req.params.name);
-            const getEventsByName = await bookingServices.getBookingsByName(name)
+            // const events = await getEventsByIdGrpc()
+            
+            const events = await bookingServices.getAllEvents()
 
-            if(!getEventsByName || !getEventsByName.success){
-                return next(new AppError(getEventsByName?.message || 'Some error occured while processing the data', 400))
+            if(!events || !events.success){
+                return next(new AppError(events?.message || 'Some error occured while processing the data', 400))
             }
-            // getEventsByName?.success ? res.status(200).json(getEventsByName) : res.status(400).json(getServiceByName)
 
-            res.status(200).json(getEventsByName)
+            res.status(200).json(events)
 
         } catch (error: any) {
             // console.log('Error from getEventServiceByName : ', error.message);
@@ -213,6 +254,27 @@ class EventController {
             next(new AppError(error.message || 'Internal server error',500))
         }
     }
+    
+    async getServiceByEvent(req: Request, res: Response, next:NextFunction){
+        try {
+
+            const { name } = req.params
+            
+            const events = await bookingServices.getServiceByEvent(name)
+
+            if(!events || !events.success){
+                return next(new AppError(events?.message || 'Some error occured while processing the data', 400))
+            }
+
+            res.status(200).json(events)
+
+        } catch (error: any) {
+            // console.log('Error from getEventServiceByName : ', error.message);
+            // res.status(500).json(error.message)
+            next(new AppError(error.message || 'Internal server error',500))
+        }
+    }
+
 
 }
 

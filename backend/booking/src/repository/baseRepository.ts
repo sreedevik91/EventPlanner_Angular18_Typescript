@@ -24,7 +24,17 @@ export default class BaseRepository<T extends Document> {
     }
 
     async updateBooking(id:string,data:UpdateQuery<T>):Promise<T | null>{
-        return await this.model.findOneAndUpdate({_id:id},{$set:data},{new:true})
+        const updateQuery:any={}
+        if(data.$push){
+            updateQuery.$push=data.$push
+        }
+        if(data.$pull){
+            updateQuery.$pull=data.$pull
+        }
+        if(data.$set){
+            updateQuery.$set=data.$set
+        }
+        return await this.model.findOneAndUpdate({_id:id},updateQuery,{new:true})
     }
 
     async deleteBooking(id:string):Promise<DeleteResult | null>{

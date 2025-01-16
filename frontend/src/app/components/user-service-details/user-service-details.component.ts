@@ -12,6 +12,7 @@ import { BookingService } from '../../services/bookingService/booking.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { IChoice } from '../../model/class/serviceClass';
+import { AlertService } from '../../services/alertService/alert.service';
 
 @Component({
   selector: 'app-user-service-details',
@@ -24,8 +25,10 @@ export class UserServiceDetailsComponent implements OnInit {
 
   activatedRoute = inject(ActivatedRoute)
   router = inject(Router)
+
   bookingService = inject(BookingService)
   userService = inject(UserSrerviceService)
+  alertService = inject(AlertService)
 
   bookingFromObj: Booking = new Booking()
 
@@ -44,39 +47,19 @@ export class UserServiceDetailsComponent implements OnInit {
   optionArray: any[] = []
   serviceImgUrl = environment.serviceImgUrl
 
-  // step: number = 1
   step = signal<number>(1)
 
-
   ngOnInit(): void {
-
-    // this.activatedRoute.queryParams.subscribe((params) => {
-    //   console.log('services by name: ', params['data'], params['service']);
-    //   this.service = params['service']
-    //   this.servicesByName.set(JSON.parse(params['data']))
-    // })
-
-    // const navigation = this.router.getCurrentNavigation()
-    // const state = navigation?.extras.state
-    // console.log('state: ', state);
-
-    // if (state) {
-    //   this.service = state['service']
-    //   this.servicesByName.set(JSON.parse(state['data']))
-    //   console.log('Received Data:', this.servicesByName());
-    //   console.log('Received Service:', this.service);
-    // } else {
-    //   console.log('state is undefined ');
-
-    // }
-
     this.service = this.dataService.getServiceName()
     this.servicesByName.set(this.dataService.getServiceData())
 
     this.initialiseBookingForm()
 
     this.userService.loggedUser$.subscribe(user => {
+      console.log('user from service:', user);
+
       this.bookingForm.get('user')?.setValue(user?.user)
+      this.bookingForm.get('userId')?.setValue(user?.id)
     })
 
   }
@@ -85,9 +68,11 @@ export class UserServiceDetailsComponent implements OnInit {
     this.bookingForm = new FormGroup({
       _id: new FormControl(this.bookingFromObj._id),
       user: new FormControl(this.bookingFromObj.user, [Validators.required]),
+      userId: new FormControl(this.bookingFromObj.userId, [Validators.required]),
       serviceId: new FormControl(this.bookingFromObj.serviceId, [Validators.required]),
       providerId: new FormControl(this.bookingFromObj.providerId, [Validators.required]),
-      eventId: new FormControl(this.bookingFromObj.eventId, [Validators.required]),
+      // eventId: new FormControl(this.bookingFromObj.eventId, [Validators.required]),
+      event: new FormControl(this.bookingFromObj.event, [Validators.required]),
       services: new FormArray(
         this.bookingFromObj.services.map((service) => {
           return new FormGroup({
@@ -112,6 +97,7 @@ export class UserServiceDetailsComponent implements OnInit {
       totalCount: new FormControl(this.bookingFromObj.totalCount === 0 ? null : this.bookingFromObj.totalCount, [Validators.required]),
     })
   }
+
 
   bookService(name: string, serviceId: string, providerId: string) {
     console.log('id to book service: ', serviceId, providerId);
@@ -157,49 +143,58 @@ export class UserServiceDetailsComponent implements OnInit {
     console.log('service booking form values: ', this.bookingForm.value);
     this.bookingService.createBooking(this.bookingForm.value).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        console.log('service booking response: ', res.body?.data);
+        if (res.status === 200) {
+          console.log('service booking response: ', res.body?.data);
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
+          this.hideModal()
+        } else {
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')
+        }
       },
       error: (error: HttpErrorResponse) => {
         console.log('service booking error: ', error.error.message, error);
-
+        this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
       }
     })
 
   }
 
-  isOption(name: string) {
-    // console.log('choiceName to check isOption: ', name);
+  isOption(name: string, choiceType:string,choiceImg:string) {
+    console.log('choiceName to check isOption: ', name,choiceType,choiceImg);
 
     const serviceArray = <FormArray>this.bookingForm.get('services')
+    console.log('serviceArray: ', serviceArray);
+    
     const isOption = serviceArray.value.some((service: any) => {
-     return service.choiceName === name
+      return service.choiceName === name && service.choiceType===choiceType && service.choiceImg===choiceImg
     })
-    // console.log('value of isOption: ', isOption);
+    console.log('value of isOption: ', isOption);
     return isOption
   }
 
-  setChoices(event:Event,index:number,name: string, type: string, price: number) {
-    let target=<HTMLInputElement>event.target
-    console.log('setChoices target value:',target,target?.checked);
-    console.log('setChoices index value:',index);
+  setChoices(event: Event, index: number, name: string, type: string, price: number) {
+    let target = <HTMLInputElement>event.target
+    console.log('setChoices target value:', target, target?.checked);
+    console.log('setChoices index value:', index);
     const choicesArray = <FormArray>this.bookingForm.get('services')
 
-    if(target?.checked){
+    if (target?.checked) {
       choicesArray.push(new FormGroup({
         choiceName: new FormControl(name),
         choiceType: new FormControl(type),
         choicePrice: new FormControl(price),
       }))
-    }else{
+    } else {
       const indexN = choicesArray.controls.findIndex(group => {
         // Check if the form group matches based on the values you want to compare
         return group.get('choiceName')?.value === name &&
-               group.get('choiceType')?.value === type &&
-               group.get('choicePrice')?.value === price;
+          group.get('choiceType')?.value === type &&
+          group.get('choicePrice')?.value === price;
       });
-      if(indexN !==-1) choicesArray.removeAt(indexN)
+      if (indexN !== -1) choicesArray.removeAt(indexN)
     }
-   
+
   }
 
   formNext() {

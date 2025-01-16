@@ -13,6 +13,7 @@ import { EventServicesComponent } from './components/event-services/event-servic
 import { EventsComponent } from './components/events/events.component';
 import { UserServiceDetailsComponent } from './components/user-service-details/user-service-details.component';
 import { UserEventDetailsComponent } from './components/user-event-details/user-event-details.component';
+import { BookingComponent } from './components/booking/booking.component';
 
 export const routes: Routes = [
     {
@@ -65,6 +66,11 @@ export const routes: Routes = [
                 canActivate:[authGuard]
             },
             {
+                path:'booking',
+                component:BookingComponent,
+                canActivate:[authGuard]
+            },
+            {
                 path:'services/details',
                 component:UserServiceDetailsComponent,
                 canActivate:[authGuard]
@@ -73,12 +79,13 @@ export const routes: Routes = [
                 path:'events/details',
                 component:UserEventDetailsComponent,
                 canActivate:[authGuard]
-            },
+            }
            
         ]
     },
     {
         path:'**',
-        component:PageNotFoundComponent
+        // component:PageNotFoundComponent,
+        redirectTo:'login'
     }
 ];

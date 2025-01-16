@@ -27,7 +27,7 @@ export interface IResponse {
 }
 
 export interface ILoggedUserData {
-    _id: string;
+    id: string;
     user: string;
     role: string;
     username: string;
@@ -71,6 +71,7 @@ export interface IService {
     img: string;
     events: string[];
     provider: string;
+    providerName?: string;
     choices: IChoice[];
     createdAt: string;
     updatedAt: string;
@@ -84,6 +85,7 @@ interface IChoice {
     choiceType: string;
     choicePrice: number;
     choiceImg: string;
+    _id:string;
 }
 
 export interface IEvent {
@@ -128,6 +130,9 @@ export interface IEventServiceResponse {
 export interface IBookedServices {
     // serviceId: string;
     // providerId: string;
+    _id?:string;
+    serviceName: string;
+    providerName: string;
     choiceName: string;
     choiceType: string;
     choicePrice: string;
@@ -135,9 +140,11 @@ export interface IBookedServices {
 
 export interface IBooking {
     _id: string;
-    // userId: string;
+    userId: string;
     user: string;
+    img: string;
     event?: string;
+    style?: string;
     service?: string;
     serviceId?: string;
     providerId?: string;
@@ -146,4 +153,12 @@ export interface IBooking {
     deliveryDate: Date;
     venue: IAddress;
     totalCount: number;
+    isConfirmed:boolean;
+}
+
+export interface IServicesArray{
+service:string;
+name:string;
+price:number;
+providerId: string;
 }

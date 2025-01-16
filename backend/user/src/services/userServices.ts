@@ -102,6 +102,7 @@ class UserServices {
             }
         } catch (error: any) {
             console.log('Error from userService sendEmail: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -153,6 +154,7 @@ class UserServices {
 
         } catch (error: any) {
             console.log('Error from resend user otp: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -184,7 +186,7 @@ class UserServices {
 
         } catch (error: any) {
             console.log('Error from reset user password: ', error.message);
-
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
 
@@ -210,7 +212,7 @@ class UserServices {
 
         } catch (error: any) {
             console.log('Error from userService register: ', error.message);
-
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -272,12 +274,12 @@ class UserServices {
                     const user = await UserRepository.getUserByUsername(username)
 
                     console.log('user for login from db: ', user?.isEmailVerified, user);
-if (user===null){
-    console.log('sending login response from service to controller: user not found');
+                    if (user === null) {
+                        console.log('sending login response from service to controller: user not found');
 
-    return { success: false,noUser: true, message: 'Sorry ! User not found, Please create your account.' }
-}else{
-                    // if (user) {
+                        return { success: false, noUser: true, message: 'Sorry ! User not found, Please create your account.' }
+                    } else {
+                        // if (user) {
                         if (user.isActive) {
                             console.log('entered email verified loop ');
                             if (user.isEmailVerified === true) {
@@ -314,12 +316,12 @@ if (user===null){
                                 } else {
                                     // console.log('sending login response from service to controller: emailVerified success fail');
 
-                                    return { success: false, wrongCredentials: true, message:'Invalid username or password' }
+                                    return { success: false, wrongCredentials: true, message: 'Invalid username or password' }
                                 }
                             } else {
                                 // console.log('sending login response from service to controller: emailNotVerified success fail');
 
-                                return { success: false, emailNotVerified: true, message:'Your email is not verified' }
+                                return { success: false, emailNotVerified: true, message: 'Your email is not verified' }
                             }
                         } else {
                             // console.log('User account is blocked');
@@ -329,16 +331,18 @@ if (user===null){
 
 
                     }
-                // } else {
+                    // } else {
 
-                //     console.log('sending login response from service to controller: user not found');
+                    //     console.log('sending login response from service to controller: user not found');
 
-                //     return { success: false,emailVerified: false, message: 'user not found' }
-                // }
- }
+                    //     return { success: false,emailVerified: false, message: 'user not found' }
+                    // }
+                }
             }
         } catch (error: any) {
             console.log('Error from userService login: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
+
         }
 
     }
@@ -373,6 +377,8 @@ if (user===null){
             }
         } catch (error: any) {
             console.log('Error from verify login otp: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
+
         }
 
     }
@@ -388,6 +394,7 @@ if (user===null){
             return { success: true, message: 'Otp Sent to email', data: user }
         } catch (error: any) {
             console.log('Error from verifyUserEmail: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -429,7 +436,7 @@ if (user===null){
 
 
             // let data = await UserRepository.getAllUsers(filterQ, sortQ, Number(pageSize), skip)
-            let data = await UserRepository.getAllUsers(filterQ, {sort:sortQ, limit:Number(pageSize), skip})
+            let data = await UserRepository.getAllUsers(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
             if (data) {
                 return { success: true, data }
@@ -438,6 +445,7 @@ if (user===null){
             }
         } catch (error: any) {
             console.log('Error from getUsers: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -448,9 +456,9 @@ if (user===null){
             let decoded: any = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
 
             const { id, user, role, googleId, email, isActive, isEmailVerified, isUserVerified } = decoded
-            const userData=await userRepository.getUserById(id)
-            if(userData){
-                const payload: JwtPayload = { id:userData._id, user:userData.name, role:userData.role, googleId:userData.googleId, email:userData.email, isActive:userData.isActive, isEmailVerified:userData.isEmailVerified, isUserVerified:userData.isUserVerified }
+            const userData = await userRepository.getUserById(id)
+            if (userData) {
+                const payload: JwtPayload = { id: userData._id, user: userData.name, role: userData.role, googleId: userData.googleId, email: userData.email, isActive: userData.isActive, isEmailVerified: userData.isEmailVerified, isUserVerified: userData.isUserVerified }
                 let newToken = await this.getToken(payload, process.env.JWT_ACCESS_SECRET!, '1m')
                 // let newToken = await this.getToken(payload, process.env.JWT_ACCESS_SECRET!, '1m')
                 const options: CookieOptions = {
@@ -464,12 +472,13 @@ if (user===null){
                 } else {
                     return { success: false, message: 'Could not refresh token' }
                 }
-            }else{
+            } else {
                 return { success: false, message: 'Could not get user details while refreshing token' }
             }
-            
+
         } catch (error: any) {
             console.log('Error from getNewToken: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -486,6 +495,7 @@ if (user===null){
             }
         } catch (error: any) {
             console.log('Error from updateUser: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -524,6 +534,7 @@ if (user===null){
 
         } catch (error: any) {
             console.log('Error from updateUserStatus: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -543,6 +554,7 @@ if (user===null){
 
         } catch (error: any) {
             console.log('Error from getUser: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -558,6 +570,7 @@ if (user===null){
 
         } catch (error: any) {
             console.log('Error from getUser: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -573,6 +586,7 @@ if (user===null){
 
         } catch (error: any) {
             console.log('Error from getUsersCount: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }
@@ -594,10 +608,10 @@ if (user===null){
                 return { success: true, message: 'user verified', data: user }
             } else {
                 return { success: false, message: 'could not verify user' }
-
             }
         } catch (error: any) {
             console.log('Error from verifyUserEmail: ', error.message);
+            return { success: false, message: error.message || 'Something went wrong.Try again' }
         }
 
     }

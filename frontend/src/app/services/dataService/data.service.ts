@@ -12,9 +12,10 @@ export class DataService {
   servicesByName = signal<IService[]>([])
   bookingFormValue = signal<IBooking>({
         _id: '',
-            // userId: string;
+            userId: '',
             user: '',
             event: '',
+            img:'',
             service: '',
             serviceId: '',
             providerId: '',
@@ -23,6 +24,7 @@ export class DataService {
             deliveryDate: new Date(),
             venue:  { building: '', street: '', city: '', district: '', state: '', pbNo: 0 },
             totalCount: 0,
+            isConfirmed:false
   })
 
   constructor() { }

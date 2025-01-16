@@ -58,7 +58,12 @@
                     <tr>
                         <th scope="row">{{$index + 1}}</th>
                         <td>{{item.name}}</td>
-                        <td>{{item.provider}}</td>
+                        <!-- <td>{{item.provider}}</td> -->
+                         @if(extra.length>0){
+                            <td>{{extra[$index].name}}</td>
+                         }@else {
+                            <td>{{item.provider}}</td>
+                         }
                         <td>
                             @for (event of item.events; track $index) {
                             <p>{{event}}</p>
