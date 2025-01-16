@@ -62,3 +62,15 @@ export const getServicesByEventNameGrpc=(name:string):Promise<any>=>{
         })
       })
       }
+
+      export const getServiceImgGrpc = (serviceImg: string): Promise<any> => {
+        return new Promise((resolve, reject) => {
+          client.GetServiceImg({ img: serviceImg }, (err: grpc.ServiceError, response: any) => {
+            if (err) {
+              reject(new Error(`Failed to fetch services: ${err.message}`));
+            } else {
+              resolve(response);
+            }
+          });
+        });
+      };

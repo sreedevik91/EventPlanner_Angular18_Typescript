@@ -5,6 +5,7 @@ import { config } from "dotenv";
 import axios from 'axios'
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
 import { log } from "console";
+import { updateEventWithNewServiceGrpc } from "../grpc/grpcEventClient";
 
 config()
 
@@ -99,7 +100,7 @@ class ServiceServices {
 
             const providerId = newServiceData.provider || ''
             const serviceName = newServiceData.name || ''
-            const service = await serviceRepository.getServiceByProvider(serviceName,providerId)
+            const service = await serviceRepository.getServiceByProvider(serviceName, providerId)
             console.log('existing service data: ', service);
 
             if (service) {
@@ -111,37 +112,48 @@ class ServiceServices {
 
                 newServiceData.events = service.events
 
-
                 newServiceData.choices?.forEach(newChoice => {
-                    service.choices.forEach(choice => {
-                        if (newChoice.choiceName === choice.choiceName) {
-                            choice.choicePrice = newChoice.choicePrice
-                            choice.choiceImg = newChoice.choiceImg || choice.choiceImg
-                            choice.choiceType = newChoice.choiceType || choice.choiceType
-                        }
-                    })
+                    let existingChoice = service.choices.filter(choice => choice.choiceName === newChoice.choiceName)
+
+                    if (existingChoice) {
+                        existingChoice[0].choiceName === newChoice.choiceName
+                        existingChoice[0].choicePrice = newChoice.choicePrice
+                        existingChoice[0].choiceImg = newChoice.choiceImg || existingChoice[0].choiceImg
+                        existingChoice[0].choiceType = newChoice.choiceType || existingChoice[0].choiceType
+                    } else {
+                        service.choices.push(newChoice)
+                    }
+
                 })
                 newServiceData.choices = service.choices
                 console.log('addService existing service final data to update: ', newServiceData);
 
                 const updatedService = await serviceRepository.updateService(service.id, newServiceData)
 
+                const updateEventWithService = await updateEventWithNewServiceGrpc(serviceName, updatedService?.events!)
+
+                console.log('updateEventWithService response: ', updateEventWithService);
+
                 console.log('addService existing service update response: ', newServiceData);
 
 
                 // return updatedService ? { success: true, data: updatedService } : { success: false, message: 'Could not update the service' }
 
-                return updatedService ? { success: true, data: updatedService, message: 'Service updated with details given'} : { success: false, message: 'Could not update the service' }
+                return updatedService ? { success: true, data: updatedService, message: 'Service updated with details given' } : { success: false, message: 'Could not update the service' }
 
             } else {
                 const data = await serviceRepository.createService(newServiceData)
+                const updateEventWithService = await updateEventWithNewServiceGrpc(serviceName, data?.events!)
+
+                console.log('updateEventWithService response: ', updateEventWithService);
 
                 console.log('addService service response: ', data);
+
                 if (data) {
 
                     // return { success: true, data: data }
 
-                    return { success: true, data: data,message: 'New service details added' }
+                    return { success: true, data: data, message: 'New service details added' }
 
                 } else {
                     return { success: false, message: 'Could not create service' }
@@ -212,7 +224,16 @@ class ServiceServices {
             // console.log('all service data filtered and sorted: ', data);
 
             if (data) {
-                return { success: true, data }
+                let extra: any = []
+                for (let service of data) {
+                    const provider = await getUserByIdGrpc(service.provider)
+                    console.log('getUserByIdGrpc provider: ', provider);
+                    extra.push({ id: service.provider, name: provider.name })
+                }
+
+                console.log('getServices data: ', data);
+                console.log('getServices extra: ', extra);
+                return { success: true, data, extra }
             } else {
                 return { success: false, message: 'Could not fetch data' }
             }
@@ -256,12 +277,18 @@ class ServiceServices {
     }
 
     async editService(id: string, serviceData: Partial<IService>) {
+
         try {
+
             const updatedService = await serviceRepository.updateService(id, serviceData)
 
             console.log('updatedService: ', updatedService);
 
             if (updatedService) {
+                const updateEventWithService = await updateEventWithNewServiceGrpc(updatedService?.name, updatedService?.events)
+
+                console.log('updateEventWithService response: ', updateEventWithService);
+
                 return { success: true, data: updatedService, message: 'Service updated successfuly' }
             } else {
                 return { success: false, message: 'Could not updated service' }
@@ -357,7 +384,7 @@ class ServiceServices {
     async getServiceByName(name: string) {
         try {
             const aggregatedServiceData = await serviceRepository.getServiceByName(name)
-            const allServicesByName=await serviceRepository.getAllServiceByName(name)
+            const allServicesByName = await serviceRepository.getAllServiceByEventName(name)
             console.log('getServiceByName response: ', aggregatedServiceData);
             if (aggregatedServiceData && allServicesByName) {
                 aggregatedServiceData.forEach(e => {
@@ -368,10 +395,10 @@ class ServiceServices {
                     // e.choices.forEach((e:IChoice)=>console.log(e)
                     // )
                 })
-            
+
                 console.log('getServiceByName aggregatedServiceData: ', aggregatedServiceData);
                 console.log('getServiceByName allServicesByName: ', allServicesByName);
-                return { success: true, data: aggregatedServiceData, extra: allServicesByName}
+                return { success: true, data: aggregatedServiceData, extra: allServicesByName }
             } else {
                 return { success: false, message: 'Could not updated service status' }
             }

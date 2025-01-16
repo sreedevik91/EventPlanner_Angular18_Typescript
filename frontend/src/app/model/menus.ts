@@ -32,6 +32,6 @@ export const Menus=[
     {
         path:'booking',
         text:'Booking',
-        roles:['user']
+        roles:['user','admin']
     },
 ]

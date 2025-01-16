@@ -1,0 +1,94 @@
+<div class="container mt-4 p-3">
+
+    <h1>Bookings</h1>
+    <hr>
+    @for (item of bookingsList(); track $index) {
+    <div class="row border border-success rounded border-4 m-3 mt-4">
+        <div class="col-md-3">
+            <img [src]="item.img" width="100%" height="100%" alt="Booking img">
+        </div>
+
+        <div class="col-md-7 border m-3 rounded">
+            @if(item.service){
+            <p>{{item.service}}</p>
+            }@else if(item.event){
+            <p>{{item.event}}</p>
+            }
+            <p>{{item.deliveryDate | date:'longDate'}}</p>
+            <div class="accordion" id="accordionExample">
+                <button class="btn btn-dark" type="button" data-bs-toggle="collapse"
+                    [attr.data-bs-target]="'#collapseOne'+$index" aria-expanded="true"
+                    [attr.aria-controls]="'collapseOne'+$index">
+                    View Details
+                </button>
+                <button class="btn btn-dark ms-3" (click)="deleteBooking(item._id)">Delete</button>
+
+            </div>
+
+
+        </div>
+
+        <div class="accordion-item">
+            <!-- <h2 class="accordion-header"> -->
+            <!-- <button class="btn btn-dark" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    View Details
+                </button> -->
+            <!-- </h2> -->
+            <div [id]="'collapseOne'+$index" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <div class="row">
+                        <div class="col-md-8 mt-4">
+                            @if(item.service){
+                            <p>Service: {{item.service}}</p>
+                            }@else if(item.event){
+                            <p>Event: {{item.event}}</p>
+                            }
+                            <ul>
+                                @if(item.style){
+                                Style: {{item.style}}
+                                }
+                                <li>Services:
+
+                                    @for (service of item.services; track $index) {
+
+                                    <div class="d-flex justify-content-between">
+                                        <p>{{service.serviceName}}</p>
+                            <app-button [btnClass]="'btn-danger rounded-pill'" (onBtnClick)="deleteChoice(item._id,service.serviceName,service._id!)">Delete</app-button>
+
+                                    </div>
+
+                                    <ul>
+                                        <li>{{service.choiceName}} </li>
+                                        @if(service.choiceType){
+                                        <li>{{service.choiceType}} </li>
+                                        }
+                                        <li>{{service.choicePrice}}</li>
+                                    </ul>
+
+                                    }
+
+                                </li>
+                                <li>Date: {{item.deliveryDate | date:'longDate'}}</li>
+                                <li>Guests: {{item.totalCount}}</li>
+                                <li>Venue:
+                                    <p>{{item.venue.building}}</p>
+                                    <p>{{item.venue.street}},{{item.venue.city}},{{item.venue.district}},{{item.venue.state}},
+                                    </p>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <!-- <div class="col-md-3 mt-4">
+                            <app-button [btnClass]="'btn-danger rounded-pill'" (onBtnClick)="deleteChoice()"></app-button>
+                            <button>Delete</button>
+                        </div> -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    }
+</div>

@@ -40,7 +40,7 @@ async getServiceByProviderOld(providerId:string):Promise<IService | null>{
     return await Service.findOne({provider:providerId})
 }
 
-    async getAllServiceByName(name: string):Promise<any[]> {
+    async getAllServiceByEventName(name: string):Promise<any[]> {
         return await Service.find({events:{$in:[name]}})
     }
 

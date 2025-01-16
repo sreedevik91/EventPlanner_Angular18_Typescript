@@ -13,10 +13,10 @@ class BookingRepository extends BaseRepository<IBooking> {
         return await Booking.find().countDocuments()
     }
 
-    async getBookingByName(name: string):Promise<any[]> {
-        let booking =await Booking.find({name})
+    async getBookingByUserId(id: string):Promise<any[]> {
+        let booking =await Booking.find({userId:id})
         return booking
-    }
+    } 
 
 }
 

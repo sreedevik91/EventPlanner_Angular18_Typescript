@@ -3,14 +3,14 @@ import * as protoLoader from "@grpc/proto-loader"
 import path from "path"
 import { IGetAvailableServicesResponse } from "../interfaces/eventInterfaces"
 
-const PROTO_PATH=path.join(__dirname,'../../../proto/eventServices.proto')
+const PROTO_PATH = path.join(__dirname, '../../../proto/eventServices.proto')
 
 // Load the proto file
-const packageDefinition=protoLoader.loadSync(PROTO_PATH)
-const serviceProto:any=grpc.loadPackageDefinition(packageDefinition).service
+const packageDefinition = protoLoader.loadSync(PROTO_PATH)
+const serviceProto: any = grpc.loadPackageDefinition(packageDefinition).service
 
 // Create a gRPC client
-const client=new serviceProto.ServiceDetails(
+const client = new serviceProto.ServiceDetails(
   'localhost:50052', // gRPC server address
   grpc.credentials.createInsecure()
 )
@@ -27,9 +27,9 @@ const client=new serviceProto.ServiceDetails(
 // })
 // }
 
-export const getServicesByEventNameGrpc=(name:string):Promise<any>=>{
-  return new Promise((resolve,reject)=>{
-    client.GetAvailableServices({serviceName:name}, (err: grpc.ServiceError, response: any) => {
+export const getServicesByEventNameGrpc = (name: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    client.GetAvailableServices({ serviceName: name }, (err: grpc.ServiceError, response: any) => {
       if (err) {
         reject(new Error(`Failed to fetch services: ${err.message}`));
       } else {
@@ -37,16 +37,28 @@ export const getServicesByEventNameGrpc=(name:string):Promise<any>=>{
       }
     })
   })
-  }
+}
 
-  export const getServicesByProviderGrpc=(id:string):Promise<any>=>{
-    return new Promise((resolve,reject)=>{
-      client.GetAvailableServicesByProvider({providerId:id}, (err: grpc.ServiceError, response: any) => {
-        if (err) {
-          reject(new Error(`Failed to fetch services: ${err.message}`));
-        } else {
-          resolve(response);
-        }
-      })
+export const getServicesByProviderGrpc = (id: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    client.GetAvailableServicesByProvider({ providerId: id }, (err: grpc.ServiceError, response: any) => {
+      if (err) {
+        reject(new Error(`Failed to fetch services: ${err.message}`));
+      } else {
+        resolve(response);
+      }
     })
-    }
+  })
+}
+
+export const getServiceImgGrpc = (serviceImg: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    client.GetServiceImg({ img: serviceImg }, (err: grpc.ServiceError, response: any) => {
+      if (err) {
+        reject(new Error(`Failed to fetch services: ${err.message}`));
+      } else {
+        resolve(response);
+      }
+    });
+  });
+};

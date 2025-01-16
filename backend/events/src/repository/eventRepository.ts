@@ -35,10 +35,15 @@ class EventRepository extends BaseRepository<IEvent> {
         return await Event.find().countDocuments()
     }
 
-    async getEventByName(name: string):Promise<any[]> {
+    async getEventByName(name: string):Promise<IEventDb[]> {
         let service =await Event.find({name})
         return service
     }
+
+    // async getEventByName(name: string):Promise<IEvent | null> {
+    //     let service =await Event.findOne({name})
+    //     return service
+    // }
 
 }
 

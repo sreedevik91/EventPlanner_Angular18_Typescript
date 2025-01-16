@@ -1,0 +1,199 @@
+
+<section class="container mt-4 p-3">
+
+    <div class="row mb-2">
+        <div class="col-md-8 text-dark fs-3 fw-bold">
+            <p>Booking Management</p>
+        </div>
+
+    </div>
+    <div class="row d-flex flex-row" [formGroup]="searchFilterForm">
+        <!-- <form [formGroup]="searchFilterForm"> -->
+        <div class="col-md-3">
+            <label for=""> User: </label><input type="text" class="form-control" formControlName="userName">
+        </div>
+       
+        <div class="col-md-3">
+            <app-button [btnClass]="'btn-dark mt-4 rounded-pill'" (onBtnClick)="onSearch()">Search</app-button>
+            <app-button [btnClass]="'btn-dark mt-4 ms-3 rounded-pill'" (onBtnClick)="onRefresh()">Refresh</app-button>
+        </div>
+        <div class="col-md-3 align-item-left mt-4 mb-4">
+            <select formControlName="pageSize" (change)="onSearch()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <!-- </form> -->
+    </div>
+    <div>
+        <app-alert></app-alert>
+    </div>
+    <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Booking</h6>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Sl.No</th>
+                        <th scope="col" role="button" (click)="onSort('user')">User</th>
+                        <th scope="col" role="button">Service/Event</th>
+                        <!-- <th scope="col" role="button" (click)="onSort('events')">Events</th> -->
+                        <th scope="col">Details</th>
+                        <th scope="col" role="button" (click)="onSort('isConfirmed')">Status</th>
+                        <!-- <th scope="col" role="button" (click)="onSort('isApproved')">Approval</th> -->
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (item of bookings(); track $index) {
+                    <tr>
+                        <th scope="row">{{$index + 1}}</th>
+                        <td>{{item.user}}</td>
+                        @if(item.service){
+                            <td>{{item.service}}</td>
+                        }@else if(item.event){
+                            <td>{{item.event}}</td>
+                        }
+                        <!-- <td>
+                            @for (event of item.events; track $index) {
+                            <p>{{event}}</p>
+                            }
+                        </td> -->
+
+                        <td>
+
+                            <p class="d-inline-flex gap-1">
+                                <!-- <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                See Options available
+                                </a> -->
+                                <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                    [attr.data-bs-target]="'#collapseExample'+ $index" aria-expanded="false"
+                                    [attr.aria-controls]="'collapseExample'+ $index">
+                                    See Options
+                                </button>
+                            </p>
+                            <div class="collapse" [id]="'collapseExample'+ $index">
+                                <!-- @for (service of item.services; track $index) {
+                                <div class="card card-body">
+                                    <p>{{$index + 1}} Service: {{service.serviceName}}</p>
+                                    <p>Name:{{service.choiceName}}</p>
+                                    @if(service.choiceType !==''){
+                                    <p>Type:{{service.choiceType}}</p>
+                                    }
+                                    <p>Price:{{service.choicePrice}}</p>
+                                </div>
+                                } -->
+
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-8 mt-4">
+                                            @if(item.service){
+                                            <p>Service: {{item.service}}</p>
+                                            }@else if(item.event){
+                                            <p>Event: {{item.event}}</p>
+                                            }
+                                            <ul>
+                                                @if(item.style){
+                                                Style: {{item.style}}
+                                                }
+                                                <li>Services:
+                
+                                                    @for (service of item.services; track $index) {
+                
+                                                    <div class="d-flex justify-content-between">
+                                                        <p>{{service.serviceName}}</p>
+                                            <!-- <app-button [btnClass]="'btn-danger rounded-pill'" (onBtnClick)="deleteChoice(item._id,service.serviceName,service._id!)">Delete</app-button> -->
+                
+                                                    </div>
+                
+                                                    <ul>
+                                                        <li>{{service.choiceName}} </li>
+                                                        @if(service.choiceType){
+                                                        <li>{{service.choiceType}} </li>
+                                                        }
+                                                        <li>{{service.choicePrice}}</li>
+                                                    </ul>
+                
+                                                    }
+                
+                                                </li>
+                                                <li>Date: {{item.deliveryDate | date:'longDate'}}</li>
+                                                <li>Guests: {{item.totalCount}}</li>
+                                                <li>Venue:
+                                                    <p>{{item.venue.building}}</p>
+                                                    <p>{{item.venue.street}},{{item.venue.city}},{{item.venue.district}},{{item.venue.state}},
+                                                    </p>
+                                                </li>
+                
+                                            </ul>
+                                        </div>
+                                        <!-- <div class="col-md-3 mt-4">
+                                            <app-button [btnClass]="'btn-danger rounded-pill'" (onBtnClick)="deleteChoice()"></app-button>
+                                            <button>Delete</button>
+                                        </div> -->
+                                    </div>
+                
+                                </div>
+
+                            </div>
+
+                        </td>
+                        <td>
+                            @if(item.isConfirmed){
+                            Booking Confirmed
+                            }@else{
+                            Pending Confirmation
+                            }
+                        </td>
+                     
+                        <td>
+                            @if(item.isConfirmed){
+                            <app-button [btnTitle]="'Service Approved'" [disabled]="true"><i
+                                    class="fa-regular fa-thumbs-up"></i></app-button>
+                            }@else {
+                            <app-button [btnTitle]="'Approve service'" (onBtnClick)="confirmBooking(item._id)"><i
+                                    class="fa-regular fa-thumbs-down"></i></app-button>
+                            }
+
+                            <!-- <i class="fa-solid fa-x"></i> -->
+                            <!-- <i class="fa-solid fa-check"></i> -->
+                            <!-- <i class="fa-solid fa-lock"></i> -->
+                            <!-- <i class="fa-solid fa-unlock"></i> -->
+                        </td>
+                    </tr>
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+
+        <nav>
+            <ul class="pagination">
+                <li class="page-item" [class.disabled]="currentPage===1">
+                    <a class="page-link" role="button" (click)="onPageChange(currentPage-1)">Previous</a>
+                </li>
+                @for (item of getTotalPages(); track $index) {
+                <li class="page-item">
+                    <a class="page-link" [class.active]="currentPage===item" role="button"
+                        (click)="onPageChange(item)">{{item}}</a>
+                </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" role="button" [class.disabled]="currentPage===getLastpage()"
+                        (click)="onPageChange(currentPage+1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+
+
+
+</section>

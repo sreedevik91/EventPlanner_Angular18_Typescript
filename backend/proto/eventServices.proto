@@ -6,6 +6,8 @@ service ServiceDetails{
     rpc GetAvailableServices(AvailableServiceRequest) returns (AvailableServiceResponse);
     rpc GetAvailableServicesByProvider(ServiceByProviderRequest) returns (AvailableServiceResponse);
     rpc GetAvailableServiceByProviderAndName(ServiceRequest) returns (ServiceResponse);
+    rpc GetServiceImg(ServiceImgRequest) returns (ServiceImgResponse); 
+
 }
 
 message serviceType{
@@ -34,6 +36,7 @@ message choice{
     string choiceType=2;
     int32 choicePrice=3;
     string choiceImg=4;
+    string id=5;
 }
 
 message ServiceRequest{
@@ -43,4 +46,12 @@ message ServiceRequest{
 
 message ServiceResponse{
     serviceType serviceDetails=1;
+}
+
+message ServiceImgRequest {
+  string img = 1;
+}
+
+message ServiceImgResponse {
+     string imgPath=1;
 }

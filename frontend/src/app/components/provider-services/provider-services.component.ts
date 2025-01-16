@@ -91,7 +91,7 @@ export class ProviderServicesComponent implements OnInit {
             choiceType: new FormControl(choice.choiceType, [Validators.required]),
             choicePrice: new FormControl(choice.choicePrice === 0 ? null : choice.choicePrice, [Validators.required]),
             choiceImg: new FormControl(choice.choiceImg || null, [Validators.required]),
-            choiceImgCategory: new FormControl(choice.choiceImgCategory, [Validators.required]),
+            choiceImgCategory: new FormControl(choice.choiceImgCategory || null),
           })
         })
 
@@ -207,6 +207,7 @@ export class ProviderServicesComponent implements OnInit {
       choiceType: new FormControl(null, [Validators.required]),
       choicePrice: new FormControl(null, [Validators.required]),
       choiceImg: new FormControl(null, [Validators.required]),
+      choiceImgCategory: new FormControl(null, [Validators.required]),
 
     });
 
@@ -259,7 +260,8 @@ export class ProviderServicesComponent implements OnInit {
           // choiceGroup.get('choiceImg')?.setValue(imageurl)
           choiceGroup.get('choiceImg')?.setValue(file)
           // let fileNameCategory=choiceGroup.get('choiceName')?.value
-          let fileNameCategory=file.name || ''
+          // let fileNameCategory=file.name || ''
+          let fileNameCategory=file.name
           choiceGroup.get('choiceImgCategory')?.setValue(fileNameCategory)
 
           this.choiceImageUrl[index] = imageurl
@@ -356,10 +358,22 @@ export class ProviderServicesComponent implements OnInit {
         if (res.status === 200) {
           this.serviceFromObj = res.body?.data
           console.log('update form data: ', this.serviceFromObj);
+          
           this.initialiseServiceForm()
           this.getChoiceOptions()
 
           const choicesArray = <FormArray>this.serviceForm.get('choices');
+          // const choicesArray = <FormArray>this.serviceForm.get('choices');
+// choicesArray.clear(); // Clear existing controls
+// this.serviceFromObj.choices.forEach(choice => {
+//   choicesArray.push(new FormGroup({
+//     choiceName: new FormControl(choice.choiceName),
+//     choiceType: new FormControl(choice.choiceType),
+//     choicePrice: new FormControl(choice.choicePrice),
+//     choiceImg: new FormControl(choice.choiceImg)
+//   }));
+// });
+
           choicesArray.controls.forEach((_, index) => this.getChoiceTypeOptions(index));
 
           this.showModal()

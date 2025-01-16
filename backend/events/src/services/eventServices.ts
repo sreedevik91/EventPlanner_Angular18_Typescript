@@ -174,7 +174,7 @@ class EventServices {
 
     async editEvent(id: string, serviceData: Partial<IEvent>) {
         try {
-            const updatedEvent = await eventRepository.updateEvent(id, serviceData)
+            const updatedEvent = await eventRepository.updateEvent(id, {$set:serviceData})
 
             console.log('updatedEvent: ', updatedEvent);
 
@@ -195,7 +195,7 @@ class EventServices {
             const event = await eventRepository.getEventById(id)
 
             if (event) {
-                const eventUpdated = await eventRepository.updateEvent(id, { isActive: !event.isActive })
+                const eventUpdated = await eventRepository.updateEvent(id, {$set:{ isActive: !event.isActive }})
 
                 console.log('editStatus service: ', event, eventUpdated);
 
@@ -269,7 +269,7 @@ class EventServices {
     async getEventsByName(name: string) {
         try {
             // const service = await getServicesByNameGrpc(name)
-            const events: IEventDb[] = await eventRepository.getEventByName(name)
+            const events: IEvent[] = await eventRepository.getEventByName(name)
 
             console.log('getServiceByName response: ', events);
 

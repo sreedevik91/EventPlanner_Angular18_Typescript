@@ -26,7 +26,11 @@ export class BookingService {
     return this.http.get(`${this.baseUrl}bookings`, { observe: 'response', params })
   }
 
-  getBookingById(id: string) {
+  getBookingsByUserId(id: string) {
+    return this.http.get(`${this.baseUrl}user/${id}`, { observe: 'response' })
+  }
+
+  getBookingsById(id: string) {
     return this.http.get(`${this.baseUrl}${id}`, { observe: 'response' })
   }
 
@@ -34,12 +38,16 @@ export class BookingService {
     return this.http.get(`${this.baseUrl}bookings/${name}`, { observe: 'response' })
   }
 
-  // getServicesByName(name: string) {
-  //   return this.http.get(`${this.baseUrl}service/${name}`, { observe: 'response' })
-  // }
-
   getServicesByNameAndProvider(name: string,providerId:string) {
     return this.http.get(`${this.baseUrl}service/${name}/${providerId}`, { observe: 'response' })
+  }
+
+  getServicesByEvent(name: string) {
+    return this.http.get(`${this.baseUrl}events/service/${name}`, { observe: 'response' })
+  }
+
+  getAllEvents(){
+    return this.http.get(`${this.baseUrl}events`, { observe: 'response' })
   }
 
   editBooking(data: FormData, id: string) {
@@ -52,6 +60,11 @@ export class BookingService {
 
   deleteBooking(id: string) {
     return this.http.delete(`${this.baseUrl}${id}`, { observe: 'response' })
+  }
+
+  deleteBookedServices(bookingId:string,serviceName:string,serviceId:string){
+    return this.http.delete(`${this.baseUrl}service/${bookingId}/${serviceName}/${serviceId}`, { observe: 'response' })
+
   }
 
 }

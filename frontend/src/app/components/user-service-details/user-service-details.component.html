@@ -103,16 +103,17 @@
 
                 <form [formGroup]="bookingForm">
 
-@if(step()===1){
+<!-- @if(step()===1){ -->
     <div>
 
-<h2>Service Details</h2>
+<h2>Service Details</h2><br>
 <h5>You have selected {{selectedService.name}} by {{selectedService.provider}}</h5><hr>
     <div [formArrayName]="'services'">
-<app-form [label]=" 'Select service options:' " [tooltip]=" 'Select option' " >
+<app-form [label]=" 'Select service options:' " [tooltip]=" 'Select option' " ><br>
+
     @for (item of optionArray; track $index) {
         
-        <input type="checkbox" (change)="setChoices($event,$index,item.choiceName,item.choiceType,item.choicePrice)" [checked]="isOption(item.choiceName)" >
+        <input type="checkbox" (change)="setChoices($event,$index,item.choiceName,item.choiceType,item.choicePrice)" [checked]="isOption(item.choiceName,item.choiceType,item.choiceImg)" >
         
         @if(item.choiceType){
             <label for="" class="ms-1"> {{item.choiceName}}-{{item.choiceType}}-{{item.choicePrice}}</label>
@@ -122,19 +123,18 @@
         <br>
     }
 
-    
-   
+
 </app-form>
 
 </div>
 
-<app-button [btnClass]=" 'm-3' " (onBtnClick)="formNext()"><i class="fa-solid fa-circle-chevron-right" style="color: #1d624e;"></i></app-button>
+<!-- <app-button [btnClass]=" 'm-3' " (onBtnClick)="formNext()"><i class="fa-solid fa-circle-chevron-right" style="color: #1d624e;"></i></app-button> -->
 
-</div>
-}
+</div><br>
+<!-- } -->
 
 
-@if (step()===2){
+<!-- @if (step()===2){ -->
     <div>
 <h2>Booking Details</h2>
         <app-form [label]=" 'Date of service Delivery:' " [tooltip]=" 'Select Date' " [Validation]="bookingForm.controls['deliveryDate'].touched &&
@@ -149,16 +149,7 @@
                 formControlName="totalCount">
         </app-form>
     
-        <!-- <div id="services" formArrayName="services">
-            <app-form [label]=" 'Selected service:' " [tooltip]=" 'Selected Events' "
-                [Validation]="bookingForm.controls['services'].touched &&
-        bookingForm.controls['services'].errors ? bookingForm.controls['services'].errors : {}">
-    
-            </app-form>
-        </div> -->
-    
-        <!-- <app-button [btnClass]="'btn-dark m-3'" (onBtnClick)="addEvent()">Add Events</app-button> -->
-    
+       
     
         <div id="choices" [formGroupName]="'venue'">
     
@@ -179,8 +170,7 @@
             <app-form [label]=" 'State:' " [tooltip]=" 'Enter state' "
             [Validation]="bookingForm.get('venue.state')?.touched &&
         bookingForm.get('venue.state')?.errors ? bookingForm.get('venue.state')?.errors : {}">
-            <!-- <input type="string" class="form-control" placeholder="Enter state"
-                formControlName="state"> -->
+          
                 <select name="" id="" class="form-control" formControlName="state" (change)="getDistricts($event)">
                     <option value="" selected disabled>Select state</option>
                     @for (item of statesList; track $index) {
@@ -192,8 +182,7 @@
             <app-form [label]=" 'District:' " [tooltip]=" 'Enter district' "
                 [Validation]="bookingForm.get('venue.district')?.touched &&
             bookingForm.get('venue.district')?.errors ? bookingForm.get('venue.district')?.errors : {}">
-                <!-- <input type="string" class="form-control" placeholder="Enter district / house name"
-                    formControlName="district"> -->
+               
                     <select name="" id="" class="form-control" formControlName="district" >
                         <option value="" selected disabled>Select District</option>
                         @for (item of districtsList; track $index) {
@@ -219,23 +208,25 @@
     
         </div>
         
-<app-button [btnClass]=" 'm-3' " (onBtnClick)="formPrevious()"> <i class="fa-solid fa-circle-chevron-left" style="color: #1d624e;"></i> </app-button>
+<!-- <app-button [btnClass]=" 'm-3' " (onBtnClick)="formPrevious()"> <i class="fa-solid fa-circle-chevron-left" style="color: #1d624e;"></i> </app-button> -->
     
         <div class="d-grid gap-2 d-md-block">
     
     
             <app-button [btnClass]=" 'btn-success m-3' " (onBtnClick)="saveBooking()">Continue</app-button>
     
-            <!-- <app-button [btnClass]=" 'btn-info m-3' " (onBtnClick)="hideModal()">Cancel</app-button> -->
+            <app-button [btnClass]=" 'btn-info m-3' " (onBtnClick)="hideModal()">Cancel</app-button>
     
         </div>
     
     </div>
-}
+<!-- } -->
 
                    
                 </form>
 
+
+                
             </div>
         </div>
     </div>

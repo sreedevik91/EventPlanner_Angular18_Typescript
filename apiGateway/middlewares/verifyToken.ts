@@ -18,20 +18,6 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
     console.log('Request Headers:', req.headers);
     console.log('Cookies:', req.cookies);
 
-    // const publicRoutes = [
-    //     '/user/verifyEmail',
-    //     '/user/login',
-    //     '/user/register',
-    //     '/user/sendResetEmail',
-    //     '/user/resetPassword',
-    //     '/user/verifyOtp',
-    //     '/user/sendOtp/:id',
-    //     '/user/refreshToken',
-    //     '/user/logout',
-    // ]
-
-
-
     const publicRoutes = [
         '/',
         '/email/verify',

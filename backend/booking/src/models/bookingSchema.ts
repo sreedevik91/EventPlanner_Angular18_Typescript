@@ -8,10 +8,10 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
     type: String,
     required: true
   },
-  // userId: {
-  //   type: String,
-  //   required: true
-  // },
+  userId: {
+    type: String,
+    required: true
+  },
   service: {
     type: String,
     required: function () {
@@ -30,26 +30,37 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
       return !this.service
     }
   },
+  style: {
+    type: String,
+    required: function () {
+      return !this.service
+    }
+  },
   // eventId: {
   //   type: String,
   //   required: function () {
   //     return !this.serviceId
   //   }
   // },
+  img: {
+    type: String,
+    required: true
+  },
   services: [{
     serviceName: {
-      type: String,
-      required: true
+      type: String
     },
     providerName: {
+      type: String
+    },
+    choiceName: {
       type: String,
       required: true
     },
-    serviceChoiceName: {
-      type: String,
-      required: true
+    choiceType: {
+      type: String
     },
-    serviceChoiceAmount: {
+    choicePrice: {
       type: Number,
       required: true
     }
@@ -59,8 +70,30 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
     required: true
   },
   venue: {
-    type: String,
-    required: true
+    building: {
+      type: String,
+      required: true
+    },
+    street: {
+      type: String,
+      required: true
+    },
+    city: {
+      type: String,
+      required: true
+    },
+    district: {
+      type: String,
+      required: true
+    },
+    state: {
+      type: String,
+      required: true
+    },
+    pbNo: {
+      type: Number,
+      required: true
+    }
   },
   tag: {
     type: String,
@@ -81,6 +114,6 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
 );
 
 
-const Event = model<IBooking>('event', BookingSchema)
+const Event = model<IBooking>('booking', BookingSchema)
 export default Event
 

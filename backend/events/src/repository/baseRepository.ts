@@ -18,13 +18,21 @@ export default class BaseRepository<T extends Document> {
         return await this.model.findById(id)
     }
 
-    async getAllEvents(query:FilterQuery<T>={}, options:{sort?:any,limit?:number,skip?:number}){
-        const {sort,limit,skip}=options
-        return await this.model.find(query).sort(sort).limit(limit!).skip(skip!)
+    async getAllEvents(query:FilterQuery<T>={}, options:{sort?:any,limit?:number,skip?:number}={}){
+        const {sort={},limit=0,skip=0}=options
+        return await this.model.find(query).sort(sort).limit(limit).skip(skip)
     }
 
     async updateEvent(id:string,data:UpdateQuery<T>):Promise<T | null>{
-        return await this.model.findOneAndUpdate({_id:id},{$set:data},{new:true})
+        const updateQuery:any={}
+        if (data.$push){
+            updateQuery.$push=data.$push
+        }
+        if(data.$set){
+            updateQuery.$push=data.$set
+        }
+        // return await this.model.findOneAndUpdate({_id:id},{$set:data},{new:true})
+        return await this.model.findOneAndUpdate({_id:id},updateQuery,{new:true})
     }
 
     async deleteEvent(id:string):Promise<DeleteResult | null>{

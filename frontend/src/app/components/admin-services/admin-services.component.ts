@@ -29,8 +29,9 @@ export class AdminServicesComponent {
   currentPage: number = Number(this.searchFilterFormObj.pageNumber)
   totalServices: number = 0
   services = signal<IService[]>([])
+  extra: any = []
 
-  errMessage:string='Some error occured'
+  errMessage: string = 'Some error occured'
 
   constructor() {
     this.getTotalServices()
@@ -66,14 +67,14 @@ export class AdminServicesComponent {
         }
       },
       error: (error: HttpErrorResponse) => {
-        this.alertService.getAlert("alert alert-danger", "Register User Failed",  error.error.message)
+        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
 
       }
     })
   }
 
   onRefresh() {
-    this.searchParams= new HttpParams()
+    this.searchParams = new HttpParams()
     this.searchFilterForm.get('serviceName')?.setValue('')
     this.searchFilterForm.get('provider')?.setValue('')
     this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
@@ -115,10 +116,12 @@ export class AdminServicesComponent {
     this.serviceService.getAllServices(params).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {
-          // this.totalServices=res.body.data.length
           this.services.set(res.body?.data)
+
+          console.log('all services new: ', res.body?.extra);
+          this.extra = res.body?.extra
+
           console.log('all services: ', this.services());
-    this.searchParams= new HttpParams()
         } else {
           console.log('could not get users');
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : this.errMessage)
@@ -138,7 +141,7 @@ export class AdminServicesComponent {
         console.log('verify user response: ', res);
         if (res.status === 200) {
           this.getAllServices(this.searchParams)
-          this.alertService.getAlert('alert alert-success', 'Success!',  res.body?.message ? res.body?.message : 'Service approved successfully')
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service approved successfully')
         } else {
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : this.errMessage)
         }
@@ -191,3 +194,5 @@ export class AdminServicesComponent {
 
 
 }
+
+

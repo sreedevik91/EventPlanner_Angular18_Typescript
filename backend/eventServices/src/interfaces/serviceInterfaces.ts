@@ -5,6 +5,7 @@ export interface IService extends Document {
     img:string;
     events: string[];
     provider: string;
+    providerName?: string;
     choices: IChoice[];
     isApproved: boolean;
     isActive: boolean;

@@ -1,6 +1,7 @@
 import { DeleteResult , Document} from "mongoose";
 
 export interface IEvent extends Document {
+  _id:string;
     name: string;
     img:string;
     // services:IEventServices[];
