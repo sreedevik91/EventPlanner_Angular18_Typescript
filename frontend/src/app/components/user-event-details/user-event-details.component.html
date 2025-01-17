@@ -48,7 +48,7 @@
                                                 @if(choice.choiceType){
                                                 <h6>{{choice.choiceType}}</h6>
                                                 }
-                                                <h6>{{choice.choicePrice}}</h6>
+                                                <h6>₹ {{choice.choicePrice}}</h6>
                                             </div>
                                         </div>
 
@@ -102,7 +102,7 @@
                             <hr>
 
                             <app-form [label]=" 'Select Event:' " [tooltip]=" 'Select Event' "><br>
-                                <select class="form-control" formControlName="event" (change)="getServices($event)">
+                                <select class="form-select" formControlName="event" (change)="getServices($event)">
                                     <option selected disabled>Select Event</option>
                                     @for (item of eventsArray; track $index) {
                                     <option [value]="item">{{item}}</option>
@@ -112,7 +112,7 @@
 
                             <app-form [label]=" 'Select Style:' " [tooltip]=" 'Select option' "><br>
 
-                                <select class="form-control" formControlName="style">
+                                <select class="form-select" formControlName="style">
                                     <option selected disabled>Select Style</option>
                                     <option value="Hindu">Hindu</option>
                                     <option value="Muslim">Muslim</option>
@@ -129,10 +129,10 @@
 
                                     <app-form [label]=" 'Select Decor:' " [tooltip]=" 'Select option' "><br>
 
-                                        <select class="form-control" (change)="setChoices($event,'decor')">
+                                        <select class="form-select" (change)="setServiceDropdowns($event,'decor')">
                                             <option selected disabled>Select Decor</option>
                                             @for (item of decor; track $index) {
-                                            <option [value]="item.name" [attr.data-extra]="item.providerId">{{item.name}}-{{item.price}}</option>
+                                            <option [value]="item.name" [attr.data-extra]="item.providerId">{{item.name}}-₹ {{item.price}}</option>
                                             }
                                             <!-- The data-* attributes are custom attributes you can add to any HTML element to store additional data. These attributes follow the data- prefix, making them valid and accessible via JavaScript. -->
                                        <!-- The [attr.data-extra] dynamically sets the data-extra attribute using the extra property -->
@@ -144,10 +144,10 @@
 
                                     <app-form [label]=" 'Select Dining:' " [tooltip]=" 'Select option' "><br>
 
-                                        <select class="form-control" (change)="setChoices($event,'dining')">
+                                        <select class="form-select" (change)="setServiceDropdowns($event,'dining')">
                                             <option selected disabled>Select Dining</option>
                                             @for (item of dining; track $index) {
-                                            <option [value]="item.name" [attr.data-extra]="item.providerId">{{item.name}}-{{item.price}}</option>
+                                            <option [value]="item.name" [attr.data-extra]="item.providerId">{{item.name}}-₹ {{item.price}}</option>
                                             }
 
                                         </select>
@@ -157,29 +157,34 @@
 
                                     <app-form [label]=" 'Select Cuisine:' " [tooltip]=" 'Select option' "><br>
 
-                                        <select class="form-control" (change)="setChoices($event,'cuisine')">
+                                        <!-- <select class="form-select" (change)="setServiceDropdowns($event,'cuisine')">
                                             <option selected disabled>Select Cuisine</option>
 
                                             @for (item of cuisine; track $index) {
-                                            <option [value]="item.name" [attr.data-extra]="item.providerId">{{item.name}}-{{item.price}}</option>
+                                            <option [value]="item.name" [attr.data-extra]="item.providerId">{{item.name}}-₹ {{item.price}}</option>
                                             }
-                                        </select>
+                                        </select> -->
                                         
-                                        <!-- @for (item of cuisine; track $index) {
-                                        <input type="checkbox" [value]="item.name" [attr.data-extra]="item.providerId"><label for="">{{item.name}}-{{item.price}}</label>
-                                        } -->
+                                        @for (item of cuisine; track $index) {
+                                        <input type="checkbox" class="form-check-input" [value]="item.name" (change)="setServiceCheckboxes(item.name,item.price,item.providerId,'cuisine')"><label for="" class="form-check-label">{{item.name}}-₹ {{item.price}}</label><br>
+                                        }
                                     </app-form>
                                     }
                                     @if(coverage.length>0){
 
                                     <app-form [label]=" 'Select Event Coverage:' " [tooltip]=" 'Select option' "><br>
 
-                                        <select class="form-control" (change)="setChoices($event,'coverage')">
+                                        <!-- <select class="form-control" (change)="setServiceDropdowns($event,'coverage')">
                                             <option selected disabled>Select Coverage</option>
                                             @for (item of coverage; track $index) {
                                             <option [value]="item.name" [attr.data-extra]="item.providerId">{{item.name}}-{{item.price}}</option>
                                             }
-                                        </select>
+                                        </select> -->
+
+                                        @for (item of coverage; track $index) {
+                                            <input type="checkbox" class="form-check-input" [value]="item.name" (change)="setServiceCheckboxes(item.name,item.price,item.providerId,'cuisine')"><label for="" class="form-check-label">{{item.name}}-₹ {{item.price}}</label><br>
+                                            }
+
                                     </app-form>
                                     }
 
@@ -203,14 +208,14 @@
                             <app-form [label]=" 'Date of service Delivery:' " [tooltip]=" 'Select Date' "
                                 [Validation]="bookingForm.controls['deliveryDate'].touched &&
                                 bookingForm.controls['deliveryDate'].errors ? bookingForm.controls['deliveryDate'].errors : {}">
-                                <input type="date" class="form-control" placeholder="Enter service delivery date"
+                                <input type="date" class="form-select" placeholder="Enter service delivery date"
                                     formControlName="deliveryDate">
                             </app-form>
 
                             <app-form [label]=" 'Number of guests:' " [tooltip]=" 'Enter guests count' "
                                 [Validation]="bookingForm.controls['totalCount'].touched &&
                                     bookingForm.controls['totalCount'].errors ? bookingForm.controls['totalCount'].errors : {}">
-                                <input type="number" class="form-control" placeholder="Enter total guests"
+                                <input type="number" class="form-select" placeholder="Enter total guests"
                                     formControlName="totalCount">
                             </app-form>
 
@@ -221,20 +226,20 @@
                                 <app-form [label]=" 'Building:' " [tooltip]=" 'Enter building / house name' "
                                     [Validation]="bookingForm.get('venue.building')?.touched &&
                                     bookingForm.get('venue.building')?.errors ? bookingForm.get('venue.building')?.errors : {}">
-                                    <input type="string" class="form-control" placeholder="Enter building / house name"
+                                    <input type="string" class="form-select" placeholder="Enter building / house name"
                                         formControlName="building">
                                 </app-form>
 
                                 <app-form [label]=" 'Street:' " [tooltip]=" 'Enter street' " [Validation]="bookingForm.get('venue.street')?.touched &&
                                     bookingForm.get('venue.street') ? bookingForm.get('venue.street')?.errors : {}">
-                                    <input type="string" class="form-control" placeholder="Enter street name"
+                                    <input type="string" class="form-select" placeholder="Enter street name"
                                         formControlName="street">
                                 </app-form>
 
                                 <app-form [label]=" 'State:' " [tooltip]=" 'Enter state' " [Validation]="bookingForm.get('venue.state')?.touched &&
                                 bookingForm.get('venue.state')?.errors ? bookingForm.get('venue.state')?.errors : {}">
 
-                                    <select name="" id="" class="form-control" formControlName="state"
+                                    <select name="" id="" class="form-select" formControlName="state"
                                         (change)="getDistricts($event)">
                                         <option value="" selected disabled>Select state</option>
                                         @for (item of statesList; track $index) {
@@ -247,7 +252,7 @@
                                     [Validation]="bookingForm.get('venue.district')?.touched &&
                                     bookingForm.get('venue.district')?.errors ? bookingForm.get('venue.district')?.errors : {}">
 
-                                    <select name="" id="" class="form-control" formControlName="district">
+                                    <select name="" id="" class="form-select" formControlName="district">
                                         <option value="" selected disabled>Select District</option>
                                         @for (item of districtsList; track $index) {
                                         <option [value]="item">{{item}}</option>
@@ -259,14 +264,14 @@
                                 <app-form [label]=" 'City:' " [tooltip]=" 'Enter city' "
                                     [Validation]="bookingForm.get('venue.city')?.touched &&
                                     bookingForm.get('venue.city')?.errors ? bookingForm.get('venue.city')?.errors : {}">
-                                    <input type="string" class="form-control" placeholder="Enter city"
+                                    <input type="string" class="form-select" placeholder="Enter city"
                                         formControlName="city">
                                 </app-form>
 
                                 <app-form [label]=" 'Post Box:' " [tooltip]=" 'Enter post box number' "
                                     [Validation]="bookingForm.get('venue.pbNo')?.touched &&
                                     bookingForm.get('venue.pbNo')?.errors ? bookingForm.get('venue.pbNo')?.errors : {}">
-                                    <input type="number" class="form-control" placeholder="Enter post box number"
+                                    <input type="number" class="form-select" placeholder="Enter post box number"
                                         formControlName="pbNo">
                                 </app-form>
 
@@ -278,8 +283,7 @@
                             <div class="d-grid gap-2 d-md-block">
 
 
-                                <app-button [btnClass]=" 'btn-success m-3' "
-                                    (onBtnClick)="saveBooking()">Continue</app-button>
+                                <app-button [btnClass]=" 'btn-success m-3' " [disabled]="bookingForm.invalid" (onBtnClick)="saveBooking()">Continue</app-button>
 
                                 <app-button [btnClass]=" 'btn-info m-3' " (onBtnClick)="hideModal()">Cancel</app-button>
 
