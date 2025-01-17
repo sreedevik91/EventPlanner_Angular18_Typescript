@@ -40,7 +40,7 @@
                                                         <!-- @if(choice.choiceType){
                                                         <h6>{{choice.choiceType}}</h6>
                                                         } -->
-                                                        <h6>{{choice.choicePrice}}</h6>
+                                                        <h6>₹ {{choice.choicePrice}}</h6>
                                                     </div>
                                                 </div>
         
@@ -116,9 +116,9 @@
         <input type="checkbox" (change)="setChoices($event,$index,item.choiceName,item.choiceType,item.choicePrice)" [checked]="isOption(item.choiceName,item.choiceType,item.choiceImg)" >
         
         @if(item.choiceType){
-            <label for="" class="ms-1"> {{item.choiceName}}-{{item.choiceType}}-{{item.choicePrice}}</label>
+            <label for="" class="ms-1"> {{item.choiceName}}-{{item.choiceType}}-₹ {{item.choicePrice}}</label>
         }@else {
-            <label for="" class="ms-1"> {{item.choiceName}}-{{item.choicePrice}}</label>
+            <label for="" class="ms-1"> {{item.choiceName}}-₹ {{item.choicePrice}}</label>
         }
         <br>
     }
@@ -213,7 +213,7 @@
         <div class="d-grid gap-2 d-md-block">
     
     
-            <app-button [btnClass]=" 'btn-success m-3' " (onBtnClick)="saveBooking()">Continue</app-button>
+            <app-button [btnClass]=" 'btn-success m-3' " [disabled]="bookingForm.invalid" (onBtnClick)="saveBooking()" >Continue</app-button>
     
             <app-button [btnClass]=" 'btn-info m-3' " (onBtnClick)="hideModal()">Cancel</app-button>
     

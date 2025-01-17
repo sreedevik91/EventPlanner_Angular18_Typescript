@@ -28,9 +28,9 @@ export class UserEventDetailsComponent implements OnInit {
   dataService = inject(DataService)
 
   bookingService = inject(BookingService)
-  userService = inject(UserSrerviceService)  
+  userService = inject(UserSrerviceService)
   alertService = inject(AlertService)
-  
+
   bookingFromObj: Booking = new Booking()
 
   bookingForm: FormGroup = new FormGroup({})
@@ -159,22 +159,22 @@ export class UserEventDetailsComponent implements OnInit {
 
   saveBooking() {
     console.log('service booking form values: ', this.bookingForm.value);
-    this.bookingService.createBooking(this.bookingForm.value).subscribe({
-      next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
-          console.log('service booking response: ', res.body?.data);
-          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
-this.hideModal()
-        } else {
-          console.log(res.body?.message);
-          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')
-        }
-      },
-      error: (error: HttpErrorResponse) => {
-        console.log('service booking error: ', error.error.message, error);
-        this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
-      }
-    })
+    // this.bookingService.createBooking(this.bookingForm.value).subscribe({
+    //   next: (res: HttpResponse<IResponse>) => {
+    //     if (res.status === 200) {
+    //       console.log('service booking response: ', res.body?.data);
+    //       this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
+    //       this.hideModal()
+    //     } else {
+    //       console.log(res.body?.message);
+    //       this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')
+    //     }
+    //   },
+    //   error: (error: HttpErrorResponse) => {
+    //     console.log('service booking error: ', error.error.message, error);
+    //     this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
+    //   }
+    // })
 
   }
 
@@ -189,10 +189,43 @@ this.hideModal()
     return isOption
   }
 
-  setChoices(event: Event, service: string) {
+  setServiceCheckboxes(choicename: string, choicePrice: number, providerId: string, serviceName: string) {
+    const choicesArray = <FormArray>this.bookingForm.get('services')
+    let choiceNameSelected = ''
+    let choiceTypeSelected = ''
+    let choicePriceSelected = 0
+    let serviceNameSelected = ''
+   
+    let selectedServiceArray = this.cuisine.filter(service => service.providerId === providerId && service.name === choicename)
+    console.log('selectedServiceArray value: ', selectedServiceArray);
+
+    if(serviceName === 'cuisine'){
+      choiceNameSelected = 'Menu'
+      choiceTypeSelected = selectedServiceArray[0].name
+      choicePriceSelected = selectedServiceArray[0].price
+      serviceNameSelected = 'Catering'
+    }else if(serviceName === 'coverage'){
+      let selectedServiceArray = this.coverage.filter(service => service.providerId === providerId && service.name === choicename)
+      choiceNameSelected = selectedServiceArray[0].name
+      choicePriceSelected = selectedServiceArray[0].price
+      serviceNameSelected = 'Event Coverage'
+    }
+   
+    choicesArray.push(new FormGroup({
+      serviceName: new FormControl(serviceNameSelected),
+      providerId: new FormControl(providerId),
+      choiceName: new FormControl(choiceNameSelected),
+      choiceType: new FormControl(choiceTypeSelected),
+      choicePrice: new FormControl(choicePriceSelected),
+    }))
+    console.log('choiceArray value: ', choicesArray);
+
+  }
+
+  setServiceDropdowns(event: Event, service: string) {
     let target = <HTMLSelectElement>event.target
-    let selectedOptions=target.options[target.selectedIndex]
-    console.log('setChoices target value:',target, selectedOptions.value,selectedOptions.getAttribute('data-extra'));
+    let selectedOptions = target.options[target.selectedIndex]
+    console.log('setChoices target value:', target, selectedOptions.value, selectedOptions.getAttribute('data-extra'));
 
     let providerId = selectedOptions.getAttribute('data-extra')
     const choicesArray = <FormArray>this.bookingForm.get('services')
@@ -200,32 +233,33 @@ this.hideModal()
     let choiceNameSelected = ''
     let choiceTypeSelected = ''
     let choicePriceSelected = 0
-    let serviceNameSelected=''
+    let serviceNameSelected = ''
 
 
     if (service === 'decor') {
       let selectedServiceArray = this.decor.filter(service => service.providerId === providerId && service.name === target.value)
       choiceNameSelected = selectedServiceArray[0].name
       choicePriceSelected = selectedServiceArray[0].price
-      serviceNameSelected='Decor'
+      serviceNameSelected = 'Decor'
     } else if (service === 'dining') {
       let selectedServiceArray = this.dining.filter(service => service.providerId === providerId && service.name === target.value)
       choiceNameSelected = 'Dining'
       choiceTypeSelected = selectedServiceArray[0].name
       choicePriceSelected = selectedServiceArray[0].price
-      serviceNameSelected='Catering'
-    } else if (service === 'cuisine') {
-      let selectedServiceArray = this.cuisine.filter(service => service.providerId === providerId && service.name === target.value)
-      choiceNameSelected = 'Menu'
-      choiceTypeSelected = selectedServiceArray[0].name
-      choicePriceSelected = selectedServiceArray[0].price
-      serviceNameSelected='Catering'
-    } else if (service === 'coverage') {
-      let selectedServiceArray = this.coverage.filter(service => service.providerId === providerId && service.name === target.value)
-      choiceNameSelected = selectedServiceArray[0].name
-      choicePriceSelected = selectedServiceArray[0].price
-      serviceNameSelected='Event Coverage'
-    }
+      serviceNameSelected = 'Catering'
+    } 
+    // else if (service === 'cuisine') {
+    //   let selectedServiceArray = this.cuisine.filter(service => service.providerId === providerId && service.name === target.value)
+    //   choiceNameSelected = 'Menu'
+    //   choiceTypeSelected = selectedServiceArray[0].name
+    //   choicePriceSelected = selectedServiceArray[0].price
+    //   serviceNameSelected = 'Catering'
+    // } else if (service === 'coverage') {
+    //   let selectedServiceArray = this.coverage.filter(service => service.providerId === providerId && service.name === target.value)
+    //   choiceNameSelected = selectedServiceArray[0].name
+    //   choicePriceSelected = selectedServiceArray[0].price
+    //   serviceNameSelected = 'Event Coverage'
+    // }
 
     choicesArray.push(new FormGroup({
       serviceName: new FormControl(serviceNameSelected),
