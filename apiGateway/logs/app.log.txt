@@ -1,7 +1,2 @@
-C:\Users\USER\Desktop\BroCampTasks\Angular_Project\apiGateway\logs\20250111-0000-01-app.log
-C:\Users\USER\Desktop\BroCampTasks\Angular_Project\apiGateway\logs\20250112-0000-01-app.log
-C:\Users\USER\Desktop\BroCampTasks\Angular_Project\apiGateway\logs\20250113-0000-01-app.log
-C:\Users\USER\Desktop\BroCampTasks\Angular_Project\apiGateway\logs\20250114-0000-01-app.log
-C:\Users\USER\Desktop\BroCampTasks\Angular_Project\apiGateway\logs\20250115-0000-01-app.log
-C:\Users\USER\Desktop\BroCampTasks\Angular_Project\apiGateway\logs\20250116-1014-01-app.log
-C:\Users\USER\Desktop\BroCampTasks\Angular_Project\apiGateway\logs\20250117-0000-01-app.log
+C:\Users\USER\Desktop\BroCampTasks\Angular_Project\apiGateway\logs\20250118-0000-01-app.log
+C:\Users\USER\Desktop\BroCampTasks\Angular_Project\apiGateway\logs\20250119-0000-01-app.log
