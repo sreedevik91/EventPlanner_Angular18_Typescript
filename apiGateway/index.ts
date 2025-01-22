@@ -19,7 +19,8 @@ dotenv.config()
 app.use(cookieParser())
 app.use(cors({
     // origin: 'http://localhost:4200', // Frontend URL
-    origin:'localhost',
+    origin: 'localhost',
+    // origin: '*',
     credentials: true, // Allow cookies to be sent
 
 }))
@@ -38,9 +39,10 @@ app.use(morgan(':method :url :status [:date[clf]] - :response-time ms :host', { 
 
 const services = [
     { path: '/user', target: process.env.USER_SERVICE },
-    { path: '/service', target: process.env.SERVICES_SERVICE }, 
+    { path: '/service', target: process.env.SERVICES_SERVICE },
     { path: '/event', target: process.env.EVENT_SERVICE },
     { path: '/booking', target: process.env.BOOKING_SERVICE },
+    { path: '/chat', target: process.env.CHAT_SERVICE },
     { path: '/', target: process.env.FRONTEND },
 ]
 
@@ -50,19 +52,46 @@ interface ProxyOptions {
 }
 // here each object in the service array is destructured to path and target variables so that it could be used directly
 const createProxy = ({ path, target }: ProxyOptions) => {
-    if(path==='/'){
-        app.use(path,createProxyMiddleware({
+
+    // if (!target) return
+
+    if (path === '/chat') {
+        app.use(path, verifyToken, createProxyMiddleware({
             target,
-            changeOrigin:true,
+            changeOrigin: true,
+            ws: true, // Enable WebSocket proxying
             cookieDomainRewrite: 'localhost'
         }))
-    }else{
-        app.use(path,verifyToken,createProxyMiddleware({
-            target,
-            changeOrigin:true,
-            cookieDomainRewrite: 'localhost'
-        }))
+    } else {
+        app.use(path,
+            path === '/' ?
+                createProxyMiddleware({
+                    target,
+                    changeOrigin: true,
+                    cookieDomainRewrite: 'localhost'
+                })
+                :
+                verifyToken, createProxyMiddleware({
+                    target,
+                    changeOrigin: true,
+                    cookieDomainRewrite: 'localhost'
+                })
+        )
     }
+
+    // if (path === '/') {
+    //     app.use(path, createProxyMiddleware({
+    //         target,
+    //         changeOrigin: true,
+    //         cookieDomainRewrite: 'localhost'
+    //     }))
+    // } else {
+    //     app.use(path, verifyToken, createProxyMiddleware({
+    //         target,
+    //         changeOrigin: true,
+    //         cookieDomainRewrite: 'localhost'
+    //     }))
+    // }
 
 }
 

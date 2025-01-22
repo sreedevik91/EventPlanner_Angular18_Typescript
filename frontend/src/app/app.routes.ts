@@ -14,6 +14,7 @@ import { EventsComponent } from './components/events/events.component';
 import { UserServiceDetailsComponent } from './components/user-service-details/user-service-details.component';
 import { UserEventDetailsComponent } from './components/user-event-details/user-event-details.component';
 import { BookingComponent } from './components/booking/booking.component';
+import { ChatComponent } from './components/chat/chat.component';
 
 export const routes: Routes = [
     {
@@ -78,6 +79,11 @@ export const routes: Routes = [
             {
                 path:'events/details',
                 component:UserEventDetailsComponent,
+                canActivate:[authGuard]
+            },
+            {
+                path:'chat',
+                component:ChatComponent,
                 canActivate:[authGuard]
             }
            

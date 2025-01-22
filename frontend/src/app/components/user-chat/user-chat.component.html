@@ -1,0 +1,99 @@
+<section class="container mt-4 p-3">
+@if(isLeftChat){
+    <div class="text-center">
+<p>Thank you for contacting us...</p>
+    </div>
+}@else{
+    <div class="border">
+        <div id="header" class="p-2 lh-sm border-bottom d-flex justify-content-between">
+            <strong class="mb-1">{{userName}}</strong>
+            <button class="btn btn-secondary btn-sm float-end" (click)="leaveChat()">Close</button>
+        </div>
+
+        <div id="chatArea">
+
+            @for(item of notification; track $index){
+            <p class="text-info text-center">{{item}}</p>
+            }
+            
+            @if(messages.length>0){
+                <hr>
+                <p class="text-center">
+                <a class="link-underline-opacity-0 text-info" (click)="oldChats=!oldChats">{{ oldChats ? 'Hide previous chats' : 'Load previous chats' }}</a>
+                </p>
+                <hr>
+            }
+           
+            @if(oldChats){
+                @for(item of messages; track $index){
+                    @if(item.chats.sender===userName){
+                    <div class="row pt-2">
+                        <div class="col-md-6"></div>
+        
+                        <div class="col-md-6">
+                            @if(item.chats.message!==''){
+                            <small>{{item.chats.date | date:'shortDate'}}</small>
+                            <div class="alert alert-success d-inline-block float-end" role="alert">{{item.chats.message}}</div>
+                            }
+                        </div>
+                    </div>
+                    }@else{
+                    <div class="row pt-2">
+                        <div class="col-md-6">
+                            @if(item.chats.message!==''){
+                            <small>{{item.chats.date | date:'shortDate'}}</small>
+                            <div class="alert alert-primary d-inline-block" role="alert">{{item.chats.message}}</div>
+                            }
+                        </div>
+                        <div class="col-md-6"></div>
+                    </div>
+                    }
+        
+                    }
+            }@else{
+                @for(item of newChats; track $index){
+                    @if(item.chats.sender===userName){
+                    <div class="row pt-2">
+                        <div class="col-md-6"></div>
+        
+                        <div class="col-md-6">
+                            @if(item.chats.message!==''){
+                            <small>{{item.chats.date | date:'shortDate'}}</small>
+                            <div class="alert alert-success d-inline-block float-end" role="alert">{{item.chats.message}}</div>
+                            }
+                        </div>
+                    </div>
+                    }@else{
+                    <div class="row pt-2">
+                        <div class="col-md-6">
+                            @if(item.chats.message!==''){
+                            <small>{{item.chats.date | date:'shortDate'}}</small>
+                            <div class="alert alert-primary d-inline-block" role="alert">{{item.chats.message}}</div>
+                            }
+                        </div>
+                        <div class="col-md-6"></div>
+                    </div>
+                    }
+        
+                    }
+            }
+           
+
+        </div>
+        <p class="text-info">{{typing}}</p>
+        <form [formGroup]="chatForm">
+
+            <div id="submit" formGroupName="chats" class="p-3 w-100 d-flex flex-row">
+                <input type="text" placeholder="Enter message" class="form-control" (input)="startedTyping()"
+                    formControlName="message">
+                <button class="btn btn-secondary btn-sm float-end" type="submit" (click)="sendMessage()">Send</button>
+            </div>
+
+        </form>
+    </div>
+}
+    
+
+   
+
+</section>
