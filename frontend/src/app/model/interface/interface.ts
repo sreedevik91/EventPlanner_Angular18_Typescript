@@ -85,7 +85,7 @@ interface IChoice {
     choiceType: string;
     choicePrice: number;
     choiceImg: string;
-    _id:string;
+    _id: string;
 }
 
 export interface IEvent {
@@ -130,7 +130,7 @@ export interface IEventServiceResponse {
 export interface IBookedServices {
     // serviceId: string;
     // providerId: string;
-    _id?:string;
+    _id?: string;
     serviceName: string;
     providerName: string;
     choiceName: string;
@@ -153,12 +153,17 @@ export interface IBooking {
     deliveryDate: Date;
     venue: IAddress;
     totalCount: number;
-    isConfirmed:boolean;
+    isConfirmed: boolean;
 }
 
-export interface IServicesArray{
-service:string;
-name:string;
-price:number;
-providerId: string;
+export interface IServicesArray {
+    service: string;
+    name: string;
+    price: number;
+    providerId: string;
+}
+
+export interface IChatJoiningResponse{
+    roomId:string;
+    message:string;
 }
