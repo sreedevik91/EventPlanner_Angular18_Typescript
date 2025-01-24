@@ -12,7 +12,7 @@ const ChatSchema: Schema<IChat> = new Schema<IChat>({
     type: String,
     // required: true
   },
-  chats: {
+  chats: [{
     sender: {
       type: String
     },
@@ -25,7 +25,7 @@ const ChatSchema: Schema<IChat> = new Schema<IChat>({
     date: {
       type: Date
     }
-  }
+  }]
 },
   {
     timestamps: true

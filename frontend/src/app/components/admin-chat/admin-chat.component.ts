@@ -67,24 +67,11 @@ export class AdminChatComponent implements OnInit {
       }
     })
 
-    this.chatService.getChatsByUser(this.activeUser).subscribe({
-      next: (res: any) => {
-        console.log('user chats from db:', res.body.data);
-        const chats = res.body.data
-        for (let chat of chats) {
-          this.messages.push(chat)
-        }
-        console.log('user messages array:', this.messages);
-      },
-      error: (error: any) => {
-        console.log('error from getMessage:', error.message);
-      }
-    })
-
-  
+     
     this.requestActiveUsers()
     this.getActiveUsers()
     this.getMessage()
+    this.getAllChats()
     this.getJoiningNotification()
     this.getLeavingNotification
     this.getTypingNotification()
@@ -120,12 +107,37 @@ export class AdminChatComponent implements OnInit {
     this.isJoinedChat = true
     this.activeUser = userId
 
+    // this.chatService.getChatsByUser(this.activeUser).subscribe({
+    //   next: (res: any) => {
+    //     console.log('user chats from db:', res.body.data);
+    //     const chats=res.body.data
+    //     for(let item of chats){
+    //       this.messages.push(item)
+    //     }
+    //     console.log('user messages array:', this.messages);
+    //   },
+    //   error: (error: any) => {
+    //     console.log('error from getMessage:', error.message);
+    //   }
+    // })
+
+    this.getAllChats()
+    this.chatService.joinRoom(userId)
+    this.getUserMessages()
+  }
+
+  requestActiveUsers() {
+    this.chatService.activeUsers()
+  }
+
+  getAllChats() {
     this.chatService.getChatsByUser(this.activeUser).subscribe({
       next: (res: any) => {
         console.log('user chats from db:', res.body.data);
-        const chats=res.body.data
-        for(let item of chats){
-          this.messages.push(item)
+        const chatData = res.body.data
+        this.messages=[]
+        for (let chat of chatData.chats) {
+          this.messages.push(chat)
         }
         console.log('user messages array:', this.messages);
       },
@@ -133,13 +145,11 @@ export class AdminChatComponent implements OnInit {
         console.log('error from getMessage:', error.message);
       }
     })
-
-    this.chatService.joinRoom(userId)
-    this.getUserMessages()
   }
 
-  requestActiveUsers() {
-    this.chatService.activeUsers()
+  togglePrevChats() {
+    this.oldChats = !this.oldChats
+    this.getAllChats()
   }
 
   sendMessage() {

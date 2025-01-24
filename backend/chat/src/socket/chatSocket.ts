@@ -41,6 +41,7 @@ export const handleSocketConnection = (io: Server) => {
             console.log(data);
             const roomId=rooms[data.userId]
             console.log('user roomId: ',roomId);
+            data.roomId=roomId
             const saveChat = await chatServices.saveChats(data)
             console.log('saved chat: ', saveChat);
             messages.push(data)
@@ -52,6 +53,7 @@ export const handleSocketConnection = (io: Server) => {
             console.log(data);
             const roomId=rooms[userId]
             console.log('admin roomId: ',roomId);
+            data.roomId=roomId
             const saveChat = await chatServices.saveChats(data)
             console.log('saved chat: ', saveChat,socket.id);
             io.to(roomId).emit('receivedMessage', data)

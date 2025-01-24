@@ -39,8 +39,8 @@ export class UserChatComponent implements OnInit {
   roomId: string = ''
   userName: string = ''
   userId: string = ''
-  oldChats:boolean=false
-  isLeftChat:boolean=false
+  oldChats: boolean = false
+  isLeftChat: boolean = false
 
   ngOnInit(): void {
 
@@ -62,22 +62,9 @@ export class UserChatComponent implements OnInit {
       }
     })
 
-    this.chatService.getChatsByUser(this.userId).subscribe({
-      next: (res: any) => {
-        console.log('user chats from db:', res.body.data);
-        const chats = res.body.data
-        for (let chat of chats) {
-          this.messages.push(chat)
-        }
-        console.log('user messages array:', this.messages);
-      },
-      error: (error: any) => {
-        console.log('error from getMessage:', error.message);
-      }
-    })
-
     this.startChat()
     this.getMessage()
+    this.getAllChats()
     this.getJoiningNotification()
     this.getLeavingNotification
     this.getTypingNotification()
@@ -108,9 +95,31 @@ export class UserChatComponent implements OnInit {
     })
   }
 
+  getAllChats() {
+    this.chatService.getChatsByUser(this.userId).subscribe({
+      next: (res: any) => {
+        console.log('user chats from db:', res.body.data);
+        const chatData = res.body.data
+        this.messages = []
+        for (let chat of chatData.chats) {
+          this.messages.push(chat)
+        }
+        console.log('user messages array:', this.messages);
+      },
+      error: (error: any) => {
+        console.log('error from getMessage:', error.message);
+      }
+    })
+  }
+
+  togglePrevChats() {
+    this.oldChats = !this.oldChats
+    this.getAllChats()
+  }
+
   startChat() {
-    this.oldChats=false
-    this.isLeftChat=false
+    this.oldChats = false
+    this.isLeftChat = false
     this.chatService.startChat(this.userName, this.userId)
   }
 
@@ -126,7 +135,7 @@ export class UserChatComponent implements OnInit {
   }
 
   leaveChat() {
-    this.isLeftChat=true
+    this.isLeftChat = true
     this.chatService.leaveRoom(this.userName, this.userId)
   }
 
