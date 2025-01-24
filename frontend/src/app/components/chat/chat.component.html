@@ -1,0 +1,12 @@
+<section>
+
+    @if(role==='admin'){
+    <app-admin-chat></app-admin-chat>
+    }@else if(role==='user' || role==='provider'){
+    <app-user-chat></app-user-chat>
+    }
+
+</section>
+
+
+

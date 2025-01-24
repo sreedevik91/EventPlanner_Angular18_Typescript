@@ -1,50 +1,59 @@
-<div style="display: flex;" class="overflow-x-hidden">
-  <div style="display: inline-block;width: 20%;">
+<div class="overflow-x-hidden">
+  <div class="row">
+    <div class="col-md-2 col-sm-2">
 
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-white vh-100" style="width: 280px; background-color: #47663B;">
-      <a routerLink="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-        <svg class="bi me-2" width="40" height="32">
-          <use xlink:href="#bootstrap"></use>
-        </svg>
-        <!-- <span style="font-family: 'Bokor', system-ui; font-weight: 400; font-size: xx-large;">Dream Events</span> -->
-        <span style="font-family: 'Alex Brush', cursive; font-weight: 400; font-size: xx-large;">Dream Events</span>
-      </a>
-      <hr>
-      <ul class="nav nav-pills flex-column mb-auto">
-        @for (item of userMenus; track $index) {
+      <div class="d-flex flex-column p-2 text-white vh-100" style="background-color: #47663B;">
+        <a routerLink="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+          <svg class="bi me-2" width="40" height="32">
+            <use xlink:href="#bootstrap"></use>
+          </svg>
+          <!-- <span style="font-family: 'Bokor', system-ui; font-weight: 400; font-size: xx-large;">Dream Events</span> -->
+          <span style="font-family: 'Alex Brush', cursive; font-weight: 400; font-size: xx-large;">Dream Events</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+          @for (item of userMenus; track $index) {
           <li class="nav-item">
-            <a [routerLink]="item.path" class="nav-link text-white text-decoration-none" routerLinkActive="active" aria-current="page">
+            <a [routerLink]="item.path" class="nav-link text-white text-decoration-none" routerLinkActive="active"
+              aria-current="page">
               <svg class="bi me-2" width="16" height="16">
                 <use xlink:href="#home"></use>
               </svg>
               {{item.text}}
             </a>
           </li>
-        }
-        
-      </ul>
-      <hr>
-      <div class="dropdown">
-        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1"
-          data-bs-toggle="dropdown" aria-expanded="false">
-          <img src="" alt="" width="32" height="32" class="rounded-circle me-2">
-          <strong>{{userName}}</strong>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-          <!-- <li><a class="dropdown-item" href="#">New project...</a></li>
+          }
+
+        </ul>
+        <div>
+          <a routerLink="chat"><i class="fa-solid fa-comment" style="color: #f3f631;"></i></a>
+        </div>
+        <hr>
+        <div class="dropdown">
+          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+            id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="" alt="" width="32" height="32" class="rounded-circle me-2">
+            <strong>{{userName}}</strong>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+            <!-- <li><a class="dropdown-item" href="#">New project...</a></li>
           <li><a class="dropdown-item" href="#">Settings</a></li>
           <li><a class="dropdown-item" href="#">Profile</a></li> -->
-          <li>
-            <hr class="dropdown-divider">
-          </li>
-          <li><a class="dropdown-item" (click)="logout()">Sign out</a></li>
-        </ul>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" (click)="logout()">Sign out</a></li>
+          </ul>
+        </div>
       </div>
     </div>
+    <!-- <div style="display: inline-block;width: 80%;"> -->
+
+    <div class="col-md-10 col-sm-10">
+      <router-outlet />
+    </div>
   </div>
-  <div style="display: inline-block;width: 80%;">
-    <router-outlet />
-  </div>
+
 </div>
 
 
@@ -52,10 +61,46 @@
 
 
 
+<!-- =============================================== -->
+
+<!-- <div class="sidebar">
+
+  <nav class="nav flex-column">
+    <a href="" class="nav-link">
+      <span class="icon">
+        <i>icon</i>
+      </span>
+      <span class="description">Dashboard</span>
+    </a>
+    <a href="" class="nav-link">
+      <span class="description">Dashboard</span>
+    </a>
+    <a href="" class="nav-link">
+      <span class="description">Dashboard</span>
+    </a>
+    <a href="" class="nav-link">
+      <span class="description">Dashboard</span>
+    </a>
+    <a href="" class="nav-link">
+      <span class="description">Dashboard</span>
+    </a>
+  </nav>
+</div>
+
+<main class="main-content">
+
+</main> -->
+
+
+<!-- =============================================== -->
 
 
 
-
+<!-- <div style="display: flex;" class="overflow-x-hidden">
+  <div style="display: inline-block;width: 20%;">
+    
+  </div>
+</div> -->
 
 
 
