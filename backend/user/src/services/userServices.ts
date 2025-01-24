@@ -365,9 +365,8 @@ class UserServices {
 
                     if (otp === otpData.otp) {
                         console.log('otp matched');
-                        user.isEmailVerified = true
-                        await user.save()
-                        return { success: true, message: 'Otp matched' }
+                        const updateEmail= await UserRepository.updateUser(id,{isEmailVerified:true})
+                        return updateEmail ? { success: true, message: 'Otp matched' } : { success: false, message: 'Something went wrong' }
                     } else {
                         console.log('otp not matched');
                         return { success: false, message: 'Otp did not match' }

@@ -1,0 +1,16 @@
+#header{
+    height: 50px;
+    }
+    
+    #chatArea{
+        /* overflow-y: scroll; */
+        overflow-y: auto;
+        overflow-x: hidden;
+        height:calc(100vh - 120px);
+    
+    }
+    
+    #submit{
+        height: 70px;
+    
+    }
