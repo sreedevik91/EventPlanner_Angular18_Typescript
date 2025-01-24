@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { Menus } from '../../model/menus';
@@ -38,6 +38,8 @@ export class LayoutComponent {
     console.log('User menus: ',this.userMenus);
     
   }
+
+
 
   logout() {
     this.userService.userLogout().subscribe((res: any) => {

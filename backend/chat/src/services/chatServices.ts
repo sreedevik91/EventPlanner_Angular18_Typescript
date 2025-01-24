@@ -23,8 +23,8 @@ class ChatServices {
             //         today.getFullYear() === chatDate.getFullYear()
             //     )
             // })
-            
-            console.log('getEventById service response: ', data);
+
+            console.log('getChatsByUserId service response: ', data);
 
             if (data) {
                 return { success: true, data: data }
@@ -32,20 +32,30 @@ class ChatServices {
                 return { success: false, message: 'Could not get booking, Something went wrong' }
             }
         } catch (error: any) {
-            console.log('Error from getEventById service: ', error.message);
+            console.log('Error from getChatsByUserId service: ', error.message);
         }
     }
 
-    async saveChats(data: any) {
+    async saveChats(data: IChat) {
         try {
             console.log('new chat to save: ', data);
-            const newChat = await chatRepository.createChat(data)
-            console.log('new chat: ', newChat);
-            if (newChat) {
-                return { success: true, data: newChat }
+            // const prevChats = await chatRepository.getChatsByUserId(data.userId)
+            const prevChats = await chatRepository.getChatsByRoomId(data.roomId)
+            console.log('prevChats: ',prevChats);
+            
+            if (prevChats && (Object.keys(prevChats)).length > 0) {
+                const updateChat = await chatRepository.updateChat(prevChats._id, { $push: { chats: data.chats } })
+                return { success: true, data: updateChat }
             } else {
-                return { success: false, message: 'Could not get booking, Something went wrong' }
+                const newChat = await chatRepository.createChat(data)
+                console.log('new chat: ', newChat);
+                if (newChat) {
+                    return { success: true, data: newChat }
+                } else {
+                    return { success: false, message: 'Could not get booking, Something went wrong' }
+                }
             }
+
         } catch (error: any) {
             console.log('Error from saveChats service: ', error.message);
         }

@@ -1,6 +1,7 @@
 import { Date, Document } from "mongoose";
 
 export interface IChat extends Document {
+  _id: string;
   userId: string;
   roomId:string;
   chats: IUserChat[];
@@ -12,6 +13,4 @@ export interface IUserChat {
   date: Date;
 }
 
-export interface IChatDb extends IChat, Document {
-  _id: string;
-}
+

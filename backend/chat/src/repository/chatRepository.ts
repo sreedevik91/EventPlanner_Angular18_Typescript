@@ -10,8 +10,14 @@ class ChatRepository extends BaseRepository<IChat> {
         super(Chat)
     }
 
-    async getChatsByUserId(id: string):Promise<IChat[]> {
-        let chats =await Chat.find({userId:id})
+    async getChatsByUserId(id: string):Promise<IChat | null> {
+        let chats =await Chat.findOne({userId:id})
+        return chats
+    } 
+
+
+    async getChatsByRoomId(roomId: string):Promise<IChat | null> {
+        let chats =await Chat.findOne({roomId})
         return chats
     } 
 
