@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import serviceServices from "../services/serviceServices"
 import { IChoice } from "../interfaces/serviceInterfaces";
 import fs from 'fs'
+import cloudinary from "../utils/cloudinary";
 
 
 class ServiceController {
@@ -29,25 +30,29 @@ class ServiceController {
             console.log('new service images to register: ', req.files);
             const { name, events, provider, choices } = req.body
             const files: any = req.files
-            let img = files?.img ? files?.img[0].filename : ''
-            let choicesWithImg = JSON.parse(choices).map((choice: any, index: number) => {
+
+            let imgName = files?.img ? files?.img[0].filename : ''
+            let imgPath = files?.img ? files?.img[0].path : ''
+            let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
+            let img = cloudinaryImgData.url
+            let choicesArray = JSON.parse(choices)
+            let choicesWithImg = await Promise.all(choicesArray.map(async (choice: any, index: number) => {
                 const choiceImgFile = files?.choiceImg
                 console.log('choiceImgFileName: ', files?.choiceImg[index]?.filename);
                 const { choiceImgCategory, ...rest } = choice
-                choiceImgFile.forEach((img: any) => {
-                    if (choiceImgCategory === img.originalname) {
-                        rest.choiceImg = img.filename
-                    }
-                })
 
-                // return {
-                //     ...rest,
-                //     choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : ''
-                // }
+                for (let img of choiceImgFile) {
+                    if (choiceImgCategory === img.originalname) {
+                    let cloudinaryImgData = await cloudinary.uploader.upload(img.path, { public_id: img.filename })
+                    let imgUrl = cloudinaryImgData.url
+                    rest.choiceImg = imgUrl
+                    }
+                }
 
                 return rest
-            })
+            }))
 
+       
             const data = {
                 name,
                 img,
@@ -126,34 +131,76 @@ class ServiceController {
             console.log('service images to update: ', files);
             console.log('service choices to update: ', JSON.parse(choices));
 
-            let choicesWithImg = []
-            let imgNew = ''
+            let choicesWithImg = JSON.parse(choices)
+            let imgNew = img
 
-            if (files && Object.keys(files).length >0) {
-                imgNew = files?.img ? files?.img[0].filename : img
-                choicesWithImg = JSON.parse(choices).map((choice: any, index: number) => {
+            if (files && Object.keys(files).length > 0) {
+
+                let imgName = files?.img ? files?.img[0].filename : ''
+                let imgPath = files?.img ? files?.img[0].path : ''
+
+                // if (imgPath) {
+                //     try {
+                //         let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
+                //         imgNew = cloudinaryImgData.url || img
+                //     } catch (error: any) {
+                //         console.error('Error uploading service image to cloudinary:', error.message);
+                //     }
+                // }
+
+                if (!imgPath) {
+                    console.warn('No valid image file path provided for upload.');
+                    imgNew = img;
+                }else{
+                    let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
+                    imgNew = cloudinaryImgData.url || img
+                }
+
+
+                // imgNew = files?.img ? files?.img[0].filename : img
+                let parsedArray = JSON.parse(choices)
+                choicesWithImg = await Promise.all(parsedArray.map(async (choice: any, index: number) => {
                     const choiceImgFile = files?.choiceImg
                     console.log('choiceImgFileName: ', files?.choiceImg[index]?.filename);
                     const { choiceImgCategory, ...rest } = choice
-                    choiceImgFile.forEach((img: any) => {
-                        if (choiceImgCategory === img.originalname) {
-                            rest.choiceImg = img.filename
-                        }
-                    })
-                    // return {
-                    //     ...rest,
-                    //     // choiceImg: files?.choiceImg ? files?.choiceImg[index].filename : choice.choiceImg
-                    //     // choiceImg: files?.choiceImg[index]?.filename ? files?.choiceImg[index]?.filename : choice.choiceImg
 
-                    //     choiceImg: choice.choiceName === choiceImgCategory ? files?.choiceImg[index].filename : choice.choiceImg
-                    // }
+                    // choiceImgFile.forEach((img: any) => {
+                    //     if (choiceImgCategory === img.originalname) {
+                    //         rest.choiceImg = img.filename
+                    //     }
+                    // })
+
+                    for (let img of choiceImgFile) {
+
+                        // if (img?.path) {
+                        //     try {
+                        //         let cloudinaryImgData = await cloudinary.uploader.upload(img.path, { public_id: img.filename })
+                        //         let imgUrl = cloudinaryImgData.url
+                        //         rest.choiceImg = imgUrl
+                        //     } catch (error: any) {
+                        //         console.error('Error uploading service image to cloudinary:', error.message);
+
+                        //     }
+                        // }
+
+                        if (!img?.path) {
+                            console.warn(`No valid path for choice image at index ${index}.`);
+                            continue;
+                        }
+
+                        let cloudinaryImgData = await cloudinary.uploader.upload(img.path, { public_id: img.filename })
+                        let imgUrl = cloudinaryImgData.url
+                        rest.choiceImg = imgUrl
+                    }
 
                     return rest
                 })
-            } else {
-                imgNew = img
-                choicesWithImg = JSON.parse(choices)
-            }
+                )
+            } 
+            // else {
+            //     imgNew = img
+            //     choicesWithImg = JSON.parse(choices)
+            // }
 
 
             console.log('choicesWithImg: ', choicesWithImg);
@@ -165,6 +212,8 @@ class ServiceController {
                 provider,
                 choices: choicesWithImg
             }
+
+            console.log('final service data to edit: ', newData);
 
             const newServiceResponse = await serviceServices.editService(id, newData)
             newServiceResponse?.success ? res.status(200).json(newServiceResponse) : res.status(400).json(newServiceResponse)

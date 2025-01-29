@@ -4,6 +4,7 @@ import { IEventServices } from "../interfaces/eventInterfaces";
 
 import fs from 'fs'
 import { AppError } from "../utils/appError";
+import cloudinary from "../utils/cloudinary";
 
 
 class EventController {
@@ -38,8 +39,10 @@ class EventController {
             console.log('new service images to register: ', req.file);
             const { name, services } = req.body
             const file: any = req.file
-            let img = file? file.filename : ''
-           
+            let imgName = file? file.filename : ''
+            let imgPath = file ? file.path : ''
+            let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
+            let img = cloudinaryImgData.url
             const data = {
                 name,
                 img,
@@ -137,7 +140,11 @@ class EventController {
             const { name, img, services} = req.body
 
             const file: any = req.file
-            let imgNew = file ? file.filename : img
+            let imgName = file? file.filename : ''
+            let imgPath = file ? file.path : ''
+            let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
+            let imgNew = cloudinaryImgData.url ||  img
+            
             // let choicesWithImg = JSON.parse(choices).map((choice: any, index: number) => {
             //     return {
             //         ...choice,

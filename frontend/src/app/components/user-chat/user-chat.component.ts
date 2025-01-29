@@ -1,11 +1,11 @@
 
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { Chat, ChatSearchFilter, IChat } from '../../model/class/chatClass';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpParams } from '@angular/common/http';
+import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { ChatService } from '../../services/chatService/chat.service';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
-import { IChatJoiningResponse } from '../../model/interface/interface';
+import { IChatJoiningResponse, IResponse } from '../../model/interface/interface';
 import { DatePipe } from '@angular/common';
 
 
@@ -14,10 +14,13 @@ import { DatePipe } from '@angular/common';
   standalone: true,
   imports: [ReactiveFormsModule, DatePipe],
   templateUrl: './user-chat.component.html',
-  styleUrl: './user-chat.component.css'
+  styleUrl: './user-chat.component.css',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 
 export class UserChatComponent implements OnInit {
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>
 
   chatService = inject(ChatService)
 
@@ -41,6 +44,13 @@ export class UserChatComponent implements OnInit {
   userId: string = ''
   oldChats: boolean = false
   isLeftChat: boolean = false
+
+  showEmojiPicker: boolean = false
+
+  recording: boolean = false
+  mediaRecorder!: MediaRecorder;
+  recordedChunks: any[] = []
+
 
   ngOnInit(): void {
 
@@ -71,6 +81,7 @@ export class UserChatComponent implements OnInit {
 
   }
 
+
   initialiseChatForm() {
     this.chatForm = new FormGroup({
       // _id: new FormControl(this.chatFormObj._id),
@@ -80,6 +91,7 @@ export class UserChatComponent implements OnInit {
         sender: new FormControl(this.chatFormObj.chats.sender, [Validators.required]),
         receiver: new FormControl(this.chatFormObj.chats.receiver, [Validators.required]),
         message: new FormControl(this.chatFormObj.chats.message, [Validators.required]),
+        type: new FormControl(this.chatFormObj.chats.type, [Validators.required]),
         date: new FormControl(new Date())
       })
     })
@@ -124,6 +136,7 @@ export class UserChatComponent implements OnInit {
   }
 
   sendMessage() {
+    this.chatForm.get('chats.type')?.setValue('text')
     console.log(this.chatForm.value);
     this.chatService.sendMessage(this.chatForm.value)
     this.chatForm.get('chats.message')?.setValue('')
@@ -143,7 +156,7 @@ export class UserChatComponent implements OnInit {
     this.chatService.getMessage().subscribe({
       next: (data: any) => {
         console.log('sent message from server:', data);
-        this.messages.push(data)
+        this.messages.push(data.chats)
         this.newChats.push(data)
         // this.newChats=data
         console.log('user messages array:', this.messages);
@@ -206,5 +219,104 @@ export class UserChatComponent implements OnInit {
       }
     })
   }
+
+
+  toggleEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker
+  }
+
+  triggerFileInput() {
+    this.fileInput.nativeElement.click()
+  }
+
+  handleFileUpload(event: Event) {
+    const input = <HTMLInputElement>event.target
+    if (input.files && input.files.length > 0) {
+      console.log('File(s) selected:', input, input.files[0]);
+      const formData = new FormData()
+      const file = input.files[0]
+      formData.append('img', file)
+
+      this.chatService.getImgUrlFromCloudinary(formData).subscribe({
+        next: (res: HttpResponse<IResponse>) => {
+          console.log(res.body?.data);
+          this.chatForm.get('chats.message')?.setValue(res.body?.data.imgUrl)
+          this.chatForm.get('chats.type')?.setValue(res.body?.data.type)
+          this.chatService.sendMessage(this.chatForm.value)
+          console.log(this.chatForm.value);
+          this.chatForm.get('chats.message')?.setValue('')
+
+        },
+        error: (err: HttpErrorResponse) => {
+          console.log(err, err.error.message);
+        }
+      })
+    }
+  }
+
+
+  startRecording() {
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.log('Your browser does not support audio recording.');
+      return
+    }
+
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      this.mediaRecorder = new MediaRecorder(stream)
+      this.recording = true
+      this.recordedChunks = []
+
+      this.mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.recordedChunks.push(event.data)
+        }
+      }
+
+      this.mediaRecorder.onstop = () => {
+        this.recording = false
+        const audioBlob = new Blob(this.recordedChunks, { type: 'audio/ogg' })
+        console.log('audioBlob: ', audioBlob);
+        const formData = new FormData()
+        formData.append('audio', audioBlob)
+        // get cloudinary link from server and send mesage to socket 
+        this.chatService.getAudioUrlFromCloudinary(formData).subscribe({
+          next: (res: HttpResponse<IResponse>) => {
+            console.log(res.body?.data);
+            this.chatForm.get('chats.message')?.setValue(res.body?.data.imgUrl)
+            this.chatForm.get('chats.type')?.setValue(res.body?.data.type)
+            this.chatService.sendMessage(this.chatForm.value)
+            console.log(this.chatForm.value);
+            this.chatForm.get('chats.message')?.setValue('')
+
+          },
+          error: (err: HttpErrorResponse) => {
+            console.log(err, err.error.message);
+          }
+        })
+      }
+
+      this.mediaRecorder.start()
+
+    })
+
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder) {
+      this.mediaRecorder.stop()
+    }
+  }
+
+  addEmoji(event: any) {
+
+    console.log('emoji click event: ', event, event.detail.unicode);
+    const control = this.chatForm.get('chats.message')
+    const userMessage = control?.value || ''
+    control?.setValue(`${userMessage}${event.detail.unicode}`)
+    console.log(control?.value);
+
+  }
+
 
 }

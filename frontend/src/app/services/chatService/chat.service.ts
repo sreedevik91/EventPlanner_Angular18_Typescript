@@ -40,6 +40,14 @@ export class ChatService {
     return this.http.get(`${this.baseUrl}${userId}`, { observe: 'response' })
   }
 
+  getImgUrlFromCloudinary( data: any){
+    return this.http.post(`${this.baseUrl}upload`,data, { observe: 'response' })
+  }
+
+  getAudioUrlFromCloudinary( data: any){
+    return this.http.post(`${this.baseUrl}audioUpload`,data, { observe: 'response' })
+  }
+
   startChat(userName: string, userId: string) {
     this.socket.emit('startChat', { userName, userId })
   }

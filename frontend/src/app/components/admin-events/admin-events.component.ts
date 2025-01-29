@@ -18,7 +18,7 @@ import { FormComponent } from '../../shared/components/form/form.component';
   templateUrl: './admin-events.component.html',
   styleUrl: './admin-events.component.css'
 })
-export class AdminEventsComponent implements OnInit  {
+export class AdminEventsComponent implements OnInit {
 
   eventFromObj: Events = new Events()
   searchFilterFormObj: EventSearchFilter = new EventSearchFilter()
@@ -27,6 +27,7 @@ export class AdminEventsComponent implements OnInit  {
   searchFilterForm: FormGroup = new FormGroup({})
 
   @ViewChild('modal') formModal!: ElementRef
+  @ViewChild('eventImgInput') eventImgInput!: ElementRef<HTMLInputElement>
 
   searchParams = new HttpParams()
 
@@ -432,7 +433,6 @@ export class AdminEventsComponent implements OnInit  {
         } else {
           console.log('could not get event', res.body?.message || '');
           this.alertService.getAlert('alert alert-danger', 'Failed!', res.body?.message || '')
-
         }
       },
       error: (error: HttpErrorResponse) => {
@@ -485,11 +485,15 @@ export class AdminEventsComponent implements OnInit  {
 
   hideModal() {
     this.formModal.nativeElement.style.display = 'none'
-    this.isAddEvent = true
     this.imgUrl = ''
     this.eventForm.reset()
     this.eventFromObj = new Events()
     this.initialiseEventForm()
+    this.isAddEvent = true
+    this.eventServicesList.set([])
+    this.eventImgInput.nativeElement.value=''
+    console.log('on closing the model eventForm value: ', this.eventForm.value);
+
   }
 
 
