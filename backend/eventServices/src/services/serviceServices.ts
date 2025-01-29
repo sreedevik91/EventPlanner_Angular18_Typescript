@@ -75,26 +75,13 @@ class ServiceServices {
             }
         } catch (error: any) {
             console.log('Error from getTotalServices service: ', error.message);
+            return { success: false, message: error.message };
         }
 
     }
 
     async addService(newServiceData: Partial<IService>) {
         try {
-            console.log('addService data: ', newServiceData);
-
-
-            // const providerId = newServiceData.provider || ''
-            // const service = await serviceRepository.getServiceByProvider(providerId)
-
-            // if (service) {
-            //     newServiceData.events?.forEach(event => {
-            //         if (!service.events.includes(event)) {
-            //             service.events.push(event)
-            //         }
-            //     })
-            //     newServiceData.events = service.events
-
 
             console.log('addService data: ', newServiceData);
 
@@ -103,7 +90,9 @@ class ServiceServices {
             const service = await serviceRepository.getServiceByProvider(serviceName, providerId)
             console.log('existing service data: ', service);
 
-            if (service) {
+            let updatedService
+
+            if (service !== null) {
                 newServiceData.events?.forEach(event => {
                     if (!service.events.includes(event)) {
                         service.events.push(event)
@@ -116,7 +105,7 @@ class ServiceServices {
                     let existingChoice = service.choices.filter(choice => choice.choiceName === newChoice.choiceName)
 
                     if (existingChoice) {
-                        existingChoice[0].choiceName === newChoice.choiceName
+                        existingChoice[0].choiceName = newChoice.choiceName
                         existingChoice[0].choicePrice = newChoice.choicePrice
                         existingChoice[0].choiceImg = newChoice.choiceImg || existingChoice[0].choiceImg
                         existingChoice[0].choiceType = newChoice.choiceType || existingChoice[0].choiceType
@@ -128,52 +117,30 @@ class ServiceServices {
                 newServiceData.choices = service.choices
                 console.log('addService existing service final data to update: ', newServiceData);
 
-                const updatedService = await serviceRepository.updateService(service.id, newServiceData)
-
-                const updateEventWithService = await updateEventWithNewServiceGrpc(serviceName, updatedService?.events!)
-
-                console.log('updateEventWithService response: ', updateEventWithService);
+                updatedService = await serviceRepository.updateService(service.id, newServiceData)
 
                 console.log('addService existing service update response: ', newServiceData);
 
-
-                // return updatedService ? { success: true, data: updatedService } : { success: false, message: 'Could not update the service' }
-
-                return updatedService ? { success: true, data: updatedService, message: 'Service updated with details given' } : { success: false, message: 'Could not update the service' }
-
             } else {
-                const data = await serviceRepository.createService(newServiceData)
-                const updateEventWithService = await updateEventWithNewServiceGrpc(serviceName, data?.events!)
+                console.log('Creating new service with data: ', newServiceData);
+                updatedService = await serviceRepository.createService(newServiceData)
+                console.log('addService new service response: ', updatedService);
 
-                console.log('updateEventWithService response: ', updateEventWithService);
-
-                console.log('addService service response: ', data);
-
-                if (data) {
-
-                    // return { success: true, data: data }
-
-                    return { success: true, data: data, message: 'New service details added' }
-
-                } else {
-                    return { success: false, message: 'Could not create service' }
-                }
+            }
+           
+            try {
+                const updateEventWithService = await updateEventWithNewServiceGrpc(serviceName, updatedService?.events!)
+                console.log('grpc updateEventWithService response: ', updateEventWithService);
+            } catch (grpcError: any) {
+                console.log('grpc updateEventWithService error: ', grpcError.message);
             }
 
+            return updatedService ? { success: true, data: updatedService, message: service ? 'Service updated successfully' : 'New service added successfully' } : { success: false, message: 'Could not update the service' }
 
-            // const data = await serviceRepository.createService(serviceData)
-
-            // console.log('addService data: ', serviceData);
-
-            // console.log('addService service response: ', data);
-            // if (data) {
-            //     return { success: true, data: data }
-            // } else {
-            //     return { success: false, message: 'Could not create service' }
-            // }
 
         } catch (error: any) {
             console.log('Error from addService service: ', error.message);
+            return { success: false, message: error.message };
         }
 
     }
@@ -239,6 +206,7 @@ class ServiceServices {
             }
         } catch (error: any) {
             console.log('Error from getServices: ', error.message);
+            return { success: false, message: error.message };
         }
 
     }
@@ -256,6 +224,7 @@ class ServiceServices {
             }
         } catch (error: any) {
             console.log('Error from deleteService service: ', error.message);
+            return { success: false, message: error.message };
         }
 
     }
@@ -272,6 +241,7 @@ class ServiceServices {
             }
         } catch (error: any) {
             console.log('Error from deleteService service: ', error.message);
+            return { success: false, message: error.message };
         }
 
     }
@@ -284,17 +254,18 @@ class ServiceServices {
 
             console.log('updatedService: ', updatedService);
 
-            if (updatedService) {
-                const updateEventWithService = await updateEventWithNewServiceGrpc(updatedService?.name, updatedService?.events)
-
-                console.log('updateEventWithService response: ', updateEventWithService);
-
-                return { success: true, data: updatedService, message: 'Service updated successfuly' }
-            } else {
-                return { success: false, message: 'Could not updated service' }
+            try {
+                const updateEventWithService = await updateEventWithNewServiceGrpc(updatedService?.name!, updatedService?.events!)
+                console.log('grpc updateEventWithService response: ', updateEventWithService);
+            } catch (grpcError:any) {
+                console.log('grpc updateEventWithService error: ', grpcError.message);
             }
+
+          return updatedService ? { success: true, data: updatedService, message: 'Service updated successfuly' } : { success: false, message: 'Could not updated service' }
+
         } catch (error: any) {
             console.log('Error from editService: ', error.message);
+            return { success: false, message: error.message };
         }
 
     }
@@ -322,6 +293,7 @@ class ServiceServices {
 
         } catch (error: any) {
             console.log('Error from editStatus service: ', error.message);
+            return { success: false, message: error.message };
         }
 
     }
@@ -377,6 +349,7 @@ class ServiceServices {
         } catch (error: any) {
 
             console.log('Error from approveService: ', error.message)
+            return { success: false, message: error.message };
         }
 
     }
@@ -405,6 +378,7 @@ class ServiceServices {
 
         } catch (error: any) {
             console.log('Error from getServiceByName service: ', error.message);
+            return { success: false, message: error.message };
         }
 
     }

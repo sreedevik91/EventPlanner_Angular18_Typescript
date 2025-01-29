@@ -1,6 +1,7 @@
 
 import { Server, Socket } from "socket.io";
 import chatServices from "../services/chatServices";
+import { getUserByIdGrpc } from "../grpc/grpcUserClient";
 
 const rooms: any = {}
 const activeUsers: any = new Set()
@@ -23,9 +24,17 @@ export const handleSocketConnection = (io: Server) => {
             io.to(roomId).emit('roomId', roomId)
         })
 
-        socket.on('getActiveUsers', () => {
+        socket.on('getActiveUsers', async () => {
             console.log(`updatedActiveUsers: `, Array.from(activeUsers));
-            io.emit('updatedActiveUsers', Array.from(activeUsers))     
+            const usersArray:string[]=Array.from(activeUsers)
+            const userDetailArray:{userId:string,userName:string}[]=[]
+            for(let userId of usersArray){
+                const userData= await getUserByIdGrpc(userId)
+                userDetailArray.push({userId,userName:userData.name})
+            }
+            console.log('userDetailArray: ', userDetailArray);
+            
+            io.emit('updatedActiveUsers', userDetailArray)     
         })
 
         socket.on('joinChat', ({ userId }) => {

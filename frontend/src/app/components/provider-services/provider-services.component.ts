@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
 import { IChoice, Service, ServiceSearchFilter } from '../../model/class/serviceClass';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
@@ -26,6 +26,9 @@ export class ProviderServicesComponent implements OnInit {
   searchFilterFormObj: ServiceSearchFilter = new ServiceSearchFilter()
 
   @ViewChild('modal') formModal!: ElementRef
+  @ViewChild('serviceImgInput') serviceImgInput!: ElementRef<HTMLInputElement>
+  @ViewChildren('choiceImgInput') choiceImgInputs!: QueryList<ElementRef<HTMLInputElement>>
+
 
   serviceForm: FormGroup = new FormGroup({})
   searchFilterForm: FormGroup = new FormGroup({})
@@ -53,7 +56,7 @@ export class ProviderServicesComponent implements OnInit {
   choiceImageUrl: (string | ArrayBuffer | null)[] = []
 
   constructor() { }
-  
+
   ngOnInit(): void {
     this.initialiseServiceForm()
     this.getTotalServices()
@@ -131,8 +134,6 @@ export class ProviderServicesComponent implements OnInit {
   // }
 
 
-
-
   initialiseSearchFilterForm() {
     this.searchFilterForm = new FormGroup({
       serviceName: new FormControl(this.searchFilterFormObj.serviceName),
@@ -190,9 +191,9 @@ export class ProviderServicesComponent implements OnInit {
     // console.log('choice images: ', choiceControl?.get('choiceImg')?.value);
 
 
-    return choiceControl?.get('choiceImg')?.value ? this.serviceImgUrl + choiceControl?.get('choiceImg')?.value : null
+    // return choiceControl?.get('choiceImg')?.value ? this.serviceImgUrl + choiceControl?.get('choiceImg')?.value : null
+    return choiceControl?.get('choiceImg')?.value ? choiceControl?.get('choiceImg')?.value : null
 
-    // return this.choiceImageUrl[index]
 
   }
 
@@ -249,7 +250,7 @@ export class ProviderServicesComponent implements OnInit {
       let reader = new FileReader
       reader.readAsDataURL(file)
       reader.onload = (event: Event) => {
-        imageurl = (<FileReader>event.target).result
+        imageurl = (<FileReader>event.target).result || this.imgUrl
         if (controlName === 'img') {
           // this.serviceForm.get('img')?.setValue(imageurl)
           this.serviceForm.get('img')?.setValue(file)
@@ -261,7 +262,7 @@ export class ProviderServicesComponent implements OnInit {
           choiceGroup.get('choiceImg')?.setValue(file)
           // let fileNameCategory=choiceGroup.get('choiceName')?.value
           // let fileNameCategory=file.name || ''
-          let fileNameCategory=file.name
+          let fileNameCategory = file.name
           choiceGroup.get('choiceImgCategory')?.setValue(fileNameCategory)
 
           this.choiceImageUrl[index] = imageurl
@@ -283,7 +284,7 @@ export class ProviderServicesComponent implements OnInit {
         }
       },
       error: (error: HttpErrorResponse) => {
-        this.alertService.getAlert("alert alert-danger", "Register User Failed",  error.error.message)
+        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
 
       }
     })
@@ -341,7 +342,7 @@ export class ProviderServicesComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
-        this.alertService.getAlert('alert alert-danger', 'Failed!',  error.error.message)
+        this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
       }
     })
   }
@@ -358,32 +359,32 @@ export class ProviderServicesComponent implements OnInit {
         if (res.status === 200) {
           this.serviceFromObj = res.body?.data
           console.log('update form data: ', this.serviceFromObj);
-          
+
           this.initialiseServiceForm()
           this.getChoiceOptions()
 
           const choicesArray = <FormArray>this.serviceForm.get('choices');
           // const choicesArray = <FormArray>this.serviceForm.get('choices');
-// choicesArray.clear(); // Clear existing controls
-// this.serviceFromObj.choices.forEach(choice => {
-//   choicesArray.push(new FormGroup({
-//     choiceName: new FormControl(choice.choiceName),
-//     choiceType: new FormControl(choice.choiceType),
-//     choicePrice: new FormControl(choice.choicePrice),
-//     choiceImg: new FormControl(choice.choiceImg)
-//   }));
-// });
+          // choicesArray.clear(); // Clear existing controls
+          // this.serviceFromObj.choices.forEach(choice => {
+          //   choicesArray.push(new FormGroup({
+          //     choiceName: new FormControl(choice.choiceName),
+          //     choiceType: new FormControl(choice.choiceType),
+          //     choicePrice: new FormControl(choice.choicePrice),
+          //     choiceImg: new FormControl(choice.choiceImg)
+          //   }));
+          // });
 
           choicesArray.controls.forEach((_, index) => this.getChoiceTypeOptions(index));
 
           this.showModal()
         } else {
-          this.alertService.getAlert("alert alert-danger", "Failed",res.body?.message ? res.body?.message : '')
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
         }
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
-        this.alertService.getAlert('alert alert-danger', 'Failed!',  error.error.message)
+        this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
       }
     })
   }
@@ -453,13 +454,13 @@ export class ProviderServicesComponent implements OnInit {
           this.hideModal()
           this.getTotalServices()
           this.getAllServices(this.searchParams)
-          this.alertService.getAlert('alert alert-success', 'Success!',res.body?.message ? res.body?.message : '')
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : '')
         } else {
-          this.alertService.getAlert("alert alert-danger", "Failed",res.body?.message ? res.body?.message : '')
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
         }
       },
       error: (error: HttpErrorResponse) => {
-        this.alertService.getAlert("alert alert-danger", "Register User Failed",  error.error.message)
+        this.alertService.getAlert("alert alert-danger", "Add Service Failed", error.error.message || '')
 
       }
     })
@@ -573,7 +574,10 @@ export class ProviderServicesComponent implements OnInit {
     this.serviceForm.reset()
     this.serviceFromObj = new Service()
     this.initialiseServiceForm()
+    this.serviceImgInput.nativeElement.value = ''
+    this.choiceImgInputs.toArray().forEach(input => {
+      input.nativeElement.value = ''
+    })
   }
-
 
 }

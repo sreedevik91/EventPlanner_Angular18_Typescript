@@ -141,6 +141,7 @@ export class UserServiceDetailsComponent implements OnInit {
 
   saveBooking() {
     console.log('service booking form values: ', this.bookingForm.value);
+    console.log('is service booking form valid: ', this.bookingForm.valid);
     this.bookingService.createBooking(this.bookingForm.value).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === 200) {

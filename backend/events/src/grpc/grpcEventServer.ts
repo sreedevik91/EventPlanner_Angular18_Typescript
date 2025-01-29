@@ -114,13 +114,19 @@ async function UpdateEventWithNewService(call: any, callback: any) {
         const eventData = await eventRepository.getEventByName(event)
         console.log('getEventByName response from grpc: ', eventData);
         let eventToUpdate = eventData[0]
+        let eventId: string = eventToUpdate._id
 
-        if (eventData && eventData.length > 0) {
-          let eventId: string = eventToUpdate._id
-          if (!eventToUpdate.services.includes(serviceName)) {
-            return await eventRepository.updateEvent(eventId, { $push: { services: serviceName } })
-          }
+
+        if (!eventData || eventData.length === 0) {
+          console.warn(`Event "${event}" not found in database.`);
+          return null; // Skip if event does not exist
         }
+
+        if (!eventToUpdate.services.includes(serviceName)) {
+          console.log(`Updating event "${event}" with service "${serviceName}".`);
+          return await eventRepository.updateEvent(eventId, { $push: { services: serviceName } })
+        }
+        console.log(`Service "${serviceName}" already associated with event "${event}".`);
 
         return null
 
@@ -131,12 +137,12 @@ async function UpdateEventWithNewService(call: any, callback: any) {
 
     })
 
-    const results =await Promise.all(updatePromises)
+    const results = await Promise.all(updatePromises)
 
     const completed = results.filter(res => res !== null)
 
-    console.log('completed updates by grpc:',completed);
-    
+    console.log('completed updates by grpc:', completed);
+
 
     if (completed.length > 0) {
 

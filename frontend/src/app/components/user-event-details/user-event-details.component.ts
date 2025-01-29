@@ -121,7 +121,6 @@ export class UserEventDetailsComponent implements OnInit {
     return this.bookingForm.get('services') as FormArray;
   }
 
-
   bookEvent(serviceId: string, providerId: string) {
     this.showModal()
   }
@@ -158,23 +157,25 @@ export class UserEventDetailsComponent implements OnInit {
   }
 
   saveBooking() {
-    console.log('service booking form values: ', this.bookingForm.value);
-    // this.bookingService.createBooking(this.bookingForm.value).subscribe({
-    //   next: (res: HttpResponse<IResponse>) => {
-    //     if (res.status === 200) {
-    //       console.log('service booking response: ', res.body?.data);
-    //       this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
-    //       this.hideModal()
-    //     } else {
-    //       console.log(res.body?.message);
-    //       this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')
-    //     }
-    //   },
-    //   error: (error: HttpErrorResponse) => {
-    //     console.log('service booking error: ', error.error.message, error);
-    //     this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
-    //   }
-    // })
+    console.log('event booking form values: ', this.bookingForm.value);
+    console.log('is event booking form valid: ', this.bookingForm.valid);
+
+    this.bookingService.createBooking(this.bookingForm.value).subscribe({
+      next: (res: HttpResponse<IResponse>) => {
+        if (res.status === 200) {
+          console.log('service booking response: ', res.body?.data);
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
+          this.hideModal()
+        } else {
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')
+        }
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log('service booking error: ', error.error.message, error);
+        this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message)
+      }
+    })
 
   }
 

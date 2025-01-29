@@ -99,104 +99,271 @@
 </section> -->
 
 
+<div class="container-fluid">
+    <div class="row">
+   
+        <div class="col-md-10">
+            <div class="chat-container">
 
-<section class="container mt-4 p-3 overflow-x-hidden">
-    @if(isLeftChat){
-        <div class="text-center">
-    <p>Thank you for contacting us...</p>
-        </div>
-    }
-    @if(!isLeftChat){
-        <div class="border">
-            <div id="header" class="p-2 lh-sm border-bottom d-flex justify-content-between">
-                <strong class="mb-1">{{userName}}</strong>
-                <button class="btn btn-secondary btn-sm float-end" (click)="leaveChat()">Close</button>
-            </div>
-    
-            <div id="chatArea">
-                
-                @for(item of notification; track $index){
-                <p class="text-info text-center">{{item}}</p>
-                }
-                
-                @if(messages.length>0){
+                <div class="chat-header">
+                    <img src="" alt="" class="avatar">
+                    <p class="username">{{userName}}</p>
+                </div>
+
+                <div class="chat-body">
+
+                    @for(item of notification; track $index){
+                    <p class="text-info text-center">{{item}}</p>
+                    }
+
+                    @if(messages.length>0){
                     <hr>
                     <p class="text-center">
-                    <a class="link-underline-opacity-0 text-info" (click)="togglePrevChats()">{{ oldChats ? 'Hide previous chats' : 'Load previous chats' }}</a>
+                        <a class="link-underline-opacity-0 text-info" (click)="togglePrevChats()">{{ oldChats ? 'Hide previous chats' : 'Load previous chats' }}</a>
                     </p>
                     <hr>
-                }
-               
-                @if(oldChats){
+                    }
+
+                    @if(oldChats){
                     @for(item of messages; track $index){
-                        @if(item.sender===userName){
-                        <div class="row pt-2">
-                            <!-- <div class="col-md-6"></div> -->
-            
-                            <div class="col-md-6 offset-md-6">
-                                @if(item.message!==''){
-                                <small class="d-block">{{item.date | date:'shortDate'}}</small>
-                                <div class="alert alert-success d-inline-block float-end" role="alert">{{item.message}}</div>
-                                }
+                    @if(item.sender===userName){
+                    <div class="row pt-2">
+
+                        <div class="col-md-6 offset-md-6">
+                            @if(item.message!==''){
+                            <small class="d-block float-end">{{item.date | date:'shortDate'}}</small>
+                            <div class="alert alert-success d-inline-block float-end">
+                                @if(item.type === 'image'){
+                                    <img [src]="item.message" alt="" class="img-fluid">
+                                }@else if(item.type === 'video'){
+                                    <video controls>
+                                        <source [src]="item.message" type="video/mp4">
+                                      </video>
+                                }@else if(item.type === 'audio'){
+                                    <audio controls>
+                                        <source [src]="item.message" type="audio/ogg">
+                                      </audio>
+                                }@else if(item.type === 'text'){
+                                   
+                                        {{item.message}}
+                                }@else if(item.type === 'raw'){
+                                   
+                                    <a [href]="item.message" target="_blank" download="{{ item.type }}" class="btn btn-link">
+                                        📄 {{ item.type || 'Download File' }}
+                                      </a>
+                            }@else{
+                                <p>Unsupported file type</p>
+                            }
                             </div>
+
+                    
+                            }
                         </div>
-                        }
-                        @if(item.sender!==userName){
-                        <div class="row pt-2">
-                            <div class="col-md-6">
-                                @if(item.message!==''){
-                                <small class="d-block">{{item.date | date:'shortDate'}}</small>
-                                <div class="alert alert-primary d-inline-block" role="alert">{{item.message}}</div>
-                                }
+                    </div>
+                    }
+                    @if(item.sender!==userName){
+                    <div class="row pt-2">
+                        <div class="col-md-6">
+                            @if(item.message!==''){
+                            <small class="d-block float-start">{{item.date | date:'shortDate'}}</small>
+                            <div class="alert alert-primary d-inline-block" role="alert">
+                                @if(item.type === 'image'){
+                                    <img [src]="item.message" alt="" class="img-fluid">
+                                }@else if(item.type === 'video'){
+                                    <video controls>
+                                        <source [src]="item.message" type="video/mp4">
+                                      </video>
+                                }@else if(item.type === 'audio'){
+                                    <audio controls>
+                                        <source [src]="item.message" type="audio/ogg">
+                                      </audio>
+                                }@else if(item.type === 'text'){
+                                   
+                                        {{item.message}}
+                                }@else if(item.type === 'raw'){
+                                   
+                                    <a [href]="item.message" target="_blank" download="{{ item.type }}" class="btn btn-link">
+                                        📄 {{ item.type || 'Download File' }}
+                                      </a>
+                            }@else{
+                                <p>Unsupported file type</p>
+                            }
+                            
                             </div>
-                            <!-- <div class="col-md-6"></div> -->
+                            }
+
+                          
+                            
                         </div>
-                        }
-            
-                        }
-                }
-                @if(!oldChats){
+                    </div>
+                    }
+
+                    }
+                    }
+                    @if(!oldChats){
                     @for(item of newChats; track $index){
-                        @if(item.chats.sender===userName){
-                        <div class="row pt-2">
-                            <!-- <div class="col-md-6"></div> -->
-            
-                            <div class="col-md-6 offset-md-6">
-                                @if(item.chats.message!==''){
-                                <small class="d-block">{{item.chats.date | date:'shortDate'}}</small>
-                                <div class="alert alert-success d-inline-block float-end" role="alert">{{item.chats.message}}</div>
-                                }
+                    @if(item.chats.sender===userName){
+                    <div class="row pt-2">
+
+                        <div class="col-md-6 offset-md-6">
+                            @if(item.chats.message!==''){
+                            <small class="d-block float-end">{{item.chats.date | date:'shortDate'}}</small>
+
+                            <div class="alert alert-success d-inline-block float-end" role="alert">
+                                @if(item.chats.type === 'image'){
+                                    <img [src]="item.chats.message" alt="" class="img-fluid">
+                                }@else if(item.chats.type === 'video'){
+                                    <video controls>
+                                        <source [src]="item.chats.message" type="video/mp4">
+                                      </video>
+                                }@else if(item.chats.type === 'audio'){
+                                    <audio controls>
+                                        <source [src]="item.chats.message" type="audio/ogg">
+                                      </audio>
+                                }@else if(item.chats.type === 'text'){
+                                   
+                                        {{item.chats.message}}
+                                }@else if(item.type === 'raw'){
+                                   
+                                    <a [href]="item.message" target="_blank" download="{{ item.type }}" class="btn btn-link">
+                                        📄 {{ item.type || 'Download File' }}
+                                      </a>
+                            }@else{
+                                <p>Unsupported file type</p>
+                            }
+                            
                             </div>
+                            }
+
+
+                            
                         </div>
-                        }
-                        @if(item.chats.sender!==userName){
-                        <div class="row pt-2">
-                            <div class="col-md-6">
-                                @if(item.chats.message!==''){
-                                <small class="d-block">{{item.chats.date | date:'shortDate'}}</small>
-                                <div class="alert alert-primary d-inline-block" role="alert">{{item.chats.message}}</div>
-                                }
+                    </div>
+                    }
+                    @if(item.chats.sender!==userName){
+                    <div class="row pt-2">
+                        <div class="col-md-6">
+                            @if(item.chats.message!==''){
+                            <small class="d-block float-start">{{item.chats.date | date:'shortDate'}}</small>
+                            <div class="alert alert-primary d-inline-block" role="alert">
+
+                                @if(item.chats.type === 'image'){
+                                    <img [src]="item.chats.message" alt="" class="img-fluid">
+                                }@else if(item.chats.type === 'video'){
+                                    <video controls>
+                                        <source [src]="item.chats.message" type="video/mp4">
+                                      </video>
+                                }@else if(item.chats.type === 'audio'){
+                                    <audio controls>
+                                        <source [src]="item.chats.message" type="audio/ogg">
+                                      </audio>
+                                }@else if(item.chats.type === 'text'){
+                                   
+                                       {{item.chats.message}}
+                                }@else if(item.type === 'raw'){
+                                   
+                                    <a [href]="item.message" target="_blank" download="{{ item.type }}" class="btn btn-link">
+                                        📄 {{ item.type || 'Download File' }}
+                                      </a>
+                            }@else{
+                                <p>Unsupported file type</p>
+                            }
+                            
                             </div>
-                            <!-- <div class="col-md-6"></div> -->
+
+                            }
                         </div>
-                        }
-            
-                        }
-                }
-               
-    
-            </div>
-            <p class="text-info">{{typing}}</p>
-            <form [formGroup]="chatForm">
-    
-                <div id="submit" formGroupName="chats" class="p-3 w-100 d-flex flex-row">
-                    <input type="text" placeholder="Enter message" class="form-control" (input)="startedTyping()"
-                        formControlName="message">
-                    <button class="btn btn-secondary btn-sm float-end" type="submit" (click)="sendMessage()">Send</button>
+                    </div>
+                    }
+
+                    }
+                    }
+
+
                 </div>
-    
-            </form>
+<!-- 
+
+                <div class="chat-footer">
+
+                    <form [formGroup]="chatForm">
+                    <div class="row">
+
+                        <div class="col-md-10">
+                            <div class="form-group mb-0" formGroupName="chats">
+                                <input type="text" placeholder="Type a message" class="form-control"
+                                    (input)="startedTyping()" formControlName="message" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 text-center align-self-center">
+                            <button class="btn btn-primary btn-sm px-3 rounded-pill" type="submit" (click)="sendMessage()">Send
+                            </button>
+                        </div>
+
+                    </div>
+                    </form>
+                </div>
+ -->
+
+ <div class="chat-footer">
+    <form [formGroup]="chatForm">
+      <div class="row align-items-center">
+  
+        <!-- Emoji Picker Button -->
+        <div class="col-auto">
+          <button type="button" class="btn btn-light btn-sm" (click)="toggleEmojiPicker()">
+            😊
+          </button>
         </div>
-    }
-        
-    </section>
+  
+        <!-- File Upload Button -->
+        <div class="col-auto">
+          <input type="file" id="fileInput" #fileInput (change)="handleFileUpload($event)" hidden>
+          <button type="button" class="btn btn-light btn-sm" (click)="triggerFileInput()">
+            📎
+          </button>
+        </div>
+  
+        <!-- Voice Message Button -->
+        <div class="col-auto">
+            @if(!recording){
+                <button type="button" class="btn btn-light btn-sm" (click)="startRecording()">
+                    🎤
+                  </button>
+            }
+          @if(recording){
+            <span class="recording-indicator">🔴 Recording...</span>
+            <button type="button" class="btn btn-light btn-sm" (click)="stopRecording()">
+              ⏹️
+            </button>
+          }
+         
+        </div>
+  
+        <!-- Message Input -->
+        <div class="col" formGroupName="chats">
+          <input type="text" placeholder="Type a message" class="form-control"
+            (input)="startedTyping()" formControlName="message" />
+        </div>
+  
+        <!-- Send Button -->
+        <div class="col-auto">
+          <button class="btn btn-primary btn-sm px-3 rounded-pill" type="submit" (click)="sendMessage()">
+            Send
+          </button>
+        </div>
+      </div>
+    </form>
+  
+    <!-- Emoji Picker -->
+     @if(showEmojiPicker){
+    <div>
+      <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
+    </div>
+}
+  </div>
+
+            </div>
+        </div>
+    </div>
+</div>

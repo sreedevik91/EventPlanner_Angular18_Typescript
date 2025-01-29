@@ -22,6 +22,10 @@ const ChatSchema: Schema<IChat> = new Schema<IChat>({
     message: {
       type: String
     },
+    type: {
+      type: String,
+      enum: ["text", "image", "video", "audio","raw"] 
+    },
     date: {
       type: Date
     }

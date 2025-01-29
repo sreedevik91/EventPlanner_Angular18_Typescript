@@ -4,7 +4,7 @@ import { config } from "dotenv";
 import { getServiceImgGrpc, getServicesByEventNameGrpc, getServicesByProviderAndName, getServicesByProviderGrpc } from "../grpc/grpcServiceClient";
 import { getEventByNameGrpc, getEventImgGrpc, getEventsByGrpc } from "../grpc/grpcEventsClient";
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
-import { log } from "console";
+import cloudinary from "../utils/cloudinary";
 
 config()
 
@@ -41,8 +41,8 @@ class ChatServices {
             console.log('new chat to save: ', data);
             // const prevChats = await chatRepository.getChatsByUserId(data.userId)
             const prevChats = await chatRepository.getChatsByRoomId(data.roomId)
-            console.log('prevChats: ',prevChats);
-            
+            console.log('prevChats: ', prevChats);
+
             if (prevChats && (Object.keys(prevChats)).length > 0) {
                 const updateChat = await chatRepository.updateChat(prevChats._id, { $push: { chats: data.chats } })
                 return { success: true, data: updateChat }
@@ -60,6 +60,35 @@ class ChatServices {
             console.log('Error from saveChats service: ', error.message);
         }
 
+    }
+
+    async uploadToCloudinary(img: string,name:string,type:any) {
+
+        try {
+            const result= await cloudinary.uploader.upload(img,{public_id:name, resource_type:type})
+            console.log('cloudinary img/video upload result: ', result);
+            return { success: true, data: {imgUrl:result?.url, type:result.resource_type} }
+              
+        } catch (error: any) {
+            console.log('cloudinary img/video upload error: ', error.message);
+            return { success: false, message: 'Something went wrong' }
+
+        }
+    }
+    
+    async uploadAudioToCloudinary(img: string,name:string) {
+
+        try {
+            // to process audio file resource_type should be mentioned as 'video'
+            const result= await cloudinary.uploader.upload(img,{public_id:name, resource_type:'video'})
+            console.log('cloudinary audio upload result: ', result);
+            return { success: true, data: {imgUrl:result?.url, type:'audio'} }
+              
+        } catch (error: any) {
+            console.log('cloudinary audio upload error: ', error.message);
+            return { success: false, message: 'Something went wrong' }
+
+        }
     }
 
 

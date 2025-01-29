@@ -209,13 +209,14 @@
                         serviceForm.controls['img'].errors ? serviceForm.controls['img'].errors : {}">
                             <!--===================================  -->
 
-                            <!-- <img [src]="serviceForm.controls['img'].value ? serviceImgUrl + serviceForm.controls['img'].value : imgUrl" alt="" width="50" height="50"> -->
+                            <!-- <img [src]="imgUrl? imgUrl : serviceImgUrl + serviceForm.controls['img'].value " alt=""
+                                width="50" height="50"> -->
 
-                            <img [src]="imgUrl? imgUrl : serviceImgUrl + serviceForm.controls['img'].value " alt=""
-                                width="50" height="50">
+                            <img [src]="imgUrl? imgUrl : serviceForm.controls['img'].value " alt="" width="50"
+                                height="50">
 
-                            <input type="file" class="form-control" placeholder="Upload an image of your service"
-                                (change)="onImageUpload($event,'img')">
+                            <input type="file" class="form-control" #serviceImgInput
+                                placeholder="Upload an image of your service" (change)="onImageUpload($event,'img')">
                             <!--===================================  -->
 
                         </app-form>
@@ -288,9 +289,10 @@
 
                                             <!-- <img [src]="getChoiceImg($index)" alt="" width="50" height="50"> -->
 
-                                            <img [src]="choiceImageUrl[$index] ? choiceImageUrl[$index] : getChoiceImg($index)" alt="" width="50" height="50">
+                                            <img [src]="choiceImageUrl[$index] ? choiceImageUrl[$index] : getChoiceImg($index)"
+                                                alt="" width="50" height="50">
 
-                                            <input type="file" class="form-control"
+                                            <input type="file" class="form-control" #choiceImgInput
                                                 placeholder="Upload an image of your choice"
                                                 (change)="onImageUpload($event,'choiceImg',$index)">
 
@@ -304,9 +306,10 @@
 
                                             <!-- <img [src]="getChoiceImg($index)" alt="" width="50" height="50"> -->
 
-                                            <img [src]="choiceImageUrl[$index] ? choiceImageUrl[$index] : getChoiceImg($index)" alt="" width="50" height="50">
+                                            <img [src]="choiceImageUrl[$index] ? choiceImageUrl[$index] : getChoiceImg($index)"
+                                                alt="" width="50" height="50">
 
-                                            <input type="file" class="form-control"
+                                            <input type="file" class="form-control" #choiceImgInput
                                                 placeholder="Upload an image of your choice"
                                                 (change)="onImageUpload($event,'choiceImg',$index)">
                                             <!--===================================  -->

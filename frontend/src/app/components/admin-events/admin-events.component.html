@@ -152,12 +152,11 @@
                         eventForm.controls['img'].errors ? eventForm.controls['img'].errors : {}">
                             <!--===================================  -->
 
-                            <!-- <img [src]="eventForm.controls['img'].value ? eventImgUrl + eventForm.controls['img'].value : imgUrl" alt="" width="50" height="50"> -->
-
-                            <img [src]="imgUrl? imgUrl : eventImgUrl + eventForm.controls['img'].value " alt=""
+                            <!-- <img [src]="imgUrl? imgUrl : eventImgUrl + eventForm.controls['img'].value " alt=""
+                                width="50" height="50"> -->
+                                <img [src]="imgUrl? imgUrl : eventForm.controls['img'].value " alt=""
                                 width="50" height="50">
-
-                            <input type="file" class="form-control" placeholder="Upload an image of your service"
+                            <input type="file" class="form-control" #eventImgInput placeholder="Upload an image of your service"
                                 (change)="onImageUpload($event)">
                             <!--===================================  -->
 

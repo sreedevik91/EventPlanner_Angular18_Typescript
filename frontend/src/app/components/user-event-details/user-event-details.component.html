@@ -20,7 +20,8 @@
 
                 <div class="col-md-4">
                     <div class="card" style="width: 20rem;">
-                        <img [src]="serviceImgUrl+services.img" class="card-img-top" alt="...">
+                        <!-- <img [src]="serviceImgUrl+services.img" class="card-img-top" alt="..."> -->
+                        <img [src]="services.img" class="card-img-top" alt="...">
                         <div class="card-body">
                             <!-- <h5 class="card-title">{{services.name}}</h5> -->
 
@@ -40,7 +41,9 @@
 
                                         <div class="row border">
                                             <div class="col-md-4 mt-2 p-2">
-                                                <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
+                                                <!-- <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
+                                                    width="100%" height="20"> -->
+                                                    <img [src]="choice.choiceImg" class="img-fluid" alt=""
                                                     width="100%" height="20">
                                             </div>
                                             <div class="col-md-7 mt-2 p-2">
@@ -283,7 +286,7 @@
                             <div class="d-grid gap-2 d-md-block">
 
 
-                                <app-button [btnClass]=" 'btn-success m-3' " [disabled]="bookingForm.invalid" (onBtnClick)="saveBooking()">Continue</app-button>
+                                <app-button [btnClass]=" 'btn-success m-3' " (onBtnClick)="saveBooking()">Continue</app-button>
 
                                 <app-button [btnClass]=" 'btn-info m-3' " (onBtnClick)="hideModal()">Cancel</app-button>
 

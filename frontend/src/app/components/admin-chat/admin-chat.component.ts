@@ -1,12 +1,12 @@
 
 
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { Chat, ChatSearchFilter, IChat } from '../../model/class/chatClass';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpParams } from '@angular/common/http';
+import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { ChatService } from '../../services/chatService/chat.service';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
-import { IChatJoiningResponse } from '../../model/interface/interface';
+import { IChatJoiningResponse, IResponse } from '../../model/interface/interface';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -14,10 +14,13 @@ import { DatePipe } from '@angular/common';
   standalone: true,
   imports: [ReactiveFormsModule, DatePipe],
   templateUrl: './admin-chat.component.html',
-  styleUrl: './admin-chat.component.css'
+  styleUrl: './admin-chat.component.css',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 
 export class AdminChatComponent implements OnInit {
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>
 
   chatService = inject(ChatService)
 
@@ -33,7 +36,7 @@ export class AdminChatComponent implements OnInit {
   userService = inject(UserSrerviceService);
 
   notification: string[] = []
-  activeUsers: string[] = []
+  activeUsers: {userId:string,userName:string}[] = []
   messages: any[] = []
   newChats: any[] = []
   typing: string = ''
@@ -42,8 +45,13 @@ export class AdminChatComponent implements OnInit {
   userId: string = ''
   isJoinedChat: boolean = false
   activeUser: string = ''
-  oldChats:boolean=false
+  oldChats: boolean = false
 
+  showEmojiPicker: boolean = false
+
+  recording: boolean = false
+  mediaRecorder!: MediaRecorder;
+  recordedChunks: any[] = []
 
   ngOnInit(): void {
 
@@ -67,7 +75,7 @@ export class AdminChatComponent implements OnInit {
       }
     })
 
-     
+
     this.requestActiveUsers()
     this.getActiveUsers()
     this.getMessage()
@@ -75,8 +83,6 @@ export class AdminChatComponent implements OnInit {
     this.getJoiningNotification()
     this.getLeavingNotification
     this.getTypingNotification()
-
-
   }
 
   initialiseChatForm() {
@@ -104,6 +110,7 @@ export class AdminChatComponent implements OnInit {
   }
 
   joinChat(userId: string) {
+    debugger
     this.isJoinedChat = true
     this.activeUser = userId
 
@@ -135,7 +142,7 @@ export class AdminChatComponent implements OnInit {
       next: (res: any) => {
         console.log('user chats from db:', res.body.data);
         const chatData = res.body.data
-        this.messages=[]
+        this.messages = []
         for (let chat of chatData.chats) {
           this.messages.push(chat)
         }
@@ -153,10 +160,11 @@ export class AdminChatComponent implements OnInit {
   }
 
   sendMessage() {
+    this.chatForm.get('chats.type')?.setValue('text')
     console.log(this.chatForm.value);
     this.chatService.adminSendMessage(this.activeUser, this.chatForm.value)
     this.chatForm.get('chats.message')?.setValue('')
-    this.typing=''
+    this.typing = ''
   }
 
   startedTyping() {
@@ -164,7 +172,7 @@ export class AdminChatComponent implements OnInit {
   }
 
   leaveChat() {
-    this.isJoinedChat=false
+    this.isJoinedChat = false
     this.chatService.leaveRoom(this.userName, this.activeUser)
   }
 
@@ -172,7 +180,7 @@ export class AdminChatComponent implements OnInit {
     this.chatService.getMessage().subscribe({
       next: (data: any) => {
         console.log('sent message from server:', data);
-        this.messages.push(data)
+        this.messages.push(data.chats)
         this.newChats.push(data)
         // this.newChats=data
         console.log('user messages array:', this.messages);
@@ -184,13 +192,13 @@ export class AdminChatComponent implements OnInit {
     })
   }
 
-  getUserMessages(){
+  getUserMessages() {
     this.chatService.getUserMessage().subscribe({
       next: (data: any) => {
         console.log('user chats from socket:', data);
-        
-        this.newChats=data
-        
+
+        this.newChats = data
+
         console.log('user messages array:', this.newChats);
       },
       error: (error: any) => {
@@ -198,7 +206,7 @@ export class AdminChatComponent implements OnInit {
       }
     })
   }
-  
+
   getActiveUsers() {
     this.chatService.getActiveUsers().subscribe({
       next: (data: any) => {
@@ -264,6 +272,103 @@ export class AdminChatComponent implements OnInit {
         console.log('error from getMessage:', error.message);
       }
     })
+  }
+
+
+  toggleEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker
+  }
+
+  triggerFileInput() {
+    this.fileInput.nativeElement.click()
+  }
+
+  handleFileUpload(event: Event) {
+    const input = <HTMLInputElement>event.target
+    if (input.files && input.files.length > 0) {
+      console.log('File(s) selected:', input, input.files[0]);
+      const formData = new FormData()
+      const file = input.files[0]
+      formData.append('img', file)
+
+      this.chatService.getImgUrlFromCloudinary(formData).subscribe({
+        next: (res: HttpResponse<IResponse>) => {
+          console.log(res.body?.data);
+          this.chatForm.get('chats.message')?.setValue(res.body?.data.imgUrl)
+          this.chatForm.get('chats.type')?.setValue(res.body?.data.type)
+          this.chatService.sendMessage(this.chatForm.value)
+          console.log(this.chatForm.value);
+          this.chatForm.get('chats.message')?.setValue('')
+
+        },
+        error: (err: HttpErrorResponse) => {
+          console.log(err, err.error.message);
+        }
+      })
+    }
+  }
+
+
+  startRecording() {
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.log('Your browser does not support audio recording.');
+      return
+    }
+
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      this.mediaRecorder = new MediaRecorder(stream)
+      this.recording = true
+      this.recordedChunks = []
+
+      this.mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.recordedChunks.push(event.data)
+        }
+      }
+
+      this.mediaRecorder.onstop = () => {
+        this.recording = false
+        const audioBlob = new Blob(this.recordedChunks, { type: 'audio/ogg' })
+        console.log('audioBlob: ', audioBlob);
+        const formData = new FormData()
+        formData.append('audio', audioBlob)
+        // get cloudinary link from server and send mesage to socket 
+        this.chatService.getAudioUrlFromCloudinary(formData).subscribe({
+          next: (res: HttpResponse<IResponse>) => {
+            console.log(res.body?.data);
+            this.chatForm.get('chats.message')?.setValue(res.body?.data.imgUrl)
+            this.chatForm.get('chats.type')?.setValue(res.body?.data.type)
+            this.chatService.sendMessage(this.chatForm.value)
+            console.log(this.chatForm.value);
+            this.chatForm.get('chats.message')?.setValue('')
+
+          },
+          error: (err: HttpErrorResponse) => {
+            console.log(err, err.error.message);
+          }
+        })
+      }
+
+      this.mediaRecorder.start()
+
+    })
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder) {
+      this.mediaRecorder.stop()
+    }
+  }
+
+  addEmoji(event: any) {
+
+    console.log('emoji click event: ', event, event.detail.unicode);
+    const control = this.chatForm.get('chats.message')
+    const userMessage = control?.value || ''
+    control?.setValue(`${userMessage}${event.detail.unicode}`)
+    console.log(control?.value);
+
   }
 
 }

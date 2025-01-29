@@ -87,7 +87,7 @@ class EventServices {
                 console.log('service selected for booking: ', service);
 
                 const provider = await getUserByIdGrpc(service[0].provider)
-                const img = await getServiceImgGrpc(service[0].img)
+                // const img = await getServiceImgGrpc(service[0].img)
 
                 services?.forEach(s => {
                     s.serviceName = service[0].name
@@ -101,7 +101,8 @@ class EventServices {
                     user,
                     userId,
                     service: service[0].name,
-                    img: img.imgPath,
+                    // img: img.imgPath,
+                    img:service[0].img,
                     services,
                     deliveryDate,
                     venue,
@@ -125,7 +126,7 @@ class EventServices {
                 const eventData = await getEventByNameGrpc(event)
                 console.log('getEventByNameGrpc response: ', eventData);
 
-                const img = await getEventImgGrpc(eventData.event[0].img)
+                // const img = await getEventImgGrpc(eventData.event[0].img)
 
                 for (let s of services || []) {
                     const provider = await getUserByIdGrpc(s.providerId!)
@@ -136,7 +137,7 @@ class EventServices {
                     user,
                     userId,
                     event,
-                    img: img.imgPath,
+                    img: eventData.event[0].img,
                     style,
                     services,
                     deliveryDate,

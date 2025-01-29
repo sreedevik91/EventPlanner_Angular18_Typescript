@@ -7,7 +7,7 @@ export class Chat {
         this._id = ''
         this.userId = ''
         this.roomId=''
-        this.chats = {message:'',date:new Date(),sender:'',receiver:''}
+        this.chats = {message:'',type:'d',date:new Date(),sender:'',receiver:''}
     }
 }
 
@@ -15,6 +15,7 @@ export interface IChat {
     sender:string;
     receiver?:string;
     message: string;
+    type:string;
     date: Date;
 }
 
