@@ -4,7 +4,7 @@ import { Events, EventSearchFilter, IEventService } from '../../model/class/even
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { EventServiceService } from '../../services/eventService/event-service.service';
 import { AlertService } from '../../services/alertService/alert.service';
-import { IEvent, IEventServiceResponse, IResponse } from '../../model/interface/interface';
+import { HttpStatusCodes, IEvent, IEventServiceResponse, IResponse } from '../../model/interface/interface';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { environment } from '../../../environments/environment.development';
 import { ButtonComponent } from '../../shared/components/button/button.component';
@@ -124,7 +124,7 @@ export class AdminEventsComponent implements OnInit {
   getTotalEvents() {
     this.eventService.getTotalEvents().subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalEvents = res.body?.data
         } else {
           console.log(res.body?.message);
@@ -175,7 +175,7 @@ export class AdminEventsComponent implements OnInit {
     // debugger
     this.eventService.getAllEvents(params).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           // this.totalEvents=res.body.data.length
           this.events.set(res.body?.data)
           console.log('events: ', this.events());
@@ -196,7 +196,7 @@ export class AdminEventsComponent implements OnInit {
     this.eventService.getServicesByName(value).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('getServices res: ', res);
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.services.set(res.body?.data)
           this.eventServicesList.set(res.body?.extra)
           this.showServices = true
@@ -234,7 +234,7 @@ export class AdminEventsComponent implements OnInit {
     // this.eventService.getServicesByName(eventName).subscribe({
     //   next: (res: HttpResponse<IResponse>) => {
     //     console.log('getEventServices res: ', res);
-    //     if (res.status === 200) {
+    //     if (res.status === HttpStatusCodes.SUCCESS) {
     //       this.services.set(res.body?.data)
     //       this.eventServicesList.set(res.body?.extra)
     //       this.showServices = true
@@ -303,7 +303,7 @@ export class AdminEventsComponent implements OnInit {
     this.eventService.editStatus(id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.getAllEvents(this.searchParams)
 
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : '')
@@ -327,7 +327,7 @@ export class AdminEventsComponent implements OnInit {
     this.isAddEvent = false
     this.eventService.getEventById(id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.eventFromObj = res.body?.data
           console.log('update form data: ', this.eventFromObj);
           this.initialiseEventForm()
@@ -375,7 +375,7 @@ export class AdminEventsComponent implements OnInit {
 
     this.eventService.createEvent(formData).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.CREATED) {
           this.hideModal()
           this.getTotalEvents()
           this.getAllEvents(this.searchParams)
@@ -424,7 +424,7 @@ export class AdminEventsComponent implements OnInit {
 
     this.eventService.editEvent(formData, id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('update event response: ', res.body);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || 'Service updated')
           this.hideModal()
@@ -446,7 +446,7 @@ export class AdminEventsComponent implements OnInit {
   deleteEvent(id: string) {
     this.eventService.deleteEvent(id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
           this.getTotalEvents()
           this.getAllEvents(this.searchParams)
@@ -495,8 +495,6 @@ export class AdminEventsComponent implements OnInit {
     console.log('on closing the model eventForm value: ', this.eventForm.value);
 
   }
-
-
 
 
 }

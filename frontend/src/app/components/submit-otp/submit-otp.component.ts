@@ -5,7 +5,7 @@ import { UserSrerviceService } from '../../services/userService/user-srervice.se
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { IResponse } from '../../model/interface/interface';
+import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
 
 @Component({
   selector: 'app-submit-otp',
@@ -75,7 +75,7 @@ export class SubmitOtpComponent implements OnInit {
       this.userService.verifyOtp(data).subscribe({
         next: (res: HttpResponse<IResponse>) => {
           console.log(res.body);
-          if (res.status === 200) {
+          if (res.status === HttpStatusCodes.SUCCESS) {
             this.otpForm.reset()
             this.router.navigate(['login']);
           } else {
@@ -105,7 +105,7 @@ export class SubmitOtpComponent implements OnInit {
 
     this.userService.resendOtp(this.id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status===200) {
+        if (res.status===HttpStatusCodes.SUCCESS) {
           this.startTimer()
           this.isOtpExpired = false
         } else {

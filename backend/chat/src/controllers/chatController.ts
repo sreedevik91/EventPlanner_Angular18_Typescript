@@ -1,11 +1,14 @@
 import { NextFunction, Request, Response } from "express"
 import { AppError } from "../utils/appError";
-import chatServices from "../services/chatServices";
+// import chatServices from "../services/chatServices";
+import { HttpStatusCodes, IChatController, IChatService } from "../interfaces/chatInterfaces";
+import { getFileType } from "../utils/cloudinary";
+import { ResponseHandler } from "../middlewares/responseHandler";
 
 
-class ChatController {
+export class ChatController implements IChatController {
 
-    constructor() {
+    constructor(private chatServices:IChatService) {
         // inorder to make 'this' bound correctly to the class component and not result in undefined bind it with the methods manually
         this.uploadToCloudinary = this.uploadToCloudinary.bind(this);
         this.uploadAudioToCloudinary = this.uploadAudioToCloudinary.bind(this);
@@ -16,15 +19,19 @@ class ChatController {
             const { userId } = req.params
             console.log('userId to get chats: ', userId);
             
-            let chats = await chatServices.getChatsByUserId(userId)
-            if (!chats || !chats.success) {
-                return next(new AppError(chats?.message || 'Some error occured while processing the data', 400))
-            }
+            let chats = await this.chatServices.getChatsByUserId(userId)
 
-            res.status(200).json(chats)
+            // if (!chats || !chats.success) {
+            //     return next(new AppError(chats?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(chats)
+
+            chats?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,chats) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,chats)
+
         } catch (error: any) {
             console.log('Error from getEventById : ', error.message);
-            next(new AppError(error.message, 500))
+            // next(new AppError(error.message, 500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
 
@@ -37,20 +44,22 @@ class ChatController {
             console.log('chat image to register: ', req.file);
             const img= req.file?.path
             const name= req.file?.originalname
-            const type= await this.getFileType(req.file?.mimetype!)
+            const type= await getFileType(req.file?.mimetype!)
 
-            let imgUrlData = await chatServices.uploadToCloudinary(img!,name!,type!)
+            let imgUrlData = await this.chatServices.uploadToCloudinary(img!,name!,type!)
             console.log('cloudinary imgUrl controller response: ', imgUrlData);
             
-            if (!imgUrlData || !imgUrlData.success) {
-                return next(new AppError(imgUrlData?.message || 'Some error occured while processing the data', 400))
-            }
+            // if (!imgUrlData || !imgUrlData.success) {
+            //     return next(new AppError(imgUrlData?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(imgUrlData)
 
-            res.status(200).json(imgUrlData)
+            imgUrlData?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,imgUrlData) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,imgUrlData)
 
         } catch (error: any) {
             console.log('Error from getEventById : ', error.message);
-            next(new AppError(error.message, 500))
+            // next(new AppError(error.message, 500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
     }
@@ -60,28 +69,30 @@ class ChatController {
             console.log('audio data from angular: ', req.file);
             const audio= req.file?.path
             const name= req.file?.originalname
-            let audioUrlData = await chatServices.uploadAudioToCloudinary(audio!,name!)
+            let audioUrlData = await this.chatServices.uploadAudioToCloudinary(audio!,name!)
             console.log('cloudinary audioUrl controller response: ', audioUrlData);
             
-            if (!audioUrlData || !audioUrlData.success) {
-                return next(new AppError(audioUrlData?.message || 'Some error occured while processing the data', 400))
-            }
+            // if (!audioUrlData || !audioUrlData.success) {
+            //     return next(new AppError(audioUrlData?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(audioUrlData)
 
-            res.status(200).json(audioUrlData)
+            audioUrlData?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,audioUrlData) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,audioUrlData)
 
         } catch (error: any) {
             console.log('Error from getEventById : ', error.message);
-            next(new AppError(error.message, 500))
+            // next(new AppError(error.message, 500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
     }
 
-    async getFileType(mimetype:string){
-        if(mimetype.startsWith('image/')) return 'image'
-        if(mimetype.startsWith('video/')) return 'video'
-        return 'raw'
-    }
+    // async getFileType(mimetype:string){
+    //     if(mimetype.startsWith('image/')) return 'image'
+    //     if(mimetype.startsWith('video/')) return 'video'
+    //     return 'raw'
+    // }
 
 }
 
-export default new ChatController()
+// export default new ChatController()

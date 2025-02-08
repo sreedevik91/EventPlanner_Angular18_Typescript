@@ -1,7 +1,7 @@
 import { DeleteResult } from "mongoose";
 import { IEvent, IEventDb, IEventRepository } from "../interfaces/eventInterfaces";
 import Event from "../models/eventSchema";
-import BaseRepository from "./baseRepository";
+import { BaseRepository } from "./baseRepository";
 
 // class ServiceRepository implements IServiceRepository{
 //     async createService(serviceData: Partial<IService>): Promise<IService> {
@@ -25,7 +25,7 @@ import BaseRepository from "./baseRepository";
 //     }
 // }
 
-class EventRepository extends BaseRepository<IEvent> {
+export class EventRepository extends BaseRepository<IEvent> implements IEventRepository{
 
     constructor() {
         super(Event)
@@ -36,8 +36,8 @@ class EventRepository extends BaseRepository<IEvent> {
     }
 
     async getEventByName(name: string):Promise<IEventDb[]> {
-        let service =await Event.find({name})
-        return service
+        let event =await Event.find({name})
+        return event
     }
 
     // async getEventByName(name: string):Promise<IEvent | null> {
@@ -47,4 +47,4 @@ class EventRepository extends BaseRepository<IEvent> {
 
 }
 
-export default new EventRepository()
+// export default new EventRepository()

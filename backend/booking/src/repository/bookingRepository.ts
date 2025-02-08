@@ -1,9 +1,9 @@
 import { DeleteResult } from "mongoose";
-import { IBooking} from "../interfaces/bookingInterfaces";
+import { IBooking, IBookingRepository} from "../interfaces/bookingInterfaces";
 import Booking from "../models/bookingSchema";
-import BaseRepository from "./baseRepository";
+import { BaseRepository } from "./baseRepository";
 
-class BookingRepository extends BaseRepository<IBooking> {
+export class BookingRepository extends BaseRepository<IBooking> implements IBookingRepository{
 
     constructor() {
         super(Booking)
@@ -13,11 +13,11 @@ class BookingRepository extends BaseRepository<IBooking> {
         return await Booking.find().countDocuments()
     }
 
-    async getBookingByUserId(id: string):Promise<any[]> {
+    async getBookingByUserId(id: string):Promise<IBooking[]> {
         let booking =await Booking.find({userId:id})
         return booking
     } 
 
 }
 
-export default new BookingRepository()
+// export default new BookingRepository()

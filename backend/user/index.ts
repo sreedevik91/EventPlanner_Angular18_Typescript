@@ -1,15 +1,13 @@
 import express from 'express'
-const app = express()
 import { config } from 'dotenv'
 import startGrpcServer from './src/grpc/grpcUserServer'
 // import cors from 'cors'
 // import cookieParser from 'cookie-parser'
-
-
 import logger from './src/utils/logFile'
 import userRoute from './src/routes/userRoutes'
 import connectDb from './src/config/db'
-import { resolve } from 'path'
+
+const app = express()
 
 config()
 connectDb()

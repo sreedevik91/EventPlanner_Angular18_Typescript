@@ -1,8 +1,9 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import path from 'path';
-import eventRepository from '../repository/eventRepository';
+import { EventRepository } from '../repository/eventRepository';
 import { config } from 'dotenv';
+import { IEventRepository } from '../interfaces/eventInterfaces';
 
 config()
 
@@ -11,6 +12,7 @@ const PROTO_PATH = path.join(__dirname, '../../../proto/events.proto');
 // Load the .proto file
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const eventsProto: any = grpc.loadPackageDefinition(packageDefinition).events;
+const eventRepository:IEventRepository= new EventRepository()
 
 // Implement the gRPC service
 async function GetEvents(call: any, callback: any) {

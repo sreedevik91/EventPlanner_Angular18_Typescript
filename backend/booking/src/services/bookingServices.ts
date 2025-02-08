@@ -1,5 +1,5 @@
-import { IBooking, IBookedServices, IBookingDb, IEvent, IChoice } from "../interfaces/bookingInterfaces"
-import bookingRepository from "../repository/bookingRepository";
+import { IBooking, IBookedServices, IBookingDb, IEvent, IChoice, IBookingRepository, IEmailService, IBookingService, IResponse } from "../interfaces/bookingInterfaces"
+// import bookingRepository from "../repository/bookingRepository";
 import nodemailer from 'nodemailer'
 import { config } from "dotenv";
 import { getServiceImgGrpc, getServicesByEventNameGrpc, getServicesByProviderAndName, getServicesByProviderGrpc } from "../grpc/grpcServiceClient";
@@ -8,65 +8,74 @@ import { getUserByIdGrpc } from "../grpc/grpcUserClient";
 
 config()
 
-class EventServices {
+export class BookingService implements IBookingService{
 
+    constructor(
+        private bookingRepository:IBookingRepository,
+        private emailService:IEmailService
+    ){}
 
-    async sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> {
+    // async sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> {
 
-        return new Promise((resolve, reject) => {
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_APP_PASSWORD
-                }
-            })
+    //     return new Promise((resolve, reject) => {
+    //         const transporter = nodemailer.createTransport({
+    //             service: 'gmail',
+    //             auth: {
+    //                 user: process.env.EMAIL_USER,
+    //                 pass: process.env.EMAIL_APP_PASSWORD
+    //             }
+    //         })
 
-            let mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: email,
-                subject: `${subject}`,
-                html: `
-                <div>
-                <p>Dear ${name}, </p>
-                <p></p>
-                <p>${content}</p>
-                <p></p>
-                <p>Warm Regards,</p>
-                <p>Admin</p>
-                <p>Dream Events</p>
-                </div>
-                `
-            }
+    //         let mailOptions = {
+    //             from: process.env.EMAIL_USER,
+    //             to: email,
+    //             subject: `${subject}`,
+    //             html: `
+    //             <div>
+    //             <p>Dear ${name}, </p>
+    //             <p></p>
+    //             <p>${content}</p>
+    //             <p></p>
+    //             <p>Warm Regards,</p>
+    //             <p>Admin</p>
+    //             <p>Dream Events</p>
+    //             </div>
+    //             `
+    //         }
 
-            transporter.sendMail(mailOptions, (error, info) => {
-                // console.log(error)
-                if (error) {
-                    console.log(error);
-                    resolve(false)
-                } else {
-                    resolve(true)
-                }
+    //         transporter.sendMail(mailOptions, (error, info) => {
+    //             // console.log(error)
+    //             if (error) {
+    //                 console.log(error);
+    //                 resolve(false)
+    //             } else {
+    //                 resolve(true)
+    //             }
 
-            })
+    //         })
 
-        })
+    //     })
 
-    }
+    // }
 
 
     async totalBookings() {
 
         try {
-            const data = await bookingRepository.getTotalBookings()
-            console.log('getTotalServices service response: ', data);
-            if (data) {
-                return { success: true, data: data }
-            } else {
-                return { success: false, message: 'Could not get the total document' }
-            }
+            const bookingCount = await this.bookingRepository.getTotalBookings()
+            console.log('getTotalServices service response: ', bookingCount);
+            // if (bookingCount) {
+            //     return { success: true, data: bookingCount }
+            // } else {
+            //     return { success: false, message: 'Could not get the total document' }
+            // }
+
+            return bookingCount ?  { success: true, data: bookingCount }: { success: false, message: 'Could not get the total document' }
+
         } catch (error: any) {
             console.log('Error from getTotalServices service: ', error.message);
+            return { success: false, message: 'Something went wrong' }
+
         }
 
     }
@@ -74,6 +83,8 @@ class EventServices {
     async addBooking(bookingData: Partial<IBooking>) {
 
         try {
+
+            let addBookingResponse:IResponse={success:false}
 
             const { user, userId, serviceId, providerId, event, style, services, deliveryDate, venue, totalCount } = bookingData
 
@@ -110,16 +121,18 @@ class EventServices {
                     totalCount
                 }
                 console.log('booking obj to create new booking:', bookObj);
-                const data = await bookingRepository.createBooking(bookObj)
+                const newBooking = await this.bookingRepository.createBooking(bookObj)
 
                 console.log('bookingData data: ', bookingData);
 
-                console.log('bookingData service response: ', data);
-                if (data) {
-                    return { success: true, data: data }
-                } else {
-                    return { success: false, message: 'Could not create service' }
-                }
+                console.log('bookingData service response: ', newBooking);
+                // if (newBooking) {
+                //     return= { success: true, data: newBooking }
+                // } else {
+                //     return { success: false, message: 'Could not create service' }
+                // }
+
+                addBookingResponse = newBooking ? { success: true, data: newBooking, message:'Booking added successfully' } : { success: false, message: 'Could not create service' }
 
             } else if (event) {
 
@@ -146,21 +159,26 @@ class EventServices {
                     totalCount
                 }
 
-                const data = await bookingRepository.createBooking(bookObj)
+                const newBooking = await this.bookingRepository.createBooking(bookObj)
 
                 console.log('bookingData data: ', bookingData);
 
-                console.log('bookingData service response: ', data);
-                if (data) {
-                    return { success: true, data: data }
-                } else {
-                    return { success: false, message: 'Could not create service' }
-                }
+                console.log('bookingData service response: ', newBooking);
+                // if (newBooking) {
+                //     return { success: true, data: newBooking }
+                // } else {
+                //     return { success: false, message: 'Could not create service' }
+                // }
+
+                addBookingResponse = newBooking ? { success: true, data: newBooking } : { success: false, message: 'Could not create service' }
 
             }
 
+            return addBookingResponse
+
         } catch (error: any) {
             console.log('Error from addBooking service: ', error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -197,46 +215,53 @@ class EventServices {
 
             // let data = await bookingRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
 
-            let data = await bookingRepository.getAllBooking(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            let bookings = await this.bookingRepository.getAllBooking(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
-            console.log('all service data filtered and sorted: ', data);
+            console.log('all service data filtered and sorted: ', bookings);
 
-            if (data) {
-                return { success: true, data }
-            } else {
-                return { success: false, message: 'Could not fetch data' }
-            }
+            // if (bookings) {
+            //     return { success: true, data:bookings }
+            // } else {
+            //     return { success: false, message: 'Could not fetch data' }
+            // }
+
+            return bookings ?  { success: true, data: bookings }: { success: false, message: 'Could not fetch data' }
+
         } catch (error: any) {
             console.log('Error from getServices: ', error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
 
-
     async deleteBooking(id: string) {
         try {
-            const data = await bookingRepository.deleteBooking(id)
+            const deleteBooking = await this.bookingRepository.deleteBooking(id)
 
-            console.log('deleteBooking service response: ', data);
-            if (data) {
-                return { success: true, data: data, message: 'Event deleted successfuly' }
-            } else {
-                return { success: false, message: 'Could not delete booking, Something went wrong' }
-            }
+            console.log('deleteBooking service response: ', deleteBooking);
+            // if (deleteBooking) {
+            //     return { success: true, data: deleteBooking, message: 'Event deleted successfuly' }
+            // } else {
+            //     return { success: false, message: 'Could not delete booking, Something went wrong' }
+            // }
+
+            return deleteBooking ? { success: true, data: deleteBooking, message: 'Event deleted successfuly' }: { success: false, message: 'Could not delete booking, Something went wrong' }
+
         } catch (error: any) {
             console.log('Error from deleteBooking service: ', error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
 
     async deleteBookedServices(bookingId: string, serviceName: string, serviceId: string) {
         try {
-            const data = await bookingRepository.updateBooking(bookingId, { $pull: { services: { _id: serviceId, serviceName } } })
+            const data = await this.bookingRepository.updateBooking(bookingId, { $pull: { services: { _id: serviceId, serviceName } } })
 
             console.log('deleteBookedServices service response: ', data);
             if (data) {
                 if (data.services.length === 0) {
-                    const deleteBooking = await bookingRepository.deleteBooking(bookingId)
+                    const deleteBooking = await this.bookingRepository.deleteBooking(bookingId)
                     console.log('Booking deleted response: ', deleteBooking);
                     return { success: true, message: 'Booking deleted successfuly' }
                 }
@@ -246,56 +271,68 @@ class EventServices {
             }
         } catch (error: any) {
             console.log('Error from deleteBookedServices service: ', error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
 
     async getBookingById(id: string) {
         try {
-            const data = await bookingRepository.getBookingById(id)
+            const booking = await this.bookingRepository.getBookingById(id)
 
-            console.log('getEventById service response: ', data);
-            if (data) {
-                return { success: true, data: data }
-            } else {
-                return { success: false, message: 'Could not get booking, Something went wrong' }
-            }
+            console.log('getEventById service response: ', booking);
+            // if (booking) {
+            //     return { success: true, data: booking }
+            // } else {
+            //     return { success: false, message: 'Could not get booking, Something went wrong' }
+            // }
+
+            return booking ? { success: true, data: booking}: { success: false, message: 'Could not get booking, Something went wrong' }
+
         } catch (error: any) {
             console.log('Error from getEventById service: ', error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
 
-
     async getBookingByUserId(id: string) {
         try {
-            const data = await bookingRepository.getBookingByUserId(id)
+            const booking = await this.bookingRepository.getBookingByUserId(id)
 
-            console.log('getEventById service response: ', data);
-            if (data) {
-                return { success: true, data: data }
-            } else {
-                return { success: false, message: 'Could not get booking, Something went wrong' }
-            }
+            console.log('getEventById service response: ', booking);
+            // if (booking) {
+            //     return { success: true, data: booking }
+            // } else {
+            //     return { success: false, message: 'Could not get booking, Something went wrong' }
+            // }
+
+            return booking ? { success: true, data: booking}: { success: false, message: 'Could not get booking, Something went wrong' }
+
         } catch (error: any) {
             console.log('Error from getEventById service: ', error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
 
     async editBooking(id: string, serviceData: Partial<IBooking>) {
         try {
-            const updatedEvent = await bookingRepository.updateBooking(id, serviceData)
+            const updatedBooking = await this.bookingRepository.updateBooking(id, serviceData)
 
-            console.log('updatedEvent: ', updatedEvent);
+            console.log('updatedEvent: ', updatedBooking);
 
-            if (updatedEvent) {
-                return { success: true, data: updatedEvent, message: 'Event updated successfuly' }
-            } else {
-                return { success: false, message: 'Could not updated booking' }
-            }
+            // if (updatedBooking) {
+            //     return { success: true, data: updatedBooking, message: 'Event updated successfuly' }
+            // } else {
+            //     return { success: false, message: 'Could not updated booking' }
+            // }
+
+            return updatedBooking ? { success: true, data: updatedBooking, message: 'Event updated successfuly' }: { success: false, message: 'Could not updated booking' }
+
         } catch (error: any) {
             console.log('Error from updatedEvent: ', error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -303,24 +340,28 @@ class EventServices {
     async editStatus(id: string) {
         // provider making the service active or block
         try {
-            const booking = await bookingRepository.getBookingById(id)
+            const booking = await this.bookingRepository.getBookingById(id)
 
             if (booking) {
-                const eventUpdated = await bookingRepository.updateBooking(id, { $set: { isConfirmed: !booking.isConfirmed } })
+                const bookingUpdated = await this.bookingRepository.updateBooking(id, { $set: { isConfirmed: !booking.isConfirmed } })
 
-                console.log('editStatus service: ', booking, eventUpdated);
+                console.log('editStatus service: ', booking, bookingUpdated);
 
-                if (eventUpdated) {
-                    return { success: true, data: eventUpdated, message: 'Event status updated' }
-                } else {
-                    return { success: false, message: 'Could not updated booking status' }
-                }
+                // if (bookingUpdated) {
+                //     return { success: true, data: bookingUpdated, message: 'Event status updated' }
+                // } else {
+                //     return { success: false, message: 'Could not updated booking status' }
+                // }
+
+            return bookingUpdated ? { success: true, data: bookingUpdated, message: 'Event status updated' }: { success: false, message: 'Could not updated booking status' }
+
             } else {
                 return { success: false, message: 'Could not find booking details' }
             }
 
         } catch (error: any) {
             console.log('Error from editStatus booking: ', error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -375,6 +416,7 @@ class EventServices {
 
         } catch (error: any) {
             console.log('Error from getServiceByName service: ', error, error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -409,6 +451,7 @@ class EventServices {
 
     //     } catch (error: any) {
     //         console.log('Error from getServiceByName service: ', error, error.message);
+    //         return { success: false, message: 'Something went wrong' }
     //     }
 
     // }
@@ -451,6 +494,7 @@ class EventServices {
 
         } catch (error: any) {
             console.log('Error from getServiceByName service: ', error, error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -500,10 +544,11 @@ class EventServices {
 
         } catch (error: any) {
             console.log('Error from getServiceByName service: ', error, error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
 
 }
 
-export default new EventServices()
+// export default new EventServices()

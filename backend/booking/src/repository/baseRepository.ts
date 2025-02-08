@@ -1,7 +1,8 @@
-import { Model,FilterQuery,UpdateQuery, Document, DeleteResult } from "mongoose";
+import { Model,FilterQuery,UpdateQuery, Document, DeleteResult, QueryOptions } from "mongoose";
+import { IRepository } from "../interfaces/bookingInterfaces";
 
 
-export default class BaseRepository<T extends Document> {
+export abstract class BaseRepository<T extends Document> implements IRepository<T>{
 
     private model: Model<T>
 
@@ -9,21 +10,21 @@ export default class BaseRepository<T extends Document> {
         this.model = model
     }
 
-    async createBooking(data:Partial<T>):Promise<T>{
-        const booking=new this.model(data)
+    async createBooking(bookingData:Partial<T>):Promise<T>{
+        const booking=new this.model(bookingData)
         return await booking.save()
     }
 
-    async getBookingById(id:string):Promise<T | null>{
-        return await this.model.findById(id)
+    async getBookingById(bookingId:string):Promise<T | null>{
+        return await this.model.findById(bookingId)
     }
 
-    async getAllBooking(query:FilterQuery<T>={}, options:{sort?:any,limit?:number,skip?:number}){
+    async getAllBooking(query:FilterQuery<T>={}, options:QueryOptions={}):Promise<T[]>{
         const {sort,limit,skip}=options
         return await this.model.find(query).sort(sort).limit(limit!).skip(skip!)
     }
 
-    async updateBooking(id:string,data:UpdateQuery<T>):Promise<T | null>{
+    async updateBooking(bookingId:string,data:UpdateQuery<T>):Promise<T | null>{
         const updateQuery:any={}
         if(data.$push){
             updateQuery.$push=data.$push
@@ -34,11 +35,11 @@ export default class BaseRepository<T extends Document> {
         if(data.$set){
             updateQuery.$set=data.$set
         }
-        return await this.model.findOneAndUpdate({_id:id},updateQuery,{new:true})
+        return await this.model.findOneAndUpdate({_id:bookingId},updateQuery,{new:true})
     }
 
-    async deleteBooking(id:string):Promise<DeleteResult | null>{
-        return await this.model.findByIdAndDelete(id)
+    async deleteBooking(bookingId:string):Promise<DeleteResult | null>{
+        return await this.model.findByIdAndDelete(bookingId)
     }
 
 

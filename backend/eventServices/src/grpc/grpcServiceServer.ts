@@ -1,8 +1,8 @@
 import * as grpc from "@grpc/grpc-js"
 import * as protoLoader from "@grpc/proto-loader"
 import path from "path"
-import serviceRepository from "../repository/serviceRepository"
-import { IService, IServiceDb } from "../interfaces/serviceInterfaces"
+import { ServiceRepository } from "../repository/serviceRepository"
+import { IService, IServiceDb, IServiceRepository } from "../interfaces/serviceInterfaces"
 import { config } from 'dotenv';
 
 config()
@@ -11,6 +11,8 @@ const PROTO_PATH = path.join(__dirname, '../../../proto/eventServices.proto')
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH)
 const serviceProto: any = grpc.loadPackageDefinition(packageDefinition).service
+
+const serviceRepository:IServiceRepository=new ServiceRepository()
 
 async function GetAvailableServices(call: any, callback: any) {
     try {

@@ -1,6 +1,6 @@
 import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IEvent, IResponse, IService, IServicesArray } from '../../model/interface/interface';
+import { HttpStatusCodes, IEvent, IResponse, IService, IServicesArray } from '../../model/interface/interface';
 import { environment } from '../../../environments/environment.development';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { DataService } from '../../services/dataService/data.service';
@@ -162,7 +162,7 @@ export class UserEventDetailsComponent implements OnInit {
 
     this.bookingService.createBooking(this.bookingForm.value).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.CREATED) {
           console.log('service booking response: ', res.body?.data);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
           this.hideModal()

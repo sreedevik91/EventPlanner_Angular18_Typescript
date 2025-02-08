@@ -4,7 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ServiceService } from '../../services/serviceService/service.service';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alertService/alert.service';
-import { IResponse, IService } from '../../model/interface/interface';
+import { HttpStatusCodes, IResponse, IService } from '../../model/interface/interface';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 
@@ -59,7 +59,7 @@ export class AdminServicesComponent {
   getTotalServices() {
     this.serviceService.getTotalServices().subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalServices = res.body?.data
         } else {
           console.log(res.body?.message);
@@ -115,7 +115,7 @@ export class AdminServicesComponent {
   getAllServices(params: HttpParams) {
     this.serviceService.getAllServices(params).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.services.set(res.body?.data)
 
           console.log('all services new: ', res.body?.extra);
@@ -139,7 +139,7 @@ export class AdminServicesComponent {
     this.serviceService.approveService(id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.getAllServices(this.searchParams)
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service approved successfully')
         } else {
@@ -160,7 +160,7 @@ export class AdminServicesComponent {
   deleteService(id: string) {
     this.serviceService.deleteService(id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service deleted successfully')
           this.getAllServices(this.searchParams)
         } else {

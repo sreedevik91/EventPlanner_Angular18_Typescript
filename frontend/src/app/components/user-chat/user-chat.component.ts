@@ -1,28 +1,35 @@
 
-import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Chat, ChatSearchFilter, IChat } from '../../model/class/chatClass';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { ChatService } from '../../services/chatService/chat.service';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
-import { IChatJoiningResponse, IResponse } from '../../model/interface/interface';
+import { HttpStatusCodes, IChatJoiningResponse, IResponse } from '../../model/interface/interface';
 import { DatePipe } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
+import { AlertService } from '../../services/alertService/alert.service';
+import { AlertComponent } from '../../shared/components/alert/alert.component';
 
 
 @Component({
   selector: 'app-user-chat',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [ReactiveFormsModule, DatePipe,AlertComponent],
   templateUrl: './user-chat.component.html',
   styleUrl: './user-chat.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 
-export class UserChatComponent implements OnInit {
+export class UserChatComponent implements OnInit, OnDestroy {
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>
 
+  destroy$: Subject<void> = new Subject<void>()
+
   chatService = inject(ChatService)
+  alertService = inject(AlertService);
+
 
   chatFormObj: Chat = new Chat()
   searchFilterFormObj: ChatSearchFilter = new ChatSearchFilter()
@@ -110,13 +117,19 @@ export class UserChatComponent implements OnInit {
   getAllChats() {
     this.chatService.getChatsByUser(this.userId).subscribe({
       next: (res: any) => {
-        console.log('user chats from db:', res.body.data);
-        const chatData = res.body.data
-        this.messages = []
-        for (let chat of chatData.chats) {
-          this.messages.push(chat)
+        if (res.status === HttpStatusCodes.SUCCESS) {
+          console.log('user chats from db:', res.body.data);
+          const chatData = res.body.data
+          this.messages = []
+          for (let chat of chatData.chats) {
+            this.messages.push(chat)
+          }
+          console.log('user messages array:', this.messages);
+        } else {
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
         }
-        console.log('user messages array:', this.messages);
+
       },
       error: (error: any) => {
         console.log('error from getMessage:', error.message);
@@ -137,6 +150,7 @@ export class UserChatComponent implements OnInit {
 
   sendMessage() {
     this.chatForm.get('chats.type')?.setValue('text')
+    this.chatForm.get('chats.date')?.setValue(new Date())
     console.log(this.chatForm.value);
     this.chatService.sendMessage(this.chatForm.value)
     this.chatForm.get('chats.message')?.setValue('')
@@ -153,7 +167,7 @@ export class UserChatComponent implements OnInit {
   }
 
   getMessage() {
-    this.chatService.getMessage().subscribe({
+    this.chatService.getMessage().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any) => {
         console.log('sent message from server:', data);
         this.messages.push(data.chats)
@@ -168,7 +182,7 @@ export class UserChatComponent implements OnInit {
   }
 
   getTypingNotification() {
-    this.chatService.getTypingNotificatrion().subscribe({
+    this.chatService.getTypingNotificatrion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (notification: string) => {
         console.log('TypingNotificatrion from server:', notification);
         this.typing = notification
@@ -180,7 +194,7 @@ export class UserChatComponent implements OnInit {
   }
 
   getJoiningNotification() {
-    this.chatService.getJoiningNotificatrion().subscribe({
+    this.chatService.getJoiningNotificatrion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (notification: any) => {
         console.log('JoiningNotificatrion from server:', notification);
         this.notification.push(notification.message)
@@ -192,7 +206,7 @@ export class UserChatComponent implements OnInit {
   }
 
   getStartChatNotification() {
-    this.chatService.getStartChatNotificatrion().subscribe({
+    this.chatService.getStartChatNotificatrion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (notification: any) => {
         console.log('start chat notificatrion from server:', notification);
         this.roomId = notification.roomId
@@ -209,7 +223,7 @@ export class UserChatComponent implements OnInit {
   }
 
   getLeavingNotification() {
-    this.chatService.getLeavingNotificatrion().subscribe({
+    this.chatService.getLeavingNotificatrion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (notification: string) => {
         console.log('LeavingNotificatrion from server:', notification);
         this.notification.push(notification)
@@ -239,12 +253,17 @@ export class UserChatComponent implements OnInit {
 
       this.chatService.getImgUrlFromCloudinary(formData).subscribe({
         next: (res: HttpResponse<IResponse>) => {
+          if (res.status === HttpStatusCodes.SUCCESS) {
           console.log(res.body?.data);
           this.chatForm.get('chats.message')?.setValue(res.body?.data.imgUrl)
           this.chatForm.get('chats.type')?.setValue(res.body?.data.type)
           this.chatService.sendMessage(this.chatForm.value)
           console.log(this.chatForm.value);
           this.chatForm.get('chats.message')?.setValue('')
+        } else {
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
+        }
 
         },
         error: (err: HttpErrorResponse) => {
@@ -282,13 +301,18 @@ export class UserChatComponent implements OnInit {
         // get cloudinary link from server and send mesage to socket 
         this.chatService.getAudioUrlFromCloudinary(formData).subscribe({
           next: (res: HttpResponse<IResponse>) => {
+            if (res.status === HttpStatusCodes.SUCCESS) {
             console.log(res.body?.data);
             this.chatForm.get('chats.message')?.setValue(res.body?.data.imgUrl)
             this.chatForm.get('chats.type')?.setValue(res.body?.data.type)
             this.chatService.sendMessage(this.chatForm.value)
             console.log(this.chatForm.value);
             this.chatForm.get('chats.message')?.setValue('')
-
+          } else {
+            console.log(res.body?.message);
+            this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
+          }
+  
           },
           error: (err: HttpErrorResponse) => {
             console.log(err, err.error.message);
@@ -316,6 +340,11 @@ export class UserChatComponent implements OnInit {
     control?.setValue(`${userMessage}${event.detail.unicode}`)
     console.log(control?.value);
 
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
 

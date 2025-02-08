@@ -7,7 +7,7 @@ import { PasswordMatchValidator } from '../../shared/validators/formValidator';
 import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { IResponse } from '../../model/interface/interface';
+import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
 
 @Component({
   selector: 'app-reset',
@@ -77,7 +77,7 @@ export class ResetComponent implements OnInit {
     this.userServices.resetPassword(data).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('resetPassword res: ', res.body);
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           // this.callAlert('alert alert-success', 'Password Reset Success', res.message)
           this.alertService.getAlert('alert alert-success', 'Password Reset Success', res.body?.message || '')
 

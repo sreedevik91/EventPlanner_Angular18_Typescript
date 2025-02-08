@@ -32,7 +32,7 @@
         
                         <div class="col-md-6">
                             @if(item.chats.message!==''){
-                            <small>{{item.chats.date | date:'shortDate'}}</small>
+                            <small>{{item.chats.date | date:'longDate'}}</small>
                             <div class="alert alert-success d-inline-block float-end" role="alert">{{item.chats.message}}</div>
                             }
                         </div>
@@ -41,7 +41,7 @@
                     <div class="row pt-2">
                         <div class="col-md-6">
                             @if(item.chats.message!==''){
-                            <small>{{item.chats.date | date:'shortDate'}}</small>
+                            <small>{{item.chats.date | date:'longDate'}}</small>
                             <div class="alert alert-primary d-inline-block" role="alert">{{item.chats.message}}</div>
                             }
                         </div>
@@ -58,7 +58,7 @@
         
                         <div class="col-md-6">
                             @if(item.chats.message!==''){
-                            <small>{{item.chats.date | date:'shortDate'}}</small>
+                            <small>{{item.chats.date | date:'longDate'}}</small>
                             <div class="alert alert-success d-inline-block float-end" role="alert">{{item.chats.message}}</div>
                             }
                         </div>
@@ -67,7 +67,7 @@
                     <div class="row pt-2">
                         <div class="col-md-6">
                             @if(item.chats.message!==''){
-                            <small>{{item.chats.date | date:'shortDate'}}</small>
+                            <small>{{item.chats.date | date:'longDate'}}</small>
                             <div class="alert alert-primary d-inline-block" role="alert">{{item.chats.message}}</div>
                             }
                         </div>
@@ -100,8 +100,12 @@
 
 
 <div class="container-fluid">
+    <div>
+        <app-alert></app-alert>
+    </div>
+
     <div class="row">
-   
+
         <div class="col-md-10">
             <div class="chat-container">
 
@@ -129,34 +133,42 @@
                     @if(item.sender===userName){
                     <div class="row pt-2">
 
-                        <div class="col-md-6 offset-md-6">
+                        <div class="col-md-6 offset-md-6 position-relative">
                             @if(item.message!==''){
-                            <small class="d-block float-end">{{item.date | date:'shortDate'}}</small>
+                            <div>
+                                <small class="col-12 d-block text-end text-muted" style="font-size: 0.75em">{{item.date |
+                                    date:'longDate'}}</small>
+                            </div>
                             <div class="alert alert-success d-inline-block float-end">
                                 @if(item.type === 'image'){
-                                    <img [src]="item.message" alt="" class="img-fluid">
+                                <img [src]="item.message" alt="" class="img-fluid">
                                 }@else if(item.type === 'video'){
-                                    <video controls>
-                                        <source [src]="item.message" type="video/mp4">
-                                      </video>
+                                <video controls>
+                                    <source [src]="item.message" type="video/mp4">
+                                </video>
                                 }@else if(item.type === 'audio'){
-                                    <audio controls>
-                                        <source [src]="item.message" type="audio/ogg">
-                                      </audio>
+                                <audio controls>
+                                    <source [src]="item.message" type="audio/ogg">
+                                </audio>
                                 }@else if(item.type === 'text'){
-                                   
-                                        {{item.message}}
+
+                                {{item.message}}
                                 }@else if(item.type === 'raw'){
-                                   
-                                    <a [href]="item.message" target="_blank" download="{{ item.type }}" class="btn btn-link">
-                                        📄 {{ item.type || 'Download File' }}
-                                      </a>
-                            }@else{
+
+                                <a [href]="item.message" target="_blank" download="{{ item.type }}"
+                                    class="btn btn-link">
+                                    📄 {{ item.type || 'Download File' }}
+                                </a>
+                                }@else{
                                 <p>Unsupported file type</p>
-                            }
+                                }
+                                <!-- <p class="float-end"><small class="text-muted" style="font-size: 0.75em;padding-left:5px">{{item.date
+                                        | date:'shortTime'}}</small></p> -->
+                                        <div class="position-absolute bottom-0 end-0"><small class="float-end text-muted p-1" style="font-size: 0.55em;">{{item.date
+                                        | date:'shortTime'}}</small></div>
                             </div>
 
-                    
+
                             }
                         </div>
                     </div>
@@ -165,35 +177,46 @@
                     <div class="row pt-2">
                         <div class="col-md-6">
                             @if(item.message!==''){
-                            <small class="d-block float-start">{{item.date | date:'shortDate'}}</small>
+                                <div>
+                                    <small class="col-12 d-block text-start text-muted" style="font-size: 0.75em">
+                                        {{item.date | date:'longDate'}}</small>
+                                </div>
+                            <!-- <small class="d-block float-start" style="font-size: 0.75em">{{item.date | date:'longDate'}}</small> -->
                             <div class="alert alert-primary d-inline-block" role="alert">
                                 @if(item.type === 'image'){
-                                    <img [src]="item.message" alt="" class="img-fluid">
+                                <img [src]="item.message" alt="" class="img-fluid">
                                 }@else if(item.type === 'video'){
-                                    <video controls>
-                                        <source [src]="item.message" type="video/mp4">
-                                      </video>
+                                <video controls>
+                                    <source [src]="item.message" type="video/mp4">
+                                </video>
                                 }@else if(item.type === 'audio'){
-                                    <audio controls>
-                                        <source [src]="item.message" type="audio/ogg">
-                                      </audio>
+                                <audio controls>
+                                    <source [src]="item.message" type="audio/ogg">
+                                </audio>
                                 }@else if(item.type === 'text'){
-                                   
-                                        {{item.message}}
+
+                                {{item.message}}
                                 }@else if(item.type === 'raw'){
-                                   
-                                    <a [href]="item.message" target="_blank" download="{{ item.type }}" class="btn btn-link">
-                                        📄 {{ item.type || 'Download File' }}
-                                      </a>
-                            }@else{
+
+                                <a [href]="item.message" target="_blank" download="{{ item.type }}"
+                                    class="btn btn-link">
+                                    📄 {{ item.type || 'Download File' }}
+                                </a>
+                                }@else{
                                 <p>Unsupported file type</p>
-                            }
-                            
+                                }
+
+                                <!-- <p class="float-end fs-6"><small style="font-size: 0.75em;padding-left:5px">{{item.date
+                                        | date:'shortTime'}}</small></p> -->
+                                
+                                        <div class="position-absolute bottom-0 start-0"><small class="float-end text-muted p-1" style="font-size: 0.55em;">{{item.date
+                                        | date:'shortTime'}}</small></div>
+
                             </div>
                             }
-
-                          
                             
+
+
                         </div>
                     </div>
                     }
@@ -207,36 +230,46 @@
 
                         <div class="col-md-6 offset-md-6">
                             @if(item.chats.message!==''){
-                            <small class="d-block float-end">{{item.chats.date | date:'shortDate'}}</small>
+                                <div>
+                                    <small class="col-12 d-block text-end text-muted" style="font-size: 0.75em">{{item.chats.date |
+                                        date:'longDate'}}</small>
+                                </div>
+                            <!-- <small class="d-block float-end" style="font-size: 0.75em">{{item.chats.date | date:'longDate'}}</small> -->
 
                             <div class="alert alert-success d-inline-block float-end" role="alert">
                                 @if(item.chats.type === 'image'){
-                                    <img [src]="item.chats.message" alt="" class="img-fluid">
+                                <img [src]="item.chats.message" alt="" class="img-fluid">
                                 }@else if(item.chats.type === 'video'){
-                                    <video controls>
-                                        <source [src]="item.chats.message" type="video/mp4">
-                                      </video>
+                                <video controls>
+                                    <source [src]="item.chats.message" type="video/mp4">
+                                </video>
                                 }@else if(item.chats.type === 'audio'){
-                                    <audio controls>
-                                        <source [src]="item.chats.message" type="audio/ogg">
-                                      </audio>
+                                <audio controls>
+                                    <source [src]="item.chats.message" type="audio/ogg">
+                                </audio>
                                 }@else if(item.chats.type === 'text'){
-                                   
-                                        {{item.chats.message}}
+
+                                {{item.chats.message}}
                                 }@else if(item.type === 'raw'){
-                                   
-                                    <a [href]="item.message" target="_blank" download="{{ item.type }}" class="btn btn-link">
-                                        📄 {{ item.type || 'Download File' }}
-                                      </a>
-                            }@else{
+
+                                <a [href]="item.message" target="_blank" download="{{ item.type }}"
+                                    class="btn btn-link">
+                                    📄 {{ item.type || 'Download File' }}
+                                </a>
+                                }@else{
                                 <p>Unsupported file type</p>
-                            }
-                            
+                                }
+                                <!-- <p class="float-end fs-6"><small style="font-size: 0.75em;padding-left:5px">{{item.date
+                                        | date:'shortTime'}}</small></p> -->
+
+                                        <div class="position-absolute bottom-0 end-0"><small class="float-end text-muted p-1" style="font-size: 0.55em;">{{item.chats.date
+                                        | date:'shortTime'}}</small></div>
+
                             </div>
                             }
 
 
-                            
+
                         </div>
                     </div>
                     }
@@ -244,31 +277,41 @@
                     <div class="row pt-2">
                         <div class="col-md-6">
                             @if(item.chats.message!==''){
-                            <small class="d-block float-start">{{item.chats.date | date:'shortDate'}}</small>
+                                <div>
+                                    <small class="col-12 d-block text-start text-muted" style="font-size: 0.75em">{{item.chats.date |
+                                        date:'longDate'}}</small>
+                                </div>
+                            <!-- <small class="d-block float-start" style="font-size: 0.75em">{{item.chats.date | date:'longDate'}}</small> -->
                             <div class="alert alert-primary d-inline-block" role="alert">
 
                                 @if(item.chats.type === 'image'){
-                                    <img [src]="item.chats.message" alt="" class="img-fluid">
+                                <img [src]="item.chats.message" alt="" class="img-fluid">
                                 }@else if(item.chats.type === 'video'){
-                                    <video controls>
-                                        <source [src]="item.chats.message" type="video/mp4">
-                                      </video>
+                                <video controls>
+                                    <source [src]="item.chats.message" type="video/mp4">
+                                </video>
                                 }@else if(item.chats.type === 'audio'){
-                                    <audio controls>
-                                        <source [src]="item.chats.message" type="audio/ogg">
-                                      </audio>
+                                <audio controls>
+                                    <source [src]="item.chats.message" type="audio/ogg">
+                                </audio>
                                 }@else if(item.chats.type === 'text'){
-                                   
-                                       {{item.chats.message}}
+
+                                {{item.chats.message}}
                                 }@else if(item.type === 'raw'){
-                                   
-                                    <a [href]="item.message" target="_blank" download="{{ item.type }}" class="btn btn-link">
-                                        📄 {{ item.type || 'Download File' }}
-                                      </a>
-                            }@else{
+
+                                <a [href]="item.message" target="_blank" download="{{ item.type }}"
+                                    class="btn btn-link">
+                                    📄 {{ item.type || 'Download File' }}
+                                </a>
+                                }@else{
                                 <p>Unsupported file type</p>
-                            }
-                            
+                                }
+                                <!-- <p class="float-end fs-6"><small style="font-size: 0.75em;padding-left:5px">{{item.date
+                                        | date:'shortTime'}}</small></p> -->
+
+                                        <div class="position-absolute bottom-0 start-0"><small class="float-end text-muted p-1" style="font-size: 0.55em;">{{item.chats.date
+                                        | date:'shortTime'}}</small></div>
+
                             </div>
 
                             }
@@ -281,7 +324,7 @@
 
 
                 </div>
-<!-- 
+                <!-- 
 
                 <div class="chat-footer">
 
@@ -305,63 +348,64 @@
                 </div>
  -->
 
- <div class="chat-footer">
-    <form [formGroup]="chatForm">
-      <div class="row align-items-center">
-  
-        <!-- Emoji Picker Button -->
-        <div class="col-auto">
-          <button type="button" class="btn btn-light btn-sm" (click)="toggleEmojiPicker()">
-            😊
-          </button>
-        </div>
-  
-        <!-- File Upload Button -->
-        <div class="col-auto">
-          <input type="file" id="fileInput" #fileInput (change)="handleFileUpload($event)" hidden>
-          <button type="button" class="btn btn-light btn-sm" (click)="triggerFileInput()">
-            📎
-          </button>
-        </div>
-  
-        <!-- Voice Message Button -->
-        <div class="col-auto">
-            @if(!recording){
-                <button type="button" class="btn btn-light btn-sm" (click)="startRecording()">
-                    🎤
-                  </button>
-            }
-          @if(recording){
-            <span class="recording-indicator">🔴 Recording...</span>
-            <button type="button" class="btn btn-light btn-sm" (click)="stopRecording()">
-              ⏹️
-            </button>
-          }
-         
-        </div>
-  
-        <!-- Message Input -->
-        <div class="col" formGroupName="chats">
-          <input type="text" placeholder="Type a message" class="form-control"
-            (input)="startedTyping()" formControlName="message" />
-        </div>
-  
-        <!-- Send Button -->
-        <div class="col-auto">
-          <button class="btn btn-primary btn-sm px-3 rounded-pill" type="submit" (click)="sendMessage()">
-            Send
-          </button>
-        </div>
-      </div>
-    </form>
-  
-    <!-- Emoji Picker -->
-     @if(showEmojiPicker){
-    <div>
-      <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
-    </div>
-}
-  </div>
+                <div class="chat-footer">
+                    <form [formGroup]="chatForm">
+                        <div class="row align-items-center">
+
+                            <!-- Emoji Picker Button -->
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-light btn-sm" (click)="toggleEmojiPicker()">
+                                    😊
+                                </button>
+                            </div>
+
+                            <!-- File Upload Button -->
+                            <div class="col-auto">
+                                <input type="file" id="fileInput" #fileInput (change)="handleFileUpload($event)" hidden>
+                                <button type="button" class="btn btn-light btn-sm" (click)="triggerFileInput()">
+                                    📎
+                                </button>
+                            </div>
+
+                            <!-- Voice Message Button -->
+                            <div class="col-auto">
+                                @if(!recording){
+                                <button type="button" class="btn btn-light btn-sm" (click)="startRecording()">
+                                    🎤
+                                </button>
+                                }
+                                @if(recording){
+                                <span class="recording-indicator">🔴 Recording...</span>
+                                <button type="button" class="btn btn-light btn-sm" (click)="stopRecording()">
+                                    ⏹️
+                                </button>
+                                }
+
+                            </div>
+
+                            <!-- Message Input -->
+                            <div class="col" formGroupName="chats">
+                                <input type="text" placeholder="Type a message" class="form-control"
+                                    (input)="startedTyping()" formControlName="message" />
+                            </div>
+
+                            <!-- Send Button -->
+                            <div class="col-auto">
+                                <button class="btn btn-primary btn-sm px-3 rounded-pill" type="submit"
+                                    (click)="sendMessage()">
+                                    Send
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Emoji Picker -->
+                    @if(showEmojiPicker){
+                    <div>
+                        <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
+                    </div>
+                    }
+                </div>
 
             </div>
         </div>

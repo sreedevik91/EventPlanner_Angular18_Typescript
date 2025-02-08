@@ -1,20 +1,24 @@
-import { CookieType, LoginData } from "../interfaces/userInterface";
+import { HttpStatusCodes, ICookie, IResponse, IUserController, IUserService, LoginData } from "../interfaces/userInterface";
 import { Request, Response } from 'express'
-import UserServices from "../services/userServices";
-import { log } from "console";
+import { ResponseHandler } from "../utils/responseHandler";
+// import UserService from "../services/userServices";
 
-class UserController {
+export class UserController implements IUserController {
+
+    constructor(private userService: IUserService) { }
 
     async registerUser(req: Request, res: Response) {
         try {
-            const isUser = await UserServices.register(req.body)
+            const isUser = await this.userService.register(req.body)
             console.log('response from register user: ', isUser);
 
-            isUser?.success ? res.status(201).json(isUser) : res.status(400).json(isUser)
+            // isUser?.success ? res.status(201).json(isUser) : res.status(400).json(isUser)
+            isUser?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.CREATED, isUser) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, isUser)
 
         } catch (error: any) {
             console.log('Error from Register User: ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
         }
     }
 
@@ -23,24 +27,28 @@ class UserController {
             // console.log('google user: ', req.user);
 
             if (req.user) {
-                const login = await UserServices.login(req.user)
+                const login = await this.userService.login(req.user)
                 if (login) {
                     if (login.emailVerified) {
                         if (login.success && login.cookieData) {
-                            const cookie: CookieType = login.cookieData
+                            const cookie: ICookie = login.cookieData
                             // console.log('login cookie data: ',cookie);
-                            const { payload, refreshToken, accessToken, options } = cookie
-                            res.cookie('refreshToken', refreshToken, options)
-                            res.cookie('accessToken', accessToken, options)
-                            res.redirect('/googleLogin/callback')
+
+                            // const { payload, refreshToken, accessToken, options } = cookie
+                            // res.cookie('refreshToken', refreshToken, options) 
+                            // res.cookie('accessToken', accessToken, options)
+                            // res.redirect('/googleLogin/callback')
+                            ResponseHandler.googleResponse(res, cookie)
                             console.log('sending login response from  controller to frontend: login success emailVerified success fail');
 
                         } else {
                             console.log('sending login response from  controller to frontend: login fail emailVerified success fail');
+                            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
 
                         }
                     } else {
                         console.log('sending login response from  controller to frontend: login fail emailNotVerified success fail');
+                        ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
 
                     }
 
@@ -48,28 +56,37 @@ class UserController {
 
             } else {
                 console.log('No google user found');
+                ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'No google user found' })
+
             }
 
         } catch (error: any) {
             console.log('Error from Login User: ', error.message);
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+
         }
     }
 
 
     async getGoogleUser(req: Request, res: Response) {
         try {
-            let user:LoginData | undefined = req.user
+            let user: LoginData | undefined = req.user
             console.log('google user data from token: ', user);
-            if (user?.email) {
-                let userDb = await UserServices.getGoogleUser(user.email)
-            // res.status(200).json({ success: true, data: user })
-            userDb?.success ? res.status(200).json(userDb) : res.status(400).json(userDb)
 
+            if (!user?.email) {
+                ResponseHandler.errorResponse(res, HttpStatusCodes.NOT_FOUND, { success: false, message: 'User not found !' })
+            } else {
+                let userDb = await this.userService.getGoogleUser(user?.email)
+                // res.status(200).json({ success: true, data: user })
+                // userDb?.success ? res.status(200).json(userDb) : res.status(400).json(userDb)
+                userDb?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, userDb) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, userDb)
             }
 
         } catch (error: any) {
             console.log('Error from getGoogleUser: ', error.message);
-            res.status(500).json({ success: true, message: error.message })
+            // res.status(500).json({ success: true, message: error.message })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+
         }
 
     }
@@ -77,8 +94,9 @@ class UserController {
 
     async userLogin(req: Request, res: Response) {
         try {
-            const login = await UserServices.login(req.body)
+            const login = await this.userService.login(req.body)
             if (login) {
+
                 // if (login.emailVerified) {
                 //     if (login.success && login.cookieData) {
                 //         const cookie: CookieType = login.cookieData
@@ -103,58 +121,65 @@ class UserController {
 
                 // }
 
-                // if (login.emailVerified) {
-                    if (login.success && login.cookieData) {
-                        const cookie: CookieType = login.cookieData
-                        // console.log('login cookie data: ',cookie);
-                        const { payload, refreshToken, accessToken, options } = cookie
-                        res.cookie('refreshToken', refreshToken, options)
-                        res.cookie('accessToken', accessToken, options)
-                        res.status(200).json({ success: true, emailVerified: true, message: 'Logged in success', data: payload })
+                if (login.success && login.cookieData) {
+                    const cookie: ICookie = login.cookieData
+                    // console.log('login cookie data: ',cookie);
+                    const { payload, refreshToken, accessToken, options } = cookie
+                    // res.cookie('refreshToken', refreshToken, options)
+                    // res.cookie('accessToken', accessToken, options)
+                    // res.status(200).json({ success: true, emailVerified: true, message: 'Logged in success', data: payload })
 
-                        console.log('sending login response from  controller to frontend: login success emailVerified success fail');
+                    ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, { success: true, emailVerified: true, message: 'Logged in success', data: payload }, cookie)
+                    console.log('sending login response from  controller to frontend: login success emailVerified success fail');
 
-                    } else {
+                } else {
+                    let status = HttpStatusCodes.BAD_REQUEST
+                    let resData: IResponse = { success: false }
+                    if (login.emailNotVerified) {
+                        // res.status(400).json({ success: false, emailNotVerified: true, message: 'Email not verified' })
+                        resData = { success: false, emailNotVerified: true, message: 'Email not verified' }
+                    } else if (login.wrongCredentials) {
+                        // res.status(400).json({ success: false, wrongCredentials: true, message: login.message ? login.message : 'Invalid username or password' })
+                        resData = { success: false, wrongCredentials: true, message: login.message ? login.message : 'Invalid username or password' }
 
-                        if (login.emailNotVerified) {
-                            res.status(400).json({ success: false, emailNotVerified: true, message: 'Email not verified' })
-                        }else if(login.wrongCredentials){
-                            res.status(400).json({ success: false,wrongCredentials:true, message: login.message ? login.message : 'Invalid username or password' })
-                        }else if(login.blocked){
-                            res.status(403).json({ success: false,blocked:true, message: login.message ? login.message : 'Your account has been blocked. Contact admin for more details.'})
-                        }else if(login.noUser){
-                            res.status(400).json({ success: false,  message: login.message ? login.message : 'User not found'})
-                        }
+                    } else if (login.blocked) {
+                        // res.status(403).json({ success: false, blocked: true, message: login.message ? login.message : 'Your account has been blocked. Contact admin for more details.' })
+                        status = HttpStatusCodes.FORBIDDEN
+                        resData = { success: false, blocked: true, message: login.message ? login.message : 'Your account has been blocked. Contact admin for more details.' }
 
-
+                    } else if (login.noUser) {
+                        // res.status(400).json({ success: false, message: login.message ? login.message : 'User not found' })
+                        status = HttpStatusCodes.NOT_FOUND
+                        resData = { success: false, message: login.message ? login.message : 'User not found' }
 
                     }
-                // } else {
 
-                //     res.status(400).json({ success: false, emailVerified: false, message: 'Email not verified' })
-                //     console.log('sending login response from  controller to frontend: login fail emailNotVerified success fail');
+                    ResponseHandler.errorResponse(res, status, resData)
 
-                // }
-
+                }
 
             }
 
         } catch (error: any) {
             console.log('Error from Login User: ', error.message);
-            res.status(500).json({ success: false, message: error.message })
+            // res.status(500).json({ success: false, message: error.message })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
         }
     }
 
     async sendResetEmail(req: Request, res: Response) {
         try {
             console.log(req.body.email);
-            const response = await UserServices.sendResetPasswordEmail(req.body.email)
-            console.log("sendMail: ", response);
-            response?.success ? res.status(200).json(response) : res.status(400).json(response)
+            const resetEmailResponse = await this.userService.sendResetPasswordEmail(req.body.email)
+            console.log("sendMail: ", resetEmailResponse);
+            // resetEmailResponse?.success ? res.status(200).json(resetEmailResponse) : res.status(400).json(resetEmailResponse)
+            resetEmailResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, resetEmailResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, resetEmailResponse)
 
         } catch (error: any) {
             console.log('Error from send email to user: ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+
         }
     }
 
@@ -162,25 +187,31 @@ class UserController {
         try {
             console.log('resetPassword data from req body:', req.body);
 
-            const response = await UserServices.resetUserPassword(req.body)
-            // console.log('reset password response: ', response);
-            response?.success ? res.status(200).json(response) : res.status(400).json(response)
+            const resetPasswordResponse = await this.userService.resetUserPassword(req.body)
+            // console.log('reset password response: ', resetPasswordResponse);
+            // resetPasswordResponse?.success ? res.status(200).json(resetPasswordResponse) : res.status(400).json(resetPasswordResponse)
+            resetPasswordResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, resetPasswordResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, resetPasswordResponse)
 
         } catch (error: any) {
             console.log('Error from reset password : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+
         }
     }
 
 
     async verifyOtp(req: Request, res: Response) {
         try {
-            const response = await UserServices.verifyLoginOtp(req.body)
-            response?.success ? res.status(200).json(response) : res.status(400).json(response)
+            const verifyOtpResponse = await this.userService.verifyLoginOtp(req.body)
+            // verifyOtpResponse?.success ? res.status(200).json(verifyOtpResponse) : res.status(400).json(verifyOtpResponse)
+            verifyOtpResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, verifyOtpResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, verifyOtpResponse)
 
         } catch (error: any) {
             console.log('Error from verify otp : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+
         }
     }
 
@@ -189,34 +220,41 @@ class UserController {
             const id = req.params.id
             console.log("id to resend otp: ", id);
 
-            const response = await UserServices.resendUserOtp(req.params.id)
-            response?.success ? res.status(200).json(response) : res.status(400).json(response)
+            const resendOtpResponse = await this.userService.resendUserOtp(req.params.id)
+            // resendOtpResponse?.success ? res.status(200).json(resendOtpResponse) : res.status(400).json(resendOtpResponse)
+            resendOtpResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, resendOtpResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, resendOtpResponse)
 
         } catch (error: any) {
             console.log('Error from resend otp : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
         }
     }
 
     async userLogout(req: Request, res: Response) {
         try {
-            res.clearCookie('accessToken')
-            res.clearCookie('refreshToken')
-            res.status(200).json({ success: true, message: 'User logged out' })
+            // res.clearCookie('accessToken')
+            // res.clearCookie('refreshToken')
+            // res.status(200).json({ success: true, message: 'User logged out' })
+            ResponseHandler.logoutResponse(res, HttpStatusCodes.SUCCESS, { success: true, message: 'User logged out' }) 
         } catch (error: any) {
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+
         }
     }
 
     async getAllUsers(req: Request, res: Response) {
 
         try {
-            let users = await UserServices.getUsers(req.query)
-            users?.success ? res.status(200).json(users) : res.status(400).json(users)
+            let users = await this.userService.getUsers(req.query)
+            // users?.success ? res.status(200).json(users) : res.status(400).json(users)
+            users?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, users) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, users)
 
         } catch (error: any) {
             console.log('Error from getAllUsers : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
 
         }
     }
@@ -224,37 +262,43 @@ class UserController {
     async getUsersCount(req: Request, res: Response) {
 
         try {
-            let users = await UserServices.getUsersCount()
-            users?.success ? res.status(200).json(users) : res.status(400).json(users)
+            let totalUsers = await this.userService.getUsersCount()
+            // totalUsers?.success ? res.status(200).json(totalUsers) : res.status(400).json(totalUsers)
+            totalUsers?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, totalUsers) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, totalUsers)
 
         } catch (error: any) {
             console.log('Error from getUsersCount : ', error.message);
-            res.status(500).json(error.message)
-
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
         }
     }
 
     async refreshToken(req: Request, res: Response) {
         try {
-            let refreshToken = req.cookies?.refreshToken
-            console.log('refreshToken: ', refreshToken);
-            if (!refreshToken) {
-                res.json({ success: false, message: 'Refresh Token is missing' })
+            let refreshTokenOld = req.cookies?.refreshToken
+            console.log('refreshToken: ', refreshTokenOld);
+            if (!refreshTokenOld) {
+                // res.json({ success: false, message: 'Refresh Token is missing' })
+                ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST,{ success: false, message: 'Refresh Token is missing' })
                 return
             }
-            let tokenRes: any = await UserServices.getNewToken(refreshToken)
-            const { accessToken, options, payload } = tokenRes
+            let tokenRes: any = await this.userService.getNewToken(refreshTokenOld)
+            const { accessToken, refreshToken,options, payload } = tokenRes
             if (accessToken) {
-                res.cookie('accessToken', accessToken, options)
-                res.cookie('refreshToken', refreshToken, options)
-                res.status(200).json({ success: true, message: 'Token refreshed', data: payload })
+                // res.cookie('accessToken', accessToken, options)
+                // res.cookie('refreshToken', refreshToken, options)
+                // res.status(200).json({ success: true, message: 'Token refreshed', data: payload })
+                ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, { success: true, message: 'Token refreshed', data: payload}, tokenRes)
                 return
             }
-            res.status(400).json({ success: false, message: 'Token could not refresh' })
+            // res.status(400).json({ success: false, message: 'Token could not refresh' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST,{ success: false, message: 'Token could not refresh' })
 
         } catch (error: any) {
             console.log('Error from refreshToken : ', error.message);
-            res.status(500).json({ success: false, message: 'Token could not refresh' })
+            // res.status(500).json({ success: false, message: 'Token could not refresh' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+
         }
     }
 
@@ -264,13 +308,14 @@ class UserController {
             const { data } = req.body
             console.log('user details to update: ', userId, data);
 
-            const newUserResponse = await UserServices.updateUser(userId, data)
-            newUserResponse?.success ? res.status(200).json(newUserResponse) : res.status(400).json(newUserResponse)
+            const newUserResponse = await this.userService.updateUser(userId, data)
+            // newUserResponse?.success ? res.status(200).json(newUserResponse) : res.status(400).json(newUserResponse)
+            newUserResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, newUserResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newUserResponse)
 
         } catch (error: any) {
             console.log('Error from edit user : ', error.message);
-            res.status(500).json(error.message)
-
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
         }
     }
 
@@ -279,12 +324,14 @@ class UserController {
             const { id } = req.body
             // console.log('id to edit user',id);
 
-            const newStatusResponse = await UserServices.updateUserStatus(id)
-            newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
+            const newStatusResponse = await this.userService.updateUserStatus(id)
+            // newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
+            newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, newStatusResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newStatusResponse)
 
         } catch (error: any) {
             console.log('Error from edit status : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
 
         }
     }
@@ -294,15 +341,16 @@ class UserController {
             const { id } = req.params
             console.log('id to get user', id);
 
-            const userResponse = await UserServices.getUser(id)
+            const userResponse = await this.userService.getUser(id)
             console.log('get user response:', userResponse);
-            
-            userResponse?.success ? res.status(200).json(userResponse) : res.status(400).json(userResponse)
+
+            // userResponse?.success ? res.status(200).json(userResponse) : res.status(400).json(userResponse)
+            userResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, userResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, userResponse)
 
         } catch (error: any) {
             console.log('Error from get user : ', error.message);
-            res.status(500).json(error.message)
-
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
         }
     }
 
@@ -310,12 +358,14 @@ class UserController {
         try {
             const { email } = req.body
             console.log('email to verify', req.body.email);
-            const verifyEmailResponse = await UserServices.verifyUserEmail(email)
-            verifyEmailResponse?.success ? res.status(200).json(verifyEmailResponse) : res.status(400).json({ message: 'could not send otp to verify email' })
+            const verifyEmailResponse = await this.userService.verifyUserEmail(email)
+            // verifyEmailResponse?.success ? res.status(200).json(verifyEmailResponse) : res.status(400).json({ message: 'could not send otp to verify email' })
+            verifyEmailResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, verifyEmailResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, verifyEmailResponse)
 
         } catch (error: any) {
             console.log('Error from verify user email : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
 
         }
     }
@@ -324,12 +374,14 @@ class UserController {
         try {
             const { id } = req.body
             console.log('id to verify', req.body.id);
-            const verifyUser = await UserServices.verifyUser(id)
-            verifyUser?.success ? res.status(200).json(verifyUser) : res.status(400).json(verifyUser)
+            const verifyUser = await this.userService.verifyUser(id)
+            // verifyUser?.success ? res.status(200).json(verifyUser) : res.status(400).json(verifyUser)
+            verifyUser?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, verifyUser) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, verifyUser)
 
         } catch (error: any) {
             console.log('Error from verify user : ', error.message);
-            res.status(500).json(error.message)
+            // res.status(500).json(error.message)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
 
         }
     }
@@ -337,4 +389,4 @@ class UserController {
 
 
 
-export default new UserController()
+// export default new UserController()

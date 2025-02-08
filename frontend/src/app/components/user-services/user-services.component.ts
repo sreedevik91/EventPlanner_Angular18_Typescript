@@ -2,7 +2,7 @@ import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angul
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ServiceService } from '../../services/serviceService/service.service';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
-import { IResponse, IService } from '../../model/interface/interface';
+import { HttpStatusCodes, IResponse, IService } from '../../model/interface/interface';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { IChoice } from '../../model/class/serviceClass';
@@ -54,7 +54,7 @@ export class UserServicesComponent implements OnInit {
   getAllServices(params: HttpParams) {
     this.serviceServices.getAllServices(params).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('getAllServices response', res.body?.data);
           this.services.set(res.body?.data)
         } else {
@@ -74,7 +74,7 @@ export class UserServicesComponent implements OnInit {
     
     this.serviceServices.getServiceByName(name).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('getServiceByName response: ', res.body?.data);
           this.serviceByName.set(res.body?.data)
           this.serviceImg=res.body?.data[0].img[0]

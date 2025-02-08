@@ -1,7 +1,8 @@
-import { Model,FilterQuery,UpdateQuery, Document, DeleteResult } from "mongoose";
+import { Model,FilterQuery,UpdateQuery, Document, DeleteResult, QueryOptions } from "mongoose";
+import { IRepository } from "../interfaces/serviceInterfaces";
 
 
-export default class BaseRepository<T extends Document> {
+export abstract class BaseRepository<T extends Document> implements IRepository<T> {
 
     private model: Model<T>
 
@@ -14,21 +15,21 @@ export default class BaseRepository<T extends Document> {
         return await service.save()
     }
 
-    async getServiceById(id:string):Promise<T | null>{
-        return await this.model.findById(id)
+    async getServiceById(serviceId:string):Promise<T | null>{
+        return await this.model.findById(serviceId)
     }
 
-    async getAllServices(query:FilterQuery<T>={}, options:{sort?:any,limit?:number,skip?:number}){
+    async getAllServices(query:FilterQuery<T>={}, options: QueryOptions= {}){
         const {sort,limit,skip}=options
         return await this.model.find(query).sort(sort).limit(limit!).skip(skip!)
     }
 
-    async updateService(id:string,data:UpdateQuery<T>):Promise<T | null>{
-        return await this.model.findOneAndUpdate({_id:id},{$set:data},{new:true})
+    async updateService(serviceId:string,data:UpdateQuery<T>):Promise<T | null>{
+        return await this.model.findOneAndUpdate({_id:serviceId},{$set:data},{new:true})
     }
 
-    async deleteService(id:string):Promise<DeleteResult | null>{
-        return await this.model.findByIdAndDelete(id)
+    async deleteService(serviceId:string):Promise<DeleteResult | null>{
+        return await this.model.findByIdAndDelete(serviceId)
     }
 
 

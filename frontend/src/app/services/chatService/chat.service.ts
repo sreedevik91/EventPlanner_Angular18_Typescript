@@ -61,11 +61,12 @@ export class ChatService {
   }
 
   adminSendMessage(userId:string,data:IChat){
+    console.log('chat data from admin component', data);
     this.socket.emit('adminSentMessage', {userId,data})
   }
 
   sendMessage(data: IChat) {
-    console.log('chat data from component', data);
+    console.log('chat data from user component', data);
     this.socket.emit('sendMessage', data)
   }
 

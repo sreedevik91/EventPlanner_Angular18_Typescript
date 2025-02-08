@@ -22,6 +22,8 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
         '/',
         '/email/verify',
         '/login',
+        '/auth/google',
+        '/auth/google/callback',
         '/register',
         '/password/resetEmail',
         '/password/reset',

@@ -1,5 +1,5 @@
-import { IChoice, IService, IServiceDb } from "../interfaces/serviceInterfaces"
-import serviceRepository from "../repository/serviceRepository"
+import { IChoice, IEmailService, IService, IServiceDb, IServiceRepository, IServicesService } from "../interfaces/serviceInterfaces"
+// import serviceRepository from "../repository/serviceRepository"
 import nodemailer from 'nodemailer'
 import { config } from "dotenv";
 import axios from 'axios'
@@ -9,64 +9,68 @@ import { updateEventWithNewServiceGrpc } from "../grpc/grpcEventClient";
 
 config()
 
-class ServiceServices {
+export class ServiceServices implements IServicesService{
 
-    axiosInstance = axios.create({
-        baseURL: process.env.USER_SERVICE_URL,     // USER_SERVICE_URL='http://localhost:4000'
-        headers: {
-            "Content-Type": "application/json",
-        },
-        withCredentials: true
-    })
+    constructor(
+        private serviceRepository: IServiceRepository,
+        private emailService: IEmailService
+    ) { }
 
-    async sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> {
+    // axiosInstance = axios.create({
+    //     baseURL: process.env.USER_SERVICE_URL,     // USER_SERVICE_URL='http://localhost:4000'
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     withCredentials: true
+    // })
 
-        return new Promise((resolve, reject) => {
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_APP_PASSWORD
-                }
-            })
+    // async sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> {
 
-            let mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: email,
-                subject: `${subject}`,
-                html: `
-                <div>
-                <p>Dear ${name}, </p>
-                <p></p>
-                <p>${content}</p>
-                <p></p>
-                <p>Warm Regards,</p>
-                <p>Admin</p>
-                <p>Dream Events</p>
-                </div>
-                `
-            }
+    //     return new Promise((resolve, reject) => {
+    //         const transporter = nodemailer.createTransport({
+    //             service: 'gmail',
+    //             auth: {
+    //                 user: process.env.EMAIL_USER,
+    //                 pass: process.env.EMAIL_APP_PASSWORD
+    //             }
+    //         })
 
-            transporter.sendMail(mailOptions, (error, info) => {
-                // console.log(error)
-                if (error) {
-                    console.log(error);
-                    resolve(false)
-                } else {
-                    resolve(true)
-                }
+    //         let mailOptions = {
+    //             from: process.env.EMAIL_USER,
+    //             to: email,
+    //             subject: `${subject}`,
+    //             html: `
+    //             <div>
+    //             <p>Dear ${name}, </p>
+    //             <p></p>
+    //             <p>${content}</p>
+    //             <p></p>
+    //             <p>Warm Regards,</p>
+    //             <p>Admin</p>
+    //             <p>Dream Events</p>
+    //             </div>
+    //             `
+    //         }
 
-            })
+    //         transporter.sendMail(mailOptions, (error, info) => {
+    //             // console.log(error)
+    //             if (error) {
+    //                 console.log(error);
+    //                 resolve(false)
+    //             } else {
+    //                 resolve(true)
+    //             }
 
-        })
+    //         })
 
-    }
+    //     })
 
+    // }
 
     async totalServices() {
 
         try {
-            const data = await serviceRepository.getTotalServices()
+            const data = await this.serviceRepository.getTotalServices()
             console.log('getTotalServices service response: ', data);
             if (data) {
                 return { success: true, data: data }
@@ -87,7 +91,7 @@ class ServiceServices {
 
             const providerId = newServiceData.provider || ''
             const serviceName = newServiceData.name || ''
-            const service = await serviceRepository.getServiceByProvider(serviceName, providerId)
+            const service = await this.serviceRepository.getServiceByProvider(serviceName, providerId)
             console.log('existing service data: ', service);
 
             let updatedService
@@ -117,17 +121,17 @@ class ServiceServices {
                 newServiceData.choices = service.choices
                 console.log('addService existing service final data to update: ', newServiceData);
 
-                updatedService = await serviceRepository.updateService(service.id, newServiceData)
+                updatedService = await this.serviceRepository.updateService(service.id, newServiceData)
 
                 console.log('addService existing service update response: ', newServiceData);
 
             } else {
                 console.log('Creating new service with data: ', newServiceData);
-                updatedService = await serviceRepository.createService(newServiceData)
+                updatedService = await this.serviceRepository.createService(newServiceData)
                 console.log('addService new service response: ', updatedService);
 
             }
-           
+
             try {
                 const updateEventWithService = await updateEventWithNewServiceGrpc(serviceName, updatedService?.events!)
                 console.log('grpc updateEventWithService response: ', updateEventWithService);
@@ -186,7 +190,7 @@ class ServiceServices {
 
             // let data = await serviceRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
 
-            let data = await serviceRepository.getAllServices(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            let data = await this.serviceRepository.getAllServices(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
             // console.log('all service data filtered and sorted: ', data);
 
@@ -211,10 +215,9 @@ class ServiceServices {
 
     }
 
-
     async deleteService(id: string) {
         try {
-            const data = await serviceRepository.deleteService(id)
+            const data = await this.serviceRepository.deleteService(id)
 
             console.log('deleteService service response: ', data);
             if (data) {
@@ -231,7 +234,7 @@ class ServiceServices {
 
     async getServiceById(id: string) {
         try {
-            const data = await serviceRepository.getServiceById(id)
+            const data = await this.serviceRepository.getServiceById(id)
 
             console.log('getServiceById service response: ', data);
             if (data) {
@@ -250,18 +253,18 @@ class ServiceServices {
 
         try {
 
-            const updatedService = await serviceRepository.updateService(id, serviceData)
+            const updatedService = await this.serviceRepository.updateService(id, serviceData)
 
             console.log('updatedService: ', updatedService);
 
             try {
                 const updateEventWithService = await updateEventWithNewServiceGrpc(updatedService?.name!, updatedService?.events!)
                 console.log('grpc updateEventWithService response: ', updateEventWithService);
-            } catch (grpcError:any) {
+            } catch (grpcError: any) {
                 console.log('grpc updateEventWithService error: ', grpcError.message);
             }
 
-          return updatedService ? { success: true, data: updatedService, message: 'Service updated successfuly' } : { success: false, message: 'Could not updated service' }
+            return updatedService ? { success: true, data: updatedService, message: 'Service updated successfuly' } : { success: false, message: 'Could not updated service' }
 
         } catch (error: any) {
             console.log('Error from editService: ', error.message);
@@ -273,11 +276,11 @@ class ServiceServices {
     async editStatus(id: string) {
         // provider making the service active or block
         try {
-            const service = await serviceRepository.getServiceById(id)
+            const service = await this.serviceRepository.getServiceById(id)
 
             if (service) {
                 // service.isActive = !service.isActive
-                const serviceUpdated = await serviceRepository.updateService(id, { isActive: !service.isActive })
+                const serviceUpdated = await this.serviceRepository.updateService(id, { isActive: !service.isActive })
 
                 // let res = await service.save()
                 console.log('editStatus service: ', service, serviceUpdated);
@@ -303,7 +306,7 @@ class ServiceServices {
         try {
             // const { email } = data
             // const service = await serviceRepository.getServiceById(id)
-            const serviceApproved = await serviceRepository.updateService(id, { isApproved: true })
+            const serviceApproved = await this.serviceRepository.updateService(id, { isApproved: true })
 
 
             // if (service) {
@@ -337,10 +340,12 @@ class ServiceServices {
             <p>Glad to inform that your account with Dream Events is ${status} by admin.</p>
             <p>May your events get more memorable with us. Happy events!</p>
            `
-                let subject = "Account Verified"
+                let subject = "Approve Service"
                 // let provider = providerData.data
-                await this.sendMail(providerData.name, providerData.email, content, subject)
-
+                const isSentMail = await this.emailService.sendMail(providerData.name, providerData.email, content, subject)
+                if (!isSentMail) {
+                    console.log('Could not send Approve Service email');
+                }
                 return { success: true, message: 'service approved', data: serviceApproved }
             } else {
                 return { success: false, message: 'could not approve service' }
@@ -356,8 +361,8 @@ class ServiceServices {
 
     async getServiceByName(name: string) {
         try {
-            const aggregatedServiceData = await serviceRepository.getServiceByName(name)
-            const allServicesByName = await serviceRepository.getAllServiceByEventName(name)
+            const aggregatedServiceData = await this.serviceRepository.getServiceByName(name)
+            const allServicesByName = await this.serviceRepository.getAllServiceByEventName(name)
             console.log('getServiceByName response: ', aggregatedServiceData);
             if (aggregatedServiceData && allServicesByName) {
                 aggregatedServiceData.forEach(e => {
@@ -383,7 +388,6 @@ class ServiceServices {
 
     }
 
-
 }
 
-export default new ServiceServices()
+// export default new ServiceServices()

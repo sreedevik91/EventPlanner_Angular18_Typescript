@@ -7,7 +7,7 @@ import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
-import { IResponse, IUser } from '../../model/interface/interface';
+import { HttpStatusCodes, IResponse, IUser } from '../../model/interface/interface';
 
 @Component({
   selector: 'app-users',
@@ -80,7 +80,7 @@ export class UsersComponent implements OnInit {
 
 
   onRefresh() {
-    this.searchParams= new HttpParams()
+    this.searchParams = new HttpParams()
     this.searchFilterForm.get('userName')?.setValue('')
     this.searchFilterForm.get('userStatus')?.setValue('')
     this.searchFilterForm.get('role')?.setValue('')
@@ -124,7 +124,7 @@ export class UsersComponent implements OnInit {
   getTotalUsers() {
     this.userServices.getUsersCount().subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status===200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalUsers = res.body?.data
           console.log('total users count: ', this.totalUsers);
 
@@ -160,8 +160,8 @@ export class UsersComponent implements OnInit {
 
   getUsers(params: HttpParams) {
     this.userServices.getAllUsers(params).subscribe({
-      next: (res:HttpResponse<IResponse>) => {
-        if (res.status===200) {
+      next: (res: HttpResponse<IResponse>) => {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.users$ = res.body?.data
           this.users.set(res.body?.data)
         } else {
@@ -186,7 +186,7 @@ export class UsersComponent implements OnInit {
 
     this.userServices.editUser(data, userId).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status===200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('update user response: ', res.body?.data);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
           this.getUsers(this.searchParams)
@@ -214,7 +214,7 @@ export class UsersComponent implements OnInit {
     console.log('create user data:', this.userForm.value);
     this.userServices.registerUser(data).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status===201) {
+        if (res.status === HttpStatusCodes.CREATED) {
           console.log('add user response: ', res.body?.data);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
           this.getUsers(this.searchParams)
@@ -256,7 +256,7 @@ export class UsersComponent implements OnInit {
     this.userServices.editStatus(userId).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
-        if (res.status===200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.getUsers(this.searchParams)
 
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
@@ -279,7 +279,7 @@ export class UsersComponent implements OnInit {
     this.userServices.verifyUser(userId).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
-        if (res.status===200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.getUsers(this.searchParams)
 
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')

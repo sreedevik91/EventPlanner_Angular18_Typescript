@@ -3,7 +3,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { AlertService } from '../../services/alertService/alert.service';
 import { BookingService } from '../../services/bookingService/booking.service';
-import { IBooking, IResponse } from '../../model/interface/interface';
+import { HttpStatusCodes, IBooking, IResponse } from '../../model/interface/interface';
 import { DatePipe } from '@angular/common';
 import { ButtonComponent } from "../../shared/components/button/button.component";
 
@@ -34,7 +34,7 @@ export class UserBookingComponent implements OnInit {
   getBookingsByUser(userId: string) {
     this.bookingService.getBookingsByUserId(userId).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
 
           this.bookingsList.set(res.body?.data)
           console.log(this.bookingsList);
@@ -55,7 +55,7 @@ export class UserBookingComponent implements OnInit {
     if (confirm('Do you want to delete the booking ?')) {
       this.bookingService.deleteBooking(bookingId).subscribe({
         next: (res: HttpResponse<IResponse>) => {
-          if (res.status === 200) {
+          if (res.status === HttpStatusCodes.SUCCESS) {
             console.log(res.body);
             this.getBookingsByUser(this.userId)
 
@@ -76,7 +76,7 @@ export class UserBookingComponent implements OnInit {
     if (confirm('Do you want to delete the service ?')) {
       this.bookingService.deleteBookedServices(bookingId, name, id).subscribe({
         next: (res: HttpResponse<IResponse>) => {
-          if (res.status === 200) {
+          if (res.status === HttpStatusCodes.SUCCESS) {
             console.log(res.body);
             this.getBookingsByUser(this.userId)
 
