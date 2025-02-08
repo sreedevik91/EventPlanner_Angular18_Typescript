@@ -1,7 +1,8 @@
-import { Model,FilterQuery,UpdateQuery, Document, DeleteResult } from "mongoose";
+import { Model,FilterQuery,UpdateQuery, Document, DeleteResult, QueryOptions } from "mongoose";
+import { IRepository } from "../interfaces/eventInterfaces";
 
 
-export default class BaseRepository<T extends Document> {
+export abstract class BaseRepository<T extends Document> implements IRepository<T>{
 
     private model: Model<T>
 
@@ -18,7 +19,7 @@ export default class BaseRepository<T extends Document> {
         return await this.model.findById(id)
     }
 
-    async getAllEvents(query:FilterQuery<T>={}, options:{sort?:any,limit?:number,skip?:number}={}){
+    async getAllEvents(query:FilterQuery<T>={}, options:QueryOptions={}):Promise<T[]>{
         const {sort={},limit=0,skip=0}=options
         return await this.model.find(query).sort(sort).limit(limit).skip(skip)
     }

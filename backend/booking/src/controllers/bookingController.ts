@@ -1,28 +1,38 @@
 import { NextFunction, Request, Response } from "express"
-import bookingServices from "../services/bookingServices";
-import { IBookedServices } from "../interfaces/bookingInterfaces";
+// import bookingServices from "../services/bookingServices";
+import { HttpStatusCodes, IBookedServices, IBookingController, IBookingService } from "../interfaces/bookingInterfaces";
 import fs from 'fs'
 import { AppError } from "../utils/appError";
+import { ResponseHandler } from "../middlewares/responseHandler";
 
 
-class EventController {
+export class BookingController implements IBookingController{
+
+    constructor(
+        private bookingServices:IBookingService
+    ){}
+
 
     async getTotalBookings(req: Request, res: Response, next:NextFunction) {
         try {
-            const response = await bookingServices.totalBookings()
-            console.log('getTotalServices controller response: ', response);
+            const bookingCount = await this.bookingServices.totalBookings()
+            console.log('getTotalServices controller response: ', bookingCount);
 
-            if(!response || !response.success){
-                return next(new AppError(response?.message || 'Some error occured while processing the data', 400))
-            }
+            // if(!response || !response.success){
+            //     return next(new AppError(response?.message || 'Some error occured while processing the data', 400))
+            // }
 
-            // response?.success ? res.status(200).json(response) : res.status(400).json(response)
-            res.status(200).json(response) 
+            // // response?.success ? res.status(200).json(response) : res.status(400).json(response)
+            // res.status(200).json(response) 
+
+            bookingCount?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,bookingCount) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,bookingCount)
+
 
         } catch (error: any) {
             console.log('Error from getTotalServices controller: ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message,500))
+            // next(new AppError(error.message,500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
 
@@ -34,61 +44,72 @@ class EventController {
 
             console.log('new booking to create from frontend: ', req.body);
 
-            const response = await bookingServices.addBooking(req.body)
-            console.log('createService controller response: ', response);
+            const newBooking = await this.bookingServices.addBooking(req.body)
+            console.log('createService controller response: ', newBooking);
 
             // response?.success ? res.status(200).json(response) : res.status(400).json(response)
 
-            if (!response || !response?.success) {
-                return next(new AppError(response?.message || 'Could not perform the required action. Something went wrong', 400))
-            }
-            res.status(200).json(response) 
+            // if (!response || !response?.success) {
+            //     return next(new AppError(response?.message || 'Could not perform the required action. Something went wrong', 400))
+            // }
+            // res.status(200).json(response) 
+
+            newBooking?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.CREATED,newBooking) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,newBooking)
+
 
         } catch (error: any) {
             console.log('Error from createService controller: ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message,500))
+            // next(new AppError(error.message,500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+
         }
 
     }
-
 
     async getAllBookings(req: Request, res: Response, next:NextFunction) {
 
         try {
-            let bookings = await bookingServices.getBookings(req.query)
+            let bookings = await this.bookingServices.getBookings(req.query)
 
-            if(!bookings || !bookings.success){
-                return next(new AppError(bookings?.message || 'Some error occured while processing the data', 400))
-            }
+            // if(!bookings || !bookings.success){
+            //     return next(new AppError(bookings?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(bookings)
 
             // services?.success ? res.status(200).json(bookings) : res.status(400).json(bookings)
-            res.status(200).json(bookings)
+
+            bookings?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,bookings) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,bookings)
+
         } catch (error: any) {
             console.log('Error from getAllBookings : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message,500))
+            // next(new AppError(error.message,500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
 
     }
 
-
     async deleteBooking(req: Request, res: Response, next:NextFunction) {
 
         try {
-            let deleteServices = await bookingServices.deleteBooking(req.params.id)
+            let deleteBooking = await this.bookingServices.deleteBooking(req.params.id)
 
-            if(!deleteServices || !deleteServices.success){
-                return next(new AppError(deleteServices?.message || 'Some error occured while processing the data', 400))
-            }
+            // if(!deleteServices || !deleteServices.success){
+            //     return next(new AppError(deleteServices?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(deleteServices) 
 
-            // deleteServices?.success ? res.status(200).json(deleteServices) : res.status(400).json(deleteServices)
-            res.status(200).json(deleteServices) 
+            // // deleteServices?.success ? res.status(200).json(deleteServices) : res.status(400).json(deleteServices)
+
+            deleteBooking?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,deleteBooking) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,deleteBooking)
+
         } catch (error: any) {
             console.log('Error from deleteEvent : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message,500))
+            // next(new AppError(error.message,500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
 
@@ -100,18 +121,22 @@ class EventController {
 
             const {bookingId,serviceName,serviceId}= req.params
 
-            let deleteServices = await bookingServices.deleteBookedServices(bookingId,serviceName,serviceId)
+            let deleteBookedServices = await this.bookingServices.deleteBookedServices(bookingId,serviceName,serviceId)
 
-            if(!deleteServices || !deleteServices.success){
-                return next(new AppError(deleteServices?.message || 'Some error occured while processing the data', 400))
-            }
+            // if(!deleteServices || !deleteServices.success){
+            //     return next(new AppError(deleteServices?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(deleteServices) 
 
-            // deleteServices?.success ? res.status(200).json(deleteServices) : res.status(400).json(deleteServices)
-            res.status(200).json(deleteServices) 
+            // // deleteServices?.success ? res.status(200).json(deleteServices) : res.status(400).json(deleteServices)
+            
+            deleteBookedServices?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,deleteBookedServices) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,deleteBookedServices)
+
         } catch (error: any) {
             console.log('Error from deleteEvent : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message,500))
+            // next(new AppError(error.message,500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
 
@@ -120,18 +145,22 @@ class EventController {
     async getBookingById(req: Request, res: Response, next:NextFunction) {
 
         try {
-            let services = await bookingServices.getBookingById(req.params.id)
+            let booking = await this.bookingServices.getBookingById(req.params.id)
 
-            if(!services || !services.success){
-                return next(new AppError(services?.message || 'Some error occured while processing the data', 400))
-            }
+            // if(!services || !services.success){
+            //     return next(new AppError(services?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(services) 
 
-            // services?.success ? res.status(200).json(services) : res.status(400).json(services)
-            res.status(200).json(services) 
+            // // services?.success ? res.status(200).json(services) : res.status(400).json(services)
+
+            booking?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,booking) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,booking)
+
         } catch (error: any) {
             console.log('Error from getEventById : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message,500))
+            // next(new AppError(error.message,500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
 
@@ -140,22 +169,24 @@ class EventController {
     async getBookingByUserId(req: Request, res: Response, next:NextFunction) {
 
         try {
-            let bookingsByUserId = await bookingServices.getBookingByUserId(req.params.id)
+            let bookingsByUserId = await this.bookingServices.getBookingByUserId(req.params.id)
 
-            if(!bookingsByUserId || !bookingsByUserId.success){
-                return next(new AppError(bookingsByUserId?.message || 'Some error occured while processing the data', 400))
-            }
+            // if(!bookingsByUserId || !bookingsByUserId.success){
+            //     return next(new AppError(bookingsByUserId?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(bookingsByUserId) 
 
-            res.status(200).json(bookingsByUserId) 
+            bookingsByUserId?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,bookingsByUserId) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,bookingsByUserId)
+
         } catch (error: any) {
             console.log('Error from getEventById : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message,500))
+            // next(new AppError(error.message,500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
 
     }
-
 
     async editBooking(req: Request, res: Response, next:NextFunction) {
 
@@ -181,18 +212,22 @@ class EventController {
                 services: JSON.parse(services)
             }
 
-            const newServiceResponse = await bookingServices.editBooking(id, newData)
+            const newServiceResponse = await this.bookingServices.editBooking(id, newData)
 
-            if(!newServiceResponse || !newServiceResponse.success){
-                return next(new AppError(newServiceResponse?.message || 'Some error occured while processing the data', 400))
-            }
+            // if(!newServiceResponse || !newServiceResponse.success){
+            //     return next(new AppError(newServiceResponse?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(newServiceResponse) 
 
-            // newServiceResponse?.success ? res.status(200).json(newServiceResponse) : res.status(400).json(newServiceResponse)
-            res.status(200).json(newServiceResponse) 
+            // // newServiceResponse?.success ? res.status(200).json(newServiceResponse) : res.status(400).json(newServiceResponse)
+
+            newServiceResponse?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,newServiceResponse) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,newServiceResponse)
+
         } catch (error: any) {
             console.log('Error from edit service : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message,500))
+            // next(new AppError(error.message,500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
 
@@ -203,16 +238,21 @@ class EventController {
             const { id } = req.body
             // console.log('id to edit user',id);
 
-            const newStatusResponse = await bookingServices.editStatus(id)
-            if(!newStatusResponse || !newStatusResponse.success){
-                return next(new AppError(newStatusResponse?.message || 'Some error occured while processing the data', 400))
-            }
-            // newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
-            res.status(200).json(newStatusResponse) 
+            const newStatusResponse = await this.bookingServices.editStatus(id)
+            // if(!newStatusResponse || !newStatusResponse.success){
+            //     return next(new AppError(newStatusResponse?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(newStatusResponse) 
+
+            // // newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
+
+            newStatusResponse?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,newStatusResponse) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,newStatusResponse)
+            
         } catch (error: any) {
             console.log('Error from edit status : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message,500))
+            // next(new AppError(error.message,500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
 
         }
     }
@@ -221,18 +261,23 @@ class EventController {
         try {
             const { name , providerId} = req.params
             console.log('event name to get service', req.params.name);
-            const service = await bookingServices.getService(name,providerId)
+            const service = await this.bookingServices.getService(name,providerId)
 
-            if(!service || !service.success){
-                return next(new AppError(service?.message || 'Some error occured while processing the data', 400))
-            }
-            // service?.success ? res.status(200).json(service) : res.status(400).json(getServiceByName)
-            res.status(200).json(service) 
+            // if(!service || !service.success){
+            //     return next(new AppError(service?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(service) 
+
+            // // service?.success ? res.status(200).json(service) : res.status(400).json(getServiceByName)
+
+            service?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,service) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,service)
 
         } catch (error: any) {
-            // console.log('Error from getEventServiceByName : ', error.message);
+            console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message || 'Internal server error',500))
+            // next(new AppError(error.message || 'Internal server error',500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+
         }
     }
 
@@ -240,18 +285,21 @@ class EventController {
         try {
             // const events = await getEventsByIdGrpc()
             
-            const events = await bookingServices.getAllEvents()
+            const events = await this.bookingServices.getAllEvents()
 
-            if(!events || !events.success){
-                return next(new AppError(events?.message || 'Some error occured while processing the data', 400))
-            }
+            // if(!events || !events.success){
+            //     return next(new AppError(events?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(events)
 
-            res.status(200).json(events)
+            events?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,events) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,events)
 
         } catch (error: any) {
-            // console.log('Error from getEventServiceByName : ', error.message);
+            console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message || 'Internal server error',500))
+            // next(new AppError(error.message || 'Internal server error',500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+
         }
     }
     
@@ -260,22 +308,25 @@ class EventController {
 
             const { name } = req.params
             
-            const events = await bookingServices.getServiceByEvent(name)
+            const events = await this.bookingServices.getServiceByEvent(name)
 
-            if(!events || !events.success){
-                return next(new AppError(events?.message || 'Some error occured while processing the data', 400))
-            }
+            // if(!events || !events.success){
+            //     return next(new AppError(events?.message || 'Some error occured while processing the data', 400))
+            // }
+            // res.status(200).json(events)
 
-            res.status(200).json(events)
+            events?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,events) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,events)
 
         } catch (error: any) {
-            // console.log('Error from getEventServiceByName : ', error.message);
+            console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message || 'Internal server error',500))
+            // next(new AppError(error.message || 'Internal server error',500))
+            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+
         }
     }
 
 
 }
 
-export default new EventController()
+// export default new EventController()

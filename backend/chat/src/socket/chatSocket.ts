@@ -1,11 +1,15 @@
 
 import { Server, Socket } from "socket.io";
-import chatServices from "../services/chatServices";
+import { ChatServices } from "../services/chatServices";
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
+import { ChatRepository } from "../repository/chatRepository";
 
 const rooms: any = {}
 const activeUsers: any = new Set()
 let messages:any[]=[]
+
+const chatRepository=new ChatRepository()
+const chatServices=new ChatServices(chatRepository)
 
 export const handleSocketConnection = (io: Server) => {
 

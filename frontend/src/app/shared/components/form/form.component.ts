@@ -14,6 +14,11 @@ export class FormComponent {
   @Input() Validation: any={}
 
   getValidationMessage() {
+
+    if(!this.Validation || typeof this.Validation!=='object'){
+      return ""
+    }
+
    const errors=Object.keys(this.Validation)
    if(errors.length !==0){
     if(errors[0]==='required'){

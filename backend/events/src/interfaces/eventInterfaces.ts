@@ -1,16 +1,17 @@
-import { DeleteResult , Document} from "mongoose";
+import { NextFunction,Request,Response } from "express";
+import { DeleteResult, Document, FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
 
 export interface IEvent extends Document {
-  _id:string;
-    name: string;
-    img:string;
-    // services:IEventServices[];
-    services:string[];
-    isActive: boolean;
+  _id: string;
+  name: string;
+  img: string;
+  // services:IEventServices[];
+  services: string[];
+  isActive: boolean;
 }
 export interface IEventServices {
-    serviceId: string;
-    ProviderId: number;
+  serviceId: string;
+  ProviderId: number;
 }
 
 
@@ -29,38 +30,28 @@ export interface IEventServices {
 // }
 
 
-export interface IEventDb extends IEvent,Document {
-    _id: string;
+export interface IEventDb extends IEvent, Document {
+  _id: string;
 }
-
-export interface IEventRepository{
-    getAllEvents(filter:any,sort:any,limit:number,skip:number):Promise<IEvent[]>;
-    createEvents(service:IEvent):Promise<IEvent>;
-    getEventById(id:string):Promise<IEventDb | null>;
-    updateEvent(id:string,service:Partial<IEvent>):Promise<IEventDb | null>;
-    deleteEvent(id:string):Promise<DeleteResult>;
-    getTotalEvents():Promise<number>;
-}
-
 
 export interface IGetAvailableServicesResponse {
-    serviceList: Array<{
-      id: string;
-      name: string;
-      provider: string;
-      img: string;
-      events: string[];
-      choices: Array<{
-        choiceName: string;
-        choiceType: string;
-        choicePrice: number;
-        choiceImg: string;
-      }>;
+  serviceList: Array<{
+    id: string;
+    name: string;
+    provider: string;
+    img: string;
+    events: string[];
+    choices: Array<{
+      choiceName: string;
+      choiceType: string;
+      choicePrice: number;
+      choiceImg: string;
     }>;
-  }
+  }>;
+}
 
 // export interface IGetAvailableServicesResponse {
- 
+
 //     id: string;
 //     name: string;
 //     provider: string;
@@ -72,5 +63,68 @@ export interface IGetAvailableServicesResponse {
 //       choicePrice: number;
 //       choiceImg: string;
 //     }>;
-  
+
 // }
+
+export interface IResponse {
+  success: boolean;
+  message?: string;
+  data?: any;
+  extra?: any
+}
+
+export enum HttpStatusCodes {
+  OK = 200,
+  CREATED = 201,
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  INTERNAL_SERVER_ERROR = 500
+}
+
+export interface IRepository<T> {
+  createEvent(service: Partial<T>): Promise<T>
+  getEventById(eventId: string): Promise<T | null>
+  getAllEvents(filter: FilterQuery<T>, options: QueryOptions): Promise<T[]>
+  updateEvent(eventId: string, serviceData: UpdateQuery<T>): Promise<T | null>
+  deleteEvent(eventId: string): Promise<DeleteResult | null>
+}
+
+export interface IEventRepository {
+  getAllEvents(filter: any,  options: QueryOptions): Promise<IEvent[]>;
+  createEvent(service: Partial<IEvent>): Promise<IEvent>;
+  getEventById(eventId: string): Promise<IEvent | null>;
+  updateEvent(eventId: string, serviceData: UpdateQuery<IEvent>): Promise<IEvent | null>;
+  deleteEvent(eventId: string): Promise<DeleteResult | null>;
+  getTotalEvents(): Promise<number>;
+  getEventByName(name: string):Promise<IEvent[]> 
+}
+
+export interface IEmailService{
+  sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> 
+}
+
+export interface IEventService{
+  totalEvents():Promise<IResponse>
+  addEvent(eventData: Partial<IEvent>):Promise<IResponse>
+  getEvents(params: any):Promise<IResponse>
+  deleteEvent(eventId: string):Promise<IResponse>
+  getEventById(eventId: string):Promise<IResponse>
+  editEvent(eventId: string, serviceData: Partial<IEvent>):Promise<IResponse>
+  editStatus(eventId: string):Promise<IResponse>
+  getServiceByName(name: string):Promise<IResponse>
+  getEventsByName(name: string):Promise<IResponse>
+}
+
+export interface IEventController{
+  getTotalEvents(req: Request, res: Response, next:NextFunction):Promise<void>
+  createEvent(req: Request, res: Response, next: NextFunction):Promise<void>
+  getAllEvents(req: Request, res: Response, next:NextFunction):Promise<void>
+  deleteEvent(req: Request, res: Response, next:NextFunction):Promise<void>
+  getEventById(req: Request, res: Response, next:NextFunction):Promise<void>
+  editEvent(req: Request, res: Response, next:NextFunction):Promise<void>
+  editStatus(req: Request, res: Response, next:NextFunction):Promise<void>
+  getEventServiceByName(req: Request, res: Response, next:NextFunction):Promise<void>
+  getEventsByName(req: Request, res: Response, next:NextFunction):Promise<void>
+}

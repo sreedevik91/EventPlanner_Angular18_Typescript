@@ -47,7 +47,7 @@ import BaseRepository from "./baseRepository";
 //     }
 // }
 
-class UserRepository extends BaseRepository<IUserDb> {
+export class UserRepository extends BaseRepository<IUserDb> implements IUserRepository {
     
     constructor() {
         super(User)
@@ -71,4 +71,4 @@ class UserRepository extends BaseRepository<IUserDb> {
 
 }
 
-export default new UserRepository()
+// export default new UserRepository()

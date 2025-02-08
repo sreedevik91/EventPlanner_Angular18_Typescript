@@ -6,7 +6,7 @@ import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { IResponse } from '../../model/interface/interface';
+import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
 
 @Component({
   selector: 'app-verify-email',
@@ -33,7 +33,7 @@ export class VerifyEmailComponent {
     this.userServices.verifyUserEmail(this.verifyEmailForm.value).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify email response: ', res);
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
 
           this.router.navigateByUrl(`/otp/${res.body?.data._id}`)

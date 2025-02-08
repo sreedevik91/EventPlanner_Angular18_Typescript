@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
-import { ILoggedUserData, ILoginData, IRegisterData, IResponse } from '../../model/interface/interface';
+import { HttpStatusCodes, ILoggedUserData, ILoginData, IRegisterData, IResponse } from '../../model/interface/interface';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -72,7 +72,7 @@ export class LoginComponent {
         console.log(res.body);
         // console.log(res.body.emailVerified);
         // if (res.body.emailVerified) {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           console.log(this.router);
 
           this.router.navigateByUrl('dashboard')
@@ -108,7 +108,7 @@ export class LoginComponent {
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
-        if (error.status === 400) {
+        if (error.status === HttpStatusCodes.BAD_REQUEST) {
           if (error.error.emailNotVerified) {
             this.alertService.getAlert("alert alert-danger", "Login Failed!", error.error.message)
             this.router.navigateByUrl(`verifyEmail`)
@@ -116,7 +116,7 @@ export class LoginComponent {
             this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
           } 
 
-        } else if (error.status === 403) {
+        } else if (error.status === HttpStatusCodes.FORBIDDEN) {
           this.router.navigateByUrl('login')
           this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
 
@@ -149,7 +149,7 @@ export class LoginComponent {
     this.userService.registerUser(this.registrationData).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('response from register user: ', res);
-        if (res.status === 201) {
+        if (res.status === HttpStatusCodes.CREATED) {
           // this.callAlert("alert alert-success", "Success!", res.message)
           this.alertService.getAlert("alert alert-success", "Success!", res.body?.message ? res.body?.message : '')
           this.router.navigateByUrl(`/otp/${res.body?.data._id}`)
@@ -177,7 +177,7 @@ export class LoginComponent {
     this.userService.sendResetEmail(emailData).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('send mail response: ', res);
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           // this.callAlert('alert alert-success', 'Email sent', res.message)
           this.alertService.getAlert('alert alert-success', 'Email sent', res.body?.message ? res.body?.message : '')
 

@@ -4,7 +4,7 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } fr
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
-import { ILoggedUserData, IResponse, IService } from '../../model/interface/interface';
+import { HttpStatusCodes, ILoggedUserData, IResponse, IService } from '../../model/interface/interface';
 import { ServiceService } from '../../services/serviceService/service.service';
 import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
@@ -276,7 +276,7 @@ export class ProviderServicesComponent implements OnInit {
   getTotalServices() {
     this.serviceService.getTotalServices().subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalServices = res.body?.data
         } else {
           console.log(res.body?.message);
@@ -331,7 +331,7 @@ export class ProviderServicesComponent implements OnInit {
   getAllServices(params: HttpParams) {
     this.serviceService.getAllServices(params).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           // this.totalServices=res.body.data.length
           this.services.set(res.body?.data)
           // console.log('total services: ', this.services());
@@ -356,7 +356,7 @@ export class ProviderServicesComponent implements OnInit {
     this.isAddService = false
     this.serviceService.getServiceById(id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.serviceFromObj = res.body?.data
           console.log('update form data: ', this.serviceFromObj);
 
@@ -394,7 +394,7 @@ export class ProviderServicesComponent implements OnInit {
     this.serviceService.editStatus(id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.getAllServices(this.searchParams)
 
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : '')
@@ -450,7 +450,7 @@ export class ProviderServicesComponent implements OnInit {
 
     this.serviceService.createService(formData).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.CREATED) {
           this.hideModal()
           this.getTotalServices()
           this.getAllServices(this.searchParams)
@@ -506,7 +506,7 @@ export class ProviderServicesComponent implements OnInit {
 
     this.serviceService.editService(formData, id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('update user response: ', res.body);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || 'Service updated')
           this.hideModal()
@@ -529,7 +529,7 @@ export class ProviderServicesComponent implements OnInit {
   deleteService(id: string) {
     this.serviceService.deleteService(id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
           this.getTotalServices()
           this.getAllServices(this.searchParams)

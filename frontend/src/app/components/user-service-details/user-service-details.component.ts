@@ -1,6 +1,6 @@
 import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IBookedServices, IResponse, IService } from '../../model/interface/interface';
+import { HttpStatusCodes, IBookedServices, IResponse, IService } from '../../model/interface/interface';
 import { environment } from '../../../environments/environment.development';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { Booking } from '../../model/class/bookingClass';
@@ -140,11 +140,20 @@ export class UserServiceDetailsComponent implements OnInit {
   }
 
   saveBooking() {
+    debugger
     console.log('service booking form values: ', this.bookingForm.value);
     console.log('is service booking form valid: ', this.bookingForm.valid);
+
+    // this.bookingService.createBooking(this.bookingForm.value).subscribe(res=>{
+    //   console.log('saveBooking response from backend: ', res);
+      
+    // })
+
     this.bookingService.createBooking(this.bookingForm.value).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        console.log('saveBooking response from backend: ', res);
+        
+        if (res.status === HttpStatusCodes.CREATED) {
           console.log('service booking response: ', res.body?.data);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
           this.hideModal()

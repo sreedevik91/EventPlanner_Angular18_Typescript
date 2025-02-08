@@ -1,28 +1,31 @@
 
 
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Chat, ChatSearchFilter, IChat } from '../../model/class/chatClass';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { ChatService } from '../../services/chatService/chat.service';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
-import { IChatJoiningResponse, IResponse } from '../../model/interface/interface';
+import { HttpStatusCodes, IChatJoiningResponse, IResponse } from '../../model/interface/interface';
 import { DatePipe } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
+import { AlertService } from '../../services/alertService/alert.service';
+import { AlertComponent } from '../../shared/components/alert/alert.component';
 
 @Component({
   selector: 'app-admin-chat',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [ReactiveFormsModule, DatePipe, AlertComponent],
   templateUrl: './admin-chat.component.html',
   styleUrl: './admin-chat.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 
-export class AdminChatComponent implements OnInit {
+export class AdminChatComponent implements OnInit, OnDestroy {
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>
 
-  chatService = inject(ChatService)
+  destroy$: Subject<void> = new Subject<void>()
 
   chatFormObj: Chat = new Chat()
   searchFilterFormObj: ChatSearchFilter = new ChatSearchFilter()
@@ -33,10 +36,14 @@ export class AdminChatComponent implements OnInit {
   searchParams = new HttpParams()
 
   chats = signal<IChat[]>([])
+
+  chatService = inject(ChatService)
   userService = inject(UserSrerviceService);
+  alertService = inject(AlertService);
 
   notification: string[] = []
-  activeUsers: {userId:string,userName:string}[] = []
+  // activeUsers: {userId:string,userName:string}[] = []
+  activeUsers = signal<{ userId: string, userName: string }[]>([])
   messages: any[] = []
   newChats: any[] = []
   typing: string = ''
@@ -69,8 +76,6 @@ export class AdminChatComponent implements OnInit {
         } else {
           this.chatForm.get('chats')?.patchValue({ sender: user.user })
         }
-
-
         // this.chatForm.get('chats.sender')?.setValue(user.username) // alternate way
       }
     })
@@ -94,6 +99,7 @@ export class AdminChatComponent implements OnInit {
         sender: new FormControl(this.chatFormObj.chats.sender, [Validators.required]),
         receiver: new FormControl(this.chatFormObj.chats.receiver, [Validators.required]),
         message: new FormControl(this.chatFormObj.chats.message, [Validators.required]),
+        type: new FormControl(this.chatFormObj.chats.type, [Validators.required]),
         date: new FormControl(new Date())
       })
     })
@@ -110,23 +116,8 @@ export class AdminChatComponent implements OnInit {
   }
 
   joinChat(userId: string) {
-    debugger
     this.isJoinedChat = true
     this.activeUser = userId
-
-    // this.chatService.getChatsByUser(this.activeUser).subscribe({
-    //   next: (res: any) => {
-    //     console.log('user chats from db:', res.body.data);
-    //     const chats=res.body.data
-    //     for(let item of chats){
-    //       this.messages.push(item)
-    //     }
-    //     console.log('user messages array:', this.messages);
-    //   },
-    //   error: (error: any) => {
-    //     console.log('error from getMessage:', error.message);
-    //   }
-    // })
 
     this.getAllChats()
     this.chatService.joinRoom(userId)
@@ -140,13 +131,19 @@ export class AdminChatComponent implements OnInit {
   getAllChats() {
     this.chatService.getChatsByUser(this.activeUser).subscribe({
       next: (res: any) => {
-        console.log('user chats from db:', res.body.data);
-        const chatData = res.body.data
-        this.messages = []
-        for (let chat of chatData.chats) {
-          this.messages.push(chat)
+        if (res.status === HttpStatusCodes.SUCCESS) {
+          console.log('user chats from db:', res.body?.data);
+          const chatData = res.body?.data
+          this.messages = []
+          for (let chat of chatData.chats) {
+            this.messages.push(chat)
+          }
+          console.log('user messages array:', this.messages);
+        } else {
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
         }
-        console.log('user messages array:', this.messages);
+
       },
       error: (error: any) => {
         console.log('error from getMessage:', error.message);
@@ -160,7 +157,9 @@ export class AdminChatComponent implements OnInit {
   }
 
   sendMessage() {
+    debugger
     this.chatForm.get('chats.type')?.setValue('text')
+    this.chatForm.get('chats.date')?.setValue(new Date())
     console.log(this.chatForm.value);
     this.chatService.adminSendMessage(this.activeUser, this.chatForm.value)
     this.chatForm.get('chats.message')?.setValue('')
@@ -177,7 +176,7 @@ export class AdminChatComponent implements OnInit {
   }
 
   getMessage() {
-    this.chatService.getMessage().subscribe({
+    this.chatService.getMessage().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any) => {
         console.log('sent message from server:', data);
         this.messages.push(data.chats)
@@ -193,7 +192,7 @@ export class AdminChatComponent implements OnInit {
   }
 
   getUserMessages() {
-    this.chatService.getUserMessage().subscribe({
+    this.chatService.getUserMessage().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any) => {
         console.log('user chats from socket:', data);
 
@@ -208,10 +207,10 @@ export class AdminChatComponent implements OnInit {
   }
 
   getActiveUsers() {
-    this.chatService.getActiveUsers().subscribe({
+    this.chatService.getActiveUsers().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any) => {
         console.log('ActiveUsers from server:', data);
-        this.activeUsers = data
+        this.activeUsers.set(data)
       },
       error: (error: any) => {
         console.log('error from getMessage:', error.message);
@@ -220,7 +219,7 @@ export class AdminChatComponent implements OnInit {
   }
 
   getTypingNotification() {
-    this.chatService.getTypingNotificatrion().subscribe({
+    this.chatService.getTypingNotificatrion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (notification: string) => {
         console.log('TypingNotificatrion from server:', notification);
         this.typing = notification
@@ -232,7 +231,7 @@ export class AdminChatComponent implements OnInit {
   }
 
   getJoiningNotification() {
-    this.chatService.getJoiningNotificatrion().subscribe({
+    this.chatService.getJoiningNotificatrion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (notification: IChatJoiningResponse) => {
         console.log('JoiningNotificatrion from server:', notification);
         this.roomId = notification.roomId
@@ -250,7 +249,7 @@ export class AdminChatComponent implements OnInit {
   }
 
   getStartChatNotification() {
-    this.chatService.getStartChatNotificatrion().subscribe({
+    this.chatService.getStartChatNotificatrion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (notification: IChatJoiningResponse) => {
         console.log('JoiningNotificatrion from server:', notification);
         this.roomId = notification.roomId
@@ -263,7 +262,7 @@ export class AdminChatComponent implements OnInit {
   }
 
   getLeavingNotification() {
-    this.chatService.getLeavingNotificatrion().subscribe({
+    this.chatService.getLeavingNotificatrion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (notification: string) => {
         console.log('LeavingNotificatrion from server:', notification);
         this.notification.push(notification)
@@ -293,12 +292,18 @@ export class AdminChatComponent implements OnInit {
 
       this.chatService.getImgUrlFromCloudinary(formData).subscribe({
         next: (res: HttpResponse<IResponse>) => {
-          console.log(res.body?.data);
-          this.chatForm.get('chats.message')?.setValue(res.body?.data.imgUrl)
-          this.chatForm.get('chats.type')?.setValue(res.body?.data.type)
-          this.chatService.sendMessage(this.chatForm.value)
-          console.log(this.chatForm.value);
-          this.chatForm.get('chats.message')?.setValue('')
+
+          if (res.status === HttpStatusCodes.SUCCESS) {
+            console.log(res.body?.data);
+            this.chatForm.get('chats.message')?.setValue(res.body?.data.imgUrl)
+            this.chatForm.get('chats.type')?.setValue(res.body?.data.type)
+            this.chatService.sendMessage(this.chatForm.value)
+            console.log(this.chatForm.value);
+            this.chatForm.get('chats.message')?.setValue('')
+          } else {
+            console.log(res.body?.message);
+            this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
+          }
 
         },
         error: (err: HttpErrorResponse) => {
@@ -336,13 +341,17 @@ export class AdminChatComponent implements OnInit {
         // get cloudinary link from server and send mesage to socket 
         this.chatService.getAudioUrlFromCloudinary(formData).subscribe({
           next: (res: HttpResponse<IResponse>) => {
-            console.log(res.body?.data);
-            this.chatForm.get('chats.message')?.setValue(res.body?.data.imgUrl)
-            this.chatForm.get('chats.type')?.setValue(res.body?.data.type)
-            this.chatService.sendMessage(this.chatForm.value)
-            console.log(this.chatForm.value);
-            this.chatForm.get('chats.message')?.setValue('')
-
+            if (res.status === HttpStatusCodes.SUCCESS) {
+              console.log(res.body?.data);
+              this.chatForm.get('chats.message')?.setValue(res.body?.data.imgUrl)
+              this.chatForm.get('chats.type')?.setValue(res.body?.data.type)
+              this.chatService.sendMessage(this.chatForm.value)
+              console.log(this.chatForm.value);
+              this.chatForm.get('chats.message')?.setValue('')
+            } else {
+              console.log(res.body?.message);
+              this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
+            }
           },
           error: (err: HttpErrorResponse) => {
             console.log(err, err.error.message);
@@ -370,5 +379,13 @@ export class AdminChatComponent implements OnInit {
     console.log(control?.value);
 
   }
+
+  ngOnDestroy(): void {
+    // this.messages=[]
+    // this.newChats=[]
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
+
 
 }

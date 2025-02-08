@@ -1,7 +1,7 @@
 import { DeleteResult } from "mongoose";
 import { IService, IServiceDb, IServiceRepository } from "../interfaces/serviceInterfaces";
 import Service from "../models/serviceSchema";
-import BaseRepository from "./baseRepository";
+import { BaseRepository } from "./baseRepository";
 
 // class ServiceRepository implements IServiceRepository{
 //     async createService(serviceData: Partial<IService>): Promise<IService> {
@@ -25,7 +25,7 @@ import BaseRepository from "./baseRepository";
 //     }
 // }
 
-class ServiceRepository extends BaseRepository<IService> {
+export class ServiceRepository extends BaseRepository<IService> implements IServiceRepository {
 
     constructor() {
         super(Service)
@@ -35,52 +35,56 @@ class ServiceRepository extends BaseRepository<IService> {
         return await Service.find().countDocuments()
     }
 
-
-async getServiceByProviderOld(providerId:string):Promise<IService | null>{
-    return await Service.findOne({provider:providerId})
-}
-
-    async getAllServiceByEventName(name: string):Promise<any[]> {
-        return await Service.find({events:{$in:[name]}})
+    async getServiceByProviderOld(providerId: string): Promise<IService | null> {
+        return await Service.findOne({ provider: providerId })
     }
 
-    async getServiceByProvider(name: string,providerId:string):Promise<IService | null> {
-        return await Service.findOne({name,provider:providerId})
+    async getAllServiceByEventName(name: string): Promise<any[]> {
+        return await Service.find({ events: { $in: [name] } })
     }
 
-    async getAllServiceByProvider(id: string):Promise<any[]> {
-        return await Service.find({provider:id})
+    async getServiceByProvider(name: string, providerId: string): Promise<IService | null> {
+        return await Service.findOne({ name, provider: providerId })
     }
 
+    async getAllServiceByProvider(id: string): Promise<any[]> {
+        return await Service.find({ provider: id })
+    }
 
-    async getServiceByName(name: string):Promise<any[]> {
-        let service =await Service.aggregate([
-            {$match:{name:name}}, // check with isApproved:true,isActive:true as well after testing
-            {$unwind:'$choices'},
-            {$project:{
-                name:'$name',
-                events:'$events',
-                choices:'$choices',
-                img:'$img'
-            }},
-            {$unwind:'$events'},
-            {$group:{
-                _id:'$choices.choiceName',
-                maxPrice:{$max:'$choices.choicePrice'},
-                minPrice:{$min:'$choices.choicePrice'},
-                img:{$push:'$img'},
-                events:{$push:'$events'},
-                choicesType:{$push:'$choices.choiceType'},
-                choiceImg:{$push:'$choices.choiceImg'},
-                // choices:{$push:{choiceName:'$choices.choiceName',choiceType:'$choices.choiceType',choicePrice:'$choices.choicePrice',choiceImg:'$choices.choiceImg'}},
+    async getServiceByName(name: string): Promise<any[]> {
+        let service = await Service.aggregate([
+            { $match: { name: name } }, // check with isApproved:true,isActive:true as well after testing
+            { $unwind: '$choices' },
+            {
+                $project: {
+                    name: '$name',
+                    events: '$events',
+                    choices: '$choices',
+                    img: '$img'
+                }
+            },
+            { $unwind: '$events' },
+            {
+                $group: {
+                    _id: '$choices.choiceName',
+                    maxPrice: { $max: '$choices.choicePrice' },
+                    minPrice: { $min: '$choices.choicePrice' },
+                    img: { $push: '$img' },
+                    events: { $push: '$events' },
+                    choicesType: { $push: '$choices.choiceType' },
+                    choiceImg: { $push: '$choices.choiceImg' },
+                    // choices:{$push:{choiceName:'$choices.choiceName',choiceType:'$choices.choiceType',choicePrice:'$choices.choicePrice',choiceImg:'$choices.choiceImg'}},
 
-            }}
+                }
+            }
 
         ])
 
         return service
     }
 
+
+
 }
 
-export default new ServiceRepository()
+// export default new ServiceRepository()

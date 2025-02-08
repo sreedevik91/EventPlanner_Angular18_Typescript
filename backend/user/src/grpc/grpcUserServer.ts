@@ -1,13 +1,16 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import path from 'path';
-import userRepository from '../repository/userRepository';
+import { IUserRepository } from '../interfaces/userInterface';
+import { UserRepository } from '../repository/userRepository';
 
 const PROTO_PATH = path.join(__dirname, '../../../proto/user.proto');
 
 // Load the .proto file
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const userProto: any = grpc.loadPackageDefinition(packageDefinition).user;
+
+const userRepository:IUserRepository= new UserRepository()
 
 // Implement the gRPC service
 async function GetUser(call: any, callback: any) {

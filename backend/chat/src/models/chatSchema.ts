@@ -27,7 +27,8 @@ const ChatSchema: Schema<IChat> = new Schema<IChat>({
       enum: ["text", "image", "video", "audio","raw"] 
     },
     date: {
-      type: Date
+      type: Date,
+      default:new Date()
     }
   }]
 },

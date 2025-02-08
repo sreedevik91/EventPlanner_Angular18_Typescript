@@ -4,6 +4,7 @@ import { UserSrerviceService } from '../../services/userService/user-srervice.se
 import { catchError, map, switchMap, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { AlertService } from '../../services/alertService/alert.service';
+import { HttpStatusCodes } from '../../model/interface/interface';
 
 export const refreshTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => {
   const userService = inject(UserSrerviceService)
@@ -29,7 +30,7 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
+      if (error.status === HttpStatusCodes.UNAUTHORIZED) {
         return userService.refreshToken().pipe(
           switchMap((res: any) => {
             console.log('Entered refreshtoken', res.body.data);
@@ -43,7 +44,7 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>
             return throwError(() => refreshError)
           })
         )
-      } else if (error.status === 403) {
+      } else if (error.status === HttpStatusCodes.FORBIDDEN) {
         return userService.userLogout().pipe(
           //tap() is used to perform side effects like navigating to the login page and showing an alert. It does not modify the observable's output.
           tap(() => {

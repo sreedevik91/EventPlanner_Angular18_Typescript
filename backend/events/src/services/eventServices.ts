@@ -1,5 +1,5 @@
-import { IEvent, IEventServices, IEventDb } from "../interfaces/eventInterfaces"
-import eventRepository from "../repository/eventRepository";
+import { IEvent, IEventServices, IEventDb, IEventRepository, IEmailService, IEventService } from "../interfaces/eventInterfaces"
+// import eventRepository from "../repository/eventRepository";
 import nodemailer from 'nodemailer'
 import { config } from "dotenv";
 import { getServicesByEventNameGrpc } from "../grpc/grpcServiceClient";
@@ -7,65 +7,70 @@ import { getUserByIdGrpc } from "../grpc/grpcUserClient";
 
 config()
 
-class EventServices {
+export class EventServices implements IEventService{
 
+    constructor(
+        private eventRepository: IEventRepository,
+        private emailService: IEmailService
+    ) { }
 
-    async sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> {
+    // async sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> {
 
-        return new Promise((resolve, reject) => {
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_APP_PASSWORD
-                }
-            })
+    //     return new Promise((resolve, reject) => {
+    //         const transporter = nodemailer.createTransport({
+    //             service: 'gmail',
+    //             auth: {
+    //                 user: process.env.EMAIL_USER,
+    //                 pass: process.env.EMAIL_APP_PASSWORD
+    //             }
+    //         })
 
-            let mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: email,
-                subject: `${subject}`,
-                html: `
-                <div>
-                <p>Dear ${name}, </p>
-                <p></p>
-                <p>${content}</p>
-                <p></p>
-                <p>Warm Regards,</p>
-                <p>Admin</p>
-                <p>Dream Events</p>
-                </div>
-                `
-            }
+    //         let mailOptions = {
+    //             from: process.env.EMAIL_USER,
+    //             to: email,
+    //             subject: `${subject}`,
+    //             html: `
+    //             <div>
+    //             <p>Dear ${name}, </p>
+    //             <p></p>
+    //             <p>${content}</p>
+    //             <p></p>
+    //             <p>Warm Regards,</p>
+    //             <p>Admin</p>
+    //             <p>Dream Events</p>
+    //             </div>
+    //             `
+    //         }
 
-            transporter.sendMail(mailOptions, (error, info) => {
-                // console.log(error)
-                if (error) {
-                    console.log(error);
-                    resolve(false)
-                } else {
-                    resolve(true)
-                }
+    //         transporter.sendMail(mailOptions, (error, info) => {
+    //             // console.log(error)
+    //             if (error) {
+    //                 console.log(error);
+    //                 resolve(false)
+    //             } else {
+    //                 resolve(true)
+    //             }
 
-            })
+    //         })
 
-        })
+    //     })
 
-    }
+    // }
 
 
     async totalEvents() {
 
         try {
-            const data = await eventRepository.getTotalEvents()
-            console.log('getTotalServices service response: ', data);
-            if (data) {
-                return { success: true, data: data }
+            const events = await this.eventRepository.getTotalEvents()
+            console.log('getTotalServices service response: ', events);
+            if (events) {
+                return { success: true, data: events }
             } else {
                 return { success: false, message: 'Could not get the total document' }
             }
         } catch (error: any) {
             console.log('Error from getTotalServices service: ', error.message);
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -74,18 +79,20 @@ class EventServices {
 
         try {
 
-            const data = await eventRepository.createEvent(eventData)
+            const newEvent = await this.eventRepository.createEvent(eventData)
 
             console.log('eventData data: ', eventData);
 
-            console.log('eventData service response: ', data);
-            if (data) {
-                return { success: true, data: data }
+            console.log('eventData service response: ', newEvent);
+            if (newEvent) {
+                return { success: true, data: newEvent }
             } else {
                 return { success: false, message: 'Could not create service' }
             }
         } catch (error: any) {
             console.log('Error from addService service: ', error.message);
+            return { success: false, message: 'Something went wrong' }
+
         }
 
     }
@@ -124,57 +131,62 @@ class EventServices {
 
             // let data = await eventRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
 
-            let data = await eventRepository.getAllEvents(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            let events = await this.eventRepository.getAllEvents(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
-            console.log('all service data filtered and sorted: ', data);
+            console.log('all service data filtered and sorted: ', events);
 
-            if (data) {
-                return { success: true, data }
+            if (events) {
+                return { success: true, events }
             } else {
                 return { success: false, message: 'Could not fetch data' }
             }
         } catch (error: any) {
             console.log('Error from getServices: ', error.message);
+            return { success: false, message: 'Something went wrong' }
+
         }
 
     }
 
-
-    async deleteEvent(id: string) {
+    async deleteEvent(eventId: string) {
         try {
-            const data = await eventRepository.deleteEvent(id)
+            const deleteResponse = await this.eventRepository.deleteEvent(eventId)
 
-            console.log('deleteEvent service response: ', data);
-            if (data) {
-                return { success: true, data: data, message: 'Event deleted successfuly' }
+            console.log('deleteEvent service response: ', deleteResponse);
+            if (deleteResponse) {
+                return { success: true, data: deleteResponse, message: 'Event deleted successfuly' }
             } else {
                 return { success: false, message: 'Could not delete event, Something went wrong' }
             }
         } catch (error: any) {
             console.log('Error from deleteEvent service: ', error.message);
+            return { success: false, message: 'Something went wrong' }
+
         }
 
     }
 
-    async getEventById(id: string) {
+    async getEventById(eventId: string) {
         try {
-            const data = await eventRepository.getEventById(id)
+            const event = await this.eventRepository.getEventById(eventId)
 
-            console.log('getEventById service response: ', data);
-            if (data) {
-                return { success: true, data: data }
+            console.log('getEventById service response: ', event);
+            if (event) {
+                return { success: true, data: event }
             } else {
                 return { success: false, message: 'Could not get event, Something went wrong' }
             }
         } catch (error: any) {
             console.log('Error from getEventById service: ', error.message);
+            return { success: false, message: 'Something went wrong' }
+
         }
 
     }
 
-    async editEvent(id: string, serviceData: Partial<IEvent>) {
+    async editEvent(eventId: string, serviceData: Partial<IEvent>) {
         try {
-            const updatedEvent = await eventRepository.updateEvent(id, {$set:serviceData})
+            const updatedEvent = await this.eventRepository.updateEvent(eventId, { $set: serviceData })
 
             console.log('updatedEvent: ', updatedEvent);
 
@@ -185,17 +197,19 @@ class EventServices {
             }
         } catch (error: any) {
             console.log('Error from updatedEvent: ', error.message);
+            return { success: false, message: 'Something went wrong' }
+
         }
 
     }
 
-    async editStatus(id: string) {
+    async editStatus(eventId: string) {
         // provider making the service active or block
         try {
-            const event = await eventRepository.getEventById(id)
+            const event = await this.eventRepository.getEventById(eventId)
 
             if (event) {
-                const eventUpdated = await eventRepository.updateEvent(id, {$set:{ isActive: !event.isActive }})
+                const eventUpdated = await this.eventRepository.updateEvent(eventId, { $set: { isActive: !event.isActive } })
 
                 console.log('editStatus service: ', event, eventUpdated);
 
@@ -210,6 +224,8 @@ class EventServices {
 
         } catch (error: any) {
             console.log('Error from editStatus event: ', error.message);
+            return { success: false, message: 'Something went wrong' }
+
         }
 
     }
@@ -262,6 +278,8 @@ class EventServices {
 
         } catch (error: any) {
             console.log('Error from getServiceByName service: ', error, error.message);
+            return { success: false, message: 'Something went wrong' }
+
         }
 
     }
@@ -269,7 +287,7 @@ class EventServices {
     async getEventsByName(name: string) {
         try {
             // const service = await getServicesByNameGrpc(name)
-            const events: IEvent[] = await eventRepository.getEventByName(name)
+            const events: IEvent[] = await this.eventRepository.getEventByName(name)
 
             console.log('getServiceByName response: ', events);
 
@@ -278,15 +296,15 @@ class EventServices {
 
             let servicesObj: any = {}
             if (events && services) {
-                services.serviceData.forEach((service:any) => {
-                   let serviceName=service.name
-                        if (!(serviceName in servicesObj)) {
-                            servicesObj[serviceName] = []
-                        }
-                        servicesObj[serviceName].push(service)
+                services.serviceData.forEach((service: any) => {
+                    let serviceName = service.name
+                    if (!(serviceName in servicesObj)) {
+                        servicesObj[serviceName] = []
+                    }
+                    servicesObj[serviceName].push(service)
 
                 })
-               
+
                 console.log(`sorted services for ${name}: `, servicesObj);
 
                 return { success: true, data: events, extra: servicesObj }
@@ -296,12 +314,12 @@ class EventServices {
 
         } catch (error: any) {
             console.log('Error from getServiceByName service: ', error, error.message);
+            return { success: false, message: 'Something went wrong' }
+
         }
 
     }
 
-
-
 }
 
-export default new EventServices()
+// export default new EventServices()

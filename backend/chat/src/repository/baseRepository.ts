@@ -1,7 +1,7 @@
-import { Model,FilterQuery,UpdateQuery, Document, DeleteResult } from "mongoose";
+import { Model,FilterQuery,UpdateQuery, Document, DeleteResult, QueryOptions } from "mongoose";
+import { IRepository } from "../interfaces/chatInterfaces";
 
-
-export default class BaseRepository<T extends Document> {
+export default class BaseRepository<T extends Document> implements IRepository<T>{
 
     private model: Model<T>
 
@@ -14,16 +14,16 @@ export default class BaseRepository<T extends Document> {
         return await booking.save()
     }
 
-    async getChatById(id:string):Promise<T | null>{
-        return await this.model.findById(id)
+    async getChatById(chatId:string):Promise<T | null>{
+        return await this.model.findById(chatId)
     }
 
-    async getAllChat(query:FilterQuery<T>={}, options:{sort?:any,limit?:number,skip?:number}){
+    async getAllChat(query:FilterQuery<T>={}, options:QueryOptions={}):Promise<T[]>{
         const {sort,limit,skip}=options
         return await this.model.find(query).sort(sort).limit(limit!).skip(skip!)
     }
 
-    async updateChat(id:string,data:UpdateQuery<T>):Promise<T | null>{
+    async updateChat(chatId:string,data:UpdateQuery<T>):Promise<T | null>{
         const updateQuery:any={}
         if(data.$push){
             updateQuery.$push=data.$push
@@ -34,11 +34,11 @@ export default class BaseRepository<T extends Document> {
         if(data.$set){
             updateQuery.$set=data.$set
         }
-        return await this.model.findOneAndUpdate({_id:id},updateQuery,{new:true})
+        return await this.model.findOneAndUpdate({_id:chatId},updateQuery,{new:true})
     }
 
-    async deleteChat(id:string):Promise<DeleteResult | null>{
-        return await this.model.findByIdAndDelete(id)
+    async deleteChat(chatId:string):Promise<DeleteResult | null>{
+        return await this.model.findByIdAndDelete(chatId)
     }
 
 

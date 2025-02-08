@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alertService/alert.service';
-import { IBooking, IResponse, IService } from '../../model/interface/interface';
+import { HttpStatusCodes, IBooking, IResponse, IService } from '../../model/interface/interface';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { Booking, BookingSearchFilter } from '../../model/class/bookingClass';
@@ -61,7 +61,7 @@ export class AdminBookingComponent implements OnInit {
   getTotalBookings() {
     this.bookingService.getTotalBookings().subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalBookings = res.body?.data
         } else {
           console.log(res.body?.message);
@@ -113,7 +113,7 @@ export class AdminBookingComponent implements OnInit {
   getAllBookings(params: HttpParams) {
     this.bookingService.getAllBookings(params).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           // this.totalServices=res.body.data.length
           this.bookings.set(res.body?.data)
           console.log('all services: ', this.bookings());
@@ -135,7 +135,7 @@ export class AdminBookingComponent implements OnInit {
     this.bookingService.editStatus(id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.getAllBookings(this.searchParams)
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service approved successfully')
         } else {
@@ -155,7 +155,7 @@ export class AdminBookingComponent implements OnInit {
   deleteBooking(id: string) {
     this.bookingService.deleteBooking(id).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === 200) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service deleted successfully')
           this.getAllBookings(this.searchParams)
         } else {

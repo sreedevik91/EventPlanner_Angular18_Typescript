@@ -1,10 +1,14 @@
 <section class="container-fluid">
 
+    <div>
+        <app-alert></app-alert>
+    </div>
+
     <div class="row">
         <div class="col-md-4">
             <div class="user-list-card">
                 <h2>Active Users</h2>
-                @for(user of activeUsers; track $index){   
+                @for(user of activeUsers(); track $index){   
                 <div class="user-card">
                     <img class="avatar" src="" alt="">
                     <p class="username" (click)="joinChat(user.userId)">{{user.userName}}</p>
@@ -45,7 +49,11 @@
         
                         <div class="col-md-6 offset-md-6">
                             @if(item.message!==''){
-                            <small class="d-block">{{item.date | date:'shortDate'}}</small>
+                                <div>
+                                    <small class="col-12 d-block text-end text-muted" style="font-size: 0.75em">{{item.date |
+                                        date:'longDate'}}</small>
+                                </div>
+                            <!-- <small class="d-block">{{item.date | date:'shortDate'}}</small> -->
                             <div class="alert alert-success d-inline-block float-end" role="alert">
                                 <!-- {{item.message}} -->
                                 @if(item.type === 'image'){
@@ -69,6 +77,9 @@
                             }@else{
                                 <p>Unsupported file type</p>
                             }
+
+                            <div class="position-absolute bottom-0 end-0"><small class="float-end text-muted p-1" style="font-size: 0.55em;">{{item.date
+                                        | date:'shortTime'}}</small></div>
                             </div>
                             }
                         </div>
@@ -78,7 +89,11 @@
                     <div class="row pt-2">
                         <div class="col-md-6">
                             @if(item.message!==''){
-                            <small class="d-block">{{item.date | date:'shortDate'}}</small>
+                                <div>
+                                    <small class="col-12 d-block text-start text-muted" style="font-size: 0.75em">{{item.date |
+                                        date:'longDate'}}</small>
+                                </div>
+                            <!-- <small class="d-block">{{item.date | date:'shortDate'}}</small> -->
                             <div class="alert alert-primary d-inline-block" role="alert">
                                 <!-- {{item.message}} -->
                                 @if(item.type === 'image'){
@@ -102,6 +117,8 @@
                             }@else{
                                 <p>Unsupported file type</p>
                             }
+                            <div class="position-absolute bottom-0 start-0"><small class="float-end text-muted p-1" style="font-size: 0.55em;">{{item.date
+                                        | date:'shortTime'}}</small></div>
                             </div>
                             }
                         </div>
@@ -119,7 +136,11 @@
         
                         <div class="col-md-6 offset-md-6">
                             @if(item.chats.message!==''){
-                            <small class="d-block">{{item.chats.date | date:'shortDate'}}</small>
+                                <div>
+                                    <small class="col-12 d-block text-end text-muted" style="font-size: 0.75em">{{item.chats.date |
+                                        date:'longDate'}}</small>
+                                </div>
+                            <!-- <small class="d-block">{{item.chats.date | date:'shortDate'}}</small> -->
                             <div class="alert alert-success d-inline-block float-end" role="alert">
                                 <!-- {{item.chats.message}} -->
                                 @if(item.chats.type === 'image'){
@@ -143,6 +164,8 @@
                             }@else{
                                 <p>Unsupported file type</p>
                             }
+                            <div class="position-absolute bottom-0 end-0"><small class="float-end text-muted p-1" style="font-size: 0.55em;">{{item.chats.date
+                                        | date:'shortTime'}}</small></div>
                             </div>
                             }
                         </div>
@@ -152,7 +175,11 @@
                     <div class="row pt-2">
                         <div class="col-md-6">
                             @if(item.chats.message!==''){
-                            <small class="d-block">{{item.chats.date | date:'shortDate'}}</small>
+                                <div>
+                                    <small class="col-12 d-block text-start text-muted" style="font-size: 0.75em">{{item.chats.date |
+                                        date:'longDate'}}</small>
+                                </div>
+                            <!-- <small class="d-block">{{item.chats.date | date:'shortDate'}}</small> -->
                             <div class="alert alert-primary d-inline-block" role="alert">
                                 <!-- {{item.chats.message}} -->
                                 @if(item.chats.type === 'image'){
@@ -176,6 +203,8 @@
                             }@else{
                                 <p>Unsupported file type</p>
                             }
+                            <div class="position-absolute bottom-0 start-0"><small class="float-end text-muted p-1" style="font-size: 0.55em;">{{item.chats.date
+                                        | date:'shortTime'}}</small></div>
                             </div>
                             }
                         </div>
@@ -226,7 +255,7 @@
           
                 <!-- File Upload Button -->
                 <div class="col-auto">
-                  <input type="file" id="fileInput" (change)="handleFileUpload($event)" hidden>
+                  <input type="file" id="fileInput" #fileInput  (change)="handleFileUpload($event)" hidden>
                   <button type="button" class="btn btn-light btn-sm" (click)="triggerFileInput()">
                     📎
                   </button>
@@ -249,7 +278,7 @@
                 </div>
           
                 <!-- Message Input -->
-                <div class="col">
+                <div class="col" formGroupName="chats">
                   <input type="text" placeholder="Type a message" class="form-control"
                     (input)="startedTyping()" formControlName="message" />
                 </div>
