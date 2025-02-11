@@ -64,7 +64,7 @@ export class AdminChatComponent implements OnInit, OnDestroy {
 
     this.initialiseChatForm()
 
-    this.userService.loggedUser$.subscribe((user) => {
+    this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
       if (user) {
         console.log(user);
         this.userName = user.user
@@ -86,7 +86,7 @@ export class AdminChatComponent implements OnInit, OnDestroy {
     this.getMessage()
     this.getAllChats()
     this.getJoiningNotification()
-    this.getLeavingNotification
+    this.getLeavingNotification()
     this.getTypingNotification()
   }
 
@@ -129,7 +129,7 @@ export class AdminChatComponent implements OnInit, OnDestroy {
   }
 
   getAllChats() {
-    this.chatService.getChatsByUser(this.activeUser).subscribe({
+    this.chatService.getChatsByUser(this.activeUser).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('user chats from db:', res.body?.data);
@@ -290,7 +290,7 @@ export class AdminChatComponent implements OnInit, OnDestroy {
       const file = input.files[0]
       formData.append('img', file)
 
-      this.chatService.getImgUrlFromCloudinary(formData).subscribe({
+      this.chatService.getImgUrlFromCloudinary(formData).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: HttpResponse<IResponse>) => {
 
           if (res.status === HttpStatusCodes.SUCCESS) {
@@ -339,7 +339,7 @@ export class AdminChatComponent implements OnInit, OnDestroy {
         const formData = new FormData()
         formData.append('audio', audioBlob)
         // get cloudinary link from server and send mesage to socket 
-        this.chatService.getAudioUrlFromCloudinary(formData).subscribe({
+        this.chatService.getAudioUrlFromCloudinary(formData).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: HttpResponse<IResponse>) => {
             if (res.status === HttpStatusCodes.SUCCESS) {
               console.log(res.body?.data);

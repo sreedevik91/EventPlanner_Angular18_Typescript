@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ILoggedUserData } from '../../model/interface/interface';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { AdminBookingComponent } from "../admin-booking/admin-booking.component";
 import { UserBookingComponent } from "../user-booking/user-booking.component";
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-booking',
@@ -11,7 +12,10 @@ import { UserBookingComponent } from "../user-booking/user-booking.component";
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css'
 })
-export class BookingComponent {
+export class BookingComponent implements OnDestroy{
+
+  destroy$:Subject<void>= new Subject<void>()
+
   user!: ILoggedUserData
   role: string = ''
 
@@ -25,4 +29,10 @@ export class BookingComponent {
       }
     })
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
+
 }

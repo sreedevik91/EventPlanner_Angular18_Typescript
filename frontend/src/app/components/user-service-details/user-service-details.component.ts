@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpStatusCodes, IBookedServices, IResponse, IService } from '../../model/interface/interface';
 import { environment } from '../../../environments/environment.development';
@@ -13,6 +13,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { IChoice } from '../../model/class/serviceClass';
 import { AlertService } from '../../services/alertService/alert.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-user-service-details',
@@ -21,7 +22,9 @@ import { AlertService } from '../../services/alertService/alert.service';
   templateUrl: './user-service-details.component.html',
   styleUrl: './user-service-details.component.css'
 })
-export class UserServiceDetailsComponent implements OnInit {
+export class UserServiceDetailsComponent implements OnInit,OnDestroy {
+
+  destroy$:Subject<void>= new Subject<void>()
 
   activatedRoute = inject(ActivatedRoute)
   router = inject(Router)
@@ -55,7 +58,7 @@ export class UserServiceDetailsComponent implements OnInit {
 
     this.initialiseBookingForm()
 
-    this.userService.loggedUser$.subscribe(user => {
+    this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe(user => {
       console.log('user from service:', user);
 
       this.bookingForm.get('user')?.setValue(user?.user)
@@ -105,7 +108,7 @@ export class UserServiceDetailsComponent implements OnInit {
     this.bookingForm.get('serviceId')?.setValue(serviceId)
     this.bookingForm.get('providerId')?.setValue(providerId)
 
-    this.bookingService.getServicesByNameAndProvider(name, providerId).subscribe({
+    this.bookingService.getServicesByNameAndProvider(name, providerId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('selected service details: ', res.body?.data);
         this.selectedService = res.body?.data
@@ -144,12 +147,12 @@ export class UserServiceDetailsComponent implements OnInit {
     console.log('service booking form values: ', this.bookingForm.value);
     console.log('is service booking form valid: ', this.bookingForm.valid);
 
-    // this.bookingService.createBooking(this.bookingForm.value).subscribe(res=>{
+    // this.bookingService.createBooking(this.bookingForm.value).pipe(takeUntil(this.destroy$)).subscribe(res=>{
     //   console.log('saveBooking response from backend: ', res);
       
     // })
 
-    this.bookingService.createBooking(this.bookingForm.value).subscribe({
+    this.bookingService.createBooking(this.bookingForm.value).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('saveBooking response from backend: ', res);
         
@@ -250,4 +253,8 @@ export class UserServiceDetailsComponent implements OnInit {
     this.initialiseBookingForm()
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
 }

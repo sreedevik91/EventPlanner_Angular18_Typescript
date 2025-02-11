@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { Router } from '@angular/router';
 import { AlertService } from '../../services/alertService/alert.service';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { HttpResponse } from '@angular/common/http';
 import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-google-auth-callback',
@@ -13,7 +14,9 @@ import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
   templateUrl: './google-auth-callback.component.html',
   styleUrl: './google-auth-callback.component.css'
 })
-export class GoogleAuthCallbackComponent implements OnInit {
+export class GoogleAuthCallbackComponent implements OnInit,OnDestroy {
+
+  destroy$:Subject<void>=new Subject<void>()
 
   userService = inject(UserSrerviceService)
   router = inject(Router)
@@ -25,7 +28,7 @@ export class GoogleAuthCallbackComponent implements OnInit {
   }
 
   handleGoogleSignin() {
-    this.userService.handleGoogleSignin().subscribe({
+    this.userService.handleGoogleSignin().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('response from google sign in: ', res.body);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -54,6 +57,11 @@ export class GoogleAuthCallbackComponent implements OnInit {
 
       }
     })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
 

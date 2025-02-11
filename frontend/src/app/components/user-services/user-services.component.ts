@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ServiceService } from '../../services/serviceService/service.service';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
@@ -9,6 +9,7 @@ import { IChoice } from '../../model/class/serviceClass';
 import { environment } from '../../../environments/environment.development';
 import { Router } from '@angular/router';
 import { DataService } from '../../services/dataService/data.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-user-services',
@@ -17,7 +18,9 @@ import { DataService } from '../../services/dataService/data.service';
   templateUrl: './user-services.component.html',
   styleUrl: './user-services.component.css'
 })
-export class UserServicesComponent implements OnInit {
+export class UserServicesComponent implements OnInit,OnDestroy {
+
+  destroy$:Subject<void>= new Subject<void>()
 
   @ViewChild('serviceModal') serviceModal!: ElementRef
 
@@ -113,6 +116,11 @@ export class UserServicesComponent implements OnInit {
   hideModal() {
     this.serviceModal.nativeElement.style.display = 'none'
     this.onLoad()
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
 }

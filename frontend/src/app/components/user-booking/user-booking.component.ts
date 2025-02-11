@@ -1,11 +1,12 @@
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { AlertService } from '../../services/alertService/alert.service';
 import { BookingService } from '../../services/bookingService/booking.service';
 import { HttpStatusCodes, IBooking, IResponse } from '../../model/interface/interface';
 import { DatePipe } from '@angular/common';
 import { ButtonComponent } from "../../shared/components/button/button.component";
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-user-booking',
@@ -14,7 +15,9 @@ import { ButtonComponent } from "../../shared/components/button/button.component
   templateUrl: './user-booking.component.html',
   styleUrl: './user-booking.component.css'
 })
-export class UserBookingComponent implements OnInit {
+export class UserBookingComponent implements OnInit,OnDestroy {
+
+  destroy$:Subject<void>=new Subject<void>()
 
   bookingsList = signal<IBooking[]>([])
 
@@ -25,14 +28,14 @@ export class UserBookingComponent implements OnInit {
   userId: string = ''
 
   ngOnInit(): void {
-    this.userService.loggedUser$.subscribe((user: any) => {
+    this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user: any) => {
       this.userId = user.id
     })
     this.getBookingsByUser(this.userId)
   }
 
   getBookingsByUser(userId: string) {
-    this.bookingService.getBookingsByUserId(userId).subscribe({
+    this.bookingService.getBookingsByUserId(userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
 
@@ -53,7 +56,7 @@ export class UserBookingComponent implements OnInit {
 
   deleteBooking(bookingId: string) {
     if (confirm('Do you want to delete the booking ?')) {
-      this.bookingService.deleteBooking(bookingId).subscribe({
+      this.bookingService.deleteBooking(bookingId).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: HttpResponse<IResponse>) => {
           if (res.status === HttpStatusCodes.SUCCESS) {
             console.log(res.body);
@@ -74,7 +77,7 @@ export class UserBookingComponent implements OnInit {
 
   deleteChoice(bookingId: string, name: string, id: string) {
     if (confirm('Do you want to delete the service ?')) {
-      this.bookingService.deleteBookedServices(bookingId, name, id).subscribe({
+      this.bookingService.deleteBookedServices(bookingId, name, id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: HttpResponse<IResponse>) => {
           if (res.status === HttpStatusCodes.SUCCESS) {
             console.log(res.body);
@@ -91,6 +94,11 @@ export class UserBookingComponent implements OnInit {
         }
       })
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
 }

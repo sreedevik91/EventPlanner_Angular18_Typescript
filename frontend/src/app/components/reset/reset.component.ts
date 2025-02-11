@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
@@ -8,6 +8,7 @@ import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-reset',
@@ -16,12 +17,14 @@ import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
   templateUrl: './reset.component.html',
   styleUrl: './reset.component.css'
 })
-export class ResetComponent implements OnInit {
+export class ResetComponent implements OnInit, OnDestroy {
 
   // class: string = ''
   // message: string = ''
   // alert: boolean = false
   // text: string = ''
+
+  destroy$: Subject<void> = new Subject<void>()
 
   token: string | null = null
   userId: string = ''
@@ -32,13 +35,13 @@ export class ResetComponent implements OnInit {
   router = inject(Router)
 
   ngOnInit(): void {
-    this.activeRoute.params.subscribe((value) => {
+    this.activeRoute.params.pipe(takeUntil(this.destroy$)).subscribe((value) => {
       this.token = value['token']
       console.log(this.token);
 
     })
 
-    // this.activeRoute.paramMap.subscribe((value)=>{
+    // this.activeRoute.paramMap.pipe(takeUntil(this.destroy$)).subscribe((value)=>{
     //   this.token=value.get('token')
     //   console.log(this.token);
 
@@ -74,7 +77,7 @@ export class ResetComponent implements OnInit {
     }
     // console.log('resetData: ', resetData, data);
     debugger
-    this.userServices.resetPassword(data).subscribe({
+    this.userServices.resetPassword(data).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('resetPassword res: ', res.body);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -95,11 +98,16 @@ export class ResetComponent implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         // this.callAlert('alert alert-danger', 'Password Reset failed', err.message)
-        this.alertService.getAlert('alert alert-danger', 'Password Reset failed',  err.error.message)
+        this.alertService.getAlert('alert alert-danger', 'Password Reset failed', err.error.message)
 
       }
     })
 
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
 }

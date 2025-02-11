@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnChanges, OnInit, signal, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnChanges, OnDestroy, OnInit, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { UserSearchFilter, User } from '../../model/class/userClass';
@@ -8,6 +8,7 @@ import { AlertService } from '../../services/alertService/alert.service';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { HttpStatusCodes, IResponse, IUser } from '../../model/interface/interface';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -16,7 +17,9 @@ import { HttpStatusCodes, IResponse, IUser } from '../../model/interface/interfa
   templateUrl: './users.component.html',
   styleUrl: './users.component.css'
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit,OnDestroy {
+
+  destroy$:Subject<void>=new Subject<void>()
 
   users$: any = []
   users = signal<IUser[]>([])
@@ -122,7 +125,7 @@ export class UsersComponent implements OnInit {
   }
 
   getTotalUsers() {
-    this.userServices.getUsersCount().subscribe({
+    this.userServices.getUsersCount().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalUsers = res.body?.data
@@ -159,7 +162,7 @@ export class UsersComponent implements OnInit {
   }
 
   getUsers(params: HttpParams) {
-    this.userServices.getAllUsers(params).subscribe({
+    this.userServices.getAllUsers(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.users$ = res.body?.data
@@ -184,7 +187,7 @@ export class UsersComponent implements OnInit {
     let data = rest
     console.log('user update data:', data);
 
-    this.userServices.editUser(data, userId).subscribe({
+    this.userServices.editUser(data, userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('update user response: ', res.body?.data);
@@ -212,7 +215,7 @@ export class UsersComponent implements OnInit {
     const data = rest
     // this.userFormObj.id=0
     console.log('create user data:', this.userForm.value);
-    this.userServices.registerUser(data).subscribe({
+    this.userServices.registerUser(data).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.CREATED) {
           console.log('add user response: ', res.body?.data);
@@ -236,7 +239,7 @@ export class UsersComponent implements OnInit {
   }
 
   onEdit(userId: string) {
-    this.userServices.getUserById(userId).subscribe({
+    this.userServices.getUserById(userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         this.userFormObj = res.body?.data
         // console.log(this.userFormObj);
@@ -253,7 +256,7 @@ export class UsersComponent implements OnInit {
 
   setStatus(userId: string) {
     console.log(userId);
-    this.userServices.editStatus(userId).subscribe({
+    this.userServices.editStatus(userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -276,7 +279,7 @@ export class UsersComponent implements OnInit {
   }
 
   verifyUser(userId: string) {
-    this.userServices.verifyUser(userId).subscribe({
+    this.userServices.verifyUser(userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -308,5 +311,9 @@ export class UsersComponent implements OnInit {
     this.formModal.nativeElement.style.display = 'block'
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
 
 }

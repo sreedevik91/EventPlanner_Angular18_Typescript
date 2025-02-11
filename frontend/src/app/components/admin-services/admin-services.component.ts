@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { Service, ServiceSearchFilter } from '../../model/class/serviceClass';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ServiceService } from '../../services/serviceService/service.service';
@@ -7,6 +7,7 @@ import { AlertService } from '../../services/alertService/alert.service';
 import { HttpStatusCodes, IResponse, IService } from '../../model/interface/interface';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-admin-services',
@@ -15,7 +16,10 @@ import { AlertComponent } from '../../shared/components/alert/alert.component';
   templateUrl: './admin-services.component.html',
   styleUrl: './admin-services.component.css'
 })
-export class AdminServicesComponent {
+export class AdminServicesComponent implements OnDestroy{
+
+  destroy$:Subject<void>= new Subject<void>()
+
   serviceFromObj: Service = new Service()
   searchFilterFormObj: ServiceSearchFilter = new ServiceSearchFilter()
 
@@ -37,6 +41,7 @@ export class AdminServicesComponent {
     this.getTotalServices()
     this.initialiseSearchFilterForm()
   }
+ 
   ngOnInit(): void {
     //  this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
     //   .set('pageSize', this.searchFilterFormObj.pageSize)
@@ -57,7 +62,7 @@ export class AdminServicesComponent {
 
 
   getTotalServices() {
-    this.serviceService.getTotalServices().subscribe({
+    this.serviceService.getTotalServices().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalServices = res.body?.data
@@ -113,7 +118,7 @@ export class AdminServicesComponent {
   }
 
   getAllServices(params: HttpParams) {
-    this.serviceService.getAllServices(params).subscribe({
+    this.serviceService.getAllServices(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.services.set(res.body?.data)
@@ -136,7 +141,7 @@ export class AdminServicesComponent {
 
   approveService(id: string) {
     debugger
-    this.serviceService.approveService(id).subscribe({
+    this.serviceService.approveService(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -158,7 +163,7 @@ export class AdminServicesComponent {
 
 
   deleteService(id: string) {
-    this.serviceService.deleteService(id).subscribe({
+    this.serviceService.deleteService(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service deleted successfully')
@@ -192,6 +197,10 @@ export class AdminServicesComponent {
     return this.totalServices / Number(this.searchFilterFormObj.pageSize)
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
 
 }
 

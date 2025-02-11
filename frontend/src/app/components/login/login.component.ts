@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpStatusCodes, ILoggedUserData, ILoginData, IRegisterData, IResponse } from '../../model/interface/interface';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -9,6 +9,7 @@ import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { Subject, takeUntil } from 'rxjs';
 declare const google: any;
 
 @Component({
@@ -18,7 +19,9 @@ declare const google: any;
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnDestroy{
+
+  destroy$:Subject<void>= new Subject<void>()
 
   @ViewChild('modal') modal!: ElementRef
 
@@ -65,7 +68,7 @@ export class LoginComponent {
     this.loginData = this.userLoginForm.value
     // console.log(this.loginData);
 
-    this.userService.userLogin(this.loginData).subscribe({
+    this.userService.userLogin(this.loginData).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         // debugger
         console.log(res);
@@ -93,7 +96,7 @@ export class LoginComponent {
         //   }
 
         // } else if (res.status === 403) {
-        //   this.userService.userLogout().subscribe((res: HttpResponse<any>) => {
+        //   this.userService.userLogout().pipe(takeUntil(this.destroy$)).subscribe((res: HttpResponse<any>) => {
         //     this.router.navigateByUrl('login')
         //   })
         //   this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
@@ -131,7 +134,7 @@ export class LoginComponent {
     }
     )
 
-    this.userService.loggedUser$.subscribe((res) => {
+    this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((res) => {
       if (res) {
         console.log('from behavioral subject: ', res);
       }
@@ -146,7 +149,7 @@ export class LoginComponent {
     const { confirmPassword, ...rest } = this.userRegistrationForm.value
     this.registrationData = rest
     console.log(this.registrationData);
-    this.userService.registerUser(this.registrationData).subscribe({
+    this.userService.registerUser(this.registrationData).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('response from register user: ', res);
         if (res.status === HttpStatusCodes.CREATED) {
@@ -174,7 +177,7 @@ export class LoginComponent {
     const emailData = this.emailForm.value
     console.log(emailData);
 
-    this.userService.sendResetEmail(emailData).subscribe({
+    this.userService.sendResetEmail(emailData).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('send mail response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -206,4 +209,8 @@ export class LoginComponent {
     document.location.href = '/login'
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
 }
