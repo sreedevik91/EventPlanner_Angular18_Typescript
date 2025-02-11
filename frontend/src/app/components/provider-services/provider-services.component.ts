@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnInit, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
 import { IChoice, Service, ServiceSearchFilter } from '../../model/class/serviceClass';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
@@ -11,7 +11,7 @@ import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/htt
 import { Catering, Decor, EventCoverage } from '../../model/eventServicesOptions';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { environment } from '../../../environments/environment.development';
-import { take } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-provider-services',
@@ -20,7 +20,9 @@ import { take } from 'rxjs';
   templateUrl: './provider-services.component.html',
   styleUrl: './provider-services.component.css'
 })
-export class ProviderServicesComponent implements OnInit {
+export class ProviderServicesComponent implements OnInit,OnDestroy {
+
+  destroy$:Subject<void>= new Subject<void>()
 
   serviceFromObj: Service = new Service()
   searchFilterFormObj: ServiceSearchFilter = new ServiceSearchFilter()
@@ -61,7 +63,7 @@ export class ProviderServicesComponent implements OnInit {
     this.initialiseServiceForm()
     this.getTotalServices()
     this.initialiseSearchFilterForm()
-    this.userService.loggedUser$.subscribe((user: any) => {
+    this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user: any) => {
       this.providerId = user.id
       this.provider = user.user
       console.log(this.providerId, user);
@@ -274,7 +276,7 @@ export class ProviderServicesComponent implements OnInit {
   }
 
   getTotalServices() {
-    this.serviceService.getTotalServices().subscribe({
+    this.serviceService.getTotalServices().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalServices = res.body?.data
@@ -329,7 +331,7 @@ export class ProviderServicesComponent implements OnInit {
   }
 
   getAllServices(params: HttpParams) {
-    this.serviceService.getAllServices(params).subscribe({
+    this.serviceService.getAllServices(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           // this.totalServices=res.body.data.length
@@ -354,7 +356,7 @@ export class ProviderServicesComponent implements OnInit {
 
   onEdit(id: string) {
     this.isAddService = false
-    this.serviceService.getServiceById(id).subscribe({
+    this.serviceService.getServiceById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.serviceFromObj = res.body?.data
@@ -391,7 +393,7 @@ export class ProviderServicesComponent implements OnInit {
 
   setStatus(id: string) {
     console.log(id);
-    this.serviceService.editStatus(id).subscribe({
+    this.serviceService.editStatus(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -448,7 +450,7 @@ export class ProviderServicesComponent implements OnInit {
       console.log(key, value);
     });
 
-    this.serviceService.createService(formData).subscribe({
+    this.serviceService.createService(formData).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.CREATED) {
           this.hideModal()
@@ -504,7 +506,7 @@ export class ProviderServicesComponent implements OnInit {
 
     // debugger
 
-    this.serviceService.editService(formData, id).subscribe({
+    this.serviceService.editService(formData, id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('update user response: ', res.body);
@@ -527,7 +529,7 @@ export class ProviderServicesComponent implements OnInit {
   }
 
   deleteService(id: string) {
-    this.serviceService.deleteService(id).subscribe({
+    this.serviceService.deleteService(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
@@ -578,6 +580,11 @@ export class ProviderServicesComponent implements OnInit {
     this.choiceImgInputs.toArray().forEach(input => {
       input.nativeElement.value = ''
     })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
 }

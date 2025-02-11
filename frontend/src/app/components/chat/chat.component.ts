@@ -1,8 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { UserChatComponent } from '../user-chat/user-chat.component';
 import { AdminChatComponent } from '../admin-chat/admin-chat.component';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
@@ -11,7 +12,9 @@ import { AdminChatComponent } from '../admin-chat/admin-chat.component';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
+
+  destroy$:Subject<void>= new Subject<void>()
 
   userService = inject(UserSrerviceService);
 
@@ -19,13 +22,18 @@ export class ChatComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.userService.loggedUser$.subscribe((user) => {
+    this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
       if (user) {
         console.log(user);
         this.role = user.role
       }
     })
 
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
 }

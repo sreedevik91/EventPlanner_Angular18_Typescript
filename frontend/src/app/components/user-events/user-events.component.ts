@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { EventServiceService } from '../../services/eventService/event-service.service';
 import { HttpStatusCodes, IEvent, IResponse } from '../../model/interface/interface';
@@ -7,6 +7,7 @@ import { AlertService } from '../../services/alertService/alert.service';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { Router } from '@angular/router';
 import { DataService } from '../../services/dataService/data.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-user-events',
@@ -15,7 +16,9 @@ import { DataService } from '../../services/dataService/data.service';
   templateUrl: './user-events.component.html',
   styleUrl: './user-events.component.css'
 })
-export class UserEventsComponent implements OnInit {
+export class UserEventsComponent implements OnInit,OnDestroy {
+
+  destroy$:Subject<void>= new Subject<void>()
 
   eventService = inject(EventServiceService)
   alertService = inject(AlertService)
@@ -32,7 +35,7 @@ export class UserEventsComponent implements OnInit {
   }
 
   getEventService(name: string) {
-    this.eventService.getEventByName(name).subscribe({
+    this.eventService.getEventByName(name).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
 
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -52,5 +55,10 @@ export class UserEventsComponent implements OnInit {
         this.alertService.getAlert("alert alert-danger", "Register User Failed", err.error.message || err.statusText)
       }
     })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 }

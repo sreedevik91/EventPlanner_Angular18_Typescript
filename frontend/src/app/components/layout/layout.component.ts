@@ -1,7 +1,8 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { Menus } from '../../model/menus';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
@@ -10,7 +11,9 @@ import { Menus } from '../../model/menus';
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
-export class LayoutComponent {
+export class LayoutComponent implements OnDestroy{
+
+  destroy$:Subject<void>=new Subject<void>()
 
   role: string = ''
   userMenus: any = []
@@ -21,7 +24,7 @@ export class LayoutComponent {
   menus=Menus
 
   constructor() {
-    this.userService.loggedUser$.subscribe((user)=>{
+    this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user)=>{
       if(user){
         this.role = user.role
         this.userName = user.user
@@ -39,11 +42,14 @@ export class LayoutComponent {
     
   }
 
-
-
   logout() {
-    this.userService.userLogout().subscribe((res: any) => {
+    this.userService.userLogout().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.router.navigate(['login'])
     })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 }

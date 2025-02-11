@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -7,6 +7,7 @@ import { FormComponent } from '../../shared/components/form/form.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-verify-email',
@@ -15,7 +16,9 @@ import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
   templateUrl: './verify-email.component.html',
   styleUrl: './verify-email.component.css'
 })
-export class VerifyEmailComponent {
+export class VerifyEmailComponent implements OnDestroy{
+
+  destroy$:Subject<void>= new Subject<void>()
 
   activeRoute = inject(ActivatedRoute)
   userServices = inject(UserSrerviceService)
@@ -30,7 +33,7 @@ export class VerifyEmailComponent {
 
   verifyEmail() {
     debugger
-    this.userServices.verifyUserEmail(this.verifyEmailForm.value).subscribe({
+    this.userServices.verifyUserEmail(this.verifyEmailForm.value).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify email response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -49,5 +52,10 @@ export class VerifyEmailComponent {
 
       }
     })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 }

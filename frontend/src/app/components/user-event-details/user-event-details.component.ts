@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpStatusCodes, IEvent, IResponse, IService, IServicesArray } from '../../model/interface/interface';
 import { environment } from '../../../environments/environment.development';
@@ -13,6 +13,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Districts } from '../../model/districtsList';
 import { style } from '@angular/animations';
 import { AlertService } from '../../services/alertService/alert.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-user-event-details',
@@ -21,7 +22,9 @@ import { AlertService } from '../../services/alertService/alert.service';
   templateUrl: './user-event-details.component.html',
   styleUrl: './user-event-details.component.css'
 })
-export class UserEventDetailsComponent implements OnInit {
+export class UserEventDetailsComponent implements OnInit,OnDestroy {
+
+  destroy$:Subject<void>= new Subject<void>()
 
   activatedRoute = inject(ActivatedRoute)
 
@@ -65,12 +68,12 @@ export class UserEventDetailsComponent implements OnInit {
 
     this.initialiseBookingForm()
 
-    this.userService.loggedUser$.subscribe(user => {
+    this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe(user => {
       this.bookingForm.get('user')?.setValue(user?.user)
       this.bookingForm.get('userId')?.setValue(user?.id)
     })
 
-    this.bookingService.getAllEvents().subscribe({
+    this.bookingService.getAllEvents().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('getAllEvents response: ', res.body?.data);
         this.eventsList = res.body?.data
@@ -128,7 +131,7 @@ export class UserEventDetailsComponent implements OnInit {
   getServices(event: Event) {
     console.log((<HTMLInputElement>event.target).value);
     const eventName = (<HTMLInputElement>event.target).value
-    this.bookingService.getServicesByEvent(eventName).subscribe({
+    this.bookingService.getServicesByEvent(eventName).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('getServicesByEvent response: ', res.body?.data, res.body?.extra);
         const services = res.body?.extra
@@ -160,7 +163,7 @@ export class UserEventDetailsComponent implements OnInit {
     console.log('event booking form values: ', this.bookingForm.value);
     console.log('is event booking form valid: ', this.bookingForm.valid);
 
-    this.bookingService.createBooking(this.bookingForm.value).subscribe({
+    this.bookingService.createBooking(this.bookingForm.value).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.CREATED) {
           console.log('service booking response: ', res.body?.data);
@@ -320,5 +323,10 @@ export class UserEventDetailsComponent implements OnInit {
     this.bookingForm.reset()
     this.bookingFromObj = new Booking()
     this.initialiseBookingForm()
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 }

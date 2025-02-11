@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alertService/alert.service';
@@ -8,6 +8,7 @@ import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { Booking, BookingSearchFilter } from '../../model/class/bookingClass';
 import { BookingService } from '../../services/bookingService/booking.service';
 import { DatePipe } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
 
 
 @Component({
@@ -17,7 +18,9 @@ import { DatePipe } from '@angular/common';
   templateUrl: './admin-booking.component.html',
   styleUrl: './admin-booking.component.css'
 })
-export class AdminBookingComponent implements OnInit {
+export class AdminBookingComponent implements OnInit, OnDestroy {
+
+  destroy$:Subject<void>= new Subject<void>()
 
   bookingFormObj: Booking = new Booking()
   bookingFilterFormObj: BookingSearchFilter = new BookingSearchFilter()
@@ -39,6 +42,7 @@ export class AdminBookingComponent implements OnInit {
     this.getTotalBookings()
     this.initialiseSearchFilterForm()
   }
+ 
   ngOnInit(): void {
      this.searchParams = this.searchParams.set('pageNumber', this.bookingFilterFormObj.pageNumber)
       .set('pageSize', this.bookingFilterFormObj.pageSize)
@@ -59,7 +63,7 @@ export class AdminBookingComponent implements OnInit {
 
 
   getTotalBookings() {
-    this.bookingService.getTotalBookings().subscribe({
+    this.bookingService.getTotalBookings().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalBookings = res.body?.data
@@ -111,7 +115,7 @@ export class AdminBookingComponent implements OnInit {
   }
 
   getAllBookings(params: HttpParams) {
-    this.bookingService.getAllBookings(params).subscribe({
+    this.bookingService.getAllBookings(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           // this.totalServices=res.body.data.length
@@ -132,7 +136,7 @@ export class AdminBookingComponent implements OnInit {
 
   confirmBooking(id: string) {
     // debugger
-    this.bookingService.editStatus(id).subscribe({
+    this.bookingService.editStatus(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -153,7 +157,7 @@ export class AdminBookingComponent implements OnInit {
 
 
   deleteBooking(id: string) {
-    this.bookingService.deleteBooking(id).subscribe({
+    this.bookingService.deleteBooking(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service deleted successfully')
@@ -187,7 +191,10 @@ export class AdminBookingComponent implements OnInit {
     return this.totalBookings / Number(this.bookingFilterFormObj.pageSize)
   }
 
-
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
 
 }
 

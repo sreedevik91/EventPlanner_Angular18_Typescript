@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
@@ -6,6 +6,7 @@ import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-submit-otp',
@@ -14,11 +15,9 @@ import { HttpStatusCodes, IResponse } from '../../model/interface/interface';
   templateUrl: './submit-otp.component.html',
   styleUrl: './submit-otp.component.css'
 })
-export class SubmitOtpComponent implements OnInit {
+export class SubmitOtpComponent implements OnInit,OnDestroy {
 
-  ngOnInit(): void {
-    this.startTimer()
-  }
+  destroy$:Subject<void>= new Subject<void>()
 
   id: string = ''
   timer: number = 60
@@ -46,6 +45,11 @@ export class SubmitOtpComponent implements OnInit {
   //   }, 2000)
   // }
 
+  ngOnInit(): void {
+    this.startTimer()
+  }
+
+
   otpForm: FormGroup = new FormGroup({
     otp: new FormControl('', Validators.required)
   })
@@ -64,7 +68,7 @@ export class SubmitOtpComponent implements OnInit {
   }
 
   verifyOtp() {
-    this.activatedRoute.params.subscribe((params) => {
+    this.activatedRoute.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.id = params['id']
       console.log('id from otp: ', this.id);
       const otpFormValue = this.otpForm.value
@@ -72,7 +76,7 @@ export class SubmitOtpComponent implements OnInit {
         id: this.id,
         otp: otpFormValue.otp
       }
-      this.userService.verifyOtp(data).subscribe({
+      this.userService.verifyOtp(data).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: HttpResponse<IResponse>) => {
           console.log(res.body);
           if (res.status === HttpStatusCodes.SUCCESS) {
@@ -98,12 +102,12 @@ export class SubmitOtpComponent implements OnInit {
   }
 
   resendOtp() {
-    this.activatedRoute.params.subscribe((params) => {
+    this.activatedRoute.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.id = params['id']
     })
     console.log('id to reset password: ', this.id);
 
-    this.userService.resendOtp(this.id).subscribe({
+    this.userService.resendOtp(this.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status===HttpStatusCodes.SUCCESS) {
           this.startTimer()
@@ -119,6 +123,11 @@ export class SubmitOtpComponent implements OnInit {
 
       }
     })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
 }

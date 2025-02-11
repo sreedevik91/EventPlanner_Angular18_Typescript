@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Events, EventSearchFilter, IEventService } from '../../model/class/eventClass';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
@@ -10,6 +10,7 @@ import { environment } from '../../../environments/environment.development';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { FormComponent } from '../../shared/components/form/form.component';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-admin-events',
@@ -18,7 +19,9 @@ import { FormComponent } from '../../shared/components/form/form.component';
   templateUrl: './admin-events.component.html',
   styleUrl: './admin-events.component.css'
 })
-export class AdminEventsComponent implements OnInit {
+export class AdminEventsComponent implements OnInit, OnDestroy {
+
+  destroy$:Subject<void>= new Subject<void>()
 
   eventFromObj: Events = new Events()
   searchFilterFormObj: EventSearchFilter = new EventSearchFilter()
@@ -51,12 +54,12 @@ export class AdminEventsComponent implements OnInit {
   imgUrl: string | ArrayBuffer | null = ''
 
   constructor() { }
-
+  
   ngOnInit(): void {
     this.initialiseEventForm()
     this.getTotalEvents()
     this.initialiseSearchFilterForm()
-    // this.userService.loggedUser$.subscribe((user: any) => {
+    // this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user: any) => {
     //   this.providerId = user.id
     //   this.provider = user.user
     //   console.log(this.providerId, user);
@@ -72,6 +75,7 @@ export class AdminEventsComponent implements OnInit {
       _id: new FormControl(this.eventFromObj._id),
       name: new FormControl(this.eventFromObj.name, [Validators.required]),
       img: new FormControl(this.eventFromObj.img || null, [Validators.required]),
+
       // services: this.isAddEvent ? new FormArray([]) : new FormArray(
       //   (this.eventFromObj.services).map((service) => {
       //     return new FormGroup({
@@ -122,7 +126,7 @@ export class AdminEventsComponent implements OnInit {
   }
 
   getTotalEvents() {
-    this.eventService.getTotalEvents().subscribe({
+    this.eventService.getTotalEvents().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalEvents = res.body?.data
@@ -173,7 +177,7 @@ export class AdminEventsComponent implements OnInit {
 
   getAllEvents(params: HttpParams) {
     // debugger
-    this.eventService.getAllEvents(params).subscribe({
+    this.eventService.getAllEvents(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           // this.totalEvents=res.body.data.length
@@ -193,7 +197,7 @@ export class AdminEventsComponent implements OnInit {
 
   getServices(value: string) {
     console.log('getServices event: ', value);
-    this.eventService.getServicesByName(value).subscribe({
+    this.eventService.getServicesByName(value).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('getServices res: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -231,7 +235,7 @@ export class AdminEventsComponent implements OnInit {
     //     eventName=eventNameValue
     //   }
 
-    // this.eventService.getServicesByName(eventName).subscribe({
+    // this.eventService.getServicesByName(eventName).pipe(takeUntil(this.destroy$)).subscribe({
     //   next: (res: HttpResponse<IResponse>) => {
     //     console.log('getEventServices res: ', res);
     //     if (res.status === HttpStatusCodes.SUCCESS) {
@@ -300,7 +304,7 @@ export class AdminEventsComponent implements OnInit {
 
   setStatus(id: string) {
     console.log(id);
-    this.eventService.editStatus(id).subscribe({
+    this.eventService.editStatus(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
@@ -325,7 +329,7 @@ export class AdminEventsComponent implements OnInit {
 
   onEdit(id: string) {
     this.isAddEvent = false
-    this.eventService.getEventById(id).subscribe({
+    this.eventService.getEventById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.eventFromObj = res.body?.data
@@ -373,7 +377,7 @@ export class AdminEventsComponent implements OnInit {
     // formData.append('choices', JSON.stringify(services))
     // console.log('data to add new service: ', formData);
 
-    this.eventService.createEvent(formData).subscribe({
+    this.eventService.createEvent(formData).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.CREATED) {
           this.hideModal()
@@ -422,7 +426,7 @@ export class AdminEventsComponent implements OnInit {
 
     // debugger
 
-    this.eventService.editEvent(formData, id).subscribe({
+    this.eventService.editEvent(formData, id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('update event response: ', res.body);
@@ -444,7 +448,7 @@ export class AdminEventsComponent implements OnInit {
   }
 
   deleteEvent(id: string) {
-    this.eventService.deleteEvent(id).subscribe({
+    this.eventService.deleteEvent(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
@@ -496,5 +500,9 @@ export class AdminEventsComponent implements OnInit {
 
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
 
 }
