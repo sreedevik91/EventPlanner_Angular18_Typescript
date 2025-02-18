@@ -7,8 +7,8 @@ export class PasswordService implements IPasswordService{
         try {
             const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt(10))
             return hashedPassword
-        } catch (error:any) {
-            console.log('hashPassword error: ',error.message);
+        }  catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from hashPassword service: ', error.message) : console.log('Unknown error from hashPassword service: ', error)
             return null
         }
     }
@@ -18,8 +18,8 @@ export class PasswordService implements IPasswordService{
             const isPAsswordMatch = await bcrypt.compare(inputPassword, userPassword)
             console.log('isPAsswordMatch: ',isPAsswordMatch);
             return isPAsswordMatch
-        } catch (error:any) {
-            console.log('verifyPassword error: ',error.message);
+        }  catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from verifyPassword service: ', error.message) : console.log('Unknown error from verifyPassword service: ', error)
             return null
         }
     }

@@ -26,9 +26,6 @@ app.use(cors({
 }))
 app.use(logger)
 
-app.use(express.static(path.join(__dirname, './public')));
-
-
 const writeStream = fs.createWriteStream(path.join(__dirname, './utils/data.log'), { flags: 'a' })
 
 // to create custom token eg: ':method'
@@ -37,12 +34,21 @@ morgan.token('host', function (req: Request, res: Response) { return req.hostnam
 
 app.use(morgan(':method :url :status [:date[clf]] - :response-time ms :host', { stream: writeStream }))
 
+// const services = [
+//     { path: '/user', target: process.env.USER_SERVICE },
+//     { path: '/service', target: process.env.SERVICES_SERVICE },
+//     { path: '/event', target: process.env.EVENT_SERVICE },
+//     { path: '/booking', target: process.env.BOOKING_SERVICE },
+//     { path: '/chat', target: process.env.CHAT_SERVICE },
+//     { path: '/', target: process.env.FRONTEND },
+// ]
+
 const services = [
-    { path: '/user', target: process.env.USER_SERVICE },
-    { path: '/service', target: process.env.SERVICES_SERVICE },
-    { path: '/event', target: process.env.EVENT_SERVICE },
-    { path: '/booking', target: process.env.BOOKING_SERVICE },
-    { path: '/chat', target: process.env.CHAT_SERVICE },
+    { path: '/api/user', target: process.env.USER_SERVICE },
+    { path: '/api/service', target: process.env.SERVICES_SERVICE },
+    { path: '/api/event', target: process.env.EVENT_SERVICE },
+    { path: '/api/booking', target: process.env.BOOKING_SERVICE },
+    { path: '/api/chat', target: process.env.CHAT_SERVICE },
     { path: '/', target: process.env.FRONTEND },
 ]
 
@@ -55,45 +61,62 @@ const createProxy = ({ path, target }: ProxyOptions) => {
 
     // if (!target) return
 
-    if (path === '/chat') {
-        app.use(path, verifyToken, createProxyMiddleware({
-            target,
-            changeOrigin: true,
-            ws: true, // Enable WebSocket proxying
-            cookieDomainRewrite: 'localhost'
-        }))
-    } else {
-        app.use(path,
-            path === '/' ?
-                createProxyMiddleware({
-                    target,
-                    changeOrigin: true,
-                    cookieDomainRewrite: 'localhost'
-                })
-                :
-                verifyToken, createProxyMiddleware({
-                    target,
-                    changeOrigin: true,
-                    cookieDomainRewrite: 'localhost'
-                })
-        )
-    }
-
-    // if (path === '/') {
-    //     app.use(path, createProxyMiddleware({
-    //         target,
-    //         changeOrigin: true,
-    //         cookieDomainRewrite: 'localhost'
-    //     }))
-    // } else {
+    // if (path === '/api/chat') {
     //     app.use(path, verifyToken, createProxyMiddleware({
     //         target,
     //         changeOrigin: true,
+    //         ws: true, // Enable WebSocket proxying
     //         cookieDomainRewrite: 'localhost'
     //     }))
+    // } else {
+    //     app.use(path,
+    //         path === '/' ?
+    //             createProxyMiddleware({
+    //                 target,
+    //                 changeOrigin: true,
+    //                 cookieDomainRewrite: 'localhost'
+    //             })
+    //             :
+    //             verifyToken, createProxyMiddleware({
+    //                 target,
+    //                 changeOrigin: true,
+    //                 cookieDomainRewrite: 'localhost'
+    //             })
+    //     )
     // }
 
+    if (path === '/') {
+        app.use(path, createProxyMiddleware({
+            target,
+            changeOrigin: true,
+            cookieDomainRewrite: 'localhost'
+        }))
+    } else {
+        app.use(path, verifyToken, createProxyMiddleware({
+            target,
+            changeOrigin: true,
+            ws:path==='/api/chat' ? true : false,
+            cookieDomainRewrite: 'localhost'
+        }))
+    }
+
+    // app.use(path, verifyToken, createProxyMiddleware(
+    //     {
+    //         target,
+    //         changeOrigin: true,
+    //         ws:path==='/chat' ? true : false,
+    //         cookieDomainRewrite: 'localhost'
+    //     }
+    // ))
+
 }
+
+
+// app.use(express.static(path.join(__dirname, './public')));
+
+// app.use('*', (req:Request,res:Response)=>{
+//     res.sendFile(path.join(__dirname,'./public/browser/index.html'))
+// })
 
 services.forEach(createProxy)
 

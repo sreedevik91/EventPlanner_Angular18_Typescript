@@ -12,7 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './event-services.component.html',
   styleUrl: './event-services.component.css'
 })
-export class EventServicesComponent implements OnInit,OnDestroy {
+export default class EventServicesComponent implements OnInit,OnDestroy {
 
   destroy$: Subject<void> = new Subject<void>()
 

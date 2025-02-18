@@ -66,6 +66,33 @@ export interface IGetAvailableServicesResponse {
 
 // }
 
+export interface IServiceGrpcType {
+  id: string;
+  name: string;
+  provider: string;
+  img: string;
+  events: string[];
+  choices: IChoiceGrpc[];
+}
+
+export interface IChoiceGrpc {
+  choiceName: string;
+  choiceType: string;
+  choicePrice: number;
+  choiceImg: string;
+  id: string;
+}
+
+export interface IRequestParams {
+  eventName?: string,
+  isActive?: boolean,
+  provider?: string,
+  pageNumber?: number,
+  pageSize?: number,
+  sortBy?: string,
+  sortOrder?: string
+}
+
 export interface IResponse {
   success: boolean;
   message?: string;
@@ -92,7 +119,7 @@ export interface IRepository<T> {
 }
 
 export interface IEventRepository {
-  getAllEvents(filter: any,  options: QueryOptions): Promise<IEvent[]>;
+  getAllEvents(filter: FilterQuery<IEvent>,  options: QueryOptions): Promise<IEvent[]>;
   createEvent(service: Partial<IEvent>): Promise<IEvent>;
   getEventById(eventId: string): Promise<IEvent | null>;
   updateEvent(eventId: string, serviceData: UpdateQuery<IEvent>): Promise<IEvent | null>;
@@ -108,7 +135,7 @@ export interface IEmailService{
 export interface IEventService{
   totalEvents():Promise<IResponse>
   addEvent(eventData: Partial<IEvent>):Promise<IResponse>
-  getEvents(params: any):Promise<IResponse>
+  getEvents(params: IRequestParams):Promise<IResponse>
   deleteEvent(eventId: string):Promise<IResponse>
   getEventById(eventId: string):Promise<IResponse>
   editEvent(eventId: string, serviceData: Partial<IEvent>):Promise<IResponse>

@@ -10,7 +10,7 @@ import { Booking } from '../../model/class/bookingClass';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormComponent } from '../../shared/components/form/form.component';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Districts } from '../../model/districtsList';
+import { Districts } from '../../model/constants/districtsList';
 import { style } from '@angular/animations';
 import { AlertService } from '../../services/alertService/alert.service';
 import { Subject, takeUntil } from 'rxjs';
@@ -22,7 +22,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './user-event-details.component.html',
   styleUrl: './user-event-details.component.css'
 })
-export class UserEventDetailsComponent implements OnInit,OnDestroy {
+export default class UserEventDetailsComponent implements OnInit,OnDestroy {
 
   destroy$:Subject<void>= new Subject<void>()
 

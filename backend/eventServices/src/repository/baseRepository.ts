@@ -4,7 +4,7 @@ import { IRepository } from "../interfaces/serviceInterfaces";
 
 export abstract class BaseRepository<T extends Document> implements IRepository<T> {
 
-    private model: Model<T>
+    protected model: Model<T>
 
     constructor(model: Model<T>) {
         this.model = model

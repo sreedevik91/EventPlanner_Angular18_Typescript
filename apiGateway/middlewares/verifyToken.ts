@@ -4,7 +4,7 @@ import { config } from 'dotenv'
 import { Request, Response, NextFunction } from 'express'
 import { match } from 'path-to-regexp'
 import { getUserByIdGrpcGateway } from '../grpc/grpcUserGatewayClient'
-
+import redisClient from "../../backend/redis/redisClient"
 
 config()
 
@@ -40,7 +40,7 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
         return publicRoutes.some(route => {
             let matchValue = match(route, { decode: decodeURIComponent })
             console.log(`Matching "${urlPath}" with "${route}"`);
-            const result= matchValue(urlPath)
+            const result = matchValue(urlPath)
             console.log('Match Result:', result);
             return result !== false;
         })
@@ -54,20 +54,30 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
 
         console.log('cookie token: ', token);
 
-
         if (!token) {
             res.status(401).json({ success: false, message: 'Unauthorized: Token Missing' })
             return
         }
+        
         try {
+
+            // Check blacklist first
+            const isBlacklisted = await redisClient.get(`blacklist:${token}`);
+            if (isBlacklisted) {
+                console.log('Token blocklisted');
+                res.status(401).json({ success: false, message: 'Token revoked' });
+                return
+            }
+
+             // Verify JWT
             const decoded = <JwtPayload>jwt.verify(token, process.env.JWT_ACCESS_SECRET!)
             console.log('decoded token: ', decoded);
 
             const userId = decoded.id
 
-            const user=await getUserByIdGrpcGateway(userId)
+            const user = await getUserByIdGrpcGateway(userId)
             console.log('user from gateway: ', user);
-            
+
 
             if (!user.isActive) {
                 res.status(403).json({ success: false, message: 'Account is blocked' })

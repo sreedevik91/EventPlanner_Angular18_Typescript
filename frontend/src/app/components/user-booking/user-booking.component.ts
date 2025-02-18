@@ -15,11 +15,13 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './user-booking.component.html',
   styleUrl: './user-booking.component.css'
 })
-export class UserBookingComponent implements OnInit,OnDestroy {
+export class UserBookingComponent implements OnInit, OnDestroy {
 
-  destroy$:Subject<void>=new Subject<void>()
+  destroy$: Subject<void> = new Subject<void>()
 
   bookingsList = signal<IBooking[]>([])
+
+  totalBooking: number = 0
 
   userService = inject(UserSrerviceService)
   alertService = inject(AlertService)
@@ -38,7 +40,6 @@ export class UserBookingComponent implements OnInit,OnDestroy {
     this.bookingService.getBookingsByUserId(userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
-
           this.bookingsList.set(res.body?.data)
           console.log(this.bookingsList);
 
@@ -60,8 +61,11 @@ export class UserBookingComponent implements OnInit,OnDestroy {
         next: (res: HttpResponse<IResponse>) => {
           if (res.status === HttpStatusCodes.SUCCESS) {
             console.log(res.body);
-            this.getBookingsByUser(this.userId)
-
+            // this.getBookingsByUser(this.userId)
+            this.bookingsList.update(bookings =>
+              bookings.filter(booking => booking._id !== bookingId)
+            )
+            this.totalBooking -= 1
           } else {
             console.log(res.body?.message);
             this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
@@ -81,8 +85,20 @@ export class UserBookingComponent implements OnInit,OnDestroy {
         next: (res: HttpResponse<IResponse>) => {
           if (res.status === HttpStatusCodes.SUCCESS) {
             console.log(res.body);
-            this.getBookingsByUser(this.userId)
-
+            // this.getBookingsByUser(this.userId)
+            this.bookingsList.update(bookings =>
+              // flatMap - Handles both updating services and potential booking removal
+              bookings.flatMap(booking=>{
+                // First filter the services
+                let filteredService= booking.services.filter(service=>service._id!==id)
+                // Check if any services remain
+                if(filteredService.length>0){
+                   // Return updated booking with filtered services
+                  return {...booking,services:filteredService}
+                }
+                // Return empty array to remove the booking completely
+                return []
+              }))
           } else {
             console.log(res.body?.message);
             this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')

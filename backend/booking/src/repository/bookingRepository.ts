@@ -10,11 +10,13 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
     }
 
     async getTotalBookings(): Promise<number> {
-        return await Booking.find().countDocuments()
+        // return await Booking.find().countDocuments()
+        return await this.model.find().countDocuments()
     }
 
     async getBookingByUserId(id: string):Promise<IBooking[]> {
-        let booking =await Booking.find({userId:id})
+        // let booking =await Booking.find({userId:id})
+        let booking =await this.getAllBooking({userId:id})
         return booking
     } 
 

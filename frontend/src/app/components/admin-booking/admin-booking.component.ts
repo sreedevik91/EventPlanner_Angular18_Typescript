@@ -140,7 +140,10 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          this.getAllBookings(this.searchParams)
+          // this.getAllBookings(this.searchParams)
+          this.bookings.update(bookings=>
+            bookings.map(booking=>booking._id===id ? {...booking,isConfirmed:true}:booking)
+          )
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service approved successfully')
         } else {
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : this.errMessage)
@@ -161,7 +164,11 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service deleted successfully')
-          this.getAllBookings(this.searchParams)
+          // this.getAllBookings(this.searchParams)
+          this.bookings.update(bookings =>
+            bookings.filter(booking => booking._id !== id)
+          )
+          this.totalBookings -= 1
         } else {
           console.log(res.body?.message);
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : this.errMessage)

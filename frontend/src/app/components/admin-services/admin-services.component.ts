@@ -145,7 +145,12 @@ export class AdminServicesComponent implements OnDestroy{
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          this.getAllServices(this.searchParams)
+          // this.getAllServices(this.searchParams)
+          this.services.update(services =>
+            services.map(service =>
+              service._id === id ? { ...service, isApproved: !service.isApproved } : service
+            )
+          )
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service approved successfully')
         } else {
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : this.errMessage)
@@ -167,7 +172,11 @@ export class AdminServicesComponent implements OnDestroy{
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service deleted successfully')
-          this.getAllServices(this.searchParams)
+          // this.getAllServices(this.searchParams)
+          this.services.update(services =>
+            services.filter(service => service._id !== id)
+          )
+          this.totalServices-=1
         } else {
           console.log(res.body?.message);
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : this.errMessage)

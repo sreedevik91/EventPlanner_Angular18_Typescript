@@ -4,7 +4,7 @@ import { IRepository } from "../interfaces/bookingInterfaces";
 
 export abstract class BaseRepository<T extends Document> implements IRepository<T>{
 
-    private model: Model<T>
+    protected model: Model<T> // 'protected' will make this property available for the child classes, if private is used it would be available only for this class
 
     constructor(model: Model<T>) {
         this.model = model
@@ -25,7 +25,7 @@ export abstract class BaseRepository<T extends Document> implements IRepository<
     }
 
     async updateBooking(bookingId:string,data:UpdateQuery<T>):Promise<T | null>{
-        const updateQuery:any={}
+        const updateQuery:UpdateQuery<T>={}
         if(data.$push){
             updateQuery.$push=data.$push
         }

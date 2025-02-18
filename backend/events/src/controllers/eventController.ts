@@ -8,11 +8,11 @@ import cloudinary from "../utils/cloudinary";
 import { ResponseHandler } from "../middlewares/responseHandler";
 
 
-export class EventController implements IEventController{
+export class EventController implements IEventController {
 
-    constructor(private eventServices:IEventService){}
+    constructor(private eventServices: IEventService) { }
 
-    async getTotalEvents(req: Request, res: Response, next:NextFunction) {
+    async getTotalEvents(req: Request, res: Response, next: NextFunction) {
         try {
             const eventsCount = await this.eventServices.totalEvents()
             console.log('getTotalServices controller response: ', eventsCount);
@@ -24,14 +24,14 @@ export class EventController implements IEventController{
 
             // eventsCount?.success ? res.status(200).json(eventsCount) : res.status(400).json(eventsCount)
 
-            eventsCount?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,eventsCount) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,eventsCount)
+            eventsCount?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, eventsCount) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, eventsCount)
 
 
-        } catch (error: any) {
-            console.log('Error from getTotalServices controller: ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getTotalEvents controller: ', error.message) : console.log('Unknown error from getTotalEvents controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
 
         }
 
@@ -45,8 +45,8 @@ export class EventController implements IEventController{
 
             console.log('new service images to register: ', req.file);
             const { name, services } = req.body
-            const file: any = req.file
-            let imgName = file? file.filename : ''
+            const file: Express.Multer.File | undefined = req.file
+            let imgName = file ? file.filename : ''
             let imgPath = file ? file.path : ''
             let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
             let img = cloudinaryImgData.url
@@ -67,18 +67,18 @@ export class EventController implements IEventController{
             // }
             // res.status(201).json(newEvent) 
 
-            newEvent?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.CREATED,newEvent) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,newEvent)
+            newEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.CREATED, newEvent) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newEvent)
 
-        } catch (error: any) {
-            console.log('Error from createService controller: ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from createEvent controller: ', error.message) : console.log('Unknown error from createEvent controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
         }
 
     }
 
-    async getAllEvents(req: Request, res: Response, next:NextFunction) {
+    async getAllEvents(req: Request, res: Response, next: NextFunction) {
 
         try {
             let events = await this.eventServices.getEvents(req.query)
@@ -90,20 +90,20 @@ export class EventController implements IEventController{
 
             // events?.success ? res.status(200).json(events) : res.status(400).json(events)
 
-            events?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,events) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,events)
+            events?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, events) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, events)
 
 
-        } catch (error: any) {
-            console.log('Error from getAllServices : ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getAllEvents controller: ', error.message) : console.log('Unknown error from getAllEvents controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
 
         }
 
     }
 
-    async deleteEvent(req: Request, res: Response, next:NextFunction) {
+    async deleteEvent(req: Request, res: Response, next: NextFunction) {
 
         try {
             let deleteEvent = await this.eventServices.deleteEvent(req.params.id)
@@ -115,19 +115,19 @@ export class EventController implements IEventController{
 
             // deleteEvent?.success ? res.status(200).json(deleteEvent) : res.status(400).json(deleteEvent)
 
-            deleteEvent?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,deleteEvent) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,deleteEvent)
-            
-        } catch (error: any) {
-            console.log('Error from deleteEvent : ', error.message);
+            deleteEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteEvent) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, deleteEvent)
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from deleteEvent controller: ', error.message) : console.log('Unknown error from deleteEvent controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
 
         }
 
     }
 
-    async getEventById(req: Request, res: Response, next:NextFunction) {
+    async getEventById(req: Request, res: Response, next: NextFunction) {
 
         try {
             let event = await this.eventServices.getEventById(req.params.id)
@@ -139,34 +139,34 @@ export class EventController implements IEventController{
 
             // event?.success ? res.status(200).json(event) : res.status(400).json(event)
 
-            event?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,event) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,event)
+            event?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, event) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, event)
 
-            
-        } catch (error: any) {
-            console.log('Error from getEventById : ', error.message);
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getEventById controller: ', error.message) : console.log('Unknown error from getEventById controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
 
         }
 
     }
 
-    async editEvent(req: Request, res: Response, next:NextFunction) {
+    async editEvent(req: Request, res: Response, next: NextFunction) {
 
         try {
             const { id } = req.params
             // const { data } = req.body
             console.log('event details to update: ', id, req.body);
 
-            const { name, img, services} = req.body
+            const { name, img, services } = req.body
 
-            const file: any = req.file
-            let imgName = file? file.filename : ''
+            const file: Express.Multer.File | undefined  = req.file
+            let imgName = file ? file.filename : ''
             let imgPath = file ? file.path : ''
             let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
-            let imgNew = cloudinaryImgData.url ||  img
-            
+            let imgNew = cloudinaryImgData.url || img
+
             // let choicesWithImg = JSON.parse(choices).map((choice: any, index: number) => {
             //     return {
             //         ...choice,
@@ -189,19 +189,19 @@ export class EventController implements IEventController{
 
             // updatedEvent?.success ? res.status(200).json(updatedEvent) : res.status(400).json(updatedEvent)
 
-            updatedEvent?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,updatedEvent) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,updatedEvent)
+            updatedEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, updatedEvent) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, updatedEvent)
 
-        } catch (error: any) {
-            console.log('Error from edit service : ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from editEvent controller: ', error.message) : console.log('Unknown error from editEvent controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
 
         }
 
     }
 
-    async editStatus(req: Request, res: Response, next:NextFunction) {
+    async editStatus(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.body
             // console.log('id to edit user',id);
@@ -212,21 +212,21 @@ export class EventController implements IEventController{
             //     return next(new AppError(newStatusResponse?.message || 'Some error occured while processing the data', 400))
             // }
             // res.status(200).json(newStatusResponse) 
-            
-            // newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
-           
-            newStatusResponse?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,newStatusResponse) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,newStatusResponse)
 
-        } catch (error: any) {
-            console.log('Error from edit status : ', error.message);
+            // newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
+
+            newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newStatusResponse)
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from editStatus controller: ', error.message) : console.log('Unknown error from editStatus controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
 
         }
     }
 
-    async getEventServiceByName(req: Request, res: Response, next:NextFunction) {
+    async getEventServiceByName(req: Request, res: Response, next: NextFunction) {
         try {
             const { name } = req.params
             console.log('event name to get service', req.params.name);
@@ -239,19 +239,20 @@ export class EventController implements IEventController{
 
             // getServiceByName?.success ? res.status(200).json(getServiceByName) : res.status(400).json(getServiceByName)
 
-            getServiceByName?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,getServiceByName) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,getServiceByName)
+            getServiceByName?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, getServiceByName) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, getServiceByName)
 
 
-        } catch (error: any) {
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getEventServiceByName controller: ', error.message) : console.log('Unknown error from getEventServiceByName controller: ', error)
             // console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message || 'Internal server error',500))
-            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
 
         }
     }
 
-    async getEventsByName(req: Request, res: Response, next:NextFunction){
+    async getEventsByName(req: Request, res: Response, next: NextFunction) {
         try {
             const { name } = req.params
             console.log('event name to get all events: ', req.params.name);
@@ -264,14 +265,15 @@ export class EventController implements IEventController{
 
             // getEventsByName?.success ? res.status(200).json(getEventsByName) : res.status(400).json(getServiceByName)
 
-            getEventsByName?.success ? ResponseHandler.successResponse(res,HttpStatusCodes.OK,getEventsByName) : ResponseHandler.errorResponse(res,HttpStatusCodes.BAD_REQUEST,getEventsByName)
+            getEventsByName?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, getEventsByName) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, getEventsByName)
 
 
-        } catch (error: any) {
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getEventsByName controller: ', error.message) : console.log('Unknown error from getEventsByName controller: ', error)
             // console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
-            next(new AppError(error.message || 'Internal server error',500))
-            ResponseHandler.errorResponse(res,HttpStatusCodes.INTERNAL_SERVER_ERROR,{success:false, message:'Something went wrong.'})
+            // next(new AppError(error.message || 'Internal server error',500))
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
 
         }
     }

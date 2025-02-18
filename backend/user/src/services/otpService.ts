@@ -44,9 +44,9 @@ export class OtpService implements IOtpService {
 
             console.log('OTP sent to email');
             return true
-        } catch (error: any) {
-            console.log('Error from send otp: ', error.message);
-            return false
+        }  catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from sendOtp service: ', error.message) : console.log('Unknown error from sendOtp service: ', error)
+            return null
         }
 
     }
@@ -71,9 +71,9 @@ export class OtpService implements IOtpService {
                 return false
             }
 
-        } catch (error: any) {
-            console.log('Error from verifyOtp: ', error.message);
-            return false
+        }  catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from verifyOtp service: ', error.message) : console.log('Unknown error from verifyOtp service: ', error)
+            return null
         }
 
     }

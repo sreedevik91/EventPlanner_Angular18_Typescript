@@ -4,7 +4,7 @@ import { IRepository } from "../interfaces/eventInterfaces";
 
 export abstract class BaseRepository<T extends Document> implements IRepository<T>{
 
-    private model: Model<T>
+    protected model: Model<T>
 
     constructor(model: Model<T>) {
         this.model = model
@@ -25,12 +25,12 @@ export abstract class BaseRepository<T extends Document> implements IRepository<
     }
 
     async updateEvent(id:string,data:UpdateQuery<T>):Promise<T | null>{
-        const updateQuery:any={}
+        const updateQuery:UpdateQuery<T>={}
         if (data.$push){
             updateQuery.$push=data.$push
         }
         if(data.$set){
-            updateQuery.$push=data.$set
+            updateQuery.$set=data.$set
         }
         // return await this.model.findOneAndUpdate({_id:id},{$set:data},{new:true})
         return await this.model.findOneAndUpdate({_id:id},updateQuery,{new:true})

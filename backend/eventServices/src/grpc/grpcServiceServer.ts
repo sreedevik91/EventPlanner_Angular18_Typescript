@@ -16,7 +16,7 @@ const serviceRepository:IServiceRepository=new ServiceRepository()
 
 async function GetAvailableServices(call: any, callback: any) {
     try {
-        const services: IServiceDb[] = await serviceRepository.getAllServiceByEventName(call.request.serviceName)
+        const services: IService[] = await serviceRepository.getAllServiceByEventName(call.request.serviceName)
 
         if (services) {
             callback(null, {serviceData:services});
@@ -36,7 +36,7 @@ async function GetAvailableServices(call: any, callback: any) {
 
 async function GetAvailableServicesByProvider(call: any, callback: any) {
     try {
-        const services: IServiceDb[] = await serviceRepository.getAllServiceByProvider(call.request.providerId)
+        const services: IService[] = await serviceRepository.getAllServiceByProvider(call.request.providerId)
 
         if (services) {
             callback(null, {serviceData:services});
