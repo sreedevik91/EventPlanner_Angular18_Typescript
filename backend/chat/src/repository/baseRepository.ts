@@ -3,7 +3,9 @@ import { IRepository } from "../interfaces/chatInterfaces";
 
 export default class BaseRepository<T extends Document> implements IRepository<T>{
 
-    private model: Model<T>
+    // private model: Model<T>
+
+    protected model: Model<T>
 
     constructor(model: Model<T>) {
         this.model = model
@@ -24,7 +26,7 @@ export default class BaseRepository<T extends Document> implements IRepository<T
     }
 
     async updateChat(chatId:string,data:UpdateQuery<T>):Promise<T | null>{
-        const updateQuery:any={}
+        const updateQuery:UpdateQuery<T>={}
         if(data.$push){
             updateQuery.$push=data.$push
         }

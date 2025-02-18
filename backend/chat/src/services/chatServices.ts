@@ -7,7 +7,7 @@ config()
 
 export class ChatServices implements IChatService {
 
-    constructor(private chatRepository:IChatRepository ){}
+    constructor(private chatRepository: IChatRepository) { }
 
     async getChatsByUserId(userId: string) {
         try {
@@ -30,8 +30,8 @@ export class ChatServices implements IChatService {
             } else {
                 return { success: false, message: 'Could not get booking, Something went wrong' }
             }
-        } catch (error: any) {
-            console.log('Error from getChatsByUserId service: ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getChatsByUserId service: ', error.message ) : console.log('Unknown error from getChatsByUserId service: ', error );
             return { success: false, message: 'Something went wrong' }
 
         }
@@ -57,32 +57,32 @@ export class ChatServices implements IChatService {
                 }
             }
 
-        } catch (error: any) {
-            console.log('Error from saveChats service: ', error.message);
+        } catch (error: unknown) {
+             error instanceof Error ? console.log('Error message from saveChats service: ', error.message ) : console.log('Unknown error from saveChats service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }
 
     }
 
-    async uploadToCloudinary(img: string,name:string,type:any) {
+    async uploadToCloudinary(img: string, name: string, type: "image" | "video" | "raw" | "auto" | undefined) {
 
         try {
             // const result= await cloudinary.uploader.upload(img,{public_id:name, resource_type:type})
             // console.log('cloudinary img/video upload result: ', result);
 
-            const uploadImgVideo=await getImgVideoUrl(img,{public_id:name, resource_type:type})
+            const uploadImgVideo = await getImgVideoUrl(img, { public_id: name, resource_type: type })
             console.log('cloudinary img/video upload result: ', uploadImgVideo);
             return uploadImgVideo
 
-        } catch (error: any) {
-            console.log('cloudinary img/video upload error: ', error.message);
+        } catch (error: unknown) {
+             error instanceof Error ? console.log('Error message from uploadToCloudinary service: ', error.message ) : console.log('Unknown error from uploadToCloudinary service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }
     }
-    
-    async uploadAudioToCloudinary(audio: string,name:string) {
+
+    async uploadAudioToCloudinary(audio: string, name: string) {
 
         try {
             // to process audio file resource_type should be mentioned as 'video'
@@ -91,12 +91,12 @@ export class ChatServices implements IChatService {
             // console.log('cloudinary audio upload result: ', result);
             // return { success: true, data: {imgUrl:result?.url, type:'audio'} }
 
-            const uploadAudio=await getAudioUrl(audio,{public_id:name, resource_type:'video'})
+            const uploadAudio = await getAudioUrl(audio, { public_id: name, resource_type: 'video' })
             console.log('cloudinary audio upload result: ', uploadAudio);
             return uploadAudio
 
-        } catch (error: any) {
-            console.log('cloudinary audio upload error: ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from uploadAudioToCloudinary service: ', error.message ) : console.log('Unknown error from uploadAudioToCloudinary service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }

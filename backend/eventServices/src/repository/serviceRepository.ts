@@ -1,5 +1,5 @@
 import { DeleteResult } from "mongoose";
-import { IService, IServiceDb, IServiceRepository } from "../interfaces/serviceInterfaces";
+import { IAggregateResponse, IService, IServiceDb, IServiceRepository } from "../interfaces/serviceInterfaces";
 import Service from "../models/serviceSchema";
 import { BaseRepository } from "./baseRepository";
 
@@ -32,27 +32,28 @@ export class ServiceRepository extends BaseRepository<IService> implements IServ
     }
 
     async getTotalServices(): Promise<number> {
-        return await Service.find().countDocuments()
+        return await this.model.find().countDocuments()
     }
 
     async getServiceByProviderOld(providerId: string): Promise<IService | null> {
-        return await Service.findOne({ provider: providerId })
+        return await this.model.findOne({ provider: providerId })
     }
 
-    async getAllServiceByEventName(name: string): Promise<any[]> {
-        return await Service.find({ events: { $in: [name] } })
+    async getAllServiceByEventName(name: string): Promise<IService[]> {
+        // return await Service.find({ events: { $in: [name] } })
+        return await this.getAllServices({ events: { $in: [name] } })
     }
 
     async getServiceByProvider(name: string, providerId: string): Promise<IService | null> {
-        return await Service.findOne({ name, provider: providerId })
+        return await this.model.findOne({ name, provider: providerId })
     }
 
-    async getAllServiceByProvider(id: string): Promise<any[]> {
-        return await Service.find({ provider: id })
+    async getAllServiceByProvider(id: string): Promise<IService[]> {
+        return await this.getAllServices({ provider: id })
     }
 
-    async getServiceByName(name: string): Promise<any[]> {
-        let service = await Service.aggregate([
+    async getServiceByName(name: string): Promise<IAggregateResponse[]> {
+        let service = await this.model.aggregate([
             { $match: { name: name } }, // check with isApproved:true,isActive:true as well after testing
             { $unwind: '$choices' },
             {

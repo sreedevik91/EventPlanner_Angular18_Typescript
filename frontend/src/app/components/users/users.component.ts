@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnChanges, OnDestroy, OnInit, signal, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, OnChanges, OnDestroy, OnInit, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { UserSearchFilter, User } from '../../model/class/userClass';
@@ -17,11 +17,11 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './users.component.html',
   styleUrl: './users.component.css'
 })
-export class UsersComponent implements OnInit,OnDestroy {
+export default class UsersComponent implements OnInit, OnDestroy {
 
-  destroy$:Subject<void>=new Subject<void>()
+  destroy$: Subject<void> = new Subject<void>()
 
-  users$: any = []
+  // users$: any = []
   users = signal<IUser[]>([])
 
   userFormObj: User = new User()
@@ -31,7 +31,10 @@ export class UsersComponent implements OnInit,OnDestroy {
   isAddUser: boolean = false
 
   searchParams = new HttpParams()
-  totalUsers: number = 0
+  totalUsers:number=0
+  // totalUsers= signal<number>(0)
+  // totalUsers= computed(()=>this.users().length)
+
 
   @ViewChild('modal') formModal!: ElementRef
 
@@ -55,6 +58,7 @@ export class UsersComponent implements OnInit,OnDestroy {
     //   .set('pageSize', this.searchFilterFormObj.pageSize)
     // this.getUsers(this.searchParams)
     this.onRefresh()
+    console.log('total users count beginning: ', this.totalUsers);
   }
 
   initialiseUserForm() {
@@ -129,6 +133,7 @@ export class UsersComponent implements OnInit,OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalUsers = res.body?.data
+          // this.totalUsers.set( res.body?.data)
           console.log('total users count: ', this.totalUsers);
 
         } else {
@@ -144,11 +149,13 @@ export class UsersComponent implements OnInit,OnDestroy {
   }
 
   getTotalPages() {
+    console.log('total users count from getTotalPages: ', this.totalUsers);
     let totalPages = Math.ceil(this.totalUsers / Number(this.searchFilterFormObj.pageSize))
     return Array(totalPages).fill(0).map((e, i) => i + 1)
   }
 
   getLastpage() {
+    console.log('total users count from getLastpage: ', this.totalUsers);
     return Math.ceil(this.totalUsers / Number(this.searchFilterFormObj.pageSize))
   }
 
@@ -165,7 +172,7 @@ export class UsersComponent implements OnInit,OnDestroy {
     this.userServices.getAllUsers(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
-          this.users$ = res.body?.data
+          // this.users$ = res.body?.data
           this.users.set(res.body?.data)
         } else {
           console.log('could not get users');
@@ -221,7 +228,8 @@ export class UsersComponent implements OnInit,OnDestroy {
           console.log('add user response: ', res.body?.data);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
           this.getUsers(this.searchParams)
-          this.getTotalUsers()
+          this.totalUsers+=1
+          // this.getTotalUsers()
           this.hideModal()
         } else {
           console.log('could not get users', res.body?.message);
@@ -260,7 +268,12 @@ export class UsersComponent implements OnInit,OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          this.getUsers(this.searchParams)
+          // this.getUsers(this.searchParams)
+          this.users.update(users =>
+            users.map(user =>
+              user._id === userId ? { ...user, isActive: !user.isActive } : user
+            )
+          )
 
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
 
@@ -283,8 +296,12 @@ export class UsersComponent implements OnInit,OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          this.getUsers(this.searchParams)
-
+          // this.getUsers(this.searchParams)
+          this.users.update(users =>
+            users.map(user =>
+              user._id === userId ? { ...user, isUserVerified: !user.isUserVerified } : user
+            )
+          )
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
 
         } else {

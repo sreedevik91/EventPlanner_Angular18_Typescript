@@ -12,7 +12,7 @@ import { Subject } from 'rxjs';
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css'
 })
-export class BookingComponent implements OnDestroy{
+export default class BookingComponent implements OnDestroy{
 
   destroy$:Subject<void>= new Subject<void>()
 

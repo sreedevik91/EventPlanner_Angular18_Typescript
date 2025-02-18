@@ -21,7 +21,7 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class AdminEventsComponent implements OnInit, OnDestroy {
 
-  destroy$:Subject<void>= new Subject<void>()
+  destroy$: Subject<void> = new Subject<void>()
 
   eventFromObj: Events = new Events()
   searchFilterFormObj: EventSearchFilter = new EventSearchFilter()
@@ -54,7 +54,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
   imgUrl: string | ArrayBuffer | null = ''
 
   constructor() { }
-  
+
   ngOnInit(): void {
     this.initialiseEventForm()
     this.getTotalEvents()
@@ -182,6 +182,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
         if (res.status === HttpStatusCodes.SUCCESS) {
           // this.totalEvents=res.body.data.length
           this.events.set(res.body?.data)
+          console.log('events response: ', res.body);
           console.log('events: ', this.events());
         } else {
           console.log('could not get users');
@@ -308,8 +309,10 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          this.getAllEvents(this.searchParams)
-
+          // this.getAllEvents(this.searchParams)
+          this.events.update(events =>
+            events.map(event => event._id === id ? { ...event, isActive: !event.isActive } : event)
+          )
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : '')
 
         } else {
@@ -381,7 +384,8 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.CREATED) {
           this.hideModal()
-          this.getTotalEvents()
+          // this.getTotalEvents()
+          this.totalEvents+=1
           this.getAllEvents(this.searchParams)
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : '')
         } else {
@@ -432,7 +436,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
           console.log('update event response: ', res.body);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || 'Service updated')
           this.hideModal()
-          this.getTotalEvents()
+          // this.getTotalEvents()
           this.getAllEvents(this.searchParams)
         } else {
           console.log('could not get event', res.body?.message || '');
@@ -452,8 +456,12 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
-          this.getTotalEvents()
-          this.getAllEvents(this.searchParams)
+          // this.getTotalEvents()
+          // this.getAllEvents(this.searchParams)
+          this.events.update(events =>
+            events.filter(event => event._id !== id)
+          )
+          this.totalEvents-=1
         } else {
           console.log(res.body?.message);
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')
@@ -495,7 +503,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
     this.initialiseEventForm()
     this.isAddEvent = true
     this.eventServicesList.set([])
-    this.eventImgInput.nativeElement.value=''
+    this.eventImgInput.nativeElement.value = ''
     console.log('on closing the model eventForm value: ', this.eventForm.value);
 
   }

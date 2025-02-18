@@ -14,7 +14,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './events.component.html',
   styleUrl: './events.component.css'
 })
-export class EventsComponent implements OnInit,OnDestroy {
+export default class EventsComponent implements OnInit,OnDestroy {
 
   destroy$: Subject<void> = new Subject<void>()
 

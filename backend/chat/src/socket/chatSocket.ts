@@ -3,10 +3,11 @@ import { Server, Socket } from "socket.io";
 import { ChatServices } from "../services/chatServices";
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
 import { ChatRepository } from "../repository/chatRepository";
+import { IChat } from "../interfaces/chatInterfaces";
 
-const rooms: any = {}
-const activeUsers: any = new Set()
-let messages:any[]=[]
+const rooms: Record<string,string> = {}
+const activeUsers:Set<string> = new Set()
+let messages:IChat[]=[]
 
 const chatRepository=new ChatRepository()
 const chatServices=new ChatServices(chatRepository)

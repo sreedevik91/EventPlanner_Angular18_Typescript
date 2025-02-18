@@ -17,7 +17,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './reset.component.html',
   styleUrl: './reset.component.css'
 })
-export class ResetComponent implements OnInit, OnDestroy {
+export default class ResetComponent implements OnInit, OnDestroy {
 
   // class: string = ''
   // message: string = ''

@@ -15,7 +15,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './submit-otp.component.html',
   styleUrl: './submit-otp.component.css'
 })
-export class SubmitOtpComponent implements OnInit,OnDestroy {
+export default class SubmitOtpComponent implements OnInit,OnDestroy {
 
   destroy$:Subject<void>= new Subject<void>()
 

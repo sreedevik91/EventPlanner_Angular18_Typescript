@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response  } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Date, DeleteResult, Document, FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
 
 export interface IBooking extends Document {
@@ -48,6 +48,52 @@ export interface IEvent {
 
 export interface IBookingDb extends IBooking, Document {
   _id: string;
+}
+
+export interface IService extends Document {
+  name: string;
+  img: string;
+  events: string[];
+  provider: string;
+  providerName?: string;
+  choices: IChoice[];
+  isApproved: boolean;
+  isActive: boolean;
+}
+
+export interface IServiceGrpcType {
+  id: string;
+  name: string;
+  provider: string;
+  img: string;
+  events: string[];
+  choices: IChoice[];
+}
+
+export interface IServiceType {
+  service:string;
+  providerId:string;
+  name:string;
+  price:number
+}
+
+
+export interface IChoice {
+  choiceName: string;
+  choiceType: string;
+  choicePrice: number;
+  choiceImg: string;
+  id: string;
+}
+
+export interface IRequestParams {
+  userName?: string,
+  isApproved?: boolean,
+  provider?: string,
+  pageNumber?: number,
+  pageSize?: number,
+  sortBy?: string,
+  sortOrder?: string
 }
 
 export interface IGetAvailableServicesResponse {
@@ -104,54 +150,54 @@ export enum HttpStatusCodes {
   INTERNAL_SERVER_ERROR = 500
 }
 
-export interface IRepository<T>{
-  createBooking(bookingData:Partial<T>):Promise<T>
-  getBookingById(bookingId:string):Promise<T | null>
-  getAllBooking(query:FilterQuery<T>, options:QueryOptions):Promise<T[]>
-  updateBooking(bookingId:string,data:UpdateQuery<T>):Promise<T | null>
-  deleteBooking(bookingId:string):Promise<DeleteResult | null>
+export interface IRepository<T> {
+  createBooking(bookingData: Partial<T>): Promise<T>
+  getBookingById(bookingId: string): Promise<T | null>
+  getAllBooking(query: FilterQuery<T>, options: QueryOptions): Promise<T[]>
+  updateBooking(bookingId: string, data: UpdateQuery<T>): Promise<T | null>
+  deleteBooking(bookingId: string): Promise<DeleteResult | null>
 }
 
-export interface IBookingRepository{
-  createBooking(bookingData:Partial<IBooking>):Promise<IBooking>
-  getBookingById(bookingId:string):Promise<IBooking | null>
-  getAllBooking(query:FilterQuery<IBooking>, options:QueryOptions):Promise<IBooking[]>
-  updateBooking(bookingId:string,data:UpdateQuery<IBooking>):Promise<IBooking | null>
-  deleteBooking(bookingId:string):Promise<DeleteResult | null>
+export interface IBookingRepository {
+  createBooking(bookingData: Partial<IBooking>): Promise<IBooking>
+  getBookingById(bookingId: string): Promise<IBooking | null>
+  getAllBooking(query: FilterQuery<IBooking>, options: QueryOptions): Promise<IBooking[]>
+  updateBooking(bookingId: string, data: UpdateQuery<IBooking>): Promise<IBooking | null>
+  deleteBooking(bookingId: string): Promise<DeleteResult | null>
   getTotalBookings(): Promise<number>
-  getBookingByUserId(id: string):Promise<IBooking[]>
+  getBookingByUserId(id: string): Promise<IBooking[]>
 }
 
-export interface IEmailService{
-  sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> 
+export interface IEmailService {
+  sendMail(name: string, email: string, content: string, subject: string): Promise<boolean>
 }
 
-export interface IBookingService{
-  totalBookings():Promise<IResponse>
-  addBooking(bookingData: Partial<IBooking>):Promise<IResponse>
-  getBookings(params: any):Promise<IResponse>
-  deleteBooking(id: string):Promise<IResponse>
-  deleteBookedServices(bookingId: string, serviceName: string, serviceId: string):Promise<IResponse> 
-  getBookingById(id: string):Promise<IResponse>
-  getBookingByUserId(id: string):Promise<IResponse>
-  editBooking(id: string, serviceData: Partial<IBooking>):Promise<IResponse>
-  editStatus(id: string):Promise<IResponse>
-  getService(name: string, providerId: string):Promise<IResponse>
-  getAllEvents():Promise<IResponse>
-  getServiceByEvent(name: string):Promise<IResponse>
+export interface IBookingService {
+  totalBookings(): Promise<IResponse>
+  addBooking(bookingData: Partial<IBooking>): Promise<IResponse>
+  getBookings(params: any): Promise<IResponse>
+  deleteBooking(id: string): Promise<IResponse>
+  deleteBookedServices(bookingId: string, serviceName: string, serviceId: string): Promise<IResponse>
+  getBookingById(id: string): Promise<IResponse>
+  getBookingByUserId(id: string): Promise<IResponse>
+  editBooking(id: string, serviceData: Partial<IBooking>): Promise<IResponse>
+  editStatus(id: string): Promise<IResponse>
+  getService(name: string, providerId: string): Promise<IResponse>
+  getAllEvents(): Promise<IResponse>
+  getServiceByEvent(name: string): Promise<IResponse>
 }
 
-export interface IBookingController{
-  getTotalBookings(req: Request, res: Response, next:NextFunction):Promise<void>
-  createBooking(req: Request, res: Response, next: NextFunction):Promise<void>
-  getAllBookings(req: Request, res: Response, next:NextFunction):Promise<void>
-  deleteBooking(req: Request, res: Response, next:NextFunction):Promise<void>
-  deleteBookedServices(req: Request, res: Response, next:NextFunction):Promise<void>
-  getBookingById(req: Request, res: Response, next:NextFunction):Promise<void>
-  getBookingByUserId(req: Request, res: Response, next:NextFunction):Promise<void>
-  editBooking(req: Request, res: Response, next:NextFunction):Promise<void>
-  editStatus(req: Request, res: Response, next:NextFunction):Promise<void>
-  getEventService(req: Request, res: Response, next:NextFunction):Promise<void>
-  getAllEvents(req: Request, res: Response, next:NextFunction):Promise<void>
-  getServiceByEvent(req: Request, res: Response, next:NextFunction):Promise<void>
+export interface IBookingController {
+  getTotalBookings(req: Request, res: Response, next: NextFunction): Promise<void>
+  createBooking(req: Request, res: Response, next: NextFunction): Promise<void>
+  getAllBookings(req: Request, res: Response, next: NextFunction): Promise<void>
+  deleteBooking(req: Request, res: Response, next: NextFunction): Promise<void>
+  deleteBookedServices(req: Request, res: Response, next: NextFunction): Promise<void>
+  getBookingById(req: Request, res: Response, next: NextFunction): Promise<void>
+  getBookingByUserId(req: Request, res: Response, next: NextFunction): Promise<void>
+  editBooking(req: Request, res: Response, next: NextFunction): Promise<void>
+  editStatus(req: Request, res: Response, next: NextFunction): Promise<void>
+  getEventService(req: Request, res: Response, next: NextFunction): Promise<void>
+  getAllEvents(req: Request, res: Response, next: NextFunction): Promise<void>
+  getServiceByEvent(req: Request, res: Response, next: NextFunction): Promise<void>
 }

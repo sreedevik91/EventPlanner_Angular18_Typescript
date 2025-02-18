@@ -13,7 +13,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit, OnDestroy{
+export default class DashboardComponent implements OnInit, OnDestroy{
 
   destroy$:Subject<void>=new Subject<void>()
 

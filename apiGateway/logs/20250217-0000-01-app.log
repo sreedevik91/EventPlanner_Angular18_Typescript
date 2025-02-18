@@ -1,0 +1,6 @@
+GET /login 200 [16/Feb/2025:18:23:00 +0000] - 129.769 ms localhost
+GET /styles.css 401 [16/Feb/2025:18:23:00 +0000] - 266.608 ms localhost
+GET /@vite/client 401 [16/Feb/2025:18:23:00 +0000] - 316.304 ms localhost
+GET /polyfills.js 401 [16/Feb/2025:18:23:00 +0000] - 39.503 ms localhost
+GET /main.js 401 [16/Feb/2025:18:23:00 +0000] - 67.010 ms localhost
+GET /favicon.ico 401 [16/Feb/2025:18:23:01 +0000] - 31.273 ms localhost

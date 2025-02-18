@@ -6,7 +6,7 @@ export default abstract class BaseRepository<T extends Document> implements IRep
 
     // private model: Model<T>
 
-    constructor(private model: Model<T>) {
+    constructor(protected model: Model<T>) {
         this.model = model
     }
 

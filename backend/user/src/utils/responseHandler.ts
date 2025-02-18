@@ -1,5 +1,6 @@
-import { Response } from "express";
+import { CookieOptions, Response } from "express";
 import { HttpStatusCodes, ICookie, IResponse } from "../interfaces/userInterface";
+import redisClient from "../../../redis/redisClient"
 
 export class ResponseHandler {
 
@@ -11,7 +12,7 @@ export class ResponseHandler {
             res.cookie('accessToken', accessToken, options)
         }
 
-        res.status(statusCode).json( responseData)
+        res.status(statusCode).json(responseData)
     }
 
     static errorResponse(res: Response, statusCode: number = HttpStatusCodes.INTERNAL_SERVER_ERROR, responseData: IResponse) {
@@ -25,10 +26,36 @@ export class ResponseHandler {
         res.redirect('/googleLogin/callback')
     }
 
-    static logoutResponse(res:Response,statusCode: number = HttpStatusCodes.SUCCESS, responseData: IResponse){
-        res.clearCookie('accessToken')
-        res.clearCookie('refreshToken')
-        res.status(statusCode).json( responseData )
+    static async logoutResponse(res: Response, token: string, expTime: number, statusCode: number = HttpStatusCodes.SUCCESS, responseData: IResponse) {
+
+        const options: CookieOptions = {
+            httpOnly: true,
+            // maxAge: 86400,
+            secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
+            // sameSite:'none'
+        }
+
+        try {
+            const expirationTime = expTime * 1000
+            const currentTime = Date.now()
+
+            if (expirationTime > currentTime) {
+                const ttl = expirationTime - currentTime
+                await redisClient.set(`blackList:${token}`, 'true', { PX: ttl })
+                console.log('token blacklisted in redis');
+                
+            }
+
+            res.clearCookie('accessToken', options)
+            res.clearCookie('refreshToken', options)
+            res.status(statusCode).json(responseData)
+        } catch (error) {
+            res.clearCookie('accessToken', options)
+            res.clearCookie('refreshToken', options)
+            res.status(statusCode).json(responseData)
+        }
+
+
     }
 
 }

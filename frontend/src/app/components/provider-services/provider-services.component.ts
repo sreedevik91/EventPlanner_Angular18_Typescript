@@ -8,7 +8,7 @@ import { HttpStatusCodes, ILoggedUserData, IResponse, IService } from '../../mod
 import { ServiceService } from '../../services/serviceService/service.service';
 import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
-import { Catering, Decor, EventCoverage } from '../../model/eventServicesOptions';
+import { Catering, Decor, EventCoverage } from '../../model/constants/eventServicesOptions';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { environment } from '../../../environments/environment.development';
 import { Subject, take, takeUntil } from 'rxjs';
@@ -397,8 +397,12 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          this.getAllServices(this.searchParams)
-
+          // this.getAllServices(this.searchParams)
+          this.services.update(services =>
+            services.map(service =>
+              service._id === id ? { ...service, isActive: !service.isActive } : service
+            )
+          )
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : '')
 
         } else {
@@ -454,7 +458,8 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.CREATED) {
           this.hideModal()
-          this.getTotalServices()
+          // this.getTotalServices()
+          this.totalServices+=1
           this.getAllServices(this.searchParams)
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : '')
         } else {
@@ -533,8 +538,12 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
-          this.getTotalServices()
-          this.getAllServices(this.searchParams)
+          // this.getTotalServices()
+          // this.getAllServices(this.searchParams)
+          this.services.update(services =>
+            services.filter(service => service._id !== id)
+          )
+          this.totalServices -= 1
         } else {
           console.log(res.body?.message);
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message || '')

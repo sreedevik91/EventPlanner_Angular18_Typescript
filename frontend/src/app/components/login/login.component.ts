@@ -19,7 +19,7 @@ declare const google: any;
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent implements OnDestroy{
+export default class LoginComponent implements OnDestroy{
 
   destroy$:Subject<void>= new Subject<void>()
 

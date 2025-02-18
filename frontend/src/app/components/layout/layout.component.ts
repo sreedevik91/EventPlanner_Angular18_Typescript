@@ -1,7 +1,7 @@
 import { Component, ElementRef, inject, OnDestroy, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
-import { Menus } from '../../model/menus';
+import { Menus } from '../../model/constants/menus';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -11,7 +11,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
-export class LayoutComponent implements OnDestroy{
+export default class LayoutComponent implements OnDestroy{
 
   destroy$:Subject<void>=new Subject<void>()
 

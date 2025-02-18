@@ -54,17 +54,17 @@ export class UserRepository extends BaseRepository<IUserDb> implements IUserRepo
     }
 
     async getUserByEmail(email: string): Promise<IUserDb | null> {
-        const user = await User.findOne({ email })
+        const user = await this.model.findOne({ email })
         return user
     }
 
     async getUserByUsername(username: string): Promise<IUserDb | null> {
-        const user = await User.findOne({ username })
+        const user = await this.model.findOne({ username })
         return user
     }
 
     async getTotalUsers():Promise<number>{
-        const usersCount = await User.find().countDocuments()
+        const usersCount = await this.model.find().countDocuments()
         return usersCount
     }
 

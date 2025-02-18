@@ -1,6 +1,7 @@
 import { CookieOptions } from "express";
 import { Document, DeleteResult, FilterQuery, QueryOptions } from "mongoose";
 import { Request, Response } from 'express'
+import { JwtHeader, JwtPayload } from "jsonwebtoken";
 
 export interface IUser extends Document {
     name: string;
@@ -44,6 +45,18 @@ export interface IUserDb extends IUser, Document {
 //     isVerified: boolean;
 //   }
 
+export interface IRequestParams {
+    userName?: string,
+    userStatus?:string;
+    role?:string;
+    isActive?: boolean,
+    provider?: string,
+    pageNumber?: number,
+    pageSize?: number,
+    sortBy?: string,
+    sortOrder?: string
+  }
+
 export interface IRepository<T> {
     // getAllUsers(filter:any,sort:any,limit:number,skip:number): Promise<T[]>;
     getAllUsers(query: FilterQuery<T>, options: QueryOptions): Promise<T[] | null>;
@@ -64,7 +77,7 @@ export interface IUserRepository {
     getTotalUsers(): Promise<number>
 }
 
-export interface IJwtPayload {
+export interface IJwtPayload extends JwtPayload {
     id: string;
     user: string;
     role: string;
@@ -73,15 +86,17 @@ export interface IJwtPayload {
     isActive: boolean;
     isEmailVerified: boolean;
     isUserVerified: boolean;
+    exp?:number;
 }
 
 
 export interface ICookie {
-    // payload: IJwtPayload;
+    // payload: IJwtPayload | undefined;
     // refreshToken: string | undefined;
     // accessToken: string | undefined;
-    // options: CookieOptions
+    // options: CookieOptions | undefined;
 
+    success?:boolean;
     payload: IJwtPayload;
     accessToken: string;
     refreshToken: string;
@@ -108,6 +123,10 @@ export interface IResponse {
     wrongCredentials?: boolean;
     blocked?: boolean;
     noUser?: boolean;
+    accessToken?:string;
+    refreshToken?:string
+    options?:CookieOptions,
+    payload?:IJwtPayload
 }
 
 export interface IGoogleUser {
@@ -123,8 +142,8 @@ export interface ICookieService {
 export interface ITokenService {
     getAccessToken(payload: IUserDb): Promise<string | null>
     getRefreshToken(payload: IUserDb): Promise<string | null>
-    verifyAccessToken(token: string): Promise<string | IJwtPayload | null>
-    verifyRefreshToken(token: string): Promise<string | IJwtPayload | null>
+    verifyAccessToken(token: string): Promise<IJwtPayload | null>
+    verifyRefreshToken(token: string): Promise<IJwtPayload | null>
 }
 
 export interface IEmailService {
@@ -157,6 +176,7 @@ export interface IUserService {
     getGoogleUser(email: string): Promise<IResponse>
     getUsersCount(): Promise<IResponse>
     verifyUser(userId: string): Promise<IResponse>
+    userLogout(token:string):Promise<IResponse>
 }
 
 export interface IUserController {

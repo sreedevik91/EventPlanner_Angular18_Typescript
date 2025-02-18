@@ -62,17 +62,17 @@ router.get('/events/count',(req:Request,res:Response,next:NextFunction)=>eventCo
 router.get('/events',(req:Request,res:Response,next:NextFunction)=>eventController.getAllEvents(req,res,next))
 router.get('/service/:name',(req:Request,res:Response,next:NextFunction)=>eventController.getEventServiceByName(req,res,next))
 router.get('/events/:name',(req:Request,res:Response,next:NextFunction)=>eventController.getEventsByName(req,res,next))
+router.patch('/status',(req:Request,res:Response,next:NextFunction)=>eventController.editStatus(req,res,next))
+router.post('/new',upload.single('img'),(req:Request,res:Response,next:NextFunction)=>eventController.createEvent(req,res,next))
 
 router.route('/:id')
 .get((req:Request,res:Response,next:NextFunction)=>eventController.getEventById(req,res,next))
 .patch(upload.single('img'),(req:Request,res:Response,next:NextFunction)=>eventController.editEvent(req,res,next))
 .delete((req:Request,res:Response,next:NextFunction)=>eventController.deleteEvent(req,res,next))
 
-router.post('/new',upload.single('img'),(req:Request,res:Response,next:NextFunction)=>eventController.createEvent(req,res,next))
 
-router.patch('/status',(req:Request,res:Response,next:NextFunction)=>eventController.editStatus(req,res,next))
 
-router.delete('/:id',(req:Request,res:Response,next:NextFunction)=>eventController.deleteEvent(req,res,next)) 
+// router.delete('/:id',(req:Request,res:Response,next:NextFunction)=>eventController.deleteEvent(req,res,next)) 
 
 eventRoute.use(router)
 

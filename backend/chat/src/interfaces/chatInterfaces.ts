@@ -52,7 +52,7 @@ export interface IChatRepository{
 export interface IChatService{
   getChatsByUserId(userId: string):Promise<IResponse>
   saveChats(data: IChat):Promise<IResponse>
-  uploadToCloudinary(img: string,name:string,type:any):Promise<IResponse>
+  uploadToCloudinary(img: string,name:string,type: "image" | "video" | "raw" | "auto" | undefined):Promise<IResponse>
   uploadAudioToCloudinary(audio: string,name:string):Promise<IResponse>
 }
 

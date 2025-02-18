@@ -3,15 +3,16 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import nodemailer from 'nodemailer'
 import otpGenerator from 'otp-generator'
-import { ICookieService, IEmailService, IOtpService, IPasswordService, ITokenService, IUser, IUserDb, IUserRepository, IJwtPayload, LoginData, IUserService } from '../interfaces/userInterface'
+import { ICookieService, IEmailService, IOtpService, IPasswordService, ITokenService, IUser, IUserDb, IUserRepository, IJwtPayload, LoginData, IUserService, IRequestParams } from '../interfaces/userInterface'
 // import UserRepository from '../repository/userRepository'
 import { CookieOptions } from 'express'
 // import userRepository from '../repository/userRepository'
 import { credentials } from '@grpc/grpc-js'
+import { FilterQuery, QueryOptions } from 'mongoose'
 
 dotenv.config()
 
-export class UserServices implements IUserService{
+export class UserServices implements IUserService {
 
     constructor(
         private UserRepository: IUserRepository,
@@ -26,7 +27,7 @@ export class UserServices implements IUserService{
     //     try {
     //         let token = jwt.sign(payload, secret, { expiresIn: expiresIn })
     //         return token
-    //     } catch (error: any) {
+    //     } catch (error: unknown) {
     //         console.log('Error from generate token: ', error.message);
     //     }
 
@@ -94,9 +95,9 @@ export class UserServices implements IUserService{
             <p>We have received a request to reset your password for Dream Event. Kindly click the link below to continue with reset password.</p>
             <p><a href="${process.env.EMAIL_URL}reset/${token}"> Reset Password </a></p>
            `
-           let subject = "Reset Password !"
+            let subject = "Reset Password !"
 
-            
+
             const isMailSent = await this.emailService.sendMail(user.name, user.email, content, subject)
 
             if (!isMailSent) {
@@ -142,9 +143,9 @@ export class UserServices implements IUserService{
             //     return { success: false, message: 'Invalid email. Enter your registered email' }
             // }
 
-        } catch (error: any) {
-            console.log('Error from userService sendEmail: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from sendResetPasswordEmail service: ', error.message) : console.log('Unknown error from sendResetPasswordEmail service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -176,7 +177,7 @@ export class UserServices implements IUserService{
     //         }
 
 
-    //     } catch (error: any) {
+    //     } catch (error: unknown) {
     //         console.log('Error from send otp: ', error.message);
     //     }
 
@@ -206,9 +207,9 @@ export class UserServices implements IUserService{
             //     return { success: false, message: "User not found" }
             // }
 
-        } catch (error: any) {
-            console.log('Error from resend user otp: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from resendUserOtp service: ', error.message) : console.log('Unknown error from resendUserOtp service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -260,9 +261,9 @@ export class UserServices implements IUserService{
             //     return { success: false, message: 'Something went wrong.Try again' }
             // }
 
-        } catch (error: any) {
-            console.log('Error from reset user password: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from resetUserPassword service: ', error.message) : console.log('Unknown error from resetUserPassword service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
 
@@ -271,29 +272,29 @@ export class UserServices implements IUserService{
     async register(userData: IUserDb) {
         try {
 
-            if(!userData.username){
-                return {success:false,message:'Username is required'}
+            if (!userData.username) {
+                return { success: false, message: 'Username is required' }
             }
 
             const isUser = await this.UserRepository.getUserByUsername(userData.username)
-                console.log('isUser: ', isUser);
-                if (isUser) {
-                    return { success: false, message: 'Username not available' }
-                }
-                const user = await this.UserRepository.createUser(userData)
+            console.log('isUser: ', isUser);
+            if (isUser) {
+                return { success: false, message: 'Username not available' }
+            }
+            const user = await this.UserRepository.createUser(userData)
 
-                if (!user) {
-                    return { success: false, message: 'Could not register user' }
-                }
+            if (!user) {
+                return { success: false, message: 'Could not register user' }
+            }
 
-                const isOtpSent = await this.otpService.sendOtp(user)
+            const isOtpSent = await this.otpService.sendOtp(user)
 
-                if (!isOtpSent) {
-                    return { success: false, message: 'Something went wrong.Try again' }
-                }
+            if (!isOtpSent) {
+                return { success: false, message: 'Something went wrong.Try again' }
+            }
 
-                console.log('new user saved', user);
-                return { success: true, message: 'User registered successfully', data: user }
+            console.log('new user saved', user);
+            return { success: true, message: 'User registered successfully', data: user }
 
             // if (userData.username) {
             //     const isUser = await this.UserRepository.getUserByUsername(userData.username)
@@ -318,9 +319,9 @@ export class UserServices implements IUserService{
             // }
 
 
-        } catch (error: any) {
-            console.log('Error from userService register: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from register service: ', error.message) : console.log('Unknown error from register service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -381,24 +382,24 @@ export class UserServices implements IUserService{
 
                 console.log('user loginData, username, password: ', username, password);
 
-                if(!username || !password){
+                if (!username || !password) {
                     return { success: false, message: 'Username and password required.' }
                 }
 
                 const user = await this.UserRepository.getUserByUsername(username)
                 console.log('user for login from db: ', user?.isEmailVerified, user);
 
-                if(!user){
+                if (!user) {
                     console.log('sending login response from service to controller: user not found');
                     return { success: false, noUser: true, message: 'Sorry ! User not found, Please create your account.' }
                 }
 
-                if(!user.isActive){
+                if (!user.isActive) {
                     console.log('User account is blocked');
                     return { success: false, blocked: true, message: 'Your account has been blocked. Contact admin for more details.' }
                 }
 
-                if (!user.isEmailVerified){
+                if (!user.isEmailVerified) {
                     console.log('sending login response from service to controller: emailNotVerified success fail');
                     return { success: false, emailNotVerified: true, message: 'Your email is not verified' }
                 }
@@ -501,9 +502,9 @@ export class UserServices implements IUserService{
                 // }
 
             }
-        } catch (error: any) {
-            console.log('Error from userService login: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from login service: ', error.message) : console.log('Unknown error from login service: ', error)
+            return { success: false, message: 'Something went wrong' }
 
         }
 
@@ -556,9 +557,9 @@ export class UserServices implements IUserService{
             //     }
 
             // }
-        } catch (error: any) {
-            console.log('Error from verify login otp: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from verifyLoginOtp service: ', error.message) : console.log('Unknown error from verifyLoginOtp service: ', error)
+            return { success: false, message: 'Something went wrong' }
 
         }
 
@@ -586,20 +587,20 @@ export class UserServices implements IUserService{
             //     await this.sendOtp(user.name, user.email, user._id)
             // }
             // return { success: true, message: 'Otp Sent to email', data: user }
-        } catch (error: any) {
-            console.log('Error from verifyUserEmail: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from verifyUserEmail service: ', error.message) : console.log('Unknown error from verifyUserEmail service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
 
-    async getUsers(params: any) {
+    async getUsers(params: IRequestParams) {
 
         try {
             const { userName, userStatus, role, pageNumber, pageSize, sortBy, sortOrder } = params
             console.log('search filter params:', userName, userStatus, role, pageNumber, pageSize, sortBy, sortOrder);
-            let filterQ: any = {}
-            let sortQ: any = {}
+            let filterQ: FilterQuery<IUser> = {}
+            let sortQ: QueryOptions = {}
             let skip = 0
             if (userName !== undefined) {
                 filterQ.name = { $regex: `.*${userName}.*`, $options: 'i' }
@@ -637,9 +638,9 @@ export class UserServices implements IUserService{
             } else {
                 return { success: false, message: 'Could not fetch data' }
             }
-        } catch (error: any) {
-            console.log('Error from getUsers: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getUsers service: ', error.message) : console.log('Unknown error from getUsers service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -647,7 +648,7 @@ export class UserServices implements IUserService{
     async getNewToken(refreshToken: string) {
 
         try {
-            let decoded: any = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
+            let decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as IJwtPayload
 
             const { id, user, role, googleId, email, isActive, isEmailVerified, isUserVerified } = decoded
             const userData = await this.UserRepository.getUserById(id)
@@ -661,7 +662,7 @@ export class UserServices implements IUserService{
                 return { success: false, message: 'Could not refresh token' }
             }
             const cookieOptions = await this.cookieService.getCookieOptions(userData, accessToken!, refreshToken)
-            return { success: true, accessToken,refreshToken, options: cookieOptions.options, payload: cookieOptions.payload }
+            return { success: true, accessToken, refreshToken, options: cookieOptions.options, payload: cookieOptions.payload }
 
             // if (userData) {
             //     const payload: IJwtPayload = { id: userData._id, user: userData.name, role: userData.role, googleId: userData.googleId, email: userData.email, isActive: userData.isActive, isEmailVerified: userData.isEmailVerified, isUserVerified: userData.isUserVerified }
@@ -682,9 +683,9 @@ export class UserServices implements IUserService{
             //     return { success: false, message: 'Could not get user details while refreshing token' }
             // }
 
-        } catch (error: any) {
-            console.log('Error from getNewToken: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getNewToken service: ', error.message) : console.log('Unknown error from getNewToken service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -699,9 +700,9 @@ export class UserServices implements IUserService{
             } else {
                 return { success: false, message: 'Could not updated user' }
             }
-        } catch (error: any) {
-            console.log('Error from updateUser: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from updateUser service: ', error.message) : console.log('Unknown error from updateUser service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -774,9 +775,9 @@ export class UserServices implements IUserService{
             //     }
             // }
 
-        } catch (error: any) {
-            console.log('Error from updateUserStatus: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from updateUserStatus service: ', error.message) : console.log('Unknown error from updateUserStatus service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -794,9 +795,9 @@ export class UserServices implements IUserService{
                 return { success: false, message: 'Could not get user details' }
             }
 
-        } catch (error: any) {
-            console.log('Error from getUser: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getUser service: ', error.message) : console.log('Unknown error from getUser service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -810,9 +811,9 @@ export class UserServices implements IUserService{
                 return { success: false, message: 'Your account has been blocked. Contact admin for more details.' }
             }
 
-        } catch (error: any) {
-            console.log('Error from getUser: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getGoogleUser service: ', error.message) : console.log('Unknown error from getGoogleUser service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -826,9 +827,9 @@ export class UserServices implements IUserService{
                 return { success: false, message: 'Could not users count' }
             }
 
-        } catch (error: any) {
-            console.log('Error from getUsersCount: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getUsersCount service: ', error.message) : console.log('Unknown error from getUsersCount service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -855,7 +856,7 @@ export class UserServices implements IUserService{
            `
             let subject = "Account Verified"
 
-            
+
             const isMailSent = await this.emailService.sendMail(user.name, user.email, content, subject)
 
             if (!isMailSent) {
@@ -879,11 +880,22 @@ export class UserServices implements IUserService{
             //     return { success: false, message: 'could not verify user' }
             // }
 
-        } catch (error: any) {
-            console.log('Error from verifyUserEmail: ', error.message);
-            return { success: false, message: error.message || 'Something went wrong.Try again' }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from verifyUser service: ', error.message) : console.log('Unknown error from verifyUser service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
+    }
+
+    async userLogout(token: string) {
+        try {
+            const decoded = await this.tokenService.verifyAccessToken(token)
+            const expirationTime = decoded?.exp
+            return { success: true, data: expirationTime }
+        } catch (error) {
+            return { success: false, message: 'Something went wrong' }
+
+        }
     }
 
 }

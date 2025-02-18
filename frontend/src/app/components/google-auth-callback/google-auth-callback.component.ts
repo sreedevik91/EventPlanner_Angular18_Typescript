@@ -14,7 +14,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './google-auth-callback.component.html',
   styleUrl: './google-auth-callback.component.css'
 })
-export class GoogleAuthCallbackComponent implements OnInit,OnDestroy {
+export default class GoogleAuthCallbackComponent implements OnInit,OnDestroy {
 
   destroy$:Subject<void>=new Subject<void>()
 

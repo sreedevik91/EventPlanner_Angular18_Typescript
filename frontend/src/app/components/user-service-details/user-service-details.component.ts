@@ -6,7 +6,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
 import { Booking } from '../../model/class/bookingClass';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormComponent } from '../../shared/components/form/form.component';
-import { Districts } from '../../model/districtsList';
+import { Districts } from '../../model/constants/districtsList';
 import { DataService } from '../../services/dataService/data.service';
 import { BookingService } from '../../services/bookingService/booking.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
@@ -22,7 +22,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './user-service-details.component.html',
   styleUrl: './user-service-details.component.css'
 })
-export class UserServiceDetailsComponent implements OnInit,OnDestroy {
+export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
 
   destroy$:Subject<void>= new Subject<void>()
 

@@ -16,7 +16,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './verify-email.component.html',
   styleUrl: './verify-email.component.css'
 })
-export class VerifyEmailComponent implements OnDestroy{
+export default class VerifyEmailComponent implements OnDestroy{
 
   destroy$:Subject<void>= new Subject<void>()
 

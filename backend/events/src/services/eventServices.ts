@@ -1,9 +1,10 @@
-import { IEvent, IEventServices, IEventDb, IEventRepository, IEmailService, IEventService } from "../interfaces/eventInterfaces"
+import { IEvent, IEventServices, IEventDb, IEventRepository, IEmailService, IEventService, IRequestParams, IServiceGrpcType, IChoiceGrpc } from "../interfaces/eventInterfaces"
 // import eventRepository from "../repository/eventRepository";
 import nodemailer from 'nodemailer'
 import { config } from "dotenv";
 import { getServicesByEventNameGrpc } from "../grpc/grpcServiceClient";
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
+import { FilterQuery, QueryOptions } from "mongoose";
 
 config()
 
@@ -68,8 +69,8 @@ export class EventServices implements IEventService{
             } else {
                 return { success: false, message: 'Could not get the total document' }
             }
-        } catch (error: any) {
-            console.log('Error from getTotalServices service: ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from totalEvents service: ', error.message ) : console.log('Unknown error from totalEvents service: ', error )
             return { success: false, message: 'Something went wrong' }
         }
 
@@ -89,21 +90,21 @@ export class EventServices implements IEventService{
             } else {
                 return { success: false, message: 'Could not create service' }
             }
-        } catch (error: any) {
-            console.log('Error from addService service: ', error.message);
+        } catch (error: unknown) {
+           error instanceof Error ? console.log('Error message from addEvent service: ', error.message ) : console.log('Unknown error from addEvent service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }
 
     }
 
-    async getEvents(params: any) {
+    async getEvents(params: IRequestParams) {
 
         try {
             const { eventName, isActive, pageNumber, pageSize, sortBy, sortOrder } = params
             console.log('search filter params:', eventName, isActive, pageNumber, pageSize, sortBy, sortOrder);
-            let filterQ: any = {}
-            let sortQ: any = {}
+            let filterQ: FilterQuery<IEvent> = {}
+            let sortQ: QueryOptions = {}
             let skip = 0
             if (eventName !== undefined) {
                 filterQ.name = { $regex: `.*${eventName}.*`, $options: 'i' }
@@ -136,12 +137,12 @@ export class EventServices implements IEventService{
             console.log('all service data filtered and sorted: ', events);
 
             if (events) {
-                return { success: true, events }
+                return { success: true, data:events }
             } else {
                 return { success: false, message: 'Could not fetch data' }
             }
-        } catch (error: any) {
-            console.log('Error from getServices: ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getEvents service: ', error.message ) : console.log('Unknown error from getEvents service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }
@@ -158,8 +159,8 @@ export class EventServices implements IEventService{
             } else {
                 return { success: false, message: 'Could not delete event, Something went wrong' }
             }
-        } catch (error: any) {
-            console.log('Error from deleteEvent service: ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from deleteEvent service: ', error.message ) : console.log('Unknown error from deleteEvent service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }
@@ -176,8 +177,8 @@ export class EventServices implements IEventService{
             } else {
                 return { success: false, message: 'Could not get event, Something went wrong' }
             }
-        } catch (error: any) {
-            console.log('Error from getEventById service: ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getEventById service: ', error.message ) : console.log('Unknown error from getEventById service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }
@@ -195,8 +196,8 @@ export class EventServices implements IEventService{
             } else {
                 return { success: false, message: 'Could not updated event' }
             }
-        } catch (error: any) {
-            console.log('Error from updatedEvent: ', error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from editEvent service: ', error.message ) : console.log('Unknown error from editEvent service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }
@@ -222,8 +223,8 @@ export class EventServices implements IEventService{
                 return { success: false, message: 'Could not find event details' }
             }
 
-        } catch (error: any) {
-            console.log('Error from editStatus event: ', error.message);
+        } catch (error: unknown) {
+           error instanceof Error ? console.log('Error message from editStatus service: ', error.message ) : console.log('Unknown error from editStatus service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }
@@ -265,7 +266,7 @@ export class EventServices implements IEventService{
 
                 // console.log('getServiceByName array: ', servicesArray);
                 let serviceSet = new Set()
-                service.serviceData.forEach(async (e: any) => {
+                service.serviceData.forEach(async (e: IServiceGrpcType) => {
                     serviceSet.add(e.name)
                 })
                 let servicesArray = Array.from(serviceSet)
@@ -276,8 +277,8 @@ export class EventServices implements IEventService{
                 return { success: false, message: 'Could not get event service' }
             }
 
-        } catch (error: any) {
-            console.log('Error from getServiceByName service: ', error, error.message);
+        } catch (error: unknown) {
+           error instanceof Error ? console.log('Error message from getServiceByName service: ', error.message ) : console.log('Unknown error from getServiceByName service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }
@@ -294,9 +295,9 @@ export class EventServices implements IEventService{
             const services = await getServicesByEventNameGrpc(name)
             console.log(`Decor services for ${name}: `, services);
 
-            let servicesObj: any = {}
+            let servicesObj: Record<string,IServiceGrpcType[]> = {}
             if (events && services) {
-                services.serviceData.forEach((service: any) => {
+                services.serviceData.forEach((service: IServiceGrpcType) => {
                     let serviceName = service.name
                     if (!(serviceName in servicesObj)) {
                         servicesObj[serviceName] = []
@@ -312,8 +313,8 @@ export class EventServices implements IEventService{
                 return { success: false, message: 'Could not get event service' }
             }
 
-        } catch (error: any) {
-            console.log('Error from getServiceByName service: ', error, error.message);
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getEventsByName service: ', error.message ) : console.log('Unknown error from getEventsByName service: ', error )
             return { success: false, message: 'Something went wrong' }
 
         }

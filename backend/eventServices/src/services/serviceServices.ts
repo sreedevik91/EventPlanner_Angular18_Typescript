@@ -1,4 +1,4 @@
-import { IChoice, IEmailService, IService, IServiceDb, IServiceRepository, IServicesService } from "../interfaces/serviceInterfaces"
+import { IChoice, IEmailService, IRequestParams, IService, IServiceDb, IServiceRepository, IServicesService } from "../interfaces/serviceInterfaces"
 // import serviceRepository from "../repository/serviceRepository"
 import nodemailer from 'nodemailer'
 import { config } from "dotenv";
@@ -6,10 +6,11 @@ import axios from 'axios'
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
 import { log } from "console";
 import { updateEventWithNewServiceGrpc } from "../grpc/grpcEventClient";
+import { FilterQuery, QueryOptions } from "mongoose";
 
 config()
 
-export class ServiceServices implements IServicesService{
+export class ServiceServices implements IServicesService {
 
     constructor(
         private serviceRepository: IServiceRepository,
@@ -77,9 +78,9 @@ export class ServiceServices implements IServicesService{
             } else {
                 return { success: false, message: 'Could not get the total document' }
             }
-        } catch (error: any) {
-            console.log('Error from getTotalServices service: ', error.message);
-            return { success: false, message: error.message };
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from totalServices service: ', error.message) : console.log('Unknown error from totalServices service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -135,27 +136,28 @@ export class ServiceServices implements IServicesService{
             try {
                 const updateEventWithService = await updateEventWithNewServiceGrpc(serviceName, updatedService?.events!)
                 console.log('grpc updateEventWithService response: ', updateEventWithService);
-            } catch (grpcError: any) {
-                console.log('grpc updateEventWithService error: ', grpcError.message);
+            } catch (grpcError: unknown) {
+                grpcError instanceof Error ? console.log('Error message from addService service, grpc updateEventWithService error: ', grpcError.message) : console.log('Unknown error from addService service,grpc updateEventWithService error: ', grpcError)
+                // console.log('grpc updateEventWithService error: ', grpcError.message);
             }
 
             return updatedService ? { success: true, data: updatedService, message: service ? 'Service updated successfully' : 'New service added successfully' } : { success: false, message: 'Could not update the service' }
 
 
-        } catch (error: any) {
-            console.log('Error from addService service: ', error.message);
-            return { success: false, message: error.message };
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from addService service: ', error.message) : console.log('Unknown error from addService service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
 
-    async getServices(params: any) {
+    async getServices(params: IRequestParams) {
 
         try {
             const { serviceName, isApproved, provider, pageNumber, pageSize, sortBy, sortOrder } = params
             console.log('search filter params:', serviceName, provider, pageNumber, pageSize, sortBy, sortOrder);
-            let filterQ: any = {}
-            let sortQ: any = {}
+            let filterQ: FilterQuery<IService> = {}
+            let sortQ: QueryOptions = {}
             let skip = 0
             if (serviceName !== undefined) {
                 filterQ.name = { $regex: `.*${serviceName}.*`, $options: 'i' }
@@ -195,7 +197,7 @@ export class ServiceServices implements IServicesService{
             // console.log('all service data filtered and sorted: ', data);
 
             if (data) {
-                let extra: any = []
+                let extra: Record<string, string>[] = []
                 for (let service of data) {
                     const provider = await getUserByIdGrpc(service.provider)
                     console.log('getUserByIdGrpc provider: ', provider);
@@ -208,9 +210,9 @@ export class ServiceServices implements IServicesService{
             } else {
                 return { success: false, message: 'Could not fetch data' }
             }
-        } catch (error: any) {
-            console.log('Error from getServices: ', error.message);
-            return { success: false, message: error.message };
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServices service: ', error.message) : console.log('Unknown error from getServices service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -225,9 +227,9 @@ export class ServiceServices implements IServicesService{
             } else {
                 return { success: false, message: 'Could not delete service, Something went wrong' }
             }
-        } catch (error: any) {
-            console.log('Error from deleteService service: ', error.message);
-            return { success: false, message: error.message };
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from deleteService service: ', error.message) : console.log('Unknown error from deleteService service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -242,9 +244,9 @@ export class ServiceServices implements IServicesService{
             } else {
                 return { success: false, message: 'Could not delete service, Something went wrong' }
             }
-        } catch (error: any) {
-            console.log('Error from deleteService service: ', error.message);
-            return { success: false, message: error.message };
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServiceById service: ', error.message) : console.log('Unknown error from getServiceById service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -260,15 +262,17 @@ export class ServiceServices implements IServicesService{
             try {
                 const updateEventWithService = await updateEventWithNewServiceGrpc(updatedService?.name!, updatedService?.events!)
                 console.log('grpc updateEventWithService response: ', updateEventWithService);
-            } catch (grpcError: any) {
-                console.log('grpc updateEventWithService error: ', grpcError.message);
+            } catch (grpcError: unknown) {
+                grpcError instanceof Error ? console.log('Error message from editService service,grpc updateEventWithService error: ', grpcError.message) : console.log('Unknown error from editService service,grpc updateEventWithService error: ', grpcError)
+
+                // console.log('grpc updateEventWithService error: ', grpcError.message);
             }
 
             return updatedService ? { success: true, data: updatedService, message: 'Service updated successfuly' } : { success: false, message: 'Could not updated service' }
 
-        } catch (error: any) {
-            console.log('Error from editService: ', error.message);
-            return { success: false, message: error.message };
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from editService service: ', error.message) : console.log('Unknown error from editService service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -294,9 +298,9 @@ export class ServiceServices implements IServicesService{
                 return { success: false, message: 'Could not find service details' }
             }
 
-        } catch (error: any) {
-            console.log('Error from editStatus service: ', error.message);
-            return { success: false, message: error.message };
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from editStatus service: ', error.message) : console.log('Unknown error from editStatus service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -351,10 +355,9 @@ export class ServiceServices implements IServicesService{
                 return { success: false, message: 'could not approve service' }
 
             }
-        } catch (error: any) {
-
-            console.log('Error from approveService: ', error.message)
-            return { success: false, message: error.message };
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from approveService service: ', error.message) : console.log('Unknown error from approveService service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }
@@ -368,7 +371,7 @@ export class ServiceServices implements IServicesService{
                 aggregatedServiceData.forEach(e => {
                     e.img = Array.from(new Set(e.img))
                     e.events = Array.from(new Set(e.events))
-                    e.choicesType = Array.from(new Set(e.choicesType)).filter((e: any) => e !== null && e !== "")
+                    e.choicesType = Array.from(new Set(e.choicesType)).filter((e: string) => e !== null && e !== "")
                     e.choiceImg = Array.from(new Set(e.choiceImg))
                     // e.choices.forEach((e:IChoice)=>console.log(e)
                     // )
@@ -381,9 +384,9 @@ export class ServiceServices implements IServicesService{
                 return { success: false, message: 'Could not updated service status' }
             }
 
-        } catch (error: any) {
-            console.log('Error from getServiceByName service: ', error.message);
-            return { success: false, message: error.message };
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServiceByName service: ', error.message) : console.log('Unknown error from getServiceByName service: ', error)
+            return { success: false, message: 'Something went wrong' }
         }
 
     }

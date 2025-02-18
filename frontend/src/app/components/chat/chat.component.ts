@@ -12,7 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
 })
-export class ChatComponent implements OnInit, OnDestroy {
+export default class ChatComponent implements OnInit, OnDestroy {
 
   destroy$:Subject<void>= new Subject<void>()
 

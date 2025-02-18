@@ -32,11 +32,14 @@ export class EventRepository extends BaseRepository<IEvent> implements IEventRep
     }
 
     async getTotalEvents(): Promise<number> {
-        return await Event.find().countDocuments()
+        // return await Event.find().countDocuments()
+        return await this.model.find().countDocuments()
     }
 
     async getEventByName(name: string):Promise<IEventDb[]> {
-        let event =await Event.find({name})
+        // let event =await Event.find({name})
+        let event =await this.getAllEvents({name})
+        // let event =await this.model.find({name})
         return event
     }
 
