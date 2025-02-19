@@ -14,11 +14,12 @@ import { Districts } from '../../model/constants/districtsList';
 import { style } from '@angular/animations';
 import { AlertService } from '../../services/alertService/alert.service';
 import { Subject, takeUntil } from 'rxjs';
+import { AlertComponent } from '../../shared/components/alert/alert.component';
 
 @Component({
   selector: 'app-user-event-details',
   standalone: true,
-  imports: [ButtonComponent, FormComponent, ReactiveFormsModule],
+  imports: [ButtonComponent, FormComponent, ReactiveFormsModule,AlertComponent],
   templateUrl: './user-event-details.component.html',
   styleUrl: './user-event-details.component.css'
 })
@@ -167,7 +168,7 @@ export default class UserEventDetailsComponent implements OnInit,OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.CREATED) {
           console.log('service booking response: ', res.body?.data);
-          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || 'Booking complete.')
           this.hideModal()
         } else {
           console.log(res.body?.message);

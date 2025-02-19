@@ -4,7 +4,7 @@ import { HttpStatusCodes, IEventController, IEventService, IEventServices } from
 
 import fs from 'fs'
 import { AppError } from "../utils/appError";
-import cloudinary from "../utils/cloudinary";
+import { getImgUrl } from "../utils/cloudinary";
 import { ResponseHandler } from "../middlewares/responseHandler";
 
 
@@ -48,8 +48,9 @@ export class EventController implements IEventController {
             const file: Express.Multer.File | undefined = req.file
             let imgName = file ? file.filename : ''
             let imgPath = file ? file.path : ''
-            let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
-            let img = cloudinaryImgData.url
+            // let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName,type:"authenticated",sign_url: true })
+            let cloudinaryImgData = await getImgUrl(imgPath, { public_id: imgName,type:"authenticated",sign_url: true })
+            let img = cloudinaryImgData.data?.imgUrl
             const eventData = {
                 name,
                 img,
@@ -164,8 +165,8 @@ export class EventController implements IEventController {
             const file: Express.Multer.File | undefined  = req.file
             let imgName = file ? file.filename : ''
             let imgPath = file ? file.path : ''
-            let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
-            let imgNew = cloudinaryImgData.url || img
+            let cloudinaryImgData = await getImgUrl(imgPath, { public_id: imgName, type:"authenticated", sign_url: true})
+            let imgNew = cloudinaryImgData.data?.imgUrl || img
 
             // let choicesWithImg = JSON.parse(choices).map((choice: any, index: number) => {
             //     return {

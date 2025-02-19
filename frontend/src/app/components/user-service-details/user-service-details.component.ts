@@ -14,11 +14,12 @@ import { UserSrerviceService } from '../../services/userService/user-srervice.se
 import { IChoice } from '../../model/class/serviceClass';
 import { AlertService } from '../../services/alertService/alert.service';
 import { Subject, takeUntil } from 'rxjs';
+import { AlertComponent } from '../../shared/components/alert/alert.component';
 
 @Component({
   selector: 'app-user-service-details',
   standalone: true,
-  imports: [ButtonComponent, ReactiveFormsModule, FormComponent],
+  imports: [ButtonComponent, ReactiveFormsModule, FormComponent,AlertComponent],
   templateUrl: './user-service-details.component.html',
   styleUrl: './user-service-details.component.css'
 })
@@ -143,7 +144,7 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
   }
 
   saveBooking() {
-    debugger
+    // debugger
     console.log('service booking form values: ', this.bookingForm.value);
     console.log('is service booking form valid: ', this.bookingForm.valid);
 
@@ -158,7 +159,7 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
         
         if (res.status === HttpStatusCodes.CREATED) {
           console.log('service booking response: ', res.body?.data);
-          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
+          this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || 'Booking complete')
           this.hideModal()
         } else {
           console.log(res.body?.message);
