@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 // import serviceServices from "../services/serviceServices"
 import { HttpStatusCodes, IChoice, IServiceController, IServicesService } from "../interfaces/serviceInterfaces";
-import cloudinary from "../utils/cloudinary";
+import { getImgUrl } from "../utils/cloudinary";
 import { ResponseHandler } from "../utils/responseHandler";
 
 
@@ -42,8 +42,10 @@ export class ServiceController implements IServiceController {
             // let imgName = imgFiles.length > 0 ? imgFiles[0].filename : '';
             // let imgPath = imgFiles.length > 0 ? imgFiles[0].path : '';
 
-            let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
-            let img = cloudinaryImgData.url
+            // let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName ,type:"authenticated",sign_url: true})
+
+            let cloudinaryImgData = await getImgUrl(imgPath, { public_id: imgName ,type:"authenticated",sign_url: true})
+            let img = cloudinaryImgData.data?.imgUrl
             let choicesArray = JSON.parse(choices)
             let choicesWithImg = await Promise.all(choicesArray.map(async (choice: IChoice, index: number) => {
                 const choiceImgFile = files?.choiceImg
@@ -52,9 +54,9 @@ export class ServiceController implements IServiceController {
 
                 for (let img of choiceImgFile!) {
                     if (choiceImgCategory === img.originalname) {
-                        let cloudinaryImgData = await cloudinary.uploader.upload(img.path, { public_id: img.filename })
-                        let imgUrl = cloudinaryImgData.url
-                        rest.choiceImg = imgUrl
+                        let cloudinaryImgData = await getImgUrl(img.path, { public_id: img.filename,type:"authenticated",sign_url: true })
+                        let imgUrl = cloudinaryImgData.data?.imgUrl
+                        rest.choiceImg = imgUrl!
                     }
                 }
 
@@ -166,8 +168,8 @@ export class ServiceController implements IServiceController {
                     console.warn('No valid image file path provided for upload.');
                     imgNew = img;
                 } else {
-                    let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
-                    imgNew = cloudinaryImgData.url || img
+                    let cloudinaryImgData = await getImgUrl(imgPath, { public_id: imgName,type:"authenticated",sign_url: true })
+                    imgNew = cloudinaryImgData.data?.imgUrl || img
                 }
 
 
@@ -202,9 +204,9 @@ export class ServiceController implements IServiceController {
                             continue;
                         }
 
-                        let cloudinaryImgData = await cloudinary.uploader.upload(img.path, { public_id: img.filename })
-                        let imgUrl = cloudinaryImgData.url
-                        rest.choiceImg = imgUrl
+                        let cloudinaryImgData = await getImgUrl(img.path, { public_id: img.filename,type:"authenticated",sign_url: true })
+                        let imgUrl = cloudinaryImgData.data?.imgUrl
+                        rest.choiceImg = imgUrl!
                     }
 
                     return rest

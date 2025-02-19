@@ -56,7 +56,7 @@ export class UserBookingComponent implements OnInit, OnDestroy {
   }
 
   deleteBooking(bookingId: string) {
-    if (confirm('Do you want to delete the booking ?')) {
+    // if (confirm('Do you want to delete the booking ?')) {
       this.bookingService.deleteBooking(bookingId).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: HttpResponse<IResponse>) => {
           if (res.status === HttpStatusCodes.SUCCESS) {
@@ -76,11 +76,11 @@ export class UserBookingComponent implements OnInit, OnDestroy {
 
         }
       })
-    }
+    // }
   }
 
   deleteChoice(bookingId: string, name: string, id: string) {
-    if (confirm('Do you want to delete the service ?')) {
+    // if (confirm('Do you want to delete the service ?')) {
       this.bookingService.deleteBookedServices(bookingId, name, id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: HttpResponse<IResponse>) => {
           if (res.status === HttpStatusCodes.SUCCESS) {
@@ -109,7 +109,7 @@ export class UserBookingComponent implements OnInit, OnDestroy {
 
         }
       })
-    }
+    // }
   }
 
   ngOnDestroy(): void {
