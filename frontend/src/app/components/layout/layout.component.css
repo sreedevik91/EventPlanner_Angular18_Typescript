@@ -65,5 +65,27 @@
     }
 }
 
+/* ========================================================================================== */
 
+/* Add these styles to your component or global CSS */
+.row.flex-nowrap {
+    min-height: 100vh;
+  }
+  
+  .content-wrapper {
+    min-height: calc(100vh - 60px); /* Adjust based on header height if exists */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Ensure content pushes footer */
+  router-outlet + * {
+    flex: 1;
+    padding-bottom: 20px; /* Add spacing before footer */
+  }
+  
+  .sidebar-footer {
+    padding: 1rem 0;
+    background-color: rgba(0,0,0,0.1);
+  }
 

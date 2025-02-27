@@ -106,7 +106,10 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
   isConfirmed: {
     type: Boolean,
     default: false
-  }
+  },
+  orderDate: {
+    type: Date
+  },
 },
   {
     timestamps: true

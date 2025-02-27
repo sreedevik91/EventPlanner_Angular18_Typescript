@@ -3,6 +3,8 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { Menus } from '../../model/constants/menus';
 import { Subject, takeUntil } from 'rxjs';
+import { IResponse } from '../../model/interface/interface';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-layout',
@@ -43,8 +45,15 @@ export default class LayoutComponent implements OnDestroy{
   }
 
   logout() {
-    this.userService.userLogout().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.router.navigate(['login'])
+    // debugger
+    this.userService.userLogout().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: HttpResponse<IResponse>)=>{
+        this.router.navigate(['login']);
+      },
+      error:(error: HttpErrorResponse)=>{
+        console.error('Logout failed:', error);
+        this.router.navigate(['login']);
+      }
     })
   }
 

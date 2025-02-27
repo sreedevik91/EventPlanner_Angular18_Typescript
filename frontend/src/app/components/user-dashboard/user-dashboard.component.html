@@ -1,1 +1,42 @@
-<p>user-dashboard works!</p>
+<div class="container">
+    <div class="row">
+
+        <div class="col-md-12 background position-relative">
+            <!-- <div class="bg-white rounded-bottom w-50 mt-4 position-absolute"> -->
+            <div class="content rounded-bottom">
+
+                <h1>Dream Events</h1>
+                <p><strong>YOUR PERSONAL DREAM MAKER</strong></p>
+                <p>We believe that it is all about the BIG DREAMS and the small details!</p>
+
+            </div>
+        </div>
+
+        <div class="col-md-12 mt-5">
+            <div class="m-2">
+                <h2>Our Events and Services</h2>
+            </div>
+            <hr>
+            
+            <div class="row">
+                @for(service of services;track $index){
+
+                <div class="col-md-3">
+
+                    <div class="card bg-white rounded-bottom shadow" style="width: 18rem;">
+                        <img [src]="service.image" height="250" class="card-img-top" alt="...">
+                        <div class="card-body">
+                          <h5 class="card-title">{{service.title}}</h5>
+                          <p class="card-text">{{service.description}}</p>
+                          <a [routerLink]="service.path" class="btn btn-dark">Know more</a>
+                        </div>
+                      </div>
+                  
+                </div>
+            }
+            </div>
+        </div>
+       
+
+    </div>
+</div>

@@ -1,0 +1,37 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Sl.No</th>
+            @for(item of columnsList; track $index) {
+                <th scope="col" role="button" (click)="columnClick()" > {{item.columnName}}</th>
+            }
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (item of tableData; track $index) {
+        <tr>
+            <th scope="row">{{$index + 1}}</th>
+
+            @for(data of tableData; track $index1) {
+                <td>{{data[item.fieldName]}}</td>
+            }
+
+            <td>
+                <button (click)="onEdit()">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button (click)="onDelete()">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+                <button (click)="onApprove()">
+                   
+                </button>
+                <button (click)="onSetStatus()">
+                   
+                </button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

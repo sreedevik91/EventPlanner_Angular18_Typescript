@@ -18,4 +18,5 @@ export const environment = {
     serviceImgUrl:'http://localhost:4000/api/service/uploads/',
     eventImgUrl:'http://localhost:4000/api/event/uploads/',
     socketBackendUrl:'http://localhost:4000',
+    razorpayKeyId:'rzp_test_85xo26IPuPICSY'
 };

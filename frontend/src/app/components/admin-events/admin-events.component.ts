@@ -57,7 +57,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initialiseEventForm()
-    this.getTotalEvents()
+    // this.getTotalEvents()
     this.initialiseSearchFilterForm()
     // this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user: any) => {
     //   this.providerId = user.id
@@ -181,7 +181,9 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           // this.totalEvents=res.body.data.length
-          this.events.set(res.body?.data)
+          this.events.set(res.body?.data.events)
+          this.totalEvents = res.body?.data.count
+
           console.log('events response: ', res.body);
           console.log('events: ', this.events());
         } else {

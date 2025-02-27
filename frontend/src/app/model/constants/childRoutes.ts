@@ -54,6 +54,16 @@ const childRoutes: Routes = [
                 // component:ChatComponent,
                 loadComponent: () => import('../../components/chat/chat.component'),
                 canActivate: [authGuard]
+            },
+            {
+                path:'favourites',
+                loadComponent:()=>import('../../components/user-favorites/user-favorites.component'),
+                canActivate: [authGuard]
+            },
+            {
+                path:'sales',
+                loadComponent:()=>import('../../components/sales/sales.component'),
+                canActivate: [authGuard]
             }
 
         ]

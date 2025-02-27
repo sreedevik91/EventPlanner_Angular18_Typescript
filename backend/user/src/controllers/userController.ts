@@ -238,6 +238,7 @@ export class UserController implements IUserController {
             // res.status(200).json({ success: true, message: 'User logged out' })
             const token= req.cookies?.accessToken
             const userLogoutResponse = await this.userService.userLogout(token)
+console.log('user logout response from controller: ', userLogoutResponse);
 
             userLogoutResponse.success? ResponseHandler.logoutResponse(res,token,userLogoutResponse.data , HttpStatusCodes.SUCCESS, { success: true, message: 'User logged out'}) :  ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, userLogoutResponse)
         } catch (error: unknown) {

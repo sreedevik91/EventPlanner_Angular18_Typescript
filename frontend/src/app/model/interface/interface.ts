@@ -26,6 +26,13 @@ export interface IResponse {
     blocked?: boolean;
 }
 
+export interface IRazorpayResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+    bookingId: string;
+}
+
 export interface ILoggedUserData {
     id: string;
     user: string;
@@ -163,17 +170,34 @@ export interface IServicesArray {
     providerId: string;
 }
 
-export interface IChatJoiningResponse{
-    roomId:string;
-    message:string;
+export interface IChatJoiningResponse {
+    roomId: string;
+    message: string;
 }
 
-export enum HttpStatusCodes{
-    SUCCESS=200,
-    CREATED=201,
-    BAD_REQUEST=400,
-    UNAUTHORIZED=401,
-    FORBIDDEN=403,
-    NOT_FOUND=404,
-    INTERNAL_SERVER_ERROR=500
+export enum HttpStatusCodes {
+    SUCCESS = 200,
+    CREATED = 201,
+    BAD_REQUEST = 400,
+    UNAUTHORIZED = 401,
+    FORBIDDEN = 403,
+    NOT_FOUND = 404,
+    INTERNAL_SERVER_ERROR = 500
 }
+
+export interface ITableColums {
+    columnName: string;
+    fieldName: string;
+    dataType: string;
+    role:boolean;
+}
+
+export interface ISales {
+    totalAmount: number;
+    totalCount: number;
+    event?: string;
+    service?: string;
+    date: string;
+  }
+
+

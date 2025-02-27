@@ -110,6 +110,12 @@ export enum HttpStatusCodes {
   INTERNAL_SERVER_ERROR = 500
 }
 
+
+export interface IEventsData{
+  events:IEvent[];
+  eventsCount:{totalEvents:number}[];
+}
+
 export interface IRepository<T> {
   createEvent(service: Partial<T>): Promise<T>
   getEventById(eventId: string): Promise<T | null>
@@ -126,6 +132,7 @@ export interface IEventRepository {
   deleteEvent(eventId: string): Promise<DeleteResult | null>;
   getTotalEvents(): Promise<number>;
   getEventByName(name: string):Promise<IEvent[]> 
+  getEventsAndCount(filter: FilterQuery<IEvent>,  options: QueryOptions): Promise<IEventsData[]>;
 }
 
 export interface IEmailService{

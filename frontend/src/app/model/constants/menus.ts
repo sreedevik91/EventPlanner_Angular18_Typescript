@@ -20,18 +20,18 @@ export const Menus=[
         roles:['admin']
     },
     {
-        path:'favorites',
-        text:'Favorites',
+        path:'favourites',
+        text:'Favourites',
         roles:['user']
-    },
-    {
-        path:'sales',
-        text:'Sales',
-        roles:['admin']
     },
     {
         path:'booking',
         text:'Booking',
         roles:['user','admin']
+    },
+    {
+        path:'sales',
+        text:'Sales',
+        roles:['provider','admin']
     },
 ]

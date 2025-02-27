@@ -16,6 +16,7 @@ export interface IBooking extends Document {
   venue: IAddress;
   totalCount: number;
   isConfirmed: boolean;
+  orderDate:Date;
   tag: string; // if there is eventId in the data from frontend then tag is event booking or if serviceId there then it is service booking 
 }
 
@@ -25,9 +26,9 @@ export interface IBookedServices {
   providerId?: string;
   serviceName: string;
   providerName: string;
-  serviceChoiceName: string;
-  serviceChoiceType: string;
-  serviceChoiceAmount: number;
+  choiceName: string;
+  choiceType: string;
+  choicePrice: number;
 }
 
 interface IAddress {
@@ -90,10 +91,20 @@ export interface IRequestParams {
   userName?: string,
   isApproved?: boolean,
   provider?: string,
-  pageNumber?: number,
-  pageSize?: number,
+  pageNumber?: string,
+  pageSize?: string,
   sortBy?: string,
-  sortOrder?: string
+  sortOrder?: string,
+  pageNumberService?:string,
+  pageNumberEvent?:string,
+  sortByService?: string;
+  sortOrderService?: string;
+  sortByEvent?: string;
+  sortOrderEvent?: string;
+  startDate?: string;
+  endDate?:string;
+  filterBy?:string;
+  providerId?:string
 }
 
 export interface IGetAvailableServicesResponse {
@@ -150,6 +161,38 @@ export enum HttpStatusCodes {
   INTERNAL_SERVER_ERROR = 500
 }
 
+export interface IRazorpayResponse {
+  razorpay_payment_id:string;
+  razorpay_order_id:string;
+  razorpay_signature:string;
+  bookingId:string;
+}
+
+export interface ISales {
+  totalAmount: number;
+  totalCount: number;
+  event?: string;
+  service?: string;
+  date: string;
+}
+
+export interface ISalesData{
+  eventsData:ISales[];
+  serviceData:ISales[];
+  serviceSalesCount:{totalSale:number}[];
+  eventSalesCount:{totalSale:number}[];
+}
+
+export interface IProviderSalesData{
+  serviceData:ISales[];
+  serviceSalesCount:{totalSale:number}[];
+}
+
+export interface IBookingsData{
+  bookings:IBooking[];
+  bookingsCount:{totalBookings:number}[];
+}
+
 export interface IRepository<T> {
   createBooking(bookingData: Partial<T>): Promise<T>
   getBookingById(bookingId: string): Promise<T | null>
@@ -166,6 +209,9 @@ export interface IBookingRepository {
   deleteBooking(bookingId: string): Promise<DeleteResult | null>
   getTotalBookings(): Promise<number>
   getBookingByUserId(id: string): Promise<IBooking[]>
+  getSalesData(query: FilterQuery<IBooking>, options: QueryOptions):Promise<ISalesData[]>
+  getProviderSalesData(query: FilterQuery<IBooking>, options: QueryOptions):Promise<IProviderSalesData[]>
+  getBookingsAndCount(query: FilterQuery<IBooking>, options: QueryOptions): Promise<IBookingsData[]>
 }
 
 export interface IEmailService {
@@ -175,7 +221,7 @@ export interface IEmailService {
 export interface IBookingService {
   totalBookings(): Promise<IResponse>
   addBooking(bookingData: Partial<IBooking>): Promise<IResponse>
-  getBookings(params: any): Promise<IResponse>
+  getBookings(params: IRequestParams): Promise<IResponse>
   deleteBooking(id: string): Promise<IResponse>
   deleteBookedServices(bookingId: string, serviceName: string, serviceId: string): Promise<IResponse>
   getBookingById(id: string): Promise<IResponse>
@@ -185,6 +231,10 @@ export interface IBookingService {
   getService(name: string, providerId: string): Promise<IResponse>
   getAllEvents(): Promise<IResponse>
   getServiceByEvent(name: string): Promise<IResponse>
+  confirmBooking(bookingId: string): Promise<IResponse>
+  verifyPayment(razorpayResponse:IRazorpayResponse): Promise<IResponse>
+  getSalesData(params: IRequestParams): Promise<IResponse>
+  getProviderSales(params: IRequestParams): Promise<IResponse>
 }
 
 export interface IBookingController {
@@ -200,4 +250,13 @@ export interface IBookingController {
   getEventService(req: Request, res: Response, next: NextFunction): Promise<void>
   getAllEvents(req: Request, res: Response, next: NextFunction): Promise<void>
   getServiceByEvent(req: Request, res: Response, next: NextFunction): Promise<void>
+  confirmBooking(req: Request, res: Response, next: NextFunction): Promise<void>
+  verifyPayment(req: Request, res: Response, next: NextFunction): Promise<void>
+  getSalesData(req: Request, res: Response, next: NextFunction): Promise<void>
+  getProviderSales(req: Request, res: Response, next: NextFunction): Promise<void>
+}
+
+export interface IPaymentService{
+  createOrder(bookingId:string,amount:number): Promise<string | null>
+  verifyOrder(razorpayResponse:IRazorpayResponse):Promise<boolean>
 }
