@@ -51,8 +51,15 @@ export class UserSrerviceService {
   }
 
   userLogout() {
-    this.loggedUserSubject.next(null)
-    return this.http.get(`${this.baseUrl}logout`, { observe: 'response' })
+    // debugger
+    // this.loggedUserSubject.next(null)
+     // First make the logout API call
+    return this.http.get(`${this.baseUrl}logout`, { observe: 'response' }).pipe(
+      tap(()=>{
+        // Clear user data AFTER the API call succeeds
+        this.loggedUserSubject.next(null)
+      })
+    )
   }
 
   verifyOtp(data: any) {

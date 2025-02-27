@@ -1,5 +1,5 @@
-import { DeleteResult } from "mongoose";
-import { IEvent, IEventDb, IEventRepository } from "../interfaces/eventInterfaces";
+import { DeleteResult, FilterQuery, QueryOptions } from "mongoose";
+import { IEvent, IEventDb, IEventRepository, IEventsData } from "../interfaces/eventInterfaces";
 import Event from "../models/eventSchema";
 import { BaseRepository } from "./baseRepository";
 
@@ -41,6 +41,26 @@ export class EventRepository extends BaseRepository<IEvent> implements IEventRep
         let event =await this.getAllEvents({name})
         // let event =await this.model.find({name})
         return event
+    }
+
+    async getEventsAndCount(query:FilterQuery<IEvent>={}, options:QueryOptions={}):Promise<IEventsData[]>{
+        const {sort={},limit=0,skip=0}=options
+        return await this.model.aggregate([
+            {
+                $facet:{
+                    'events':[
+                        {$match:query},
+                        {$sort:sort},
+                        {$skip:skip!},
+                        {$limit:limit!}
+                    ],
+                    'eventsCount':[
+                        {$match:query},
+                        {$count:'totalEvents'}
+                    ]
+                }
+            }
+        ])
     }
 
     // async getEventByName(name: string):Promise<IEvent | null> {

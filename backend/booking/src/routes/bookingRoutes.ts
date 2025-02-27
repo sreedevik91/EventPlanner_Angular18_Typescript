@@ -9,13 +9,15 @@ import { BookingRepository } from "../repository/bookingRepository";
 import { BookingService } from "../services/bookingServices";
 import { EmailService } from "../services/emailService";
 import { BookingController } from "../controllers/bookingController";
+import { PaymentService } from "../services/paymentService";
 
 const router=Router()
 const bookingRoute=express()
 
 const bookingRepository=new BookingRepository()
 const emailService=new EmailService()
-const bookingService=new BookingService(bookingRepository,emailService)
+const paymentService=new PaymentService()
+const bookingService=new BookingService(bookingRepository,emailService,paymentService)
 const bookingController= new BookingController(bookingService)
 
 bookingRoute.use(cookieParser())
@@ -53,11 +55,16 @@ bookingRoute.use(cors())
 router.get('/bookings/count',(req:Request,res:Response,next:NextFunction)=>bookingController.getTotalBookings(req,res,next))
 router.get('/bookings',(req:Request,res:Response,next:NextFunction)=>bookingController.getAllBookings(req,res,next))
 router.get('/events',(req:Request,res:Response,next:NextFunction)=>bookingController.getAllEvents(req,res,next))
+router.get('/providerSales',(req:Request,res:Response,next:NextFunction)=>bookingController.getProviderSales(req,res,next))
+router.get('/salesData/admin',(req:Request,res:Response,next:NextFunction)=>bookingController.getSalesData(req,res,next))
+
 router.get('/events/service/:name',(req:Request,res:Response,next:NextFunction)=>bookingController.getServiceByEvent(req,res,next))
 router.get('/service/:name/:providerId',(req:Request,res:Response,next:NextFunction)=>bookingController.getEventService(req,res,next))
 router.get('/user/:id',(req:Request,res:Response,next:NextFunction)=>bookingController.getBookingByUserId(req,res,next))
 
-router.post('/new',(req:Request,res:Response,next:NextFunction)=>bookingController.createBooking(req,res,next))
+router.post('/new',(req:Request,res:Response,next:NextFunction)=>bookingController.createBooking(req,res,next)) 
+router.post('/confirm',(req:Request,res:Response,next:NextFunction)=>bookingController.confirmBooking(req,res,next))
+router.post('/verifyPayment',(req:Request,res:Response,next:NextFunction)=>bookingController.verifyPayment(req,res,next))
 
 router.patch('/status',(req:Request,res:Response,next:NextFunction)=>bookingController.editStatus(req,res,next))
 

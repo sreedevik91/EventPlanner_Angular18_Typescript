@@ -39,14 +39,14 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
   errMessage: string = 'Some error occured'
 
   constructor() {
-    this.getTotalBookings()
-    this.initialiseSearchFilterForm()
+    // this.getTotalBookings()
   }
  
   ngOnInit(): void {
      this.searchParams = this.searchParams.set('pageNumber', this.bookingFilterFormObj.pageNumber)
       .set('pageSize', this.bookingFilterFormObj.pageSize)
-    this.getAllBookings(this.searchParams)
+    this.initialiseSearchFilterForm()
+    // this.getAllBookings(this.searchParams)
     this.onRefresh()
   }
 
@@ -119,7 +119,9 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           // this.totalServices=res.body.data.length
-          this.bookings.set(res.body?.data)
+          this.bookings.set(res.body?.data.bookings)
+          this.totalBookings = res.body?.data.count
+
           console.log('all services: ', this.bookings());
           // this.searchParams = new HttpParams()
         } else {
@@ -195,7 +197,8 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
   }
 
   getLastpage() {
-    return this.totalBookings / Number(this.bookingFilterFormObj.pageSize)
+    // console.log('total bookings:',this.totalBookings);
+    return Math.ceil(this.totalBookings / Number(this.bookingFilterFormObj.pageSize))
   }
 
   ngOnDestroy(): void {

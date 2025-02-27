@@ -149,13 +149,13 @@ export default class UsersComponent implements OnInit, OnDestroy {
   }
 
   getTotalPages() {
-    console.log('total users count from getTotalPages: ', this.totalUsers);
+    // console.log('total users count from getTotalPages: ', this.totalUsers);
     let totalPages = Math.ceil(this.totalUsers / Number(this.searchFilterFormObj.pageSize))
     return Array(totalPages).fill(0).map((e, i) => i + 1)
   }
 
   getLastpage() {
-    console.log('total users count from getLastpage: ', this.totalUsers);
+    // console.log('total users count from getLastpage: ', this.totalUsers);
     return Math.ceil(this.totalUsers / Number(this.searchFilterFormObj.pageSize))
   }
 

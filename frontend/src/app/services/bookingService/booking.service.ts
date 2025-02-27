@@ -18,6 +18,14 @@ export class BookingService {
     return this.http.post(`${this.baseUrl}new`, data, { observe: 'response' })
   }
 
+  confirmBooking(bookingId:string) {
+    return this.http.post(`${this.baseUrl}confirm`, {bookingId}, { observe: 'response' })
+  }
+
+  verifyPayment(razorpayResponse:any) {
+    return this.http.post(`${this.baseUrl}verifyPayment`, razorpayResponse, { observe: 'response' })
+  }
+
   getTotalBookings() {
     return this.http.get(`${this.baseUrl}bookings/count`, { observe: 'response' })
   }
@@ -64,6 +72,16 @@ export class BookingService {
 
   deleteBookedServices(bookingId:string,serviceName:string,serviceId:string){
     return this.http.delete(`${this.baseUrl}service/${bookingId}/${serviceName}/${serviceId}`, { observe: 'response' })
+  }
+
+  getSales(params:HttpParams){
+    // return this.http.get(`${this.baseUrl}admin/salesData`, { observe: 'response', params })
+    return this.http.get(`${this.baseUrl}salesData/admin`, { observe: 'response', params })
+  }
+
+  getProviderSales(params:HttpParams){
+    // return this.http.get(`${this.baseUrl}provider/sales`, { observe: 'response', params })
+    return this.http.get(`${this.baseUrl}providerSales`, { observe: 'response', params })
 
   }
 

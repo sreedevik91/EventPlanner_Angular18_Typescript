@@ -7,11 +7,12 @@ import { HttpStatusCodes, IBooking, IResponse } from '../../model/interface/inte
 import { DatePipe } from '@angular/common';
 import { ButtonComponent } from "../../shared/components/button/button.component";
 import { Subject, takeUntil } from 'rxjs';
+import { AlertComponent } from '../../shared/components/alert/alert.component';
 
 @Component({
   selector: 'app-user-booking',
   standalone: true,
-  imports: [DatePipe, ButtonComponent],
+  imports: [DatePipe, ButtonComponent,AlertComponent],
   templateUrl: './user-booking.component.html',
   styleUrl: './user-booking.component.css'
 })
@@ -37,11 +38,13 @@ export class UserBookingComponent implements OnInit, OnDestroy {
   }
 
   getBookingsByUser(userId: string) {
+    // debugger
     this.bookingService.getBookingsByUserId(userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.bookingsList.set(res.body?.data)
-          console.log(this.bookingsList);
+          console.log('confirmed bookings: ',this.bookingsList);
+          this.bookingsList.update(bookings=>bookings.filter(booking=>booking.isConfirmed===true))
 
         } else {
           console.log(res.body?.message);

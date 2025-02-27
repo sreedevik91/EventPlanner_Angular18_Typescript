@@ -132,12 +132,18 @@ export class EventServices implements IEventService{
 
             // let data = await eventRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
 
-            let events = await this.eventRepository.getAllEvents(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            // let events = await this.eventRepository.getAllEvents(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            let events = await this.eventRepository.getEventsAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
             console.log('all service data filtered and sorted: ', events);
 
+            const data={
+                events:events[0].events,
+                count:events[0].eventsCount[0].totalEvents || 0
+            }
+
             if (events) {
-                return { success: true, data:events }
+                return { success: true, data }
             } else {
                 return { success: false, message: 'Could not fetch data' }
             }

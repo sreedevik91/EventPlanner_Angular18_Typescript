@@ -1,4 +1,4 @@
-import { IBooking, IBookedServices, IBookingDb, IEvent, IChoice, IBookingRepository, IEmailService, IBookingService, IResponse, IRequestParams, IServiceGrpcType, IServiceType } from "../interfaces/bookingInterfaces"
+import { IBooking, IBookedServices, IBookingDb, IEvent, IChoice, IBookingRepository, IEmailService, IBookingService, IResponse, IRequestParams, IServiceGrpcType, IServiceType, IPaymentService, IRazorpayResponse } from "../interfaces/bookingInterfaces"
 // import bookingRepository from "../repository/bookingRepository";
 import nodemailer from 'nodemailer'
 import { config } from "dotenv";
@@ -6,15 +6,18 @@ import { getServiceImgGrpc, getServicesByEventNameGrpc, getServicesByProviderAnd
 import { getEventByNameGrpc, getEventImgGrpc, getEventsByGrpc } from "../grpc/grpcEventsClient";
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
 import { FilterQuery, QueryOptions } from "mongoose";
+import { log } from "@grpc/grpc-js/build/src/logging";
 
 config()
 
-export class BookingService implements IBookingService{
+export class BookingService implements IBookingService {
 
     constructor(
-        private bookingRepository:IBookingRepository,
-        private emailService:IEmailService
-    ){}
+        private bookingRepository: IBookingRepository,
+        private emailService: IEmailService,
+        private paymentService: IPaymentService
+
+    ) { }
 
     // async sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> {
 
@@ -71,11 +74,11 @@ export class BookingService implements IBookingService{
             //     return { success: false, message: 'Could not get the total document' }
             // }
 
-            return bookingCount ?  { success: true, data: bookingCount }: { success: false, message: 'Could not get the total document' }
+            return bookingCount ? { success: true, data: bookingCount } : { success: false, message: 'Could not get the total document' }
 
         } catch (error: unknown) {
             // console.log('Error from getTotalServices service: ', error.message);
-            error instanceof Error ? console.log('Error message from getTotalServices service: ', error.message ) : console.log('Unknown error from getTotalServices service: ', error )
+            error instanceof Error ? console.log('Error message from getTotalServices service: ', error.message) : console.log('Unknown error from getTotalServices service: ', error)
 
             return { success: false, message: 'Something went wrong' }
 
@@ -87,7 +90,7 @@ export class BookingService implements IBookingService{
 
         try {
 
-            let addBookingResponse:IResponse={success:false}
+            let addBookingResponse: IResponse = { success: false }
 
             const { user, userId, serviceId, providerId, event, style, services, deliveryDate, venue, totalCount } = bookingData
 
@@ -116,7 +119,7 @@ export class BookingService implements IBookingService{
                     userId,
                     service: service[0].name,
                     // img: img.imgPath,
-                    img:service[0].img,
+                    img: service[0].img,
                     services,
                     deliveryDate,
                     venue,
@@ -135,7 +138,7 @@ export class BookingService implements IBookingService{
                 //     return { success: false, message: 'Could not create service' }
                 // }
 
-                addBookingResponse = newBooking ? { success: true, data: newBooking, message:'Booking added successfully' } : { success: false, message: 'Could not create service' }
+                addBookingResponse = newBooking ? { success: true, data: newBooking, message: 'Booking added successfully' } : { success: false, message: 'Could not create service' }
 
             } else if (event) {
 
@@ -180,7 +183,7 @@ export class BookingService implements IBookingService{
             return addBookingResponse
 
         } catch (error: unknown) {
-            error instanceof Error ? console.log('Error message from addBooking service: ', error.message ) : console.log('Unknown error from addBooking service: ', error )
+            error instanceof Error ? console.log('Error message from addBooking service: ', error.message) : console.log('Unknown error from addBooking service: ', error)
 
             // console.log('Error from addBooking service: ', error.message);
             return { success: false, message: 'Something went wrong' }
@@ -220,9 +223,11 @@ export class BookingService implements IBookingService{
 
             // let data = await bookingRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
 
-            let bookings = await this.bookingRepository.getAllBooking(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            // let bookings = await this.bookingRepository.getAllBooking(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            let bookingsData = await this.bookingRepository.getBookingsAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
-            console.log('all service data filtered and sorted: ', bookings);
+            // console.log('all bookings data : ', bookings);
+            console.log('all bookings and total count: ', bookingsData[0].bookings, bookingsData[0].bookingsCount[0].totalBookings);
 
             // if (bookings) {
             //     return { success: true, data:bookings }
@@ -230,11 +235,16 @@ export class BookingService implements IBookingService{
             //     return { success: false, message: 'Could not fetch data' }
             // }
 
-            return bookings ?  { success: true, data: bookings }: { success: false, message: 'Could not fetch data' }
+            const data={
+                bookings:bookingsData[0].bookings,
+                count:bookingsData[0].bookingsCount[0].totalBookings || 0
+            }
+
+            return bookingsData ? { success: true, data } : { success: false, message: 'Could not fetch data' }
 
         } catch (error: unknown) {
             // console.log('Error from getServices: ', error.message);
-            error instanceof Error ? console.log('Error message from getBookings service: ', error.message ) : console.log('Unknown error from getBookings service: ', error )
+            error instanceof Error ? console.log('Error message from getBookings service: ', error.message) : console.log('Unknown error from getBookings service: ', error)
 
             return { success: false, message: 'Something went wrong' }
         }
@@ -252,11 +262,11 @@ export class BookingService implements IBookingService{
             //     return { success: false, message: 'Could not delete booking, Something went wrong' }
             // }
 
-            return deleteBooking ? { success: true, data: deleteBooking, message: 'Event deleted successfuly' }: { success: false, message: 'Could not delete booking, Something went wrong' }
+            return deleteBooking ? { success: true, data: deleteBooking, message: 'Event deleted successfuly' } : { success: false, message: 'Could not delete booking, Something went wrong' }
 
         } catch (error: unknown) {
             // console.log('Error from deleteBooking service: ', error.message);
-            error instanceof Error ? console.log('Error message from deleteBooking service: ', error.message ) : console.log('Unknown error from deleteBooking service: ', error )
+            error instanceof Error ? console.log('Error message from deleteBooking service: ', error.message) : console.log('Unknown error from deleteBooking service: ', error)
 
             return { success: false, message: 'Something went wrong' }
         }
@@ -280,7 +290,7 @@ export class BookingService implements IBookingService{
             }
         } catch (error: unknown) {
             // console.log('Error from deleteBookedServices service: ', error.message);
-            error instanceof Error ? console.log('Error message from deleteBookedServices service: ', error.message ) : console.log('Unknown error from deleteBookedServices service: ', error )
+            error instanceof Error ? console.log('Error message from deleteBookedServices service: ', error.message) : console.log('Unknown error from deleteBookedServices service: ', error)
 
             return { success: false, message: 'Something went wrong' }
         }
@@ -298,11 +308,11 @@ export class BookingService implements IBookingService{
             //     return { success: false, message: 'Could not get booking, Something went wrong' }
             // }
 
-            return booking ? { success: true, data: booking}: { success: false, message: 'Could not get booking, Something went wrong' }
+            return booking ? { success: true, data: booking } : { success: false, message: 'Could not get booking, Something went wrong' }
 
         } catch (error: unknown) {
             // console.log('Error from getEventById service: ', error.message);
-            error instanceof Error ? console.log('Error message from getBookingById service: ', error.message ) : console.log('Unknown error from getBookingById service: ', error )
+            error instanceof Error ? console.log('Error message from getBookingById service: ', error.message) : console.log('Unknown error from getBookingById service: ', error)
 
             return { success: false, message: 'Something went wrong' }
         }
@@ -320,11 +330,11 @@ export class BookingService implements IBookingService{
             //     return { success: false, message: 'Could not get booking, Something went wrong' }
             // }
 
-            return booking ? { success: true, data: booking}: { success: false, message: 'Could not get booking, Something went wrong' }
+            return booking ? { success: true, data: booking } : { success: false, message: 'Could not get booking, Something went wrong' }
 
         } catch (error: unknown) {
             // console.log('Error from getEventById service: ', error.message);
-            error instanceof Error ? console.log('Error message from getBookingByUserId service: ', error.message ) : console.log('Unknown error from getBookingByUserId service: ', error )
+            error instanceof Error ? console.log('Error message from getBookingByUserId service: ', error.message) : console.log('Unknown error from getBookingByUserId service: ', error)
 
             return { success: false, message: 'Something went wrong' }
         }
@@ -343,11 +353,11 @@ export class BookingService implements IBookingService{
             //     return { success: false, message: 'Could not updated booking' }
             // }
 
-            return updatedBooking ? { success: true, data: updatedBooking, message: 'Event updated successfuly' }: { success: false, message: 'Could not updated booking' }
+            return updatedBooking ? { success: true, data: updatedBooking, message: 'Event updated successfuly' } : { success: false, message: 'Could not updated booking' }
 
         } catch (error: unknown) {
             // console.log('Error from updatedEvent: ', error.message);
-            error instanceof Error ? console.log('Error message from editBooking service: ', error.message ) : console.log('Unknown error from editBooking service: ', error )
+            error instanceof Error ? console.log('Error message from editBooking service: ', error.message) : console.log('Unknown error from editBooking service: ', error)
 
             return { success: false, message: 'Something went wrong' }
         }
@@ -370,7 +380,7 @@ export class BookingService implements IBookingService{
                 //     return { success: false, message: 'Could not updated booking status' }
                 // }
 
-            return bookingUpdated ? { success: true, data: bookingUpdated, message: 'Event status updated' }: { success: false, message: 'Could not updated booking status' }
+                return bookingUpdated ? { success: true, data: bookingUpdated, message: 'Event status updated' } : { success: false, message: 'Could not updated booking status' }
 
             } else {
                 return { success: false, message: 'Could not find booking details' }
@@ -378,7 +388,7 @@ export class BookingService implements IBookingService{
 
         } catch (error: unknown) {
             // console.log('Error from editStatus booking: ', error.message);
-            error instanceof Error ? console.log('Error message from editStatus service: ', error.message ) : console.log('Unknown error from editStatus service: ', error )
+            error instanceof Error ? console.log('Error message from editStatus service: ', error.message) : console.log('Unknown error from editStatus service: ', error)
 
             return { success: false, message: 'Something went wrong' }
         }
@@ -435,7 +445,7 @@ export class BookingService implements IBookingService{
 
         } catch (error: unknown) {
             // console.log('Error from getServiceByName service: ', error, error.message);
-            error instanceof Error ? console.log('Error message from getService service: ', error.message ) : console.log('Unknown error from getService service: ', error )
+            error instanceof Error ? console.log('Error message from getService service: ', error.message) : console.log('Unknown error from getService service: ', error)
 
             return { success: false, message: 'Something went wrong' }
         }
@@ -491,7 +501,7 @@ export class BookingService implements IBookingService{
                     mySet.add(event.name)
                 })
                 let eventsArray = Array.from(mySet)
-                let obj: Record<string,{eventId:string,event:string}[]> = {}
+                let obj: Record<string, { eventId: string, event: string }[]> = {}
                 eventsList.events.forEach((e: IEvent) => {
                     let key = e.name
                     obj[key] = obj[key] || []
@@ -499,7 +509,7 @@ export class BookingService implements IBookingService{
                 })
 
                 let events: { eventId: string, event: string }[] = []
-                Object.values(obj).forEach((val: {eventId:string,event:string}[]) => {
+                Object.values(obj).forEach((val: { eventId: string, event: string }[]) => {
                     val.forEach((eventObj: { eventId: string, event: string }) => {
                         events.push(eventObj)
                     })
@@ -515,7 +525,7 @@ export class BookingService implements IBookingService{
 
         } catch (error: unknown) {
             // console.log('Error from getServiceByName service: ', error, error.message);
-            error instanceof Error ? console.log('Error message from getAllEvents service: ', error.message ) : console.log('Unknown error from getAllEvents service: ', error )
+            error instanceof Error ? console.log('Error message from getAllEvents service: ', error.message) : console.log('Unknown error from getAllEvents service: ', error)
 
             return { success: false, message: 'Something went wrong' }
         }
@@ -527,7 +537,7 @@ export class BookingService implements IBookingService{
             const services = await getServicesByEventNameGrpc(name)
             console.log(`services for ${name}: `, services);
 
-            let servicesObj:{decor:IServiceType[], dining:IServiceType[], cuisine:IServiceType[], coverage:IServiceType[]}= {coverage:[],cuisine:[],decor:[],dining:[]}
+            let servicesObj: { decor: IServiceType[], dining: IServiceType[], cuisine: IServiceType[], coverage: IServiceType[] } = { coverage: [], cuisine: [], decor: [], dining: [] }
 
             let decor: IServiceType[] = []
             let dining: IServiceType[] = []
@@ -567,13 +577,252 @@ export class BookingService implements IBookingService{
 
         } catch (error: unknown) {
             // console.log('Error from getServiceByName service: ', error, error.message);
-            error instanceof Error ? console.log('Error message from getServiceByEvent service: ', error.message ) : console.log('Unknown error from getServiceByEvent service: ', error )
+            error instanceof Error ? console.log('Error message from getServiceByEvent service: ', error.message) : console.log('Unknown error from getServiceByEvent service: ', error)
 
             return { success: false, message: 'Something went wrong' }
         }
 
     }
 
+    async confirmBooking(bookingId: string) {
+        try {
+
+            const booking = await this.bookingRepository.getBookingById(bookingId)
+            const bookingService = booking?.services
+            const totalAmount = bookingService?.reduce((sum: number, b: IBookedServices) => {
+                sum += b.choicePrice
+                return sum
+            }, 0)
+            console.log('booking Id for razorpay order id: ', bookingId, ' ,total amount for razorpay order id: ', totalAmount);
+
+            const razorpayOrderId = await this.paymentService.createOrder(bookingId, totalAmount!)
+            console.log('razorpay order id: ', razorpayOrderId);
+
+            return razorpayOrderId ? { success: true, data: { razorpayOrderId, amount: totalAmount! * 100 } } : { success: false, message: 'Could not proceed payment. Try again.' }
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServiceByEvent service: ', error.message) : console.log('Unknown error from getServiceByEvent service: ', error)
+
+            return { success: false, message: 'Something went wrong' }
+        }
+    }
+
+    async verifyPayment(razorpayResponse: IRazorpayResponse) {
+        try {
+
+            const razorpayVerifyPayment = await this.paymentService.verifyOrder(razorpayResponse)
+
+            console.log('razorpayVerifyPayment response: ', razorpayVerifyPayment);
+
+            if (razorpayVerifyPayment) {
+                const updateBooking = await this.bookingRepository.updateBooking(razorpayResponse.bookingId, { $set: { isConfirmed: true, orderDate: Date.now() } })
+                console.log('updated booking after payment success: ', updateBooking);
+                const userData = await getUserByIdGrpc(updateBooking?.userId!)
+                let content = `
+            <p>Glad to inform that your booking with Dream Events is confirmed.</p>
+            <p>Please visit our website for more details. Happy events!</p>
+           `
+                let subject = "Booking Confirmation"
+                // let provider = providerData.data
+                const isSentMail = await this.emailService.sendMail(userData.name, userData.email, content, subject)
+                if (!isSentMail) {
+                    console.log('could not sent booking confirmation email: ', isSentMail);
+                }
+            }
+
+            return razorpayVerifyPayment ? { success: true, data: {}, message: 'Payment Successful.' } : { success: false, message: 'Payment failed. Try again.' }
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServiceByEvent service: ', error.message) : console.log('Unknown error from getServiceByEvent service: ', error)
+
+            return { success: false, message: 'Something went wrong' }
+        }
+    }
+
+    async getSalesData(params: IRequestParams) {
+        try {
+            console.log('entered getSalesData');
+
+            const { pageNumberEvent, pageNumberService, pageSize, sortOrderService, sortByService, sortOrderEvent, sortByEvent, startDate, endDate, filterBy } = params
+            console.log('search filter params for sales data:', pageNumberEvent, pageNumberService, pageSize, sortOrderService, sortByService, sortOrderEvent, sortByEvent, startDate, endDate, filterBy);
+
+            let filterQEvent: FilterQuery<IBooking> = {}
+            let filterQService: FilterQuery<IBooking> = {}
+            let sortQEvent: QueryOptions = {}
+            let sortQService: QueryOptions = {}
+            let skipEvent = 0
+            let skipService = 0
+            let fromDate = null
+            let toDate = null
+            const now = new Date();
+
+            if (sortOrderService !== undefined && sortByService !== undefined) {
+                let order = sortOrderService === 'asc' ? 1 : -1
+                if (sortByService === 'service') { sortQService.service = order }
+                else if (sortByService === 'date') { sortQService.date = order }
+                else if (sortByService === 'totalCount') { sortQService.totalCount = order }
+                else if (sortByService === 'totalAmount') { sortQService.totalAmount = order }
+
+            } else {
+                sortQService.date = 1
+            }
+
+            if (sortOrderEvent !== undefined && sortByEvent !== undefined) {
+                let order = sortOrderEvent === 'asc' ? 1 : -1
+                if (sortByEvent === 'event') { sortQEvent.service = order }
+                else if (sortByEvent === 'date') { sortQEvent.date = order }
+                else if (sortByEvent === 'totalCount') { sortQEvent.totalCount = order }
+                else if (sortByEvent === 'totalAmount') { sortQEvent.totalAmount = order }
+
+            } else {
+                sortQEvent.date = 1
+            }
+
+            filterQEvent.event = { $exists: true }
+            filterQEvent.isConfirmed = true
+
+            // filterQService.service = { $exists: true } // not eeded as services sre there in events as well
+            filterQService.isConfirmed = true
+
+            if (pageNumberEvent !== '' || pageNumberEvent !== undefined) {
+                skipEvent = (Number(pageNumberEvent) - 1) * Number(pageSize)
+            } else if (pageNumberService !== '' || pageNumberService !== undefined) {
+                skipService = (Number(pageNumberService) - 1) * Number(pageSize)
+            }
+
+            if (startDate !== undefined || endDate !== undefined) {
+                fromDate = new Date(startDate!)
+                toDate = new Date(endDate!)
+                filterQEvent.orderDate = { $gte: (fromDate), $lte: (toDate) }
+                filterQService.orderDate = { $gte: (fromDate), $lte: (toDate) }
+            }
+
+            if (filterBy === '1_day') {
+                fromDate = new Date(now.setDate(now.getDate() - 1))
+                toDate = new Date()
+                filterQEvent.orderDate = { $gte: (fromDate), $lte: (toDate) }
+                filterQService.orderDate = { $gte: (fromDate), $lte: (toDate) }
+            } else if (filterBy === '1_week') {
+                fromDate = new Date(now.setDate(now.getDate() - 7))
+                toDate = new Date()
+                filterQEvent.orderDate = { $gte: (fromDate), $lte: (toDate) }
+                filterQService.orderDate = { $gte: (fromDate), $lte: (toDate) }
+            } else if (filterBy === '1_month') {
+                fromDate = new Date(now.setMonth(now.getMonth() - 1))
+                toDate = new Date()
+                filterQEvent.orderDate = { $gte: (fromDate), $lte: (toDate) }
+                filterQService.orderDate = { $gte: (fromDate), $lte: (toDate) }
+            }
+
+            // filterQEvent.createdAt = fromDate && toDate ? { $gte: (fromDate), $lte: (toDate) } : {}
+            // filterQService.createdAt = fromDate && toDate ? { $gte: (fromDate), $lte: (toDate) } : {}
+
+            console.log('filterQService: ', filterQService, ', filterQEvent: ', filterQEvent);
+            console.log('sortQEvent: ', sortQEvent, ',sortQService: ', sortQService);
+            console.log('skipService: ', skipService, ', skipEvent: ', skipEvent);
+
+            const salesData = await this.bookingRepository.getSalesData({ filterQEvent, filterQService }, { sortQEvent, sortQService, limit: Number(pageSize), skipEvent, skipService })
+
+            console.log('salesData: ', salesData, ', eventSales response: ', salesData[0].eventsData, ', serviceSales response: ', salesData[0].serviceData, ', eventSalesCount response: ', salesData[0].eventSalesCount, ', serviceSalesCount response: ', salesData[0].serviceSalesCount);
+            const data = {
+                eventSales: salesData[0].eventsData,
+                eventSalesCount: salesData[0].eventSalesCount[0]?.totalSale || 0,
+                servicesSales: salesData[0].serviceData,
+                serviceSalesCount: salesData[0].serviceSalesCount[0]?.totalSale || 0,
+            }
+            return salesData ? { success: true, data } : { success: false, message: 'Fetching data failed. Try again.' }
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServiceByEvent service: ', error.message) : console.log('Unknown error from getServiceByEvent service: ', error)
+
+            return { success: false, message: 'Something went wrong' }
+        }
+    }
+
+    async getProviderSales(params: IRequestParams) {
+        try {
+            console.log('entered getProviderSales');
+
+            const { pageNumberService, pageSize, sortOrderService, sortByService, startDate, endDate, filterBy, providerId } = params
+            console.log('search filter params for provider sales data:', pageNumberService, pageSize, sortOrderService, sortByService, startDate, endDate, filterBy, providerId);
+
+            const providerData = await getUserByIdGrpc(providerId!)
+            let provider = providerData.name
+            console.log('provider details to get sales data: ', providerData);
+
+            let filterQService: FilterQuery<IBooking> = {}
+            let sortQService: QueryOptions = {}
+            let skipService = 0
+            let fromDate = null
+            let toDate = null
+            const now = new Date();
+
+            if (sortOrderService !== undefined && sortByService !== undefined) {
+                let order = sortOrderService === 'asc' ? 1 : -1
+                if (sortByService === 'service') { sortQService.service = order }
+                else if (sortByService === 'date') { sortQService.date = order }
+                else if (sortByService === 'totalCount') { sortQService.totalCount = order }
+                else if (sortByService === 'totalAmount') { sortQService.totalAmount = order }
+
+            } else {
+                sortQService.date = 1
+            }
+
+            // filterQService.service = { $exists: true } // not eeded as services sre there in events as well
+            filterQService.isConfirmed = true
+            filterQService.services = {
+                $elemMatch: {
+                    providerName: { $regex: /provider/i }
+                }
+            }
+
+            if (pageNumberService !== '' || pageNumberService !== undefined) {
+                skipService = (Number(pageNumberService) - 1) * Number(pageSize)
+            }
+
+            if (startDate !== undefined || endDate !== undefined) {
+                fromDate = new Date(startDate!)
+                toDate = new Date(endDate!)
+                filterQService.orderDate = { $gte: (fromDate), $lte: (toDate) }
+            }
+
+            if (filterBy === '1_day') {
+                fromDate = new Date(now.setDate(now.getDate() - 1))
+                toDate = new Date()
+                filterQService.orderDate = { $gte: (fromDate), $lte: (toDate) }
+            } else if (filterBy === '1_week') {
+                fromDate = new Date(now.setDate(now.getDate() - 7))
+                toDate = new Date()
+                filterQService.orderDate = { $gte: (fromDate), $lte: (toDate) }
+            } else if (filterBy === '1_month') {
+                fromDate = new Date(now.setMonth(now.getMonth() - 1))
+                toDate = new Date()
+                filterQService.orderDate = { $gte: (fromDate), $lte: (toDate) }
+            }
+
+            // filterQService.createdAt = fromDate && toDate ? { $gte: (fromDate), $lte: (toDate) } : {}
+
+            console.log('filterQService: ', filterQService);
+            console.log('sortQService: ', sortQService);
+            console.log('skipService: ', skipService);
+
+            const salesData = await this.bookingRepository.getProviderSalesData(filterQService, { sortQService, limit: Number(pageSize), skipService })
+
+            console.log('salesData: ', salesData, ', serviceSales response: ', salesData[0].serviceData, ', serviceSalesCount response: ', salesData[0].serviceSalesCount);
+            const data = {
+                servicesSales: salesData[0].serviceData,
+                serviceSalesCount: salesData[0].serviceSalesCount[0]?.totalSale || 0,
+            }
+            return salesData ? { success: true, data } : { success: false, message: 'Fetching data failed. Try again.' }
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServiceByEvent service: ', error.message) : console.log('Unknown error from getServiceByEvent service: ', error)
+
+            return { success: false, message: 'Something went wrong' }
+        }
+    }
+
 }
+
 
 // export default new EventServices()
