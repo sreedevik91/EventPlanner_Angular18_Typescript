@@ -1,9 +1,8 @@
 import * as grpc from "@grpc/grpc-js"
 import * as protoLoader from "@grpc/proto-loader"
 import path from "path"
-import { IGetAvailableServicesResponse } from "../interfaces/chatInterfaces"
 
-const PROTO_PATH=path.join(__dirname,'../../../proto/eventServices.proto')
+const PROTO_PATH=path.join(__dirname,'../../../../proto/eventServices.proto')
 
 // Load the proto file
 const packageDefinition=protoLoader.loadSync(PROTO_PATH)

@@ -41,6 +41,9 @@ export class BookingService {
   getBookingsById(id: string) {
     return this.http.get(`${this.baseUrl}${id}`, { observe: 'response' })
   }
+  getBookingsByProvider(id: string) {
+    return this.http.get(`${this.baseUrl}bookings/${id}`, { observe: 'response' })
+  }
 
   getBookingsByName(name: string) {
     return this.http.get(`${this.baseUrl}bookings/${name}`, { observe: 'response' })
@@ -82,7 +85,11 @@ export class BookingService {
   getProviderSales(params:HttpParams){
     // return this.http.get(`${this.baseUrl}provider/sales`, { observe: 'response', params })
     return this.http.get(`${this.baseUrl}providerSales`, { observe: 'response', params })
+  }
 
+  getAdminBookingsData(){
+    // return this.http.get(`${this.baseUrl}provider/sales`, { observe: 'response', params })
+    return this.http.get(`${this.baseUrl}adminData`, { observe: 'response' })
   }
 
 }

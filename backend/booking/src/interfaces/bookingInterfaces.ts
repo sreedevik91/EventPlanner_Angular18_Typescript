@@ -78,7 +78,6 @@ export interface IServiceType {
   price:number
 }
 
-
 export interface IChoice {
   choiceName: string;
   choiceType: string;
@@ -193,6 +192,25 @@ export interface IBookingsData{
   bookingsCount:{totalBookings:number}[];
 }
 
+export interface IAdminBookingData{
+  bookingData:{type:string, customer:string, date:Date, isConfirmed:boolean}[];
+  totalRevenue:{totalAmount:number}[];
+  oldBookings:{count:number}[];
+  upcomingBookings:{count:number}[];
+  totalBooking:{count:number}[]
+}
+
+export interface IProviderBookings {
+  user: string;
+  event: string;
+  service: string;
+  deliveryDate: Date;
+  tag: string;
+  totalCount: number;
+  orderDate: Date;
+  services: IBookedServices[];
+}
+
 export interface IRepository<T> {
   createBooking(bookingData: Partial<T>): Promise<T>
   getBookingById(bookingId: string): Promise<T | null>
@@ -212,6 +230,8 @@ export interface IBookingRepository {
   getSalesData(query: FilterQuery<IBooking>, options: QueryOptions):Promise<ISalesData[]>
   getProviderSalesData(query: FilterQuery<IBooking>, options: QueryOptions):Promise<IProviderSalesData[]>
   getBookingsAndCount(query: FilterQuery<IBooking>, options: QueryOptions): Promise<IBookingsData[]>
+  getBookingsByProvider(name: string): Promise<IBooking[] | null>
+  getTotalBookingData(): Promise<IAdminBookingData[]>
 }
 
 export interface IEmailService {
@@ -235,6 +255,8 @@ export interface IBookingService {
   verifyPayment(razorpayResponse:IRazorpayResponse): Promise<IResponse>
   getSalesData(params: IRequestParams): Promise<IResponse>
   getProviderSales(params: IRequestParams): Promise<IResponse>
+  getBookingsByProvider(name: string): Promise<IResponse>
+  getAdminBookingData(): Promise<IResponse>
 }
 
 export interface IBookingController {
@@ -254,6 +276,8 @@ export interface IBookingController {
   verifyPayment(req: Request, res: Response, next: NextFunction): Promise<void>
   getSalesData(req: Request, res: Response, next: NextFunction): Promise<void>
   getProviderSales(req: Request, res: Response, next: NextFunction): Promise<void>
+  getBookingsByProvider(req: Request, res: Response, next: NextFunction): Promise<void>
+  getAdminBookingData(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
 export interface IPaymentService{

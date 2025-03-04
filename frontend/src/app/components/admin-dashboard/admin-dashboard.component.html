@@ -1,1 +1,130 @@
-<p>admin-dashboard works!</p>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+
+            <!-- <div class="col-md-3 col-lg-2 sidebar text-white p-3 fixed-left">
+                <h4 class="mb-4">Event Planner</h4>
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="#">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-calendar-event me-2"></i> Events
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-people me-2"></i> Clients
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-building me-2"></i> Venues
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-bar-chart-line me-2"></i> Reports
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-gear me-2"></i> Settings
+                    </a>
+                </nav>
+            </div> -->
+
+            <!-- Main Content -->
+            <div class="col-md-12 col-lg-12 ms-auto p-4 main-content">
+                <!-- Top Bar -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>Dashboard Overview</h3>
+                    <!-- <div class="d-flex">
+                        <input type="text" class="form-control me-2" placeholder="Search...">
+                        <button class="btn btn-primary">
+                            <i class="bi bi-bell"></i>
+                        </button>
+                    </div> -->
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <h5><i class="bi bi-calendar-check card-icon"></i></h5>
+                                <h5 class="card-title">Total Completed Events</h5>
+                                <h2 class="card-text">{{oldBookingsCount()}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h5><i class="bi bi-ticket-perforated card-icon"></i></h5>
+                                <h5 class="card-title">Bookings</h5>
+                                <h2 class="card-text">{{totalBookings()}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <h5><i class="bi bi-currency-rupee card-icon"></i></h5>
+                                <h5 class="card-title">Revenue</h5>
+                                <h2 class="card-text">₹{{totalRevenue()}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="card bg-danger text-white">
+                            <div class="card-body">
+                                <h5><i class="bi bi-exclamation-triangle card-icon"></i></h5>
+                                <h5 class="card-title">Pending Bookings </h5>
+                                <h2 class="card-text">{{upcomingBookingsCount()}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings Table -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Bookings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Event Name</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <!-- <th>Action</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (item of adminBookingsList(); track $index) {
+                                    <tr>
+                                        <td>{{item.type}}</td>
+                                        <td>{{item.customer}}</td>
+                                        <td>{{item.date | date:'mediumDate'}}</td>
+                                        <td>
+                                            @if(item.isConfirmed){
+                                                <span class="badge bg-success">Confirmed</span>
+                                            }@else {
+                                                <span class="badge bg-warning">Pending</span>
+                                            }
+                                            </td>
+                                        <!-- <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td> -->
+                                    </tr>
+                                }
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   

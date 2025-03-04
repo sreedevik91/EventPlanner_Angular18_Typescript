@@ -3,7 +3,7 @@ import * as protoLoader from "@grpc/proto-loader"
 import path from "path"
 import { IGetAvailableServicesResponse } from "../interfaces/bookingInterfaces"
 
-const PROTO_PATH=path.join(__dirname,'../../../proto/eventServices.proto')
+const PROTO_PATH=path.join(__dirname,'../../../../proto/eventServices.proto')
 
 // Load the proto file
 const packageDefinition=protoLoader.loadSync(PROTO_PATH)

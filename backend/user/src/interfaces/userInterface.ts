@@ -57,6 +57,11 @@ export interface IRequestParams {
     sortOrder?: string
   }
 
+  export interface IUsersData{
+    users:IUser[];
+    usersCount:{totalUsers:number}[];
+  }
+
 export interface IRepository<T> {
     // getAllUsers(filter:any,sort:any,limit:number,skip:number): Promise<T[]>;
     getAllUsers(query: FilterQuery<T>, options: QueryOptions): Promise<T[] | null>;
@@ -75,6 +80,7 @@ export interface IUserRepository {
     getUserByEmail(email: string): Promise<IUserDb | null>;
     getUserByUsername(username: string): Promise<IUserDb | null>;
     getTotalUsers(): Promise<number>
+    getUsersAndCount(filter: FilterQuery<IUser>,  options: QueryOptions): Promise<IUsersData[]>;
 }
 
 export interface IJwtPayload extends JwtPayload {

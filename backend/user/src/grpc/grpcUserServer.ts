@@ -4,7 +4,7 @@ import path from 'path';
 import { IUserRepository } from '../interfaces/userInterface';
 import { UserRepository } from '../repository/userRepository';
 
-const PROTO_PATH = path.join(__dirname, '../../../proto/user.proto');
+const PROTO_PATH = path.join(__dirname, '../../../../proto/user.proto');
 
 // Load the .proto file
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);

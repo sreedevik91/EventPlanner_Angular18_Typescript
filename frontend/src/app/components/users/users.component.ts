@@ -46,17 +46,16 @@ export default class UsersComponent implements OnInit, OnDestroy {
 
   currentPage: number = Number(this.searchFilterFormObj.pageNumber)
 
-  constructor() {
-    this.getTotalUsers()
-    this.initialiseUserForm()
-    this.initialiseSearchFilterForm()
-  }
+  constructor() { }
 
   ngOnInit() {
     // this.searchParams = this.searchParams
     //   .set('pageNumber', this.searchFilterFormObj.pageNumber)
     //   .set('pageSize', this.searchFilterFormObj.pageSize)
     // this.getUsers(this.searchParams)
+    // this.getTotalUsers()
+    this.initialiseUserForm()
+    this.initialiseSearchFilterForm()
     this.onRefresh()
     console.log('total users count beginning: ', this.totalUsers);
   }
@@ -173,7 +172,10 @@ export default class UsersComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           // this.users$ = res.body?.data
-          this.users.set(res.body?.data)
+          console.log('get users response: ', res.body?.data);
+          
+          this.users.set(res.body?.data.users)
+          this.totalUsers = res.body?.data.count
         } else {
           console.log('could not get users');
           this.alertService.getAlert('alert alert-danger', 'Failed!', res.body?.message || '')

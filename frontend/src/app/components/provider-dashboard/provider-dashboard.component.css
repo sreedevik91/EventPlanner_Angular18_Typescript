@@ -294,3 +294,45 @@ h2.text-center {
         left: 28px;
     }
 }
+
+/* ================================ */
+
+/* Vertical Slide */
+/* .carousel-inner {
+    perspective: 1000px;
+  }
+  
+  .carousel-item {
+    transition: transform 1s ease-in-out !important;
+    transform: translateY(100%);
+  }
+  
+  .carousel-item-next.carousel-item-start,
+  .carousel-item-prev.carousel-item-end,
+  .carousel-item.active {
+    transform: translateY(0);
+  }
+  
+  .active.carousel-item-end,
+  .active.carousel-item-start {
+    transform: translateY(-100%);
+  } */
+
+  /* Replace the default slide effect with fade */
+  /* horizontal Slide */
+.carousel-item {
+    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out !important;
+    opacity: 0;
+  }
+  
+  .carousel-item-next.carousel-item-start,
+  .carousel-item-prev.carousel-item-end,
+  .carousel-item.active {
+    opacity: 1;
+  }
+  
+  /* Remove the default translateX/translateY transforms */
+  .active.carousel-item-end,
+  .active.carousel-item-start {
+    transform: none !important;
+  }

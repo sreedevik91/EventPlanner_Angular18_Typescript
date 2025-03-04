@@ -135,7 +135,7 @@ export class EventServices implements IEventService{
             // let events = await this.eventRepository.getAllEvents(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
             let events = await this.eventRepository.getEventsAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
-            console.log('all service data filtered and sorted: ', events);
+            console.log('all events and total count: ', events);
 
             const data={
                 events:events[0].events,

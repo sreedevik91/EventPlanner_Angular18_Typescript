@@ -1,5 +1,5 @@
-import { DeleteResult } from "mongoose";
-import { IUserDb, IUserRepository } from "../interfaces/userInterface";
+import { DeleteResult, FilterQuery, QueryOptions } from "mongoose";
+import { IUserDb, IUserRepository, IUsersData } from "../interfaces/userInterface";
 import { IUser } from "../interfaces/userInterface";
 import User from "../models/userSchema";
 import BaseRepository from "./baseRepository";
@@ -68,6 +68,27 @@ export class UserRepository extends BaseRepository<IUserDb> implements IUserRepo
         return usersCount
     }
 
+    async getUsersAndCount(query:FilterQuery<IUser>={}, options:QueryOptions={}):Promise<IUsersData[]>{
+        const {sort={},limit=0,skip=0}=options
+        return await this.model.aggregate([
+            {
+                $facet:{
+                    'users':[
+                        {$match:query},
+                        {$sort:sort},
+                        {$skip:skip!},
+                        {$limit:limit!}
+                    ],
+                    'usersCount':[
+                        {$match:query},
+                        {$count:'totalUsers'}
+                    ]
+                }
+            }
+        ])
+    }
+
+  
 
 }
 

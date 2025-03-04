@@ -192,13 +192,19 @@ export class ServiceServices implements IServicesService {
 
             // let data = await serviceRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
 
-            let data = await this.serviceRepository.getAllServices(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            // let data = await this.serviceRepository.getAllServices(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            let servicesData = await this.serviceRepository.getServicesAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
-            // console.log('all service data filtered and sorted: ', data);
+            console.log('all users and total count: ', servicesData);
+
+            const data={
+                services:servicesData[0].services,
+                count:servicesData[0].servicesCount[0].totalServices || 0
+            }
 
             if (data) {
                 let extra: Record<string, string>[] = []
-                for (let service of data) {
+                for (let service of data.services) {
                     const provider = await getUserByIdGrpc(service.provider)
                     console.log('getUserByIdGrpc provider: ', provider);
                     extra.push({ id: service.provider, name: provider.name })
