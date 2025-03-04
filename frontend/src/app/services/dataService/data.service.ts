@@ -22,6 +22,7 @@ export class DataService {
             eventId: '',
             services: [],
             deliveryDate: new Date(),
+            orderDate: new Date(),
             venue:  { building: '', street: '', city: '', district: '', state: '', pbNo: 0 },
             totalCount: 0,
             isConfirmed:false

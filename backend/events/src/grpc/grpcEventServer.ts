@@ -7,7 +7,7 @@ import { IEventRepository } from '../interfaces/eventInterfaces';
 
 config()
 
-const PROTO_PATH = path.join(__dirname, '../../../proto/events.proto');
+const PROTO_PATH = path.join(__dirname, '../../../../proto/events.proto');
 
 // Load the .proto file
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);

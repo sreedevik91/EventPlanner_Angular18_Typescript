@@ -334,8 +334,12 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
     this.serviceService.getAllServices(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
+          console.log('getAllServices res from provider panel: ', res.body);
+          
           // this.totalServices=res.body.data.length
-          this.services.set(res.body?.data)
+          this.services.set(res.body?.data.services)
+          this.totalServices = res.body?.data.count
+
           // console.log('total services: ', this.services());
         } else {
           console.log('could not get users');

@@ -7,7 +7,7 @@ import { config } from 'dotenv';
 
 config()
 
-const PROTO_PATH = path.join(__dirname, '../../../proto/eventServices.proto')
+const PROTO_PATH = path.join(__dirname, '../../../../proto/eventServices.proto')
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH)
 const serviceProto: any = grpc.loadPackageDefinition(packageDefinition).service

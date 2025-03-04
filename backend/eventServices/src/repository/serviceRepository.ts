@@ -1,5 +1,5 @@
-import { DeleteResult } from "mongoose";
-import { IAggregateResponse, IService, IServiceDb, IServiceRepository } from "../interfaces/serviceInterfaces";
+import { DeleteResult, FilterQuery, QueryOptions } from "mongoose";
+import { IAggregateResponse, IService, IServiceDb, IServiceRepository, IServicesData } from "../interfaces/serviceInterfaces";
 import Service from "../models/serviceSchema";
 import { BaseRepository } from "./baseRepository";
 
@@ -80,11 +80,29 @@ export class ServiceRepository extends BaseRepository<IService> implements IServ
             }
 
         ])
-
+        
         return service
     }
 
-
+    async getServicesAndCount(query:FilterQuery<IService>={}, options:QueryOptions={}):Promise<IServicesData[]>{
+        const {sort={},limit=0,skip=0}=options
+        return await this.model.aggregate([
+            {
+                $facet:{
+                    'services':[
+                        {$match:query},
+                        {$sort:sort},
+                        {$skip:skip!},
+                        {$limit:limit!}
+                    ],
+                    'servicesCount':[
+                        {$match:query},
+                        {$count:'totalServices'}
+                    ]
+                }
+            }
+        ])
+    }
 
 }
 

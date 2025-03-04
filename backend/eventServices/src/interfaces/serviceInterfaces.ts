@@ -75,6 +75,11 @@ export enum HttpStatusCodes {
     INTERNAL_SERVER_ERROR = 500
 }
 
+export interface IServicesData{
+    services:IService[];
+    servicesCount:{totalServices:number}[];
+  }
+
 export interface IRepository<T> {
     // getAllUsers(filter:any,sort:any,limit:number,skip:number): Promise<T[]>;
     getAllServices(query: FilterQuery<T>, options: QueryOptions): Promise<T[] | null>;
@@ -96,6 +101,7 @@ export interface IServiceRepository {
     getServiceByProvider(name: string, providerId: string): Promise<IService | null>
     getAllServiceByProvider(id: string): Promise<IService[]>
     getServiceByName(name: string): Promise<IAggregateResponse[]>
+    getServicesAndCount(filter: FilterQuery<IService>,  options: QueryOptions): Promise<IServicesData[]>;
 }
 
 export interface IEmailService {

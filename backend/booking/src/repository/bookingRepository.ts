@@ -21,20 +21,20 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
         return booking
     }
 
-    async getBookingsAndCount(query:FilterQuery<IBooking>={}, options:QueryOptions={}):Promise<IBookingsData[]>{
-        const {sort,limit,skip}=options
+    async getBookingsAndCount(query: FilterQuery<IBooking> = {}, options: QueryOptions = {}): Promise<IBookingsData[]> {
+        const { sort, limit, skip } = options
         return await this.model.aggregate([
             {
-                $facet:{
-                    'bookings':[
-                        {$match:query},
-                        {$sort:sort},
-                        {$skip:skip!},
-                        {$limit:limit!}
+                $facet: {
+                    'bookings': [
+                        { $match: query },
+                        { $sort: sort },
+                        { $skip: skip! },
+                        { $limit: limit! }
                     ],
-                    'bookingsCount':[
-                        {$match:query},
-                        {$count:'totalBookings'}
+                    'bookingsCount': [
+                        { $match: query },
+                        { $count: 'totalBookings' }
                     ]
                 }
             }
@@ -42,11 +42,11 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
     }
 
     async getSalesData(query: FilterQuery<IBooking> = {}, options: QueryOptions = {}) {
-       
-        const { sortQEvent,sortQService,limit, skipEvent, skipService } = options
+
+        const { sortQEvent, sortQService, limit, skipEvent, skipService } = options
         const { filterQEvent, filterQService } = query
-        console.log('getSalesData filter queries: ',filterQEvent, filterQService);
-        
+        console.log('getSalesData filter queries: ', filterQEvent, filterQService);
+
         const salesData = await this.model.aggregate([
             {
                 $facet: {
@@ -74,7 +74,7 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                                 _id: 0
                             }
                         },
-                        {$sort:sortQEvent},
+                        { $sort: sortQEvent },
                         { $skip: skipEvent },            // Skip for pagination (e.g., page 1: skip 0)
                         { $limit: limit! },          // Limit results per page
 
@@ -84,8 +84,8 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                         {
                             $group: {
                                 _id: { event: '$event', date: { $dateToString: { format: '%d-%m-%Y', date: '$orderDate' } } },
-                                totalAmount: { $sum: '$services.choicePrice' },
-                                totalCount: { $sum: 1 }
+                                // totalAmount: { $sum: '$services.choicePrice' },
+                                // totalCount: { $sum: 1 }
                             }
                         },
                         { $count: 'totalSale' }
@@ -110,7 +110,7 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                                 _id: 0
                             }
                         },
-                        {$sort:sortQService},
+                        { $sort: sortQService },
                         { $skip: skipService },            // Skip for pagination (e.g., page 1: skip 0)
                         { $limit: limit! },          // Limit results per page
                     ],
@@ -121,7 +121,62 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                         {
                             $group: {
                                 _id: { service: '$services.serviceName', date: { $dateToString: { format: '%d-%m-%Y', date: '$orderDate' } } },
-                                totalAmount: { $sum: '$services.choicePrice'},
+                                // totalAmount: { $sum: '$services.choicePrice' },
+                                // totalCount: { $sum: 1 }
+                            }
+                        },
+                        { $count: 'totalSale' }
+                    ]
+
+                }
+            }
+
+        ])
+
+        return salesData
+    }
+
+    async getProviderSalesData(query: FilterQuery<IBooking> = {}, options: QueryOptions = {}) {
+
+        const { sortQService, limit, skipService } = options
+        console.log('getProviderSalesData query: ', query);
+
+        const salesData = await this.model.aggregate([
+            {
+                $facet: {
+
+                    'serviceData': [
+                        // { $match: { service: { $exists: true }, isConfirmed: true } },
+                        { $match: query },
+                        { $unwind: '$services' },
+                        {
+                            $group: {
+                                _id: { service: '$services.serviceName', date: { $dateToString: { format: '%d-%m-%Y', date: '$orderDate' } } },
+                                totalAmount: { $sum: '$services.choicePrice' },
+                                totalCount: { $sum: 1 }
+                            }
+                        },
+                        {
+                            $project: {
+                                service: '$_id.service',
+                                date: '$_id.date',
+                                totalAmount: 1,
+                                totalCount: 1,
+                                _id: 0
+                            }
+                        },
+                        { $sort: sortQService },
+                        { $skip: skipService },            // Skip for pagination (e.g., page 1: skip 0)
+                        { $limit: limit! },          // Limit results per page
+                    ],
+
+                    'serviceSalesCount': [
+                        { $match: query },
+                        { $unwind: '$services' },
+                        {
+                            $group: {
+                                _id: { service: '$services.serviceName', date: { $dateToString: { format: '%d-%m-%Y', date: '$orderDate' } } },
+                                totalAmount: { $sum: '$services.choicePrice' },
                                 totalCount: { $sum: 1 }
                             }
                         },
@@ -137,60 +192,59 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
         return salesData
     }
 
-    async getProviderSalesData(query: FilterQuery<IBooking> = {}, options: QueryOptions = {}) {
-       
-        const { sortQService,limit, skipService } = options
-        console.log('getProviderSalesData query: ', query);
-        
-        const salesData = await this.model.aggregate([
+    async getBookingsByProvider(name: string) {
+        const regexPattern = new RegExp(name, 'i')
+        return await this.model.find({ isConfirmed: true, services: { $elemMatch: { providerName: { $regex: regexPattern } } } }).sort({ deliveryDate: 1 })
+    }
+
+    async getTotalBookingData() {
+        return await this.model.aggregate([
             {
                 $facet: {
-                   
-                    'serviceData': [
-                        // { $match: { service: { $exists: true }, isConfirmed: true } },
-                        { $match: query },
+                    'oldBookings': [
+                        { $match: { deliveryDate: { $lte: new Date() }, isConfirmed: true } },
+                        { $count: 'count' }
+                    ],
+                    'upcomingBookings': [
+                        { $match: { deliveryDate: { $gt: new Date() }, isConfirmed: true } },
+                        { $count: 'count' }
+                    ],
+                    'totalRevenue': [
+                        { $match: {} },
                         { $unwind: '$services' },
                         {
                             $group: {
-                                _id: { service: '$services.serviceName', date: { $dateToString: { format: '%d-%m-%Y', date: '$orderDate' } } },
-                                totalAmount: { $sum: '$services.choicePrice' },
-                                totalCount: { $sum: 1 }
+                                _id:null,
+                                totalAmount: {$sum: '$services.choicePrice' }
                             }
                         },
                         {
                             $project: {
-                                service: '$_id.service',
-                                date: '$_id.date',
-                                totalAmount: 1,
-                                totalCount: 1,
-                                _id: 0
+                                _id:0,
+                                totalAmount: 1
                             }
-                        },
-                        {$sort:sortQService},
-                        { $skip: skipService },            // Skip for pagination (e.g., page 1: skip 0)
-                        { $limit: limit! },          // Limit results per page
+                        }
                     ],
-
-                    'serviceSalesCount': [
-                        { $match: query },
-                        { $unwind: '$services' },
+                    'bookingData': [
+                        { $match: {} },
                         {
-                            $group: {
-                                _id: { service: '$services.serviceName', date: { $dateToString: { format: '%d-%m-%Y', date: '$orderDate' } } },
-                                totalAmount: { $sum: '$services.choicePrice'},
-                                totalCount: { $sum: 1 }
+                            $project: {
+                                _id:0,
+                                type: '$tag',
+                                customer: '$user',
+                                date: '$deliveryDate',
+                                isConfirmed: '$isConfirmed'
                             }
-                        },
-                        { $count: 'totalSale' }
+                        }
+                    ],
+                    'totalBooking':[
+                        { $match: {} },
+                        {$count:'count'}
                     ]
-
-
                 }
-            }
+            },
 
         ])
-
-        return salesData
     }
 }
 

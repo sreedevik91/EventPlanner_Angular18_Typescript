@@ -38,14 +38,14 @@ export class AdminServicesComponent implements OnDestroy{
   errMessage: string = 'Some error occured'
 
   constructor() {
-    this.getTotalServices()
-    this.initialiseSearchFilterForm()
   }
  
   ngOnInit(): void {
     //  this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
     //   .set('pageSize', this.searchFilterFormObj.pageSize)
     // this.getAllServices(this.searchParams)
+    this.getTotalServices()
+    this.initialiseSearchFilterForm()
     this.onRefresh()
   }
 
@@ -121,8 +121,8 @@ export class AdminServicesComponent implements OnDestroy{
     this.serviceService.getAllServices(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
-          this.services.set(res.body?.data)
-
+          this.services.set(res.body?.data.services)
+          this.totalServices = res.body?.data.count
           console.log('all services new: ', res.body?.extra);
           this.extra = res.body?.extra
 

@@ -1,220 +1,108 @@
-<section id="schedule" class="row">
-    <div class="title-start schedule-menu col-md-4 col-md-offset-4">
-    <br />
-        <h2>Events Schedule</h2>
-        <p class="sub-text text-center">Check out the event details</p>
-    </div>
-        <ul class="timeline">
-            <li>
+<div class="container">
+    
+    <!-- <div style="height: 400px;">
+        <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <div class="carousel-item active" data-bs-interval="1000">
+                <img src="https://photographylife.com/wp-content/uploads/2023/05/Nikon-Z8-Official-Samples-00002.jpg" class="d-block w-100" alt="...">
+              </div>
+              <div class="carousel-item" data-bs-interval="2000">
+                <img src="https://www.shutterstock.com/image-photo/parkland-county-spruce-grove-alberta-260nw-2374615685.jpg" class="d-block w-100" alt="...">
+              </div>
+              <div class="carousel-item" data-bs-interval="3000">
+                <img src="https://www.sony.net/Products/di_photo-gallery/images/extralarge/1721.JPG" class="d-block w-100" alt="...">
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+    </div> -->
+
+    <section id="schedule" class="row mt-4 overflow-hidden">
+
+        <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @for (item of serviceImages; track $index) {
+              <div [class]="$index===0 ? 'carousel-item active' : 'carousel-item' " data-bs-interval="2000">
+                <img [src]="item" class="d-block w-100" height="400px" alt="...">
+              </div>
+            }
+              <!-- <div class="carousel-item" data-bs-interval="2000">
+                <img src="https://www.shutterstock.com/image-photo/parkland-county-spruce-grove-alberta-260nw-2374615685.jpg" class="d-block w-100" height="400px" alt="...">
+              </div>
+              <div class="carousel-item" data-bs-interval="2000">
+                <img src="https://www.sony.net/Products/di_photo-gallery/images/extralarge/1721.JPG" class="d-block w-100" height="400px" alt="...">
+              </div> -->
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+
+
+        <!-- <div class="title-start schedule-menu mt-4 col-md-4 col-md-offset-4">
+            <br />
+            <h2>Upcoming Events Schedule</h2>
+            <p class="sub-text text-center">Check out the event details</p>
+        </div><hr> -->
+
+        <div class="mt-4 col-md-12">
+            <br />
+            <h1>Upcoming Events Schedule</h1>
+            <p>Check out the event details</p>
+        </div><hr>
+
+        <ul class="timeline mb-5">
+            @for (item of providerBookings(); track $index) {
+            <li [class]="($index + 1)%2===0 ? 'timeline-inverted' :''">
                 <div class="timeline-badge">
-                  <a><i class="fa fa-circle" id=""></i></a>
+                    <a><i class="fa fa-circle" id=""></i></a>
                 </div>
                 <div class="timeline-panel">
                     <div class="timeline-heading">
-                        <h4>Event One</h4>
+                        <h4>{{item.tag}}</h4>
                     </div>
                     <div class="timeline-body d-flex">
-                        <p class="timeline-desc col-md-6">Invitamus me testatur sed quod non dum animae tuae lacrimis ut libertatem deum rogus aegritudinis causet. Dicens hoc contra serpentibus isto.</p>
+                        <p class="timeline-desc col-md-6">
+                            {{item.tag}} by {{item.user}} on {{item.deliveryDate | date:'shortDate' }} at {{item.venue?.building}}. Booking confirmed on  {{item.orderDate | date:'shortDate' }}
+                        </p>
                         <p class="timeline-other col-md-6">
-                            
                             <em class="timeline-item">
-                             Venue : Adeleade
-                            </em> 
-                            <em class="timeline-item">
-                            Seats : 25
+                                Booking : {{item.event}} || {{item.service}}
                             </em>
                             <em class="timeline-item">
-                            Ticket: $35 
+                                Venue : {{item.venue?.building}},{{item.venue?.street}},{{item.venue?.city}},{{item.venue?.district}},{{item.venue?.state}},{{item.venue?.pbNo}}
                             </em>
                             <em class="timeline-item">
-                            Date : Feb-21-2014
+                                Seats : {{item.totalCount}}
                             </em>
+                            <!-- <em class="timeline-item">
+                                Ticket: $35
+                            </em> -->
                             <em class="timeline-item">
-                            Duration : 5days
+                                Date : {{item.deliveryDate | date:'shortDate' }}
                             </em>
-
+                           
                         </p>
 
                     </div>
-                    
+
                 </div>
             </li>
-            
-            <li  class="timeline-inverted">
-                <div class="timeline-badge">
-                  <a><i class="fa fa-circle" id=""></i></a>
-                </div>
-                <div class="timeline-panel">
-                    <div class="timeline-heading">
-                        <h4>Event Two</h4>
-                    </div>
-                    <div class="timeline-body d-flex">
-                        <p class="timeline-desc col-md-6">Invitamus me testatur sed quod non dum animae tuae lacrimis ut libertatem deum rogus aegritudinis causet. Dicens hoc contra serpentibus isto.</p>
-                        <p class="timeline-other col-md-6">
-                            
-                            <em class="timeline-item">
-                             Venue : Adeleade
-                            </em> 
-                            <em class="timeline-item">
-                            Seats : 25
-                            </em>
-                            <em class="timeline-item">
-                            Ticket: $35 
-                            </em>
-                            <em class="timeline-item">
-                            Date : Feb-21-2014
-                            </em>
-                            <em class="timeline-item">
-                            Duration : 5days
-                            </em>
+        }
 
-                        </p>
-
-                    </div>
-                    
-                </div>
-            </li>
-            
-            <li>
-                <div class="timeline-badge">
-                  <a><i class="fa fa-circle" id=""></i></a>
-                </div>
-                <div class="timeline-panel">
-                    <div class="timeline-heading">
-                        <h4>Event Three</h4>
-                    </div>
-                    <div class="timeline-body d-flex">
-                        <p class="timeline-desc col-md-6">Invitamus me testatur sed quod non dum animae tuae lacrimis ut libertatem deum rogus aegritudinis causet. Dicens hoc contra serpentibus isto.</p>
-                        <p class="timeline-other col-md-6">
-                            
-                            <em class="timeline-item">
-                             Venue : Adeleade
-                            </em> 
-                            <em class="timeline-item">
-                            Seats : 25
-                            </em>
-                            <em class="timeline-item">
-                            Ticket: $35 
-                            </em>
-                            <em class="timeline-item">
-                            Date : Feb-21-2014
-                            </em>
-                            <em class="timeline-item">
-                            Duration : 5days
-                            </em>
-
-                        </p>
-
-                    </div>
-                </div>
-            </li>
-            
-            <li class="timeline-inverted">
-                <div class="timeline-badge">
-                  <a><i class="fa fa-circle" id=""></i></a>
-                </div>
-                <div class="timeline-panel">
-                    <div class="timeline-heading">
-                        <h4>Event Four</h4>
-                    </div>
-                    <div class="timeline-body d-flex">
-                        <p class="timeline-desc col-md-6">Invitamus me testatur sed quod non dum animae tuae lacrimis ut libertatem deum rogus aegritudinis causet. Dicens hoc contra serpentibus isto.</p>
-                        <p class="timeline-other col-md-6">
-                            
-                            <em class="timeline-item">
-                             Venue : Adeleade
-                            </em> 
-                            <em class="timeline-item">
-                            Seats : 25
-                            </em>
-                            <em class="timeline-item">
-                            Ticket: $35 
-                            </em>
-                            <em class="timeline-item">
-                            Date : Feb-21-2014
-                            </em>
-                            <em class="timeline-item">
-                            Duration : 5days
-                            </em>
-
-                        </p>
-
-                    </div>
-           
-                </div>
-            </li>
-            
-            <li>
-                <div class="timeline-badge">
-                  <a><i class="fa fa-circle" id=""></i></a>
-                </div>
-                <div class="timeline-panel">
-                    <div class="timeline-heading">
-                        <h4>Event Five</h4>
-                    </div>
-                    <div class="timeline-body d-flex">
-                        <p class="timeline-desc col-md-6">Invitamus me testatur sed quod non dum animae tuae lacrimis ut libertatem deum rogus aegritudinis causet. Dicens hoc contra serpentibus isto.</p>
-                        <p class="timeline-other col-md-6">
-                            
-                            <em class="timeline-item">
-                             Venue : Adeleade
-                            </em> 
-                            <em class="timeline-item">
-                            Seats : 25
-                            </em>
-                            <em class="timeline-item">
-                            Ticket: $35 
-                            </em>
-                            <em class="timeline-item">
-                            Date : Feb-21-2014
-                            </em>
-                            <em class="timeline-item">
-                            Duration : 5days
-                            </em>
-
-                        </p>
-
-                    </div>
-                    
-                </div>
-            </li>
-            
-            <li  class="timeline-inverted">
-                <div class="timeline-badge">
-                  <a><i class="fa fa-circle" id=""></i></a>
-                </div>
-                <div class="timeline-panel">
-                    <div class="timeline-heading">
-                        <h4>Event Six</h4>
-                    </div>
-                    <div class="timeline-body d-flex">
-                        <p class="timeline-desc col-md-6">Invitamus me testatur sed quod non dum animae tuae lacrimis ut libertatem deum rogus aegritudinis causet. Dicens hoc contra serpentibus isto.</p>
-                        <p class="timeline-other col-md-6">
-                            
-                            <em class="timeline-item">
-                             Venue : Adeleade
-                            </em> 
-                            <em class="timeline-item">
-                            Seats : 25
-                            </em>
-                            <em class="timeline-item">
-                            Ticket: $35 
-                            </em>
-                            <em class="timeline-item">
-                            Date : Feb-21-2014
-                            </em>
-                            <em class="timeline-item">
-                            Duration : 5days
-                            </em>
-
-                        </p>
-
-                    </div>
-                    
-                </div>
-            </li>
-            <li class="clearfix no-float"></li>
         </ul>
-        
-    </section>
 
+    </section>
+</div>

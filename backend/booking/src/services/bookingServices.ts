@@ -1,4 +1,4 @@
-import { IBooking, IBookedServices, IBookingDb, IEvent, IChoice, IBookingRepository, IEmailService, IBookingService, IResponse, IRequestParams, IServiceGrpcType, IServiceType, IPaymentService, IRazorpayResponse } from "../interfaces/bookingInterfaces"
+import { IBooking, IBookedServices, IBookingDb, IEvent, IChoice, IBookingRepository, IEmailService, IBookingService, IResponse, IRequestParams, IServiceGrpcType, IServiceType, IPaymentService, IRazorpayResponse, IProviderBookings } from "../interfaces/bookingInterfaces"
 // import bookingRepository from "../repository/bookingRepository";
 import nodemailer from 'nodemailer'
 import { config } from "dotenv";
@@ -235,9 +235,9 @@ export class BookingService implements IBookingService {
             //     return { success: false, message: 'Could not fetch data' }
             // }
 
-            const data={
-                bookings:bookingsData[0].bookings,
-                count:bookingsData[0].bookingsCount[0].totalBookings || 0
+            const data = {
+                bookings: bookingsData[0].bookings,
+                count: bookingsData[0].bookingsCount[0].totalBookings || 0
             }
 
             return bookingsData ? { success: true, data } : { success: false, message: 'Could not fetch data' }
@@ -334,6 +334,42 @@ export class BookingService implements IBookingService {
 
         } catch (error: unknown) {
             // console.log('Error from getEventById service: ', error.message);
+            error instanceof Error ? console.log('Error message from getBookingByUserId service: ', error.message) : console.log('Unknown error from getBookingByUserId service: ', error)
+
+            return { success: false, message: 'Something went wrong' }
+        }
+
+    }
+
+    async getBookingsByProvider(id: string) {
+        try {
+            const provider = await getUserByIdGrpc(id)
+            const bookings = await this.bookingRepository.getBookingsByProvider(provider.name)
+
+            console.log('getEventById service response: ', bookings);
+            // const { user, event, service, services, deliveryDate, tag, totalCount, orderDate } = booking
+
+            let newBookings: Partial<IBooking>[] = (bookings || []).map(booking => {
+                return {
+                    user: booking.user,
+                    event: booking.event || '',
+                    service: booking.service || '',
+                    deliveryDate: booking.deliveryDate,
+                    venue: booking.venue,
+                    tag: booking.tag,
+                    totalCount: booking.totalCount,
+                    orderDate: booking.orderDate,
+                    services: booking.services.filter(service => service.providerName === provider?.name)
+                }
+
+            });
+
+            console.log('filtered bookings for provider: ', newBookings);
+
+            return bookings ? { success: true, data: newBookings } : { success: false, message: 'Could not get booking, Something went wrong' }
+
+        } catch (error: unknown) {
+
             error instanceof Error ? console.log('Error message from getBookingByUserId service: ', error.message) : console.log('Unknown error from getBookingByUserId service: ', error)
 
             return { success: false, message: 'Something went wrong' }
@@ -769,10 +805,11 @@ export class BookingService implements IBookingService {
             }
 
             // filterQService.service = { $exists: true } // not eeded as services sre there in events as well
+            const regexPattern = new RegExp(provider, 'i')
             filterQService.isConfirmed = true
             filterQService.services = {
                 $elemMatch: {
-                    providerName: { $regex: /provider/i }
+                    providerName: { $regex: regexPattern }
                 }
             }
 
@@ -821,6 +858,35 @@ export class BookingService implements IBookingService {
             return { success: false, message: 'Something went wrong' }
         }
     }
+
+    async getAdminBookingData() {
+        try {
+
+            const adminData = await this.bookingRepository.getTotalBookingData()
+
+            console.log('adminData: ', adminData,
+                ', bookingData response: ', adminData[0].bookingData,
+                ', oldBookings count response: ', adminData[0].oldBookings[0].count,
+                ', totalRevenue amount response: ', adminData[0].totalRevenue[0].totalAmount,
+                ', upcomingBookings count response: ', adminData[0].upcomingBookings[0].count,
+                ', totalBooking count response: ', adminData[0].totalBooking[0].count,
+            );
+            const data = {
+                bookingData: adminData[0].bookingData,
+                oldBookings: adminData[0].oldBookings[0].count,
+                upcomingBookings: adminData[0].upcomingBookings[0].count,
+                totalRevenue: adminData[0].totalRevenue[0].totalAmount,
+                totalBooking: adminData[0].totalBooking[0].count
+            }
+            return adminData ? { success: true, data } : { success: false, message: 'Fetching data failed. Try again.' }
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getAdminBookingData service: ', error.message) : console.log('Unknown error from getAdminBookingData service: ', error)
+
+            return { success: false, message: 'Something went wrong' }
+        }
+    }
+
 
 }
 

@@ -629,11 +629,18 @@ export class UserServices implements IUserService {
 
             console.log('skip: ', skip);
 
-
             // let data = await UserRepository.getAllUsers(filterQ, sortQ, Number(pageSize), skip)
-            let data = await this.UserRepository.getAllUsers(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            // let data = await this.UserRepository.getAllUsers(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+           
+            let usersData = await this.UserRepository.getUsersAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            console.log('all users and total count: ', usersData);
 
-            if (data) {
+            const data={
+                users:usersData[0].users,
+                count:usersData[0].usersCount[0].totalUsers || 0
+            }
+
+            if (usersData) {
                 return { success: true, data }
             } else {
                 return { success: false, message: 'Could not fetch data' }

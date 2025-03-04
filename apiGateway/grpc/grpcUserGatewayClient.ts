@@ -2,7 +2,7 @@ import * as grpc from '@grpc/grpc-js'
 import * as protoLoader from '@grpc/proto-loader'
 import path from 'path'
 
-const PROTO_PATH_GATEWAY=path.join(__dirname,'../../backend/proto/user.proto')
+const PROTO_PATH_GATEWAY=path.join(__dirname,'../../proto/user.proto')
 
 
 const packageDefinition=protoLoader.loadSync(PROTO_PATH_GATEWAY)

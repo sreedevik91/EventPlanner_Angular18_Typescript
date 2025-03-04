@@ -196,6 +196,21 @@ export class BookingController implements IBookingController {
 
         }
 
+    } 
+
+    async getBookingsByProvider(req: Request, res: Response, next: NextFunction) {
+
+        try {
+            let bookingsByProvider = await this.bookingServices.getBookingsByProvider(req.params.providerId)
+
+            bookingsByProvider?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookingsByProvider) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, bookingsByProvider)
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getBookingsByProvider controller: ', error.message) : console.log('Unknown error from getBookingsByProvider controller: ', error)
+
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+        }
+
     }
 
     async editBooking(req: Request, res: Response, next: NextFunction) {
@@ -407,6 +422,21 @@ export class BookingController implements IBookingController {
             const salesResponse = await this.bookingServices.getProviderSales(req.query)
 
             salesResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, salesResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, salesResponse)
+
+        } catch (error) {
+            error instanceof Error ? console.log('Error message from getServiceByEvent controller: ', error.message) : console.log('Unknown error from getServiceByEvent controller: ', error)
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+
+        }
+    } 
+
+    async getAdminBookingData(req: Request, res: Response, next: NextFunction) {
+
+        try {
+            
+            const adminBookingData = await this.bookingServices.getAdminBookingData()
+
+            adminBookingData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, adminBookingData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, adminBookingData)
 
         } catch (error) {
             error instanceof Error ? console.log('Error message from getServiceByEvent controller: ', error.message) : console.log('Unknown error from getServiceByEvent controller: ', error)

@@ -158,7 +158,9 @@ export interface IBooking {
     eventId?: string;
     services: IBookedServices[];
     deliveryDate: Date;
+    orderDate: Date;
     venue: IAddress;
+    tag?:string;
     totalCount: number;
     isConfirmed: boolean;
 }
@@ -200,4 +202,10 @@ export interface ISales {
     date: string;
   }
 
+  export interface IAdminBookingData{
+    type: string;
+    customer:string;
+    date: Date;
+    isConfirmed: boolean;
+  }
 
