@@ -3,6 +3,9 @@ import * as protoLoader from '@grpc/proto-loader';
 import path from 'path';
 import { IUserRepository } from '../interfaces/userInterface';
 import { UserRepository } from '../repository/userRepository';
+import { config } from 'dotenv';
+
+config()
 
 const PROTO_PATH = path.join(__dirname, '../../../../proto/user.proto');
 
@@ -40,7 +43,7 @@ export default function startGrpcServer() {
     server.addService(userProto.UserService.service, { GetUser });
 
     server.bindAsync(
-      '0.0.0.0:50051',
+      process.env.GRPC_USER_SERVER!,
       grpc.ServerCredentials.createInsecure(),
       () => {
         console.log('gRPC Server running on port 50051');
