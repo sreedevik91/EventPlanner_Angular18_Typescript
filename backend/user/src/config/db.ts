@@ -1,4 +1,7 @@
 import mongoose from 'mongoose';
+import { config } from "dotenv";
+
+config()
 
 // to run in the docker container
 
@@ -15,7 +18,7 @@ import mongoose from 'mongoose';
 //to run locally and test
 
 const connectDb = () => {
-    mongoose.connect('mongodb://0.0.0.0:27017/userService')
+    mongoose.connect(process.env.MONGO_URL!)
         .then(() => {
             console.log('database connected');
         })

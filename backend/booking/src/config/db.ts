@@ -1,7 +1,10 @@
 import { connect } from "mongoose";
+import { config } from "dotenv";
+
+config()
 
 const connectDb=()=>{
-    connect('mongodb://0.0.0.0:27017/bookingService')
+    connect(process.env.MONGO_URL!)
     .then(()=>{
         console.log('booking database connected');
     })

@@ -15,9 +15,9 @@ export class ChatService {
 
   socket = inject(Socket)
 
- http = inject(HttpClient)
+  http = inject(HttpClient)
 
-  baseUrl:string=environment.apiChatUrl
+  baseUrl: string = environment.apiChatUrl
 
   constructor() {
     // Log when the socket connects successfully
@@ -36,16 +36,16 @@ export class ChatService {
     });
   }
 
-  getChatsByUser( userId: string){
+  getChatsByUser(userId: string) {
     return this.http.get(`${this.baseUrl}${userId}`, { observe: 'response' })
   }
 
-  getImgUrlFromCloudinary( data: any){
-    return this.http.post(`${this.baseUrl}upload`,data, { observe: 'response' })
+  getImgUrlFromCloudinary(data: any) {
+    return this.http.post(`${this.baseUrl}upload`, data, { observe: 'response' })
   }
 
-  getAudioUrlFromCloudinary( data: any){
-    return this.http.post(`${this.baseUrl}audioUpload`,data, { observe: 'response' })
+  getAudioUrlFromCloudinary(data: any) {
+    return this.http.post(`${this.baseUrl}audioUpload`, data, { observe: 'response' })
   }
 
   startChat(userName: string, userId: string) {
@@ -60,9 +60,9 @@ export class ChatService {
     this.socket.emit('joinChat', { userId })
   }
 
-  adminSendMessage(userId:string,data:IChat){
+  adminSendMessage(userId: string, data: IChat) {
     console.log('chat data from admin component', data);
-    this.socket.emit('adminSentMessage', {userId,data})
+    this.socket.emit('adminSentMessage', { userId, data })
   }
 
   sendMessage(data: IChat) {
