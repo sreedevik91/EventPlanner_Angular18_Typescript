@@ -1,24 +1,15 @@
-FROM node:alpine AS build
 
+# Step 1: Build the Angular app
+FROM node:18 AS build-stage
 WORKDIR /app
-# WORKDIR /usr/src/app/frontend
-
-COPY package*.json .
-
+COPY package*.json ./
 RUN npm ci
-
-RUN npm install -g @angular/cli
-
 COPY . .
+RUN npm run build --prod  
 
-RUN npm run build --configuration=production
-
-FROM nginx:latest
-
-COPY --from=build /app/dist/frontend /usr/share/nginx/html  
-# (if WORKDIR is /app)
-# COPY --from=build /usr/src/app/frontend/dist/frontend/browser /usr/share/nginx/html
-
-EXPOSE 4200
-
-CMD ["nginx","-g","daemon off;"]
+# Step 2: Serve with Nginx
+FROM nginx:alpine AS production-stage
+COPY --from=build-stage /app/dist/frontend /usr/share/nginx/html
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
