@@ -74,7 +74,7 @@ services:
   event-service:
     build:
       context: .
-      dockerfile: backend/eventServices/Dockerfile
+      dockerfile: backend/events/Dockerfile
     ports:
       - "3003:3003"
       - "50053:50053"

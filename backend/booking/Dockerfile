@@ -3,8 +3,12 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package.json and install dependencies
-COPY package*.json ./
-RUN npm ci --production
+# COPY package*.json ./
+# COPY package.json package-lock.json ./
+COPY backend/booking/package.json backend/booking/package-lock.json ./
+
+# RUN npm ci --production
+RUN npm ci --omit=dev
 
 # Copy proto files for gRPC
 COPY proto ./proto
