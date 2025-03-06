@@ -2,6 +2,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# Install required system dependencies for bcrypt
+RUN apk add --no-cache python3 make g++ 
+
 # Copy package.json and install dependencies
 COPY package*.json ./
 RUN npm ci --production
