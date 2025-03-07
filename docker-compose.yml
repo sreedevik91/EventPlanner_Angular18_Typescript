@@ -4,7 +4,7 @@ services:
   api-gateway:
     build:
       context: .  # ← Sets root as build context
-      dockerfile: api-gateway/Dockerfile
+      dockerfile: apiGateway/Dockerfile
     environment:
       - NODE_ENV=production
       - PORT=4000
@@ -129,7 +129,7 @@ services:
 
   frontend:
     build:
-      context: frontend
+      context: .
       dockerfile: frontend/Dockerfile
     networks:
       - event_planner_network

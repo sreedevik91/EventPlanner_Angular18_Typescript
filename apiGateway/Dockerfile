@@ -7,7 +7,7 @@ WORKDIR /app
 
 # 1. Copy package files first for optimal layer caching
 # COPY package*.json ./
-COPY package.json package-lock.json ./
+COPY apiGateway/package.json apiGateway/package-lock.json ./
 
 # 2. Install production dependencies (including grpc/proto-loader)
 # RUN npm ci --production
@@ -33,8 +33,8 @@ FROM node:18-alpine
 WORKDIR /app
 
 # 7. Copy built files from builder
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apiGateway/dist ./dist
+COPY --from=builder /app/apiGateway/node_modules ./node_modules
 COPY --from=builder /app/proto ./proto
 COPY --from=builder /app/redis ./redis 
 

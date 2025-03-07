@@ -1,11 +1,12 @@
 {
-  "name": "services",
+  "name": "events",
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon"
+    "start": "nodemon",
+    "build": "tsc -p backend/events/tsconfig.json" 
   },
   "keywords": [],
   "author": "",
