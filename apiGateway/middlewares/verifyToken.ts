@@ -1,10 +1,13 @@
 
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import { JwtPayload, verify } from 'jsonwebtoken'
 import { config } from 'dotenv'
 import { Request, Response, NextFunction } from 'express'
 import { match } from 'path-to-regexp'
 import { getUserByIdGrpcGateway } from '../grpc/grpcUserGatewayClient'
 import redisClient from "../../redis/redisClient"
+// import redisClient from "../redis/redisClient"
+
+// import { redisClient } from "@redis/redisClient";
 
 config()
 
@@ -70,7 +73,7 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
             }
 
              // Verify JWT
-            const decoded = <JwtPayload>jwt.verify(token, process.env.JWT_ACCESS_SECRET!)
+            const decoded = <JwtPayload>verify(token, process.env.JWT_ACCESS_SECRET!)
             console.log('decoded token: ', decoded);
 
             const userId = decoded.id

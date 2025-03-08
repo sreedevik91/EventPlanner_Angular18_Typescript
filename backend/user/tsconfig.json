@@ -4,6 +4,7 @@
      /* Modules */
     "module": "commonjs",                                /* Specify what module code is generated. */
     "rootDir": "../../",                                  /* Specify the root folder within your source files. */ // Points to /app in Docker
+    // "rootDir": "./",                                  /* Specify the root folder within your source files. */ // Points to /app in Docker
     /* Emit */
     "outDir": "./dist",                                   /* Specify an output folder for all emitted files. */
      /* Interop Constraints */
@@ -16,3 +17,19 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   }
 }
+
+// {
+//   "compilerOptions": {
+//     "module": "commonjs",                                /* Specify what module code is generated. */
+
+//     "rootDir": "./", // Service directory (e.g., /app/backend/eventServices)
+//     "outDir": "./dist",
+//     "baseUrl": ".",
+//     "paths": {
+//       "@proto/*": ["../../proto/*"], // Alias for proto files
+//       "@redis/*": ["../../redis/*"]  // Alias for redis files
+//     },
+//     "preserveSymlinks": true // Ensure TypeScript follows symlinks
+//   },
+//   "include": ["**/*.ts", "../../proto/**/*.ts", "../../redis/**/*.ts"]
+// }
