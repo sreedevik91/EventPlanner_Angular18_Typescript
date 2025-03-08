@@ -144,6 +144,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./frontend/dist/frontend:/usr/share/nginx/html
+    entrypoint: ["nginx", "-g", "daemon off;"]  # Skip entrypoint scripts
     depends_on:
       - api-gateway
     networks:

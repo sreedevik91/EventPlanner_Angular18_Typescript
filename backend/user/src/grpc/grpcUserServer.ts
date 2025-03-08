@@ -13,28 +13,28 @@ const PROTO_PATH = path.join(__dirname, '../../../../proto/user.proto');
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const userProto: any = grpc.loadPackageDefinition(packageDefinition).user;
 
-const userRepository:IUserRepository= new UserRepository()
+const userRepository: IUserRepository = new UserRepository()
 
 // Implement the gRPC service
 async function GetUser(call: any, callback: any) {
   try {
-    const user =await userRepository.getUserById(call.request.id)
+    const user = await userRepository.getUserById(call.request.id)
 
-  if (user) {
-    callback(null, user);
-  } else {
-    callback({
-      code: grpc.status.NOT_FOUND,
-      message: 'User not found',
-    });
-  }
+    if (user) {
+      callback(null, user);
+    } else {
+      callback({
+        code: grpc.status.NOT_FOUND,
+        message: 'User not found',
+      });
+    }
   } catch (error) {
     callback({
       code: grpc.status.INTERNAL,
       message: 'An internal error occurred',
     });
   }
-  
+
 }
 
 export default function startGrpcServer() {
@@ -55,3 +55,8 @@ export default function startGrpcServer() {
 
   });
 }
+
+
+
+
+

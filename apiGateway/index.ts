@@ -44,12 +44,12 @@ app.use(morgan(':method :url :status [:date[clf]] - :response-time ms :host', { 
 // ]
 
 const services = [
-    { path: '/api/user', target: process.env.USER_SERVICE },
-    { path: '/api/service', target: process.env.SERVICES_SERVICE },
-    { path: '/api/event', target: process.env.EVENT_SERVICE },
-    { path: '/api/booking', target: process.env.BOOKING_SERVICE },
-    { path: '/api/chat', target: process.env.CHAT_SERVICE },
-    { path: '/', target: process.env.FRONTEND },
+    { path: '/api/user', target: process.env.USER_SERVICE! },
+    { path: '/api/service', target: process.env.SERVICES_SERVICE! },
+    { path: '/api/event', target: process.env.EVENT_SERVICE! },
+    { path: '/api/booking', target: process.env.BOOKING_SERVICE! },
+    { path: '/api/chat', target: process.env.CHAT_SERVICE! },
+    { path: '/', target: process.env.FRONTEND! },
 ]
 
 interface ProxyOptions {
@@ -84,6 +84,10 @@ const createProxy = ({ path, target }: ProxyOptions) => {
     //             })
     //     )
     // }
+
+    if (!target) {
+        throw new Error(`Proxy target for path "${path}" is undefined!`);
+      }
 
     if (path === '/') {
         app.use(path, createProxyMiddleware({

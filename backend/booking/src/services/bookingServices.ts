@@ -866,17 +866,17 @@ export class BookingService implements IBookingService {
 
             console.log('adminData: ', adminData,
                 ', bookingData response: ', adminData[0].bookingData,
-                ', oldBookings count response: ', adminData[0].oldBookings[0].count,
-                ', totalRevenue amount response: ', adminData[0].totalRevenue[0].totalAmount,
-                ', upcomingBookings count response: ', adminData[0].upcomingBookings[0].count,
-                ', totalBooking count response: ', adminData[0].totalBooking[0].count,
+                ', oldBookings count response: ', adminData[0].oldBookings[0],
+                ', totalRevenue amount response: ', adminData[0].totalRevenue[0]?.totalAmount,
+                ', upcomingBookings count response: ', adminData[0].upcomingBookings[0],
+                ', totalBooking count response: ', adminData[0].totalBooking[0],
             );
             const data = {
                 bookingData: adminData[0].bookingData,
-                oldBookings: adminData[0].oldBookings[0].count,
-                upcomingBookings: adminData[0].upcomingBookings[0].count,
-                totalRevenue: adminData[0].totalRevenue[0].totalAmount,
-                totalBooking: adminData[0].totalBooking[0].count
+                oldBookings: adminData[0].oldBookings[0]?.count ||0,
+                upcomingBookings: adminData[0].upcomingBookings[0]?.count || 0,
+                totalRevenue: adminData[0].totalRevenue[0]?.totalAmount||0,
+                totalBooking: adminData[0].totalBooking[0]?.count||0
             }
             return adminData ? { success: true, data } : { success: false, message: 'Fetching data failed. Try again.' }
 
