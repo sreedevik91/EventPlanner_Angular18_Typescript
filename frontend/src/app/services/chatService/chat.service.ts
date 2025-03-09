@@ -4,7 +4,8 @@ import { IChat } from '../../model/class/chatClass';
 import { Observable } from 'rxjs';
 import { IChatJoiningResponse } from '../../model/interface/interface';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment.development';
+// import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 // import { io, Socket } from 'socket.io-client';
 
 

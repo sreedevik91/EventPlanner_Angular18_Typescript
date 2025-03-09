@@ -10,6 +10,7 @@
 // };
 
 export const environment = {
+    production: false,
     apiUserUrl:'http://localhost:4000/api/user/',
     apiServiceUrl:'http://localhost:4000/api/service/',
     apiEventUrl:'http://localhost:4000/api/event/',

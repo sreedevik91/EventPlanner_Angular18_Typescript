@@ -8,21 +8,24 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=4000
-      - USER_SERVCE=http://user-service:3001
+      - USER_SERVICE=http://user-service:3001
       - SERVICES_SERVICE=http://services-service:3002
       - EVENT_SERVICE=http://event-service:3003
       - BOOKING_SERVICE=http://booking-service:3004
       - CHAT_SERVICE=http://chat-service:3005
-      - FRONTEND=http://frontend:4200
+      # - FRONTEND=http://frontend:4200
+      - FRONTEND=http://nginx:80
       - JWT_ACCESS_SECRET=sreedeviEventPlannerApplicationAccessToken
       - JWT_REFRESH_SECRET=sreedeviEventPlannerApplicationRefreshToken
       - GRPC_USER_SERVER=user-service:50051
+      - REDIS_CONNECTION_STRING=redis://redis:6379
     ports:
       - "4000:4000"
     networks:
       - event_planner_network
     depends_on:
       - user-service
+      - redis
 
   user-service:
     build:
@@ -44,6 +47,7 @@ services:
       - SESSION_SECRET_KEY=eventplannerapplication
       - GRPC_USER_SERVER=user-service:50051
       - MONGO_URL=mongodb://mongodb:27017/userService
+      - REDIS_CONNECTION_STRING=redis://redis:6379
     networks:
       - event_planner_network
     depends_on:
@@ -135,7 +139,6 @@ services:
       - event_planner_network
     depends_on:
       - api-gateway
-      - nginx 
 
   nginx:
     image: nginx:latest
@@ -143,9 +146,10 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./frontend/dist/frontend:/usr/share/nginx/html
+      - ./frontend/dist/browser:/usr/share/nginx/html
     entrypoint: ["nginx", "-g", "daemon off;"]  # Skip entrypoint scripts
     depends_on:
+      - frontend
       - api-gateway
     networks:
       - event_planner_network
@@ -155,6 +159,10 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    volumes:
+    - redis_data:/data
+    command: 
+      - --bind 0.0.0.0  # ← Critical for Docker networking.By default, Redis binds to 127.0.0.1, making it unreachable from other containers unless explicitly set to 0.0.0.0.
     networks:
       - event_planner_network
 
@@ -163,14 +171,15 @@ services:
     restart: always
     ports:
       - "27017:27017"
+    volumes:
+    - mongodb_data:/data/db 
     networks:
       - event_planner_network   
 
 
 volumes:
-  mongo_user_db: {}
-  # mongo_event_db: {}
-  # mongo_booking_db: {}
+  mongodb_data:  # Persist MongoDB
+  redis_data:     # Persist Redis (optional)
 
 networks:
   event_planner_network:

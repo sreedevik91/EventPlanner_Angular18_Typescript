@@ -1,10 +1,12 @@
 import { CookieOptions, Response } from "express";
 import { HttpStatusCodes, ICookie, IResponse } from "../interfaces/userInterface";
-import redisClient from "../../../../redis/redisClient"
+// import redisClient from "../../../../redis/redisClient"
+
 // import redisClient from "../../redis/redisClient"
 
 // import redisClient from "@redis/redisClient";
 
+import redisClient from "../middlewares/redisClient";
 
 export class ResponseHandler {
 
@@ -46,8 +48,7 @@ export class ResponseHandler {
             if (expirationTime > currentTime) {
                 const ttl = expirationTime - currentTime
                 await redisClient.set(`blackList:${token}`, 'true', { PX: ttl })
-                console.log('token blacklisted in redis');
-                
+                console.log('token blacklisted in redis');     
             }
 
             res.clearCookie('accessToken', options)

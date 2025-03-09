@@ -11,16 +11,16 @@ import morgan from 'morgan'
 import logger from './utils/logFile'
 import verifyToken from './middlewares/verifyToken'
 
-
 const app = express()
 
 dotenv.config()
 
 app.use(cookieParser())
 app.use(cors({
-    // origin: 'http://localhost:4200', // Frontend URL
-    origin: 'localhost',
+    origin: ['http://localhost:4200', 'http://localhost','localhost'], // Frontend URL
+    // origin: 'localhost',
     // origin: '*',
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     credentials: true, // Allow cookies to be sent
 
 }))
@@ -35,26 +35,35 @@ morgan.token('host', function (req: Request, res: Response) { return req.hostnam
 app.use(morgan(':method :url :status [:date[clf]] - :response-time ms :host', { stream: writeStream }))
 
 // const services = [
-//     { path: '/user', target: process.env.USER_SERVICE },
-//     { path: '/service', target: process.env.SERVICES_SERVICE },
-//     { path: '/event', target: process.env.EVENT_SERVICE },
-//     { path: '/booking', target: process.env.BOOKING_SERVICE },
-//     { path: '/chat', target: process.env.CHAT_SERVICE },
+//     { path: '/api/user', target: process.env.USER_SERVICE },
+//     { path: '/api/service', target: process.env.SERVICES_SERVICE },
+//     { path: '/api/event', target: process.env.EVENT_SERVICE },
+//     { path: '/api/booking', target: process.env.BOOKING_SERVICE },
+//     { path: '/api/chat', target: process.env.CHAT_SERVICE },
 //     { path: '/', target: process.env.FRONTEND },
 // ]
 
 const services = [
-    { path: '/api/user', target: process.env.USER_SERVICE! },
-    { path: '/api/service', target: process.env.SERVICES_SERVICE! },
-    { path: '/api/event', target: process.env.EVENT_SERVICE! },
-    { path: '/api/booking', target: process.env.BOOKING_SERVICE! },
-    { path: '/api/chat', target: process.env.CHAT_SERVICE! },
-    { path: '/', target: process.env.FRONTEND! },
+    { path: '/api/user', target: getEnvVal('USER_SERVICE') },
+    { path: '/api/service', target: getEnvVal('SERVICES_SERVICE') },
+    { path: '/api/event', target:getEnvVal('EVENT_SERVICE') },
+    { path: '/api/booking', target:getEnvVal('BOOKING_SERVICE') },
+    { path: '/api/chat', target: getEnvVal('CHAT_SERVICE') },
+    { path: '/', target: getEnvVal('FRONTEND') },
 ]
+
+function getEnvVal(value: string) {
+    let target = process.env[value]
+    if (!target) {
+        throw new Error(`Proxy target for path is undefined!`);
+    } else {
+        return target
+    }
+}
 
 interface ProxyOptions {
     path: string;
-    target?: string;
+    target: string;
 }
 // here each object in the service array is destructured to path and target variables so that it could be used directly
 const createProxy = ({ path, target }: ProxyOptions) => {
@@ -87,7 +96,7 @@ const createProxy = ({ path, target }: ProxyOptions) => {
 
     if (!target) {
         throw new Error(`Proxy target for path "${path}" is undefined!`);
-      }
+    }
 
     if (path === '/') {
         app.use(path, createProxyMiddleware({
@@ -99,7 +108,7 @@ const createProxy = ({ path, target }: ProxyOptions) => {
         app.use(path, verifyToken, createProxyMiddleware({
             target,
             changeOrigin: true,
-            ws:path==='/api/chat' ? true : false,
+            ws: path === '/api/chat' ? true : false,
             cookieDomainRewrite: 'localhost'
         }))
     }

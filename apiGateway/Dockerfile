@@ -33,8 +33,8 @@ COPY proto /app/proto
 COPY redis /app/redis
 
 # Create symbolic links inside the service directory
-RUN ln -s /app/proto ./proto && \
-    ln -s /app/redis ./redis
+# RUN ln -s /app/proto ./proto && \
+#     ln -s /app/redis ./redis
 
 # 5. Copy source code
 COPY apiGateway/ .
