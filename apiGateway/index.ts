@@ -1,6 +1,6 @@
 import express from 'express'
 import { Request, Response } from 'express'
-import cors from 'cors'
+import cors, { CorsOptions } from 'cors'
 import fs from 'fs'
 import path from 'path'
 import cookieParser from 'cookie-parser'
@@ -15,15 +15,56 @@ const app = express()
 
 dotenv.config()
 
-app.use(cookieParser())
-app.use(cors({
-    origin: ['http://localhost:4200', 'http://localhost','localhost'], // Frontend URL
+const allowedOrigins:string[] = [
+    'http://localhost',       // Frontend on port 80 (Nginx)
+    'http://localhost:4200'   // Angular dev server
+];
+
+const corsOptions:CorsOptions = {
+    // origin: ['http://localhost:4200', 'http://localhost','localhost'], // Frontend URL
     // origin: 'localhost',
     // origin: '*',
+    origin: (
+        origin: string | undefined, // Type: string | undefined
+        callback: (err: Error | null, allow?: boolean) => void // Callback signature
+    ) => {
+
+        console.log('Incoming Origin:', origin); // 👈 Log the origin
+
+        // Allow requests with no origin (e.g., curl, Postman)
+        if (!origin) return callback(null, true);
+
+        // Validate against allowed origins
+        if (allowedOrigins.includes(origin)) {
+            console.log('Allowed Origin:', origin); // 👈 Confirm match
+            callback(null, true);
+        } else {
+            console.log('Blocked Origin:', origin); // 👈 Identify mismatches
+            callback(new Error(`Origin ${origin} not allowed by CORS`));
+        }
+
+
+        // if (!origin || allowedOrigins.includes(origin)) {
+        //     callback(null, true);
+        //   } else {
+        //     callback(new Error(`Origin ${origin} not allowed by CORS`));
+        //   }
+
+    },
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     credentials: true, // Allow cookies to be sent
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+}
+app.use(cors(corsOptions))
+app.options('*', cors(corsOptions)); // Handle preflight requests
+// After setting up CORS middleware, add:
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost'); // 👈 Force override
+    next();
+  });
 
-}))
+app.use(cookieParser())
+
 app.use(logger)
 
 const writeStream = fs.createWriteStream(path.join(__dirname, './utils/data.log'), { flags: 'a' })
@@ -46,8 +87,8 @@ app.use(morgan(':method :url :status [:date[clf]] - :response-time ms :host', { 
 const services = [
     { path: '/api/user', target: getEnvVal('USER_SERVICE') },
     { path: '/api/service', target: getEnvVal('SERVICES_SERVICE') },
-    { path: '/api/event', target:getEnvVal('EVENT_SERVICE') },
-    { path: '/api/booking', target:getEnvVal('BOOKING_SERVICE') },
+    { path: '/api/event', target: getEnvVal('EVENT_SERVICE') },
+    { path: '/api/booking', target: getEnvVal('BOOKING_SERVICE') },
     { path: '/api/chat', target: getEnvVal('CHAT_SERVICE') },
     { path: '/', target: getEnvVal('FRONTEND') },
 ]
