@@ -7,3 +7,5 @@ POST /login 200 [08/Mar/2025:07:34:58 +0000] - 129.085 ms localhost
 POST /login 200 [08/Mar/2025:07:36:02 +0000] - 121.354 ms localhost
 GET /users?pageNumber=1&pageSize=2 200 [08/Mar/2025:07:38:26 +0000] - 38.791 ms localhost
 GET /logout 304 [08/Mar/2025:07:38:41 +0000] - 34.291 ms localhost
+POST /login 200 [08/Mar/2025:08:08:54 +0000] - 460.314 ms localhost
+POST /login 200 [08/Mar/2025:13:23:42 +0000] - 565.642 ms localhost

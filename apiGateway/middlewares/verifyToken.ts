@@ -4,10 +4,13 @@ import { config } from 'dotenv'
 import { Request, Response, NextFunction } from 'express'
 import { match } from 'path-to-regexp'
 import { getUserByIdGrpcGateway } from '../grpc/grpcUserGatewayClient'
-import redisClient from "../../redis/redisClient"
+// import redisClient from "../../redis/redisClient"
+
 // import redisClient from "../redis/redisClient"
 
 // import { redisClient } from "@redis/redisClient";
+
+import redisClient from './redisClient'
 
 config()
 
