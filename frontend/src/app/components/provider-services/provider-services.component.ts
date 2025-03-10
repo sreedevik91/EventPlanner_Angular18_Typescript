@@ -10,7 +10,7 @@ import { AlertService } from '../../services/alertService/alert.service';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { Catering, Decor, EventCoverage } from '../../model/constants/eventServicesOptions';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { Subject, take, takeUntil } from 'rxjs';
 
 @Component({

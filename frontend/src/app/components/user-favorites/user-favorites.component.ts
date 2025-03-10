@@ -8,7 +8,7 @@ import { UserSrerviceService } from '../../services/userService/user-srervice.se
 import { AlertService } from '../../services/alertService/alert.service';
 import { BookingService } from '../../services/bookingService/booking.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 
 declare var Razorpay: any;

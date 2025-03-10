@@ -38,15 +38,15 @@ export class ChatService {
   }
 
   getChatsByUser(userId: string) {
-    return this.http.get(`${this.baseUrl}${userId}`, { observe: 'response' })
+    return this.http.get(`${this.baseUrl}${userId}`, { observe: 'response', withCredentials:true })
   }
 
   getImgUrlFromCloudinary(data: any) {
-    return this.http.post(`${this.baseUrl}upload`, data, { observe: 'response' })
+    return this.http.post(`${this.baseUrl}upload`, data, { observe: 'response', withCredentials:true })
   }
 
   getAudioUrlFromCloudinary(data: any) {
-    return this.http.post(`${this.baseUrl}audioUpload`, data, { observe: 'response' })
+    return this.http.post(`${this.baseUrl}audioUpload`, data, { observe: 'response', withCredentials:true })
   }
 
   startChat(userName: string, userId: string) {

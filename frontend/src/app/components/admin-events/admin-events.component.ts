@@ -6,7 +6,7 @@ import { EventServiceService } from '../../services/eventService/event-service.s
 import { AlertService } from '../../services/alertService/alert.service';
 import { HttpStatusCodes, IEvent, IEventServiceResponse, IResponse } from '../../model/interface/interface';
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { FormComponent } from '../../shared/components/form/form.component';

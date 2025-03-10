@@ -30,7 +30,7 @@ RUN ls -la node_modules/.bin/tsc && chmod +x node_modules/.bin/tsc
 COPY proto /app/proto
 
 # 4. Copy Redis client configuration
-COPY redis /app/redis
+# COPY redis /app/redis
 
 # Create symbolic links inside the service directory
 # RUN ln -s /app/proto ./proto && \
@@ -44,8 +44,10 @@ RUN npm run build
 
 # Create a symbolic link:
 # /app/apiGateway/dist/proto → /app/proto
-RUN ln -s /app/proto ./dist/proto  && \
-    ln -s /app/redis ./dist/redis
+
+# RUN ln -s /app/proto ./dist/proto  && \
+#     ln -s /app/redis ./dist/redis
+RUN ln -s /app/proto ./dist/proto 
 
 # Build using the absolute path to tsc
 # RUN ./node_modules/.bin/tsc -p tsconfig.json
@@ -64,7 +66,7 @@ COPY --from=builder /app/apiGateway/node_modules ./node_modules
 
 # 8. Copy proto/redis to ROOT directory (not under apiGateway)
 COPY --from=builder /app/proto /app/proto
-COPY --from=builder /app/redis /app/redis
+# COPY --from=builder /app/redis /app/redis
 
 # 9. Expose ports (API and gRPC)
 EXPOSE 4000 

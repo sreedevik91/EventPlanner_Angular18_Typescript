@@ -1,7 +1,7 @@
 import { Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpStatusCodes, IBookedServices, IResponse, IService } from '../../model/interface/interface';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { Booking } from '../../model/class/bookingClass';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';

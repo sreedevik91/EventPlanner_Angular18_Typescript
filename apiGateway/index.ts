@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { NextFunction } from 'express'
 import { Request, Response } from 'express'
 import cors, { CorsOptions } from 'cors'
 import fs from 'fs'
@@ -15,54 +15,79 @@ const app = express()
 
 dotenv.config()
 
-const allowedOrigins:string[] = [
+const allowedOrigins: string[] = [
     'http://localhost',       // Frontend on port 80 (Nginx)
     'http://localhost:4200'   // Angular dev server
 ];
 
-const corsOptions:CorsOptions = {
-    // origin: ['http://localhost:4200', 'http://localhost','localhost'], // Frontend URL
-    // origin: 'localhost',
-    // origin: '*',
-    origin: (
-        origin: string | undefined, // Type: string | undefined
-        callback: (err: Error | null, allow?: boolean) => void // Callback signature
-    ) => {
+// const corsOptions: CorsOptions = {
+//     // origin: ['http://localhost', 'http://localhost:4200', 'http://api-gateway', 'http://frontend'], // Frontend URL
+//     // origin: 'localhost',
+//     // origin: '*',
+//     // origin: (
+//     //     origin: string | undefined, // Type: string | undefined
+//     //     callback: (err: Error | null, allow?: boolean) => void // Callback signature
+//     // ) => {
 
-        console.log('Incoming Origin:', origin); // 👈 Log the origin
+//     //     console.log('Incoming Origin:', origin); // 👈 Log the origin
 
-        // Allow requests with no origin (e.g., curl, Postman)
-        if (!origin) return callback(null, true);
+//     //     // Allow requests with no origin (e.g., curl, Postman)
+//     //     if (!origin) return callback(null, true);
 
-        // Validate against allowed origins
-        if (allowedOrigins.includes(origin)) {
-            console.log('Allowed Origin:', origin); // 👈 Confirm match
-            callback(null, true);
-        } else {
-            console.log('Blocked Origin:', origin); // 👈 Identify mismatches
-            callback(new Error(`Origin ${origin} not allowed by CORS`));
-        }
+//     //     // Validate against allowed origins
+//     //     if (allowedOrigins.includes(origin)) {
+//     //         console.log('Allowed Origin:', origin); // 👈 Confirm match
+//     //         callback(null, true);
+//     //     } else {
+//     //         console.log('Blocked Origin:', origin); // 👈 Identify mismatches
+//     //         callback(new Error(`Origin ${origin} not allowed by CORS`));
+//     //     }
 
 
-        // if (!origin || allowedOrigins.includes(origin)) {
-        //     callback(null, true);
-        //   } else {
-        //     callback(new Error(`Origin ${origin} not allowed by CORS`));
-        //   }
+//     //     // if (!origin || allowedOrigins.includes(origin)) {
+//     //     //     callback(null, true);
+//     //     //   } else {
+//     //     //     callback(new Error(`Origin ${origin} not allowed by CORS`));
+//     //     //   }
 
-    },
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-    credentials: true, // Allow cookies to be sent
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-}
-app.use(cors(corsOptions))
-app.options('*', cors(corsOptions)); // Handle preflight requests
+//     // },
+
+//     origin: function (origin, callback) {
+//         const allowedOrigins = ['http://localhost','http://localhost:4200', 'http://api-gateway', 'http://frontend'];
+
+//         if (!origin || allowedOrigins.includes(origin)) {
+//             callback(null, origin); // Allow requests from allowed origins
+//         } else {
+//             callback(new Error('Not allowed by CORS'));
+//         }
+//     },
+//     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'], // Allowed headers
+//     credentials: true, // Allow cookies to be sent
+//     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+//     preflightContinue: false
+// }
+// app.use(cors(corsOptions))
+
+// app.use(cors({
+//     // origin:'localhost',
+//     // origin:['http://localhost', 'http://localhost:4200', "http://frontend"],
+//     origin:'*',
+//     credentials:true
+// }))
+
+app.use(cors({
+    origin: ['http://localhost:4200','http://localhost', 'http://frontend', 'http://nginx'], // Ensure full URL
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+}));
+
+// app.options('*', cors(corsOptions)); // Handle preflight requests
 // After setting up CORS middleware, add:
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost'); // 👈 Force override
-    next();
-  });
-
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', 'http://localhost'); // 👈 Force override
+//     next();
+// });
 app.use(cookieParser())
 
 app.use(logger)
@@ -143,14 +168,26 @@ const createProxy = ({ path, target }: ProxyOptions) => {
         app.use(path, createProxyMiddleware({
             target,
             changeOrigin: true,
-            cookieDomainRewrite: 'localhost'
+            cookieDomainRewrite: 'localhost',
+            // on: {
+            //     proxyRes: (proxyRes, req, res) => {
+            //         proxyRes.headers['Access-Control-Allow-Origin'] = req.headers.origin || 'http://localhost';
+            //         proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
+            //     }
+            // }
         }))
     } else {
         app.use(path, verifyToken, createProxyMiddleware({
             target,
             changeOrigin: true,
             ws: path === '/api/chat' ? true : false,
-            cookieDomainRewrite: 'localhost'
+            cookieDomainRewrite: 'localhost',
+            // on: {
+            //     proxyRes: (proxyRes, req, res) => {
+            //         proxyRes.headers['Access-Control-Allow-Origin'] = req.headers.origin || 'http://localhost';
+            //         proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
+            //     }
+            // }
         }))
     }
 
@@ -172,9 +209,37 @@ const createProxy = ({ path, target }: ProxyOptions) => {
 //     res.sendFile(path.join(__dirname,'./public/browser/index.html'))
 // })
 
+// app.use((req:Request, res:Response, next:NextFunction) => {
+//     const allowedOrigins = ['http://localhost:4200', 'http://api-gateway', 'http://frontend'];
+    
+//     if(!req.headers) return
+
+//     if (allowedOrigins.includes(req.headers.origin!)) {
+//         res.setHeader('Access-Control-Allow-Origin', req.headers.origin!);
+//     }
+
+//     res.setHeader('Access-Control-Allow-Credentials', 'true');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+
+//     console.log('Final Response Headers:', res.getHeaders());
+//     next();
+// });
+
+
+// app.use((req, res, next) => {
+//     console.log('Incoming Request Origin:', req.headers.origin);
+//     next();
+// });
+// app.use((req, res, next) => {
+//     console.log('Final Response Headers:', res.getHeaders());
+//     next();
+// });
+
+
 services.forEach(createProxy)
 
-app.listen(process.env.PORT || 4000, () => {
+app.listen(Number(process.env.PORT) || 4000, "0.0.0.0", () => {
     console.log('Server running on port 4000');
 
 })

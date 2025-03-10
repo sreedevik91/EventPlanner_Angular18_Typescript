@@ -10,6 +10,7 @@ import { AlertService } from '../../services/alertService/alert.service';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Subject, takeUntil } from 'rxjs';
+import { environment } from '../../../environments/environment';
 declare const google: any;
 
 @Component({
@@ -63,10 +64,10 @@ export default class LoginComponent implements OnDestroy{
   }
 
   login() {
-    // debugger
+    debugger
     this.userLoginForm.get('role')?.setValue(this.userRole)
     this.loginData = this.userLoginForm.value
-    // console.log(this.loginData);
+    console.log(environment.apiUserUrl);
 
     this.userService.userLogin(this.loginData).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {

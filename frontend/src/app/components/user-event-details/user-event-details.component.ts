@@ -1,7 +1,7 @@
 import { Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpStatusCodes, IEvent, IResponse, IService, IServicesArray } from '../../model/interface/interface';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { DataService } from '../../services/dataService/data.service';
 import { BookingService } from '../../services/bookingService/booking.service';
