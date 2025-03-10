@@ -6,7 +6,7 @@ import { HttpStatusCodes, IResponse, IService } from '../../model/interface/inte
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertService } from '../../services/alertService/alert.service';
 import { IChoice } from '../../model/class/serviceClass';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { DataService } from '../../services/dataService/data.service';
 import { Subject } from 'rxjs';

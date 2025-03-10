@@ -4,11 +4,6 @@ import { config } from 'dotenv'
 import { Request, Response, NextFunction } from 'express'
 import { match } from 'path-to-regexp'
 import { getUserByIdGrpcGateway } from '../grpc/grpcUserGatewayClient'
-// import redisClient from "../../redis/redisClient"
-
-// import redisClient from "../redis/redisClient"
-
-// import { redisClient } from "@redis/redisClient";
 
 import redisClient from './redisClient'
 
@@ -68,11 +63,21 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
         try {
 
             // Check blacklist first
-            const isBlacklisted = await redisClient.get(`blacklist:${token}`);
-            if (isBlacklisted) {
-                console.log('Token blocklisted');
-                res.status(401).json({ success: false, message: 'Token revoked' });
-                return
+            // const isBlacklisted = await redisClient.get(`blacklist:${token}`);
+            // if (isBlacklisted) {
+            //     console.log('Token blocklisted');
+            //     res.status(401).json({ success: false, message: 'Token revoked' });
+            //     return
+            // }
+            try {
+                const isBlacklisted = await redisClient.get(`blacklist:${token}`);
+                if (isBlacklisted) {
+                    console.log('Token blocklisted');
+                    res.status(401).json({ success: false, message: 'Token revoked' });
+                    return
+                }
+            } catch (error) {
+                console.error('Redis error:', error);
             }
 
              // Verify JWT

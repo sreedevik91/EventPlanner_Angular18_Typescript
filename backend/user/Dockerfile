@@ -68,7 +68,8 @@ COPY proto /app/proto
 # Create a symbolic link to mimic the local structure
 # RUN mkdir -p /app/backend && ln -s /app/proto /app/backend/proto
 
-COPY redis /app/redis  
+# COPY redis /app/redis  
+
 # Create a symbolic link to mimic the local structure
 # RUN mkdir -p /app/backend && ln -s /app/redis /app/backend/redis
 
@@ -83,8 +84,10 @@ COPY backend/user/ .
 RUN npm run build
 
 # Create symbolic link from dist/proto to root proto directory
-RUN ln -s /app/proto ./dist/proto  && \
-    ln -s /app/redis ./dist/redis
+# RUN ln -s /app/proto ./dist/proto  && \
+#     ln -s /app/redis ./dist/redis
+
+RUN ln -s /app/proto ./dist/proto
 
 # Build using the absolute path to tsc
 # RUN ./node_modules/.bin/tsc -p tsconfig.json
