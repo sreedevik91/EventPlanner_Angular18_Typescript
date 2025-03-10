@@ -9,3 +9,16 @@ GET /users?pageNumber=1&pageSize=2 200 [08/Mar/2025:07:38:26 +0000] - 38.791 ms 
 GET /logout 304 [08/Mar/2025:07:38:41 +0000] - 34.291 ms localhost
 POST /login 200 [08/Mar/2025:08:08:54 +0000] - 460.314 ms localhost
 POST /login 200 [08/Mar/2025:13:23:42 +0000] - 565.642 ms localhost
+POST /login - [10/Mar/2025:13:33:42 +0000] - - ms localhost
+POST /login - [10/Mar/2025:13:35:14 +0000] - - ms localhost
+POST /login - [10/Mar/2025:13:43:31 +0000] - - ms localhost
+POST /login - [10/Mar/2025:13:45:01 +0000] - - ms localhost
+POST /login - [10/Mar/2025:13:45:48 +0000] - - ms localhost
+POST /login 200 [10/Mar/2025:13:46:52 +0000] - 458.618 ms localhost
+GET /logout 304 [10/Mar/2025:13:47:20 +0000] - 63.374 ms localhost
+POST /login - [10/Mar/2025:13:47:59 +0000] - - ms localhost
+POST /login 200 [10/Mar/2025:16:26:04 +0000] - 448.616 ms localhost
+GET /logout 304 [10/Mar/2025:16:26:17 +0000] - 23.877 ms localhost
+POST /login 200 [10/Mar/2025:16:44:47 +0000] - 564.759 ms localhost
+POST /login 200 [10/Mar/2025:17:09:28 +0000] - 839.337 ms localhost
+GET /logout 304 [10/Mar/2025:17:10:18 +0000] - 64.624 ms localhost

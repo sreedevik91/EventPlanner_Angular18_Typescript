@@ -54,7 +54,7 @@ RUN ls -la node_modules/.bin/tsc && chmod +x node_modules/.bin/tsc
 # Copy service-specific files (proto, redis, and source code)
 # Shared across services
 COPY proto /app/proto                 
-COPY redis /app/redis  
+# COPY redis /app/redis  
 # Copy user-service code              
 COPY backend/events/ .                  
 
@@ -62,8 +62,10 @@ COPY backend/events/ .
 RUN npm run build
 
 # Create symbolic link from dist/proto to root proto directory
-RUN ln -s /app/proto ./dist/proto  && \
-    ln -s /app/redis ./dist/redis
+# RUN ln -s /app/proto ./dist/proto  && \
+#     ln -s /app/redis ./dist/redis
+
+RUN ln -s /app/proto ./dist/proto 
 
 # Build using the absolute path to tsc
 # RUN ./node_modules/.bin/tsc -p tsconfig.json
