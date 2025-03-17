@@ -63,7 +63,6 @@ serviceRoute.use(cors())
 
 router.get('/services/count', (req:Request,res:Response)=>serviceController.getTotalServices(req,res))
 router.get('/services', (req:Request,res:Response)=>serviceController.getAllServices(req,res))
-router.get('/name/:name', (req:Request,res:Response)=>serviceController.getServiceByName(req,res))
 
 router.post('/new', upload.fields([{ name: 'img' }, { name: 'choiceImg' }]), (req:Request,res:Response)=>serviceController.createService(req,res))
 
@@ -74,6 +73,8 @@ router.route('/:id')
     .get((req:Request,res:Response)=>serviceController.getServiceById(req,res))
     .patch( upload.fields([{ name: 'img' }, { name: 'choiceImg' }]), (req:Request,res:Response)=>serviceController.editService(req,res))
     .delete((req:Request,res:Response)=>serviceController.deleteService(req,res))
+    
+router.get('/name/:name', (req:Request,res:Response)=>serviceController.getServiceByName(req,res))
 
 serviceRoute.use(router)
 export default serviceRoute 

@@ -29,13 +29,18 @@ export class UserSrerviceService {
   }
 
   userLogin(data: ILoginData) {
+    debugger
+    console.log('userlogin url:',`${this.baseUrl}login` );
+    
     return this.http.post(`${this.baseUrl}login`, data, { observe: 'response', withCredentials:true })
+    
     // { observe: 'response' } will incluse status codes in response which could be get be response.status
     // backend response data would be accessed by response.body.keyName
   }
 
   googleSignin() {
-    window.location.href = 'http://localhost:4000/user/auth/google';
+    debugger
+    window.location.href = environment.googleAuthUrl;
   }
 
   handleGoogleSignin() {

@@ -117,22 +117,22 @@ export interface IEventsData{
 }
 
 export interface IRepository<T> {
-  createEvent(service: Partial<T>): Promise<T>
+  createEvent(service: Partial<T>): Promise<T | null>
   getEventById(eventId: string): Promise<T | null>
-  getAllEvents(filter: FilterQuery<T>, options: QueryOptions): Promise<T[]>
+  getAllEvents(filter: FilterQuery<T>, options: QueryOptions): Promise<T[] | null>
   updateEvent(eventId: string, serviceData: UpdateQuery<T>): Promise<T | null>
   deleteEvent(eventId: string): Promise<DeleteResult | null>
 }
 
 export interface IEventRepository {
-  getAllEvents(filter: FilterQuery<IEvent>,  options: QueryOptions): Promise<IEvent[]>;
-  createEvent(service: Partial<IEvent>): Promise<IEvent>;
+  getAllEvents(filter: FilterQuery<IEvent>,  options: QueryOptions): Promise<IEvent[] | null>;
+  createEvent(service: Partial<IEvent>): Promise<IEvent | null>;
   getEventById(eventId: string): Promise<IEvent | null>;
   updateEvent(eventId: string, serviceData: UpdateQuery<IEvent>): Promise<IEvent | null>;
   deleteEvent(eventId: string): Promise<DeleteResult | null>;
-  getTotalEvents(): Promise<number>;
-  getEventByName(name: string):Promise<IEvent[]> 
-  getEventsAndCount(filter: FilterQuery<IEvent>,  options: QueryOptions): Promise<IEventsData[]>;
+  getTotalEvents(): Promise<number | null>;
+  getEventByName(name: string):Promise<IEvent[] | null> 
+  getEventsAndCount(filter: FilterQuery<IEvent>,  options: QueryOptions): Promise<IEventsData[] | null>;
 }
 
 export interface IEmailService{
@@ -161,4 +161,24 @@ export interface IEventController{
   editStatus(req: Request, res: Response, next:NextFunction):Promise<void>
   getEventServiceByName(req: Request, res: Response, next:NextFunction):Promise<void>
   getEventsByName(req: Request, res: Response, next:NextFunction):Promise<void>
+}
+
+export const SERVICE_RESPONSES = {
+    commonError: 'Something went wrong.',
+    totalEventsError: 'Could not get the total document',
+    addEventError: 'Could not create service',
+    getEventsError: 'Could not fetch data',
+    deleteEventSuccess:'Event deleted successfuly',
+    deleteEventError: 'Could not delete event, Something went wrong',
+    getEventError: 'Could not get event, Something went wrong',
+    editEventSuccess:'Event updated successfuly' ,
+    editEventError:'Could not update event',
+    editStatusSuccess:'Event status updated' ,
+    editStatusError: 'Could not updated event status',
+    getServiceError: 'Could not get event service'
+}
+
+export const CONTROLLER_RESPONSES = {
+    commonError: 'Something went wrong.',
+    internalServerError:'Internal Server Error'
 }

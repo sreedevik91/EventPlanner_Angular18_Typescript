@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 // import eventServices from "../services/eventServices";
-import { HttpStatusCodes, IEventController, IEventService, IEventServices } from "../interfaces/eventInterfaces";
+import { CONTROLLER_RESPONSES, HttpStatusCodes, IEventController, IEventService, IEventServices } from "../interfaces/eventInterfaces";
 
 import fs from 'fs'
 import { AppError } from "../utils/appError";
@@ -31,7 +31,7 @@ export class EventController implements IEventController {
             error instanceof Error ? console.log('Error message from getTotalEvents controller: ', error.message) : console.log('Unknown error from getTotalEvents controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
 
@@ -74,7 +74,7 @@ export class EventController implements IEventController {
             error instanceof Error ? console.log('Error message from createEvent controller: ', error.message) : console.log('Unknown error from createEvent controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
 
     }
@@ -98,7 +98,7 @@ export class EventController implements IEventController {
             error instanceof Error ? console.log('Error message from getAllEvents controller: ', error.message) : console.log('Unknown error from getAllEvents controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
 
@@ -122,7 +122,7 @@ export class EventController implements IEventController {
             error instanceof Error ? console.log('Error message from deleteEvent controller: ', error.message) : console.log('Unknown error from deleteEvent controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
 
@@ -147,7 +147,7 @@ export class EventController implements IEventController {
             error instanceof Error ? console.log('Error message from getEventById controller: ', error.message) : console.log('Unknown error from getEventById controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
 
@@ -196,7 +196,7 @@ export class EventController implements IEventController {
             error instanceof Error ? console.log('Error message from editEvent controller: ', error.message) : console.log('Unknown error from editEvent controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
 
@@ -222,7 +222,7 @@ export class EventController implements IEventController {
             error instanceof Error ? console.log('Error message from editStatus controller: ', error.message) : console.log('Unknown error from editStatus controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -248,7 +248,7 @@ export class EventController implements IEventController {
             // console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message || 'Internal server error',500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -274,7 +274,7 @@ export class EventController implements IEventController {
             // console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message || 'Internal server error',500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
