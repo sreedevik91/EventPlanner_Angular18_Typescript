@@ -14,7 +14,7 @@
 
 /* ========================================================================================== */
 
-.sidebar{
+/* .sidebar{
     position: fixed;
     top:0;
     left: 0;
@@ -63,7 +63,7 @@
     .main-content{
         margin-left: 60px;
     }
-}
+} */
 
 /* ========================================================================================== */
 
@@ -88,4 +88,41 @@
     padding: 1rem 0;
     background-color: rgba(0,0,0,0.1);
   }
+
+/* ========================================================================================== */
+
+
+/* Custom Responsive Styles */
+.sidebar {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .main-content {
+    margin-left: 0;
+    transition: margin-left 0.3s ease-in-out;
+  }
+  
+  @media (max-width: 767.98px) {
+    .main-content {
+      margin-top: 70px; /* Space for hamburger button */
+    }
+    
+    .offcanvas-md.offcanvas-start {
+      width: 75% !important;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .offcanvas-md.offcanvas-start {
+      transform: none !important;
+      visibility: visible !important;
+      position: static !important;
+    }
+    
+    .sidebar {
+      min-width: 250px !important;
+    }
+  }
+
+/* ========================================================================================== */
 

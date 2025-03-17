@@ -32,17 +32,17 @@ export enum HttpStatusCodes {
 }
 
 export interface IRepository<T>{
-  createChat(data:Partial<T>):Promise<T>
+  createChat(data:Partial<T>):Promise<T | null>
   getChatById(chatId:string):Promise<T | null>
-  getAllChat(query:FilterQuery<T>, options:QueryOptions):Promise<T[]>
+  getAllChat(query:FilterQuery<T>, options:QueryOptions):Promise<T[] | null>
   updateChat(chatId:string,data:UpdateQuery<T>):Promise<T | null>
   deleteChat(chatId:string):Promise<DeleteResult | null>
 }
 
 export interface IChatRepository{
-  createChat(data:Partial<IChat>):Promise<IChat>
+  createChat(data:Partial<IChat>):Promise<IChat | null>
   getChatById(chatId:string):Promise<IChat | null>
-  getAllChat(query:FilterQuery<IChat>, options:QueryOptions):Promise<IChat[]>
+  getAllChat(query:FilterQuery<IChat>, options:QueryOptions):Promise<IChat[] | null>
   updateChat(chatId:string,data:UpdateQuery<IChat>):Promise<IChat | null>
   deleteChat(chatId:string):Promise<DeleteResult | null>
   getChatsByUserId(userId: string):Promise<IChat | null>
@@ -62,3 +62,13 @@ export interface IChatController{
   uploadAudioToCloudinary(req: Request, res: Response, next: NextFunction):Promise<void>
 }
 
+
+export const CONTROLLER_RESPONSES = {
+  commonError: 'Something went wrong.'
+}
+
+export const SERVICE_RESPONSES = {
+  commonError: 'Something went wrong.',
+  getChatError:'Could not get booking, Something went wrong',
+  saveChatError: 'Could not save chat, Something went wrong'
+}

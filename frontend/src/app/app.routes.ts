@@ -96,9 +96,9 @@ export const routes: Routes = [
 
         // ]
     },
-    {
-        path: '**',
-        // component:PageNotFoundComponent,
-        redirectTo: 'login'
-    }
+    // {
+    //     path: '**',
+    //     // component:PageNotFoundComponent,
+    //     redirectTo: 'login'
+    // }
 ];

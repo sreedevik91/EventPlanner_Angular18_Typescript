@@ -1,4 +1,4 @@
-import { IChat, IChatRepository, IChatService } from "../interfaces/chatInterfaces"
+import { IChat, IChatRepository, IChatService, SERVICE_RESPONSES } from "../interfaces/chatInterfaces"
 // import chatRepository from "../repository/chatRepository";
 import { config } from "dotenv";
 import { getAudioUrl, getImgVideoUrl } from "../utils/cloudinary";
@@ -28,11 +28,11 @@ export class ChatServices implements IChatService {
             if (data) {
                 return { success: true, data: data }
             } else {
-                return { success: false, message: 'Could not get booking, Something went wrong' }
+                return { success: false, message:SERVICE_RESPONSES.getChatError }
             }
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getChatsByUserId service: ', error.message ) : console.log('Unknown error from getChatsByUserId service: ', error );
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError}
 
         }
     }
@@ -53,13 +53,13 @@ export class ChatServices implements IChatService {
                 if (newChat) {
                     return { success: true, data: newChat }
                 } else {
-                    return { success: false, message: 'Could not get booking, Something went wrong' }
+                    return { success: false, message:SERVICE_RESPONSES.saveChatError }
                 }
             }
 
         } catch (error: unknown) {
              error instanceof Error ? console.log('Error message from saveChats service: ', error.message ) : console.log('Unknown error from saveChats service: ', error )
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError}
 
         }
 
@@ -77,7 +77,7 @@ export class ChatServices implements IChatService {
 
         } catch (error: unknown) {
              error instanceof Error ? console.log('Error message from uploadToCloudinary service: ', error.message ) : console.log('Unknown error from uploadToCloudinary service: ', error )
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError}
 
         }
     }
@@ -97,7 +97,7 @@ export class ChatServices implements IChatService {
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from uploadAudioToCloudinary service: ', error.message ) : console.log('Unknown error from uploadAudioToCloudinary service: ', error )
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError}
 
         }
     }

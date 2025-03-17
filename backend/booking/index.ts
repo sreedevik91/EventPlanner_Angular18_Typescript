@@ -11,6 +11,7 @@ connectDb()
 
 app.use(express.json())
 app.use('/',bookingRoute)
+// app.use('/api/booking',bookingRoute)
 app.use(errorHandler)
 
 app.listen(process.env.PORT || 3004, () => {

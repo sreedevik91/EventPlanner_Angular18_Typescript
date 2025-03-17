@@ -115,14 +115,14 @@ async function UpdateEventWithNewService(call: any, callback: any) {
       try {
         const eventData = await eventRepository.getEventByName(event)
         console.log('getEventByName response from grpc: ', eventData);
-        let eventToUpdate = eventData[0]
-        let eventId: string = eventToUpdate._id
-
-
+       
         if (!eventData || eventData.length === 0) {
           console.warn(`Event "${event}" not found in database.`);
           return null; // Skip if event does not exist
         }
+        
+        let eventToUpdate = eventData[0]
+        let eventId: string = eventToUpdate._id
 
         if (!eventToUpdate.services.includes(serviceName)) {
           console.log(`Updating event "${event}" with service "${serviceName}".`);

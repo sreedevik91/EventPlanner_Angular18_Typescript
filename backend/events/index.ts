@@ -12,6 +12,7 @@ connectDb()
 
 app.use(express.json())
 app.use('/',eventRoute)
+// app.use('/api/event',eventRoute)
 app.use(errorHandler)
 
 const startExpressServer=()=>{

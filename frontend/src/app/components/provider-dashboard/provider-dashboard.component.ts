@@ -6,6 +6,9 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { HttpStatusCodes, IBooking, IResponse } from '../../model/interface/interface';
 import { DatePipe } from '@angular/common';
 import { Carousel } from 'bootstrap';
+import { Chart, ChartConfiguration, ChartTypeRegistry, registerables } from 'chart.js'
+
+Chart.register(...registerables)
 
 @Component({
   selector: 'app-provider-dashboard',
@@ -22,6 +25,7 @@ export class ProviderDashboardComponent implements OnInit, OnDestroy, AfterViewI
   destroy$: Subject<void> = new Subject<void>()
 
   providerId: string = ''
+  user: string = ''
 
   providerBookings = signal<(Partial<IBooking>[])>([])
 
@@ -36,13 +40,20 @@ export class ProviderDashboardComponent implements OnInit, OnDestroy, AfterViewI
     'https://www.paperlesspost.com/blog/wp-content/uploads/072922_Blog_70thBirthdayPartyIdeas_01-hero.png'
   ]
 
+  providerChart: Chart<keyof ChartTypeRegistry, (number | null)[], unknown> | null = null;
+
+  labels = signal<string[]>([])
+  amount = signal<(number | null)[]>([])
+
   ngOnInit(): void {
     this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
       if (user) {
         this.providerId = user.id
+        this.user=user.user
       }
     })
     this.getServicesByProvider()
+    this.creatChart('Weekly')
   }
 
   ngAfterViewInit(): void {
@@ -71,6 +82,43 @@ export class ProviderDashboardComponent implements OnInit, OnDestroy, AfterViewI
       }
     })
   }
+
+  creatChart(filter: string) {
+    this.bookingService.getChartDataProvider(filter,this.user).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: HttpResponse<IResponse>) => {
+        console.log('charts data response: ', res);
+          this.labels.set(res.body?.data.providerChartData.label)
+          this.amount.set(res.body?.data.providerChartData.amount)
+          if (this.providerChart) this.providerChart.destroy()
+            const config: ChartConfiguration<'bar', (number | null)[], unknown> = {
+              type: 'bar',
+              data: {
+                labels: this.labels(),
+                datasets: [{
+                  label: filter,
+                  data: this.amount(),
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
+            }
+            this.providerChart = new Chart('myChart', config);
+
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log('charts data error: ', error);
+
+      }
+    })
+   
+  }
+
 
   ngOnDestroy(): void {
     this.destroy$.next()

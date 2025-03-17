@@ -8,7 +8,10 @@ WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/ .
-RUN npm run build --prod  
+# RUN npm run build --prod 
+
+# Ensure production build 
+RUN npm run build -- --configuration production  
 
 # Step 2: Serve with Nginx
 FROM nginx:alpine AS production-stage

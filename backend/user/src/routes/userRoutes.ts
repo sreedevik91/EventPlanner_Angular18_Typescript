@@ -70,7 +70,7 @@ router.get('/auth/google/callback',passport.authenticate('google'),(req:Request,
 
 router.post('/register',(req:Request,res:Response)=>userController.registerUser(req, res))
 router.post('/email/verify',(req:Request,res:Response)=>userController.verifyEmail(req, res))
-router.post('/login',  (req:Request, res:Response) => userController.userLogin(req, res)) 
+router.post('/login',(req:Request, res:Response) => userController.userLogin(req, res)) 
 router.post('/password/resetEmail',(req:Request,res:Response)=>userController.sendResetEmail(req, res))
 router.post('/password/reset',(req:Request,res:Response)=>userController.resetPassword(req, res))
 router.post('/otp/verify',(req:Request,res:Response)=>userController.verifyOtp(req, res))

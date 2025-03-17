@@ -23,6 +23,7 @@ connectDb()
 // app.use(express.static('public'));
 
 app.use('/',serviceRoute)
+// app.use('/api/service',serviceRoute)
 
 const startExpressServer=()=>{
     return new Promise(resolve=>{

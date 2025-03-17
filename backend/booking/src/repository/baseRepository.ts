@@ -10,46 +10,64 @@ export abstract class BaseRepository<T extends Document> implements IRepository<
         this.model = model
     }
 
-    async createBooking(bookingData: Partial<T>): Promise<T> {
+    async createBooking(bookingData: Partial<T>): Promise<T | null> {
         try {
             const booking = new this.model(bookingData)
             return await booking.save()
-        } catch (error) {
-            console.error("Error creating user:", error);
-            throw new Error("Failed to create user");
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from Booking BaseRepository: ', error.message) : console.log('Unknown error from Booking BaseRepository: ', error)
+            // throw new Error("Failed to create user");
+            return null
         }
 
     }
 
     async getBookingById(bookingId: string): Promise<T | null> {
-
-        return await this.model.findById(bookingId)
+        try {
+            return await this.model.findById(bookingId)
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from Booking BaseRepository: ', error.message) : console.log('Unknown error from Booking BaseRepository: ', error)
+            // throw new Error("Failed to create user");
+            return null
+        }
     }
 
-    async getAllBooking(query: FilterQuery<T> = {}, options: QueryOptions = {}): Promise<T[]> {
-
-        const { sort, limit, skip } = options
-        return await this.model.find(query).sort(sort).limit(limit!).skip(skip!)
+    async getAllBooking(query: FilterQuery<T> = {}, options: QueryOptions = {}): Promise<T[] | null> {
+        try {
+            const { sort, limit, skip } = options
+            return await this.model.find(query).sort(sort).limit(limit!).skip(skip!)
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from Booking BaseRepository: ', error.message) : console.log('Unknown error from Booking BaseRepository: ', error)
+            return null
+        }
     }
 
     async updateBooking(bookingId: string, data: UpdateQuery<T>): Promise<T | null> {
-
-        const updateQuery: UpdateQuery<T> = {}
-        if (data.$push) {
-            updateQuery.$push = data.$push
+        try {
+            const updateQuery: UpdateQuery<T> = {}
+            if (data.$push) {
+                updateQuery.$push = data.$push
+            }
+            if (data.$pull) {
+                updateQuery.$pull = data.$pull
+            }
+            if (data.$set) {
+                updateQuery.$set = data.$set
+            }
+            return await this.model.findOneAndUpdate({ _id: bookingId }, updateQuery, { new: true })
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from Booking BaseRepository: ', error.message) : console.log('Unknown error from Booking BaseRepository: ', error)
+            return null
         }
-        if (data.$pull) {
-            updateQuery.$pull = data.$pull
-        }
-        if (data.$set) {
-            updateQuery.$set = data.$set
-        }
-        return await this.model.findOneAndUpdate({ _id: bookingId }, updateQuery, { new: true })
     }
 
     async deleteBooking(bookingId: string): Promise<DeleteResult | null> {
-        
-        return await this.model.findByIdAndDelete(bookingId)
+        try {
+            return await this.model.findByIdAndDelete(bookingId)
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from Booking BaseRepository: ', error.message) : console.log('Unknown error from Booking BaseRepository: ', error)
+            return null
+        }
     }
 
 

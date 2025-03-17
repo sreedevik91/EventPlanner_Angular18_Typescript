@@ -10,7 +10,7 @@ import redisClient from "../middlewares/redisClient";
 
 export class ResponseHandler {
 
-    static successResponse(res: Response, statusCode: number = HttpStatusCodes.SUCCESS, responseData: IResponse, cookieData?: ICookie) {
+    static successResponse(res: Response, statusCode: number = HttpStatusCodes.OK, responseData: IResponse, cookieData?: ICookie) {
 
         if (cookieData) {
             const { refreshToken, accessToken, options } = cookieData
@@ -32,7 +32,7 @@ export class ResponseHandler {
         res.redirect('/googleLogin/callback')
     }
 
-    static async logoutResponse(res: Response, token: string, expTime: number, statusCode: number = HttpStatusCodes.SUCCESS, responseData: IResponse) {
+    static async logoutResponse(res: Response, token: string, expTime: number, statusCode: number = HttpStatusCodes.OK, responseData: IResponse) {
 
         const options: CookieOptions = {
             httpOnly: true,

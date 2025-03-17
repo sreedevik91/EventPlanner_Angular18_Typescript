@@ -4,9 +4,8 @@ import cors, { CorsOptions } from 'cors'
 import fs from 'fs'
 import path from 'path'
 import cookieParser from 'cookie-parser'
-import { createProxyMiddleware } from 'http-proxy-middleware'
+import { createProxyMiddleware, Options } from 'http-proxy-middleware'
 import dotenv from 'dotenv'
-import { match } from 'path-to-regexp'
 import morgan from 'morgan'
 import logger from './utils/logFile'
 import verifyToken from './middlewares/verifyToken'
@@ -16,9 +15,13 @@ const app = express()
 dotenv.config()
 
 const allowedOrigins: string[] = [
-    'http://localhost',       // Frontend on port 80 (Nginx)
-    'http://localhost:4200'   // Angular dev server
+  'http://localhost',       // Frontend on port 80 (Nginx)
+  'http://localhost:4200'   // Angular dev server
 ];
+
+
+// ================================================================================================================
+
 
 // const corsOptions: CorsOptions = {
 //     // origin: ['http://localhost', 'http://localhost:4200', 'http://api-gateway', 'http://frontend'], // Frontend URL
@@ -75,12 +78,38 @@ const allowedOrigins: string[] = [
 //     credentials:true
 // }))
 
-app.use(cors({
-    origin: ['http://localhost:4200','http://localhost', 'http://frontend', 'http://nginx'], // Ensure full URL
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-}));
+// ================================================================================================================
+
+
+// app.use(cors({
+//     // origin: ['http://localhost', 'http://localhost:4200', 'http://frontend', 'http://nginx'], // Ensure full URL
+//     origin: 'http://localhost', // Ensure full URL
+//     // origin: (origin, callback) => {
+//     //     console.log('Received Origin:', origin); // 👈 Log incoming origin
+
+//     //     const allowedOrigins = [
+//     //       'http://localhost',
+//     //       'http://localhost:4200',
+//     //       'http://frontend',
+//     //       'http://nginx'
+//     //     ];
+//     //     if (origin && allowedOrigins.includes(origin)) {
+//     //       callback(null, origin); // 👈 Reflect request origin
+//     //     } else {
+//     //       callback(new Error('Not allowed by CORS'));
+//     //     }
+
+//     //     // if (!origin || allowedOrigins.includes(origin)) {
+//     //     //     callback(null, true); // 👈 Reflect request origin
+//     //     //   } else {
+//     //     //     callback(new Error('Not allowed by CORS'));
+//     //     //   }
+//     //   },
+//     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+//     credentials: true,
+//     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+//     exposedHeaders: ['Set-Cookie'] // 👈 Expose cookie headers to frontend
+// }));
 
 // app.options('*', cors(corsOptions)); // Handle preflight requests
 // After setting up CORS middleware, add:
@@ -110,95 +139,165 @@ app.use(morgan(':method :url :status [:date[clf]] - :response-time ms :host', { 
 // ]
 
 const services = [
-    { path: '/api/user', target: getEnvVal('USER_SERVICE') },
-    { path: '/api/service', target: getEnvVal('SERVICES_SERVICE') },
-    { path: '/api/event', target: getEnvVal('EVENT_SERVICE') },
-    { path: '/api/booking', target: getEnvVal('BOOKING_SERVICE') },
-    { path: '/api/chat', target: getEnvVal('CHAT_SERVICE') },
-    { path: '/', target: getEnvVal('FRONTEND') },
+  // { path: '/user', target: 'http://user-service:3001' },
+  { path: '/api/user', target: getEnvVal('USER_SERVICE') || 'http://user-service:3001' },
+  { path: '/api/service', target: getEnvVal('SERVICES_SERVICE') || 'http://services-service:3002' },
+  { path: '/api/event', target: getEnvVal('EVENT_SERVICE') || 'http://event-service:3003' },
+  { path: '/api/booking', target: getEnvVal('BOOKING_SERVICE') || 'http://booking-service:3004' },
+  { path: '/api/chat', target: getEnvVal('CHAT_SERVICE') || 'http://chat-service:3005' },
+  { path: '/', target: getEnvVal('FRONTEND') || 'http://nginx:80' },
 ]
 
 function getEnvVal(value: string) {
-    let target = process.env[value]
-    if (!target) {
-        throw new Error(`Proxy target for path is undefined!`);
-    } else {
-        return target
-    }
+  let target = process.env[value]
+  if (!target) {
+    throw new Error(`Proxy target for path is undefined!`);
+  } else {
+    return target
+  }
 }
 
 interface ProxyOptions {
-    path: string;
-    target: string;
+  path: string;
+  target: string;
 }
 // here each object in the service array is destructured to path and target variables so that it could be used directly
 const createProxy = ({ path, target }: ProxyOptions) => {
 
-    // if (!target) return
+  // if (!target) return
 
-    // if (path === '/api/chat') {
-    //     app.use(path, verifyToken, createProxyMiddleware({
-    //         target,
-    //         changeOrigin: true,
-    //         ws: true, // Enable WebSocket proxying
-    //         cookieDomainRewrite: 'localhost'
-    //     }))
-    // } else {
-    //     app.use(path,
-    //         path === '/' ?
-    //             createProxyMiddleware({
-    //                 target,
-    //                 changeOrigin: true,
-    //                 cookieDomainRewrite: 'localhost'
-    //             })
-    //             :
-    //             verifyToken, createProxyMiddleware({
-    //                 target,
-    //                 changeOrigin: true,
-    //                 cookieDomainRewrite: 'localhost'
-    //             })
-    //     )
-    // }
+  // if (path === '/api/chat') {
+  //     app.use(path, verifyToken, createProxyMiddleware({
+  //         target,
+  //         changeOrigin: true,
+  //         ws: true, // Enable WebSocket proxying
+  //         cookieDomainRewrite: 'localhost'
+  //     }))
+  // } else {
+  //     app.use(path,
+  //         path === '/' ?
+  //             createProxyMiddleware({
+  //                 target,
+  //                 changeOrigin: true,
+  //                 cookieDomainRewrite: 'localhost'
+  //             })
+  //             :
+  //             verifyToken, createProxyMiddleware({
+  //                 target,
+  //                 changeOrigin: true,
+  //                 cookieDomainRewrite: 'localhost'
+  //             })
+  //     )
+  // }
 
-    if (!target) {
-        throw new Error(`Proxy target for path "${path}" is undefined!`);
+  if (!target) {
+    throw new Error(`Proxy target for path "${path}" is undefined!`);
+  }
+
+  const proxyOptions: Options = { // 👈 Explicitly type as Options
+    target,
+    changeOrigin: true,
+    // cookieDomainRewrite: 'localhost',
+    pathRewrite: {
+      [`^${path}`]: '', // 👈 Strip the base path (e.g., /api/user → '')
+    },
+    ws: path === '/api/chat',
+    on: { // 👈 Use "on" with event names
+      proxyRes: (proxyRes, req, res) => {
+        // Delete conflicting CORS headers
+        // delete proxyRes.headers['access-control-allow-origin'];
+        // delete proxyRes.headers['access-control-allow-credentials'];
+        // delete proxyRes.headers['access-control-allow-methods'];
+        // delete proxyRes.headers['access-control-allow-headers'];
+
+        // Case-insensitive deletion of backend CORS headers
+        // const headers = proxyRes.headers;
+        // const lowercaseHeaders = Object.keys(headers).reduce((acc, key) => {
+        //   acc[key.toLowerCase()] = headers[key];
+        //   return acc;
+        // }, {} as Record<string, any>);
+
+        // delete lowercaseHeaders['access-control-allow-origin'];
+        // delete lowercaseHeaders['access-control-allow-credentials'];
+        // delete lowercaseHeaders['access-control-allow-methods'];
+        // delete lowercaseHeaders['access-control-allow-headers'];
+
+        // // Reassign cleaned headers
+        // proxyRes.headers = lowercaseHeaders;
+        // Remove ALL CORS headers regardless of case
+        const headersToRemove = [
+          'access-control-allow-origin',
+          'access-control-allow-methods',
+          'access-control-allow-headers',
+          'access-control-allow-credentials',
+          'vary'
+        ];
+
+        headersToRemove.forEach(header => {
+          delete proxyRes.headers[header];
+          delete proxyRes.headers[header.toUpperCase()];
+        });
+
+      }
     }
+  };
 
-    if (path === '/') {
-        app.use(path, createProxyMiddleware({
-            target,
-            changeOrigin: true,
-            cookieDomainRewrite: 'localhost',
-            // on: {
-            //     proxyRes: (proxyRes, req, res) => {
-            //         proxyRes.headers['Access-Control-Allow-Origin'] = req.headers.origin || 'http://localhost';
-            //         proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
-            //     }
-            // }
-        }))
-    } else {
-        app.use(path, verifyToken, createProxyMiddleware({
-            target,
-            changeOrigin: true,
-            ws: path === '/api/chat' ? true : false,
-            cookieDomainRewrite: 'localhost',
-            // on: {
-            //     proxyRes: (proxyRes, req, res) => {
-            //         proxyRes.headers['Access-Control-Allow-Origin'] = req.headers.origin || 'http://localhost';
-            //         proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
-            //     }
-            // }
-        }))
-    }
+  if (path === '/') {
+    app.use(path, createProxyMiddleware(proxyOptions));
+  } else {
+    app.use(path, verifyToken, createProxyMiddleware(proxyOptions));
+  }
 
-    // app.use(path, verifyToken, createProxyMiddleware(
-    //     {
-    //         target,
-    //         changeOrigin: true,
-    //         ws:path==='/chat' ? true : false,
-    //         cookieDomainRewrite: 'localhost'
-    //     }
-    // ))
+
+
+
+  // if (path === '/') {
+  //     app.use(path, createProxyMiddleware({
+  //         target,
+  //         changeOrigin: true,
+  //         cookieDomainRewrite: 'localhost',
+  //         on: {
+  //             proxyRes: (proxyRes, req, res) => {
+  //                 // proxyRes.headers['Access-Control-Allow-Origin'] = req.headers.origin || 'http://localhost';
+  //                 // proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
+
+  //                 // 👇 Remove conflicting CORS headers from backend services
+  //                 delete proxyRes.headers['access-control-allow-origin'];
+  //                 delete proxyRes.headers['access-control-allow-credentials'];
+  //                 delete proxyRes.headers['access-control-allow-methods'];
+  //                 delete proxyRes.headers['access-control-allow-headers'];
+  //             }
+  //         }
+  //     }))
+  // } else {
+  //     app.use(path, verifyToken, createProxyMiddleware({
+  //         target,
+  //         changeOrigin: true,
+  //         ws: path === '/api/chat' ? true : false,
+  //         cookieDomainRewrite: 'localhost',
+  //         on: {
+  //             proxyRes: (proxyRes, req, res) => {
+  //                 // proxyRes.headers['Access-Control-Allow-Origin'] = req.headers.origin || 'http://localhost';
+  //                 // proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
+
+  //                 // 👇 Remove conflicting CORS headers from backend services
+  //                 delete proxyRes.headers['access-control-allow-origin'];
+  //                 delete proxyRes.headers['access-control-allow-credentials'];
+  //                 delete proxyRes.headers['access-control-allow-methods'];
+  //                 delete proxyRes.headers['access-control-allow-headers'];
+  //             }
+  //         }
+  //     }))
+  // }
+
+  // app.use(path, verifyToken, createProxyMiddleware(
+  //     {
+  //         target,
+  //         changeOrigin: true,
+  //         ws:path==='/chat' ? true : false,
+  //         cookieDomainRewrite: 'localhost'
+  //     }
+  // ))
 
 }
 
@@ -211,7 +310,7 @@ const createProxy = ({ path, target }: ProxyOptions) => {
 
 // app.use((req:Request, res:Response, next:NextFunction) => {
 //     const allowedOrigins = ['http://localhost:4200', 'http://api-gateway', 'http://frontend'];
-    
+
 //     if(!req.headers) return
 
 //     if (allowedOrigins.includes(req.headers.origin!)) {
@@ -240,6 +339,16 @@ const createProxy = ({ path, target }: ProxyOptions) => {
 services.forEach(createProxy)
 
 app.listen(Number(process.env.PORT) || 4000, "0.0.0.0", () => {
-    console.log('Server running on port 4000');
+  console.log('Server running on port 4000');
 
 })
+
+
+
+
+
+
+
+
+
+

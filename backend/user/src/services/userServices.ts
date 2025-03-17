@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import nodemailer from 'nodemailer'
 import otpGenerator from 'otp-generator'
-import { ICookieService, IEmailService, IOtpService, IPasswordService, ITokenService, IUser, IUserDb, IUserRepository, IJwtPayload, LoginData, IUserService, IRequestParams } from '../interfaces/userInterface'
+import { ICookieService, IEmailService, IOtpService, IPasswordService, ITokenService, IUser, IUserDb, IUserRepository, IJwtPayload, LoginData, IUserService, IRequestParams, SERVICE_RESPONSES } from '../interfaces/userInterface'
 // import UserRepository from '../repository/userRepository'
 import { CookieOptions } from 'express'
 // import userRepository from '../repository/userRepository'
@@ -82,13 +82,13 @@ export class UserServices implements IUserService {
             const user = await this.UserRepository.getUserByEmail(email)
 
             if (!user) {
-                return { success: false, message: 'Invalid email. Enter your registered email' }
+                return { success: false, message: SERVICE_RESPONSES.invalidEmail }
             }
 
             const token = await this.tokenService.getAccessToken(user)
 
             if (!token) {
-                return { success: false, message: 'Could not get credentials' }
+                return { success: false, message: SERVICE_RESPONSES.missingToken}
             }
 
             let content = `
@@ -102,10 +102,10 @@ export class UserServices implements IUserService {
 
             if (!isMailSent) {
                 console.log('Could not send Reset Password email');
-                return { success: false, message: 'Something went wrong.Could not send Reset Password email' }
+                return { success: false, message: SERVICE_RESPONSES.sendEmailError}
             }
 
-            return { success: true, message: 'Email sent successfully' }
+            return { success: true, message: SERVICE_RESPONSES.sendEmailSuccess }
 
 
             // if (user) {
@@ -145,7 +145,7 @@ export class UserServices implements IUserService {
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from sendResetPasswordEmail service: ', error.message) : console.log('Unknown error from sendResetPasswordEmail service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -189,16 +189,16 @@ export class UserServices implements IUserService {
 
             const user = await this.UserRepository.getUserById(id)
             if (!user) {
-                return { success: false, message: "User not found" }
+                return { success: false, message: SERVICE_RESPONSES.userNotFound }
             }
 
             const isOtpSent = await this.otpService.sendOtp(user)
 
             if (!isOtpSent) {
-                return { success: false, message: 'Something went wrong.Try again' }
+                return { success: false, message: SERVICE_RESPONSES.sendOtpError }
             }
 
-            return { success: true, message: 'Otp resent successfully' }
+            return { success: true, message: SERVICE_RESPONSES.resendOtpSuccess}
 
             // if (user) {
             //     const isOtpSent=await this.otpService.sendOtp(user.name, user.email, id)
@@ -209,7 +209,7 @@ export class UserServices implements IUserService {
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from resendUserOtp service: ', error.message) : console.log('Unknown error from resendUserOtp service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -229,27 +229,27 @@ export class UserServices implements IUserService {
 
             const decoded = await this.tokenService.verifyAccessToken(token)
             if (!decoded || typeof decoded === 'string') {
-                return { success: false, message: 'Something went wrong.Try again' }
+                return { success: false, message: SERVICE_RESPONSES.commonError}
             }
             const user = await this.UserRepository.getUserById(decoded.id)
             console.log('user to reset password: ', user);
 
             if (!user) {
-                return { success: false, message: 'User not found' }
+                return { success: false, message: SERVICE_RESPONSES.userNotFound}
             }
 
             const hashedPassword = await this.passwordService.hashPassword(password)
             if (!hashedPassword) {
-                return { success: false, message: 'Could not update password. Please try again.' }
+                return { success: false, message: SERVICE_RESPONSES.updatePasswordError}
             }
             const savePassword = await this.UserRepository.updateUser(decoded.id, { password: hashedPassword! })
             console.log('savePassword: ', savePassword);
 
             if (!savePassword) {
-                return { success: false, message: 'Could not save password' }
+                return { success: false, message: SERVICE_RESPONSES.savePasswordError}
             }
 
-            return { success: true, message: 'Password reset successfully' }
+            return { success: true, message: SERVICE_RESPONSES.resetPasswordSuccess}
 
             // if (user) {
             //     // const savePassword= await UserRepository.updateUser({_id:decoded.id},{$set:{password:password}})
@@ -263,7 +263,7 @@ export class UserServices implements IUserService {
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from resetUserPassword service: ', error.message) : console.log('Unknown error from resetUserPassword service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
 
@@ -273,28 +273,28 @@ export class UserServices implements IUserService {
         try {
 
             if (!userData.username) {
-                return { success: false, message: 'Username is required' }
+                return { success: false, message: SERVICE_RESPONSES.noUsername}
             }
 
             const isUser = await this.UserRepository.getUserByUsername(userData.username)
             console.log('isUser: ', isUser);
             if (isUser) {
-                return { success: false, message: 'Username not available' }
+                return { success: false, message: SERVICE_RESPONSES.usernameNotAvailable}
             }
             const user = await this.UserRepository.createUser(userData)
 
             if (!user) {
-                return { success: false, message: 'Could not register user' }
+                return { success: false, message: SERVICE_RESPONSES.userRegisterError}
             }
 
             const isOtpSent = await this.otpService.sendOtp(user)
 
             if (!isOtpSent) {
-                return { success: false, message: 'Something went wrong.Try again' }
+                return { success: false, message:SERVICE_RESPONSES.commonError }
             }
 
             console.log('new user saved', user);
-            return { success: true, message: 'User registered successfully', data: user }
+            return { success: true, message: SERVICE_RESPONSES.userRegisterSuccess, data: user }
 
             // if (userData.username) {
             //     const isUser = await this.UserRepository.getUserByUsername(userData.username)
@@ -321,7 +321,7 @@ export class UserServices implements IUserService {
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from register service: ', error.message) : console.log('Unknown error from register service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -331,7 +331,10 @@ export class UserServices implements IUserService {
         console.log('user loginData: ', loginData);
 
         try {
+            
             if (loginData.googleId && loginData.email) {
+            console.log('entered google login');
+
                 const isUser = await this.UserRepository.getUserByEmail(loginData.email)
 
                 let user: IUserDb | null
@@ -366,24 +369,32 @@ export class UserServices implements IUserService {
                 //     // sameSite: 'none'
                 // }
 
-                const accessToken = await this.tokenService.getAccessToken(user)
-                const refreshToken = await this.tokenService.getRefreshToken(user)
+                if (user) {
+                    const accessToken = await this.tokenService.getAccessToken(user)
+                    const refreshToken = await this.tokenService.getRefreshToken(user)
 
-                if (!accessToken && !refreshToken) {
-                    console.log('No token generated');
+                    if (!accessToken && !refreshToken) {
+                        console.log('No token generated');
+                    }
+
+                    let cookieData = await this.cookieService.getCookieOptions(user, accessToken!, refreshToken!)
+
+                    return { cookieData, success: true, emailVerified: true }
+                } else {
+                    return { success: false, message:SERVICE_RESPONSES.googleLoginError }
+
                 }
 
-                let cookieData = await this.cookieService.getCookieOptions(user, accessToken!, refreshToken!)
-
-                return { cookieData, success: true, emailVerified: true }
 
             } else {
+            console.log('entered db login');
+
                 const { username, password } = loginData
 
                 console.log('user loginData, username, password: ', username, password);
 
                 if (!username || !password) {
-                    return { success: false, message: 'Username and password required.' }
+                    return { success: false, message: SERVICE_RESPONSES.missingCredentials}
                 }
 
                 const user = await this.UserRepository.getUserByUsername(username)
@@ -391,17 +402,17 @@ export class UserServices implements IUserService {
 
                 if (!user) {
                     console.log('sending login response from service to controller: user not found');
-                    return { success: false, noUser: true, message: 'Sorry ! User not found, Please create your account.' }
+                    return { success: false, noUser: true, message: SERVICE_RESPONSES.userNotFound }
                 }
 
                 if (!user.isActive) {
                     console.log('User account is blocked');
-                    return { success: false, blocked: true, message: 'Your account has been blocked. Contact admin for more details.' }
+                    return { success: false, blocked: true, message: SERVICE_RESPONSES.accountBlocked}
                 }
 
                 if (!user.isEmailVerified) {
                     console.log('sending login response from service to controller: emailNotVerified success fail');
-                    return { success: false, emailNotVerified: true, message: 'Your email is not verified' }
+                    return { success: false, emailNotVerified: true, message: SERVICE_RESPONSES.emailNotVerified}
                 }
 
                 if (user.password && await this.passwordService.verifyPassword(password, user.password)) {
@@ -419,7 +430,7 @@ export class UserServices implements IUserService {
                 } else {
                     console.log('sending login response from service to controller: emailVerified success fail');
 
-                    return { success: false, wrongCredentials: true, message: 'Invalid username or password' }
+                    return { success: false, wrongCredentials: true, message: SERVICE_RESPONSES.invalidCredentials}
 
                 }
 
@@ -504,7 +515,7 @@ export class UserServices implements IUserService {
             }
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from login service: ', error.message) : console.log('Unknown error from login service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
 
         }
 
@@ -517,23 +528,23 @@ export class UserServices implements IUserService {
             const user = await this.UserRepository.getUserById(id)
 
             if (!user) {
-                return { success: false, message: 'User not found.' }
+                return { success: false, message: SERVICE_RESPONSES.userNotFound}
             }
 
             const isOtpMatched = await this.otpService.verifyOtp(otp, user)
 
             if (!isOtpMatched) {
-                return { success: false, message: 'Otp did not match' }
+                return { success: false, message:SERVICE_RESPONSES.otpMissmatch }
             }
             console.log('otp matched');
 
             const updateEmail = await this.UserRepository.updateUser(id, { isEmailVerified: true })
 
             if (!updateEmail) {
-                return { success: false, message: 'Something went wrong' }
+                return { success: false, message: SERVICE_RESPONSES.commonError }
             }
 
-            return { success: true, message: 'Otp matched' }
+            return { success: true, message: SERVICE_RESPONSES.otpMatched}
 
             // if (user) {
             //     const { otpData } = user
@@ -549,7 +560,7 @@ export class UserServices implements IUserService {
             //         if (otp === otpData.otp) {
             //             console.log('otp matched');
             //             const updateEmail = await this.UserRepository.updateUser(id, { isEmailVerified: true })
-            //             return updateEmail ? { success: true, message: 'Otp matched' } : { success: false, message: 'Something went wrong' }
+            //             return updateEmail ? { success: true, message: 'Otp matched' } : { success: false, message: SERVICE_RESPONSES.commonError }
             //         } else {
             //             console.log('otp not matched');
             //             return { success: false, message: 'Otp did not match' }
@@ -559,7 +570,7 @@ export class UserServices implements IUserService {
             // }
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from verifyLoginOtp service: ', error.message) : console.log('Unknown error from verifyLoginOtp service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
 
         }
 
@@ -572,16 +583,16 @@ export class UserServices implements IUserService {
             const user = await this.UserRepository.getUserByEmail(email)
 
             if (!user) {
-                return { success: false, message: 'User not found.' }
+                return { success: false, message: SERVICE_RESPONSES.userNotFound}
             }
 
             const isOtpSent = await this.otpService.sendOtp(user)
 
             if (!isOtpSent) {
-                return { success: false, message: 'Could not send email to user, something went wrong' }
+                return { success: false, message: SERVICE_RESPONSES.sendEmailError}
             }
 
-            return { success: true, message: 'Otp Sent to email', data: user }
+            return { success: true, message:SERVICE_RESPONSES.sendOtpSuccess, data: user }
 
             // if (user) {
             //     await this.sendOtp(user.name, user.email, user._id)
@@ -589,7 +600,7 @@ export class UserServices implements IUserService {
             // return { success: true, message: 'Otp Sent to email', data: user }
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from verifyUserEmail service: ', error.message) : console.log('Unknown error from verifyUserEmail service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -631,23 +642,23 @@ export class UserServices implements IUserService {
 
             // let data = await UserRepository.getAllUsers(filterQ, sortQ, Number(pageSize), skip)
             // let data = await this.UserRepository.getAllUsers(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
-           
+
             let usersData = await this.UserRepository.getUsersAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
             console.log('all users and total count: ', usersData);
 
-            const data={
-                users:usersData[0].users,
-                count:usersData[0].usersCount[0].totalUsers || 0
-            }
 
             if (usersData) {
+                const data = {
+                    users: usersData[0].users,
+                    count: usersData[0].usersCount[0].totalUsers || 0
+                }
                 return { success: true, data }
             } else {
-                return { success: false, message: 'Could not fetch data' }
+                return { success: false, message: SERVICE_RESPONSES.dataFetchError}
             }
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getUsers service: ', error.message) : console.log('Unknown error from getUsers service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -661,12 +672,12 @@ export class UserServices implements IUserService {
             const userData = await this.UserRepository.getUserById(id)
 
             if (!userData) {
-                return { success: false, message: 'User not found' }
+                return { success: false, message:SERVICE_RESPONSES.userNotFound }
             }
 
             const accessToken = await this.tokenService.getAccessToken(userData)
             if (!accessToken) {
-                return { success: false, message: 'Could not refresh token' }
+                return { success: false, message:SERVICE_RESPONSES.refreshTokenError }
             }
             const cookieOptions = await this.cookieService.getCookieOptions(userData, accessToken!, refreshToken)
             return { success: true, accessToken, refreshToken, options: cookieOptions.options, payload: cookieOptions.payload }
@@ -692,7 +703,7 @@ export class UserServices implements IUserService {
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getNewToken service: ', error.message) : console.log('Unknown error from getNewToken service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -703,13 +714,13 @@ export class UserServices implements IUserService {
             console.log('updatedUser: ', updatedUser);
 
             if (updatedUser) {
-                return { success: true, data: updatedUser, message: 'User updated successfuly' }
+                return { success: true, data: updatedUser, message:SERVICE_RESPONSES.updateUserSuccess }
             } else {
-                return { success: false, message: 'Could not updated user' }
+                return { success: false, message:SERVICE_RESPONSES.updateUserError }
             }
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from updateUser service: ', error.message) : console.log('Unknown error from updateUser service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -719,7 +730,7 @@ export class UserServices implements IUserService {
             const user = await this.UserRepository.getUserById(userId)
 
             if (!user) {
-                return { success: false, message: 'User not found' }
+                return { success: false, message: SERVICE_RESPONSES.userNotFound}
             }
 
             let blocked: boolean = false
@@ -727,7 +738,7 @@ export class UserServices implements IUserService {
             console.log('updatedUserStatus: ', user, updatedUser);
 
             if (!updatedUser) {
-                return { success: false, message: 'Could not updated user status' }
+                return { success: false, message:SERVICE_RESPONSES.updateStatusError }
             }
 
             if (!updatedUser.isActive) {
@@ -751,7 +762,7 @@ export class UserServices implements IUserService {
                 console.log('Could not send update account email');
             }
 
-            return { success: true, data: updatedUser, blocked, message: 'User status updated' }
+            return { success: true, data: updatedUser, blocked, message: SERVICE_RESPONSES.updateStatusSuccess}
 
             // if (user) {
             //     let blocked: boolean = false
@@ -784,7 +795,7 @@ export class UserServices implements IUserService {
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from updateUserStatus service: ', error.message) : console.log('Unknown error from updateUserStatus service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -799,12 +810,12 @@ export class UserServices implements IUserService {
 
                 return { success: true, data: user }
             } else {
-                return { success: false, message: 'Could not get user details' }
+                return { success: false, message: SERVICE_RESPONSES.noUserData}
             }
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getUser service: ', error.message) : console.log('Unknown error from getUser service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -815,12 +826,12 @@ export class UserServices implements IUserService {
             if (user && user.isActive) {
                 return { success: true, data: user }
             } else {
-                return { success: false, message: 'Your account has been blocked. Contact admin for more details.' }
+                return { success: false, message: SERVICE_RESPONSES.accountBlocked}
             }
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getGoogleUser service: ', error.message) : console.log('Unknown error from getGoogleUser service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -831,12 +842,12 @@ export class UserServices implements IUserService {
 
                 return { success: true, data: user }
             } else {
-                return { success: false, message: 'Could not users count' }
+                return { success: false, message: SERVICE_RESPONSES.usersCountError}
             }
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getUsersCount service: ', error.message) : console.log('Unknown error from getUsersCount service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -848,13 +859,13 @@ export class UserServices implements IUserService {
             const user = await this.UserRepository.getUserById(userId)
 
             if (!user) {
-                return { success: false, message: 'User not found' }
+                return { success: false, message: SERVICE_RESPONSES.userNotFound}
             }
 
             const updatedUser = await this.UserRepository.updateUser(userId, { isUserVerified: true })
 
             if (!updatedUser) {
-                return { success: false, message: 'Could not verify user' }
+                return { success: false, message: SERVICE_RESPONSES.verifyUserError}
             }
 
             let content = `
@@ -870,7 +881,7 @@ export class UserServices implements IUserService {
                 console.log('Could not send Account Verified email');
             }
 
-            return { success: true, message: 'user verified', data: user }
+            return { success: true, message: SERVICE_RESPONSES.verifyUserSuccess, data: user }
 
 
             // if (user) {
@@ -889,7 +900,7 @@ export class UserServices implements IUserService {
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from verifyUser service: ', error.message) : console.log('Unknown error from verifyUser service: ', error)
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
     }
@@ -900,7 +911,7 @@ export class UserServices implements IUserService {
             const expirationTime = decoded?.exp
             return { success: true, data: expirationTime }
         } catch (error) {
-            return { success: false, message: 'Something went wrong' }
+            return { success: false, message: SERVICE_RESPONSES.commonError }
 
         }
     }

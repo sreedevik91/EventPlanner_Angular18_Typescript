@@ -3,7 +3,7 @@
 services:
   api-gateway:
     build:
-      context: .  # ← Sets root as build context
+      context: . # ← Sets root as build context
       dockerfile: apiGateway/Dockerfile
     environment:
       - NODE_ENV=production
@@ -14,7 +14,8 @@ services:
       - BOOKING_SERVICE=http://booking-service:3004
       - CHAT_SERVICE=http://chat-service:3005
       # - FRONTEND=http://frontend:4200
-      - FRONTEND=http://nginx:80
+      # - FRONTEND=http://nginx:80
+      - FRONTEND=http://nginx
       - JWT_ACCESS_SECRET=sreedeviEventPlannerApplicationAccessToken
       - JWT_REFRESH_SECRET=sreedeviEventPlannerApplicationRefreshToken
       - GRPC_USER_SERVER=user-service:50051
@@ -32,7 +33,7 @@ services:
       context: .
       dockerfile: backend/user/Dockerfile
     ports:
-      - "3001:3001"
+      # - "3001:3001"
       - "50051:50051"
     environment:
       - PORT=3001
@@ -42,8 +43,10 @@ services:
       - GOOGLE_SECRET=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
       - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
       - EMAIL_USER=sreedevisooraj15@gmail.com
-      - EMAIL_URL=http://localhost/api/
-      - GOOGLE_CALLBACK_URL=http://localhost/api/user/auth/google/callback
+      # - EMAIL_URL=http://localhost/api/
+      # - GOOGLE_CALLBACK_URL=http://localhost/user/auth/google/callback
+      - EMAIL_URL=http://nginx/api/ # Was localhost
+      - GOOGLE_CALLBACK_URL=http://nginx/api/user/auth/google/callback # Fixed path
       - SESSION_SECRET_KEY=eventplannerapplication
       - GRPC_USER_SERVER=user-service:50051
       - MONGO_URL=mongodb://mongodb:27017/userService
@@ -59,11 +62,12 @@ services:
       context: .
       dockerfile: backend/eventServices/Dockerfile
     ports:
-      - "3002:3002"
+      # - "3002:3002"
       - "50052:50052"
     environment:
       - PORT=3002
-      - SERVICE_IMG_URL=http://localhost/api/service/uploads/
+      # - SERVICE_IMG_URL=http://localhost/api/service/uploads/
+      - SERVICE_IMG_URL=http://nginx/api/service/uploads/ # Add nginx prefix
       - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
       - EMAIL_USER=sreedevisooraj15@gmail.com
       - CLOUDINARY_CLOUD_NAME=dqsfjbusg
@@ -80,11 +84,12 @@ services:
       context: .
       dockerfile: backend/events/Dockerfile
     ports:
-      - "3003:3003"
+      # - "3003:3003"
       - "50053:50053"
     environment:
       - PORT=3003
-      - EVENT_IMG_URL=http://localhost/api/event/uploads/
+      # - EVENT_IMG_URL=http://localhost/api/event/uploads/
+      - EVENT_IMG_URL=http://nginx/api/event/uploads/ # Add nginx prefix
       - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
       - EMAIL_USER=sreedevisooraj15@gmail.com
       - CLOUDINARY_CLOUD_NAME=dqsfjbusg
@@ -100,8 +105,8 @@ services:
     build:
       context: .
       dockerfile: backend/booking/Dockerfile
-    ports:
-      - "3004:3004"
+    # ports:
+    #   - "3004:3004"
     environment:
       - PORT=3004
       - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
@@ -118,8 +123,8 @@ services:
     build:
       context: .
       dockerfile: backend/chat/Dockerfile
-    ports:
-      - "3005:3005"
+    # ports:
+    #   - "3005:3005"
     environment:
       - PORT=3005
       - CLOUDINARY_CLOUD_NAME=dqsfjbusg
@@ -131,14 +136,14 @@ services:
     depends_on:
       - mongodb
 
-  frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
-    networks:
-      - event_planner_network
-    depends_on:
-      - api-gateway
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: frontend/Dockerfile
+  #   networks:
+  #     - event_planner_network
+  #   depends_on:
+  #     - api-gateway
 
   nginx:
     image: nginx:latest
@@ -147,9 +152,9 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./frontend/dist/browser:/usr/share/nginx/html
-    entrypoint: ["nginx", "-g", "daemon off;"]  # Skip entrypoint scripts
+    entrypoint: [ "nginx", "-g", "daemon off;" ] # Skip entrypoint scripts
     depends_on:
-      - frontend
+      # - frontend
       - api-gateway
     networks:
       - event_planner_network
@@ -160,9 +165,9 @@ services:
     ports:
       - "6379:6379"
     volumes:
-    - redis_data:/data
-    command: 
-      - --bind 0.0.0.0  # ← Critical for Docker networking.By default, Redis binds to 127.0.0.1, making it unreachable from other containers unless explicitly set to 0.0.0.0.
+      - redis_data:/data
+    command:
+      - --bind 0.0.0.0 # ← Critical for Docker networking.By default, Redis binds to 127.0.0.1, making it unreachable from other containers unless explicitly set to 0.0.0.0.
     networks:
       - event_planner_network
 
@@ -172,16 +177,18 @@ services:
     ports:
       - "27017:27017"
     volumes:
-    - mongodb_data:/data/db 
+      # - mongodb_data:/data/db 
+      # - ./mongo-data:/data/db  # Bind mount to host directory
+      - /mnt/c/Users/USER/Documents/BroCampTasks/Angular_Project/mongo-data:/data/db
     networks:
-      - event_planner_network   
-
+      - event_planner_network
 
 volumes:
   mongodb_data:  # Persist MongoDB
-  redis_data:     # Persist Redis (optional)
+  redis_data:
+    # Persist Redis (optional)
 
 networks:
   event_planner_network:
+    name: event_planner_network
     driver: bridge
-
