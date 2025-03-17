@@ -66,21 +66,21 @@ export interface IRepository<T> {
     // getAllUsers(filter:any,sort:any,limit:number,skip:number): Promise<T[]>;
     getAllUsers(query: FilterQuery<T>, options: QueryOptions): Promise<T[] | null>;
     getUserById(userId: string): Promise<T | null>;
-    createUser(userData: Partial<T>): Promise<T>;
+    createUser(userData: Partial<T>): Promise<T | null>;
     updateUser(userId: string, user: Partial<T>): Promise<T | null>;
-    deleteUser(userId: string): Promise<DeleteResult>;
+    deleteUser(userId: string): Promise<DeleteResult | null>;
 }
 
 export interface IUserRepository {
     getAllUsers(query: FilterQuery<IUserDb>, options: QueryOptions): Promise<IUserDb[] | null>;
     getUserById(userId: string): Promise<IUserDb | null>;
-    createUser(userData: Partial<IUserDb>): Promise<IUserDb>;
+    createUser(userData: Partial<IUserDb>): Promise<IUserDb | null>;
     updateUser(userId: string, user: Partial<IUserDb>): Promise<IUserDb | null>;
-    deleteUser(userId: string): Promise<DeleteResult>;
+    deleteUser(userId: string): Promise<DeleteResult | null>;
     getUserByEmail(email: string): Promise<IUserDb | null>;
     getUserByUsername(username: string): Promise<IUserDb | null>;
-    getTotalUsers(): Promise<number>
-    getUsersAndCount(filter: FilterQuery<IUser>,  options: QueryOptions): Promise<IUsersData[]>;
+    getTotalUsers(): Promise<number | null>
+    getUsersAndCount(filter: FilterQuery<IUser>,  options: QueryOptions): Promise<IUsersData[] | null>;
 }
 
 export interface IJwtPayload extends JwtPayload {
@@ -219,11 +219,61 @@ export interface IResponse {
 }
 
 export enum HttpStatusCodes{
-    SUCCESS=200,
+    OK=200,
     CREATED=201,
     BAD_REQUEST=400,
     UNAUTHORIZED=401,
     FORBIDDEN=403,
     NOT_FOUND=404,
     INTERNAL_SERVER_ERROR=500
+}
+
+export const CONTROLLER_RESPONSES = {
+    commonError: 'Something went wrong.',
+    googleLoginError: 'No google user found',
+    userNotFound: 'User not found !',
+    loginSuccess:'Logged in successfully',
+    emailNotVerified:'Email not verified',
+    invalidCredentials:'Invalid username or password',
+    accountBlocked:'Your account has been blocked. Contact admin for more details.',
+    loggedOut: 'User logged out',
+    refreshTokenMissing:'Refresh Token is missing',
+    tokenRefresh:'Token refreshed',
+    tokenRefreshError: 'Token could not refresh'
+}
+
+export const SERVICE_RESPONSES = {
+    commonError: 'Something went wrong.',
+    invalidEmail: 'Invalid email. Enter your registered email',
+    missingToken: 'Could not get credentials',
+    sendEmailError: 'Could not send email to user, something went wrong',
+    sendEmailSuccess: 'Email sent successfully',
+    userNotFound: 'Sorry ! User not found, Please create your account.',
+    sendOtpError:'Could not send Otp.Try again',
+    resendOtpSuccess: 'Otp resent successfully',
+    updatePasswordError: 'Could not update password. Please try again.',
+    savePasswordError: 'Could not save password',
+    resetPasswordSuccess: 'Password reset successfully',
+    noUsername: 'Username is required',
+    usernameNotAvailable: 'Username not available',
+    userRegisterError: 'Could not register user',
+    userRegisterSuccess: 'User registered successfully',
+    googleLoginError: 'No google user found',
+    missingCredentials:'Username and password required.',
+    accountBlocked: 'Your account has been blocked. Contact admin for more details.',
+    emailNotVerified: 'Your email is not verified',
+    invalidCredentials: 'Invalid username or password',
+    otpMissmatch: 'Otp did not match',
+    otpMatched:'Otp matched',
+    sendOtpSuccess: 'Otp Sent to email',
+    dataFetchError: 'Could not fetch data',
+    refreshTokenError: 'Could not refresh token',
+    updateUserSuccess:'User updated successfuly',
+    updateUserError: 'Could not updated user',
+    updateStatusError:'Could not updated user status',
+    updateStatusSuccess:'User status updated',
+    noUserData: 'Could not get user details',
+    usersCountError: 'Could not get users count',
+    verifyUserError:'Could not verify user',
+    verifyUserSuccess: 'User verified',
 }

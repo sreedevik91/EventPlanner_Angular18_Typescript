@@ -26,6 +26,7 @@ connectDb()
 
 app.use(express.json())
 app.use('/',chatRoute)
+// app.use('/api/chat',chatRoute)
 app.use(errorHandler)
 
 httpServer.listen(process.env.PORT || 3005, () => {

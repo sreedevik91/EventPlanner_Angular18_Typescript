@@ -4,7 +4,7 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { refreshTokenInterceptor } from './interceptors/refreshToken/refresh-token.interceptor';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-import { environment } from '../environments/environment.development';
+import { environment } from '../environments/environment';
 
 const config: SocketIoConfig = { url: environment.socketBackendUrl, options: {transports: ['websocket', 'polling']} };
 

@@ -1,6 +1,6 @@
 <div class="container">
-    
-    <!-- <div style="height: 400px;">
+
+  <!-- <div style="height: 400px;">
         <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
               <div class="carousel-item active" data-bs-interval="1000">
@@ -24,85 +24,129 @@
           </div>
     </div> -->
 
-    <section id="schedule" class="row mt-4 overflow-hidden">
 
-        <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                @for (item of serviceImages; track $index) {
-              <div [class]="$index===0 ? 'carousel-item active' : 'carousel-item' " data-bs-interval="2000">
-                <img [src]="item" class="d-block w-100" height="400px" alt="...">
-              </div>
-            }
-              <!-- <div class="carousel-item" data-bs-interval="2000">
+  <section id="schedule" class="row mt-4 overflow-hidden">
+
+    <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        @for (item of serviceImages; track $index) {
+        <div [class]="$index===0 ? 'carousel-item active' : 'carousel-item' " data-bs-interval="2000">
+          <img [src]="item" class="d-block w-100" height="400px" alt="...">
+        </div>
+        }
+        <!-- <div class="carousel-item" data-bs-interval="2000">
                 <img src="https://www.shutterstock.com/image-photo/parkland-county-spruce-grove-alberta-260nw-2374615685.jpg" class="d-block w-100" height="400px" alt="...">
               </div>
               <div class="carousel-item" data-bs-interval="2000">
                 <img src="https://www.sony.net/Products/di_photo-gallery/images/extralarge/1721.JPG" class="d-block w-100" height="400px" alt="...">
               </div> -->
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
-            </button>
-          </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
+        data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval"
+        data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
 
 
-        <!-- <div class="title-start schedule-menu mt-4 col-md-4 col-md-offset-4">
+    <!-- <div class="title-start schedule-menu mt-4 col-md-4 col-md-offset-4">
             <br />
             <h2>Upcoming Events Schedule</h2>
             <p class="sub-text text-center">Check out the event details</p>
         </div><hr> -->
 
-        <div class="mt-4 col-md-12">
-            <br />
-            <h1>Upcoming Events Schedule</h1>
-            <p>Check out the event details</p>
-        </div><hr>
+    <div class="row">
+      <div class="col-1"></div>
+      <div class="col-10">
 
-        <ul class="timeline mb-5">
-            @for (item of providerBookings(); track $index) {
-            <li [class]="($index + 1)%2===0 ? 'timeline-inverted' :''">
-                <div class="timeline-badge">
-                    <a><i class="fa fa-circle" id=""></i></a>
-                </div>
-                <div class="timeline-panel">
-                    <div class="timeline-heading">
-                        <h4>{{item.tag}}</h4>
-                    </div>
-                    <div class="timeline-body d-flex">
-                        <p class="timeline-desc col-md-6">
-                            {{item.tag}} by {{item.user}} on {{item.deliveryDate | date:'shortDate' }} at {{item.venue?.building}}. Booking confirmed on  {{item.orderDate | date:'shortDate' }}
-                        </p>
-                        <p class="timeline-other col-md-6">
-                            <em class="timeline-item">
-                                Booking : {{item.event}} || {{item.service}}
-                            </em>
-                            <em class="timeline-item">
-                                Venue : {{item.venue?.building}},{{item.venue?.street}},{{item.venue?.city}},{{item.venue?.district}},{{item.venue?.state}},{{item.venue?.pbNo}}
-                            </em>
-                            <em class="timeline-item">
-                                Seats : {{item.totalCount}}
-                            </em>
-                            <!-- <em class="timeline-item">
-                                Ticket: $35
-                            </em> -->
-                            <em class="timeline-item">
-                                Date : {{item.deliveryDate | date:'shortDate' }}
-                            </em>
-                           
-                        </p>
+        <div class="card mt-4">
 
-                    </div>
+          <div class="filter">
+            <a class="icon ms-4" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+              <li class="dropdown-header text-start">
+                <h6>Filter</h6>
+              </li>
 
-                </div>
-            </li>
-        }
+              <li><a class="dropdown-item" (click)="creatChart('Weekly')">Weekly</a></li>
+              <li><a class="dropdown-item" (click)="creatChart('Monthly')">Monthly</a></li>
+              <li><a class="dropdown-item" (click)="creatChart('Yearly')">Yearly</a></li>
+            </ul>
+          </div>
 
-        </ul>
+          <div class="card-body">
+            <h5 class="card-title">Reports <span><a (click)="creatChart('Weekly')">/Products-Revenue</a></span></h5>
+            <div class="col">
+              <canvas id="myChart"></canvas>
+            </div>
+          </div>
 
-    </section>
+        </div>
+
+      </div>
+      <div class="col-1"></div>
+
+    </div>
+
+    <div class="mt-4 col-md-12">
+      <br />
+      <h1>Upcoming Events Schedule</h1>
+      <p>Check out the event details</p>
+    </div>
+    <hr>
+
+    <ul class="timeline mb-5">
+      @if(providerBookings().length===0){
+      No upcoming events scheduled...
+      }@else {
+      @for (item of providerBookings(); track $index) {
+      <li [class]="($index + 1)%2===0 ? 'timeline-inverted' :''">
+        <div class="timeline-badge">
+          <a><i class="fa fa-circle" id=""></i></a>
+        </div>
+        <div class="timeline-panel">
+          <div class="timeline-heading">
+            <h4>{{item.tag}}</h4>
+          </div>
+          <div class="timeline-body d-flex">
+            <p class="timeline-desc col-md-6">
+              {{item.tag}} by {{item.user}} on {{item.deliveryDate | date:'shortDate' }} at {{item.venue?.building}}.
+              Booking confirmed on {{item.orderDate | date:'shortDate' }}
+            </p>
+            <p class="timeline-other col-md-6">
+              <em class="timeline-item">
+                Booking : {{item.event}} || {{item.service}}
+              </em>
+              <em class="timeline-item">
+                Venue :
+                {{item.venue?.building}},{{item.venue?.street}},{{item.venue?.city}},{{item.venue?.district}},{{item.venue?.state}},{{item.venue?.pbNo}}
+              </em>
+              <em class="timeline-item">
+                Seats : {{item.totalCount}}
+              </em>
+              <!-- <em class="timeline-item">
+                                    Ticket: $35
+                                </em> -->
+              <em class="timeline-item">
+                Date : {{item.deliveryDate | date:'shortDate' }}
+              </em>
+
+            </p>
+
+          </div>
+
+        </div>
+      </li>
+      }
+      }
+
+
+    </ul>
+
+  </section>
 </div>

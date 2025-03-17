@@ -175,21 +175,33 @@ export interface ISales {
   date: string;
 }
 
+export interface ISalesDataOut{
+  eventSales: ISales[];
+  eventSalesCount: number;
+  servicesSales: ISales[];
+  serviceSalesCount: any;
+}
+
 export interface ISalesData{
   eventsData:ISales[];
   serviceData:ISales[];
-  serviceSalesCount:{totalSale:number}[];
+  serviceSalesNumber:{totalSale:number}[];
   eventSalesCount:{totalSale:number}[];
 }
 
 export interface IProviderSalesData{
   serviceData:ISales[];
-  serviceSalesCount:{totalSale:number}[];
+  serviceSalesNumber:{totalSale:number}[];
 }
 
 export interface IBookingsData{
   bookings:IBooking[];
   bookingsCount:{totalBookings:number}[];
+}
+
+export interface IBookingsDataOut{
+  bookings: IBooking[];
+  count: number;
 }
 
 export interface IAdminBookingData{
@@ -199,6 +211,37 @@ export interface IAdminBookingData{
   upcomingBookings:{count:number}[];
   totalBooking:{count:number}[]
 }
+
+export interface IChartsDataAdmin{
+  servicesChartData:{_id:{service:string,date:number},amount:number}[],
+  eventsChartData:{_id:{event:string,date:number},amount:number}[],
+  // providerChartData:{_id:{provider:string,date:number},amount:number}[]
+}
+export interface IChartsDataProvider{
+      providerChartData:{_id:{provider:string,date:number,service:string},amount:number}[]
+}
+
+export interface IChartDataResponseAdmin{
+  servicesChartData: {
+      label: string[];
+      amount: number[];
+  };
+  eventsChartData: {
+      label: string[];
+      amount: number[];
+  };
+  
+}
+
+export interface IChartDataResponseProvider{
+
+  providerChartData: {
+      label: string[];
+      amount: number[];
+  }
+
+}
+
 
 export interface IProviderBookings {
   user: string;
@@ -211,27 +254,47 @@ export interface IProviderBookings {
   services: IBookedServices[];
 }
 
+export interface IBookingAdminData {
+  bookingData: {
+      type: string;
+      customer: string;
+      date: Date;
+      isConfirmed: boolean;
+  }[];
+  oldBookings: number;
+  upcomingBookings: number;
+  totalRevenue: number;
+  totalBooking: number;
+}
+
+export interface IProviderSales{
+    servicesSales: ISales[];
+    serviceSalesCount: number;
+}
+
 export interface IRepository<T> {
-  createBooking(bookingData: Partial<T>): Promise<T>
+  createBooking(bookingData: Partial<T>): Promise<T | null>
   getBookingById(bookingId: string): Promise<T | null>
-  getAllBooking(query: FilterQuery<T>, options: QueryOptions): Promise<T[]>
+  getAllBooking(query: FilterQuery<T>, options: QueryOptions): Promise<T[] | null>
   updateBooking(bookingId: string, data: UpdateQuery<T>): Promise<T | null>
   deleteBooking(bookingId: string): Promise<DeleteResult | null>
 }
 
 export interface IBookingRepository {
-  createBooking(bookingData: Partial<IBooking>): Promise<IBooking>
+  createBooking(bookingData: Partial<IBooking>): Promise<IBooking | null>
   getBookingById(bookingId: string): Promise<IBooking | null>
-  getAllBooking(query: FilterQuery<IBooking>, options: QueryOptions): Promise<IBooking[]>
+  getAllBooking(query: FilterQuery<IBooking>, options: QueryOptions): Promise<IBooking[] | null>
   updateBooking(bookingId: string, data: UpdateQuery<IBooking>): Promise<IBooking | null>
   deleteBooking(bookingId: string): Promise<DeleteResult | null>
-  getTotalBookings(): Promise<number>
-  getBookingByUserId(id: string): Promise<IBooking[]>
-  getSalesData(query: FilterQuery<IBooking>, options: QueryOptions):Promise<ISalesData[]>
-  getProviderSalesData(query: FilterQuery<IBooking>, options: QueryOptions):Promise<IProviderSalesData[]>
-  getBookingsAndCount(query: FilterQuery<IBooking>, options: QueryOptions): Promise<IBookingsData[]>
+  getTotalBookings(): Promise<number | null>
+  getBookingByUserId(id: string): Promise<IBooking[] | null>
+  getSalesData(query: FilterQuery<IBooking>, options: QueryOptions):Promise<ISalesData[] | null>
+  getProviderSalesData(query: FilterQuery<IBooking>, options: QueryOptions):Promise<IProviderSalesData[] | null>
+  getBookingsAndCount(query: FilterQuery<IBooking>, options: QueryOptions): Promise<IBookingsData[] | null>
   getBookingsByProvider(name: string): Promise<IBooking[] | null>
-  getTotalBookingData(): Promise<IAdminBookingData[]>
+  getTotalBookingData(): Promise<IAdminBookingData[] | null>
+  getAdminChartData(filter: string): Promise<IChartsDataAdmin[] | null>
+  getProviderChartData(filter: string, id:string): Promise<IChartsDataProvider[] | null>
 }
 
 export interface IEmailService {
@@ -257,6 +320,8 @@ export interface IBookingService {
   getProviderSales(params: IRequestParams): Promise<IResponse>
   getBookingsByProvider(name: string): Promise<IResponse>
   getAdminBookingData(): Promise<IResponse>
+  getAdminChartData(filter:string): Promise<IResponse>
+  getProviderChartData(filter:string, id:string): Promise<IResponse>
 }
 
 export interface IBookingController {
@@ -278,9 +343,37 @@ export interface IBookingController {
   getProviderSales(req: Request, res: Response, next: NextFunction): Promise<void>
   getBookingsByProvider(req: Request, res: Response, next: NextFunction): Promise<void>
   getAdminBookingData(req: Request, res: Response, next: NextFunction): Promise<void>
+  getAdminChartData(req: Request, res: Response, next: NextFunction): Promise<void>
+  getProviderChartData(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
 export interface IPaymentService{
   createOrder(bookingId:string,amount:number): Promise<string | null>
   verifyOrder(razorpayResponse:IRazorpayResponse):Promise<boolean>
+}
+
+export const CONTROLLER_RESPONSES = {
+  commonError: 'Something went wrong.'
+}
+
+export const SERVICE_RESPONSES = {
+  commonError: 'Something went wrong.',
+  totalBookingError:'Could not get the total document',
+  addBookingSuccess:'Booking added successfully',
+  addBookingError: 'Could not create service',
+  fetchDataError: 'Fetching data failed. Try again.',
+  deleteBookingSuccess:'Booking deleted successfuly',
+  deleteBookingError: 'Could not delete booking, Something went wrong',
+  deleteServicesSuccess:'Booked service deleted successfuly' ,
+  deleteServicesError: 'Could not delete booked service, Something went wrong',
+  getBookingError: 'Could not get booking, Something went wrong',
+  editBookingSuccess: 'Booking updated successfuly',
+  editBookingError: 'Could not updated booking',
+  editStatusSuccess: 'Booking status updated',
+  editStatusError:'Could not updated booking status',
+  getServiceError: 'Could not get booked service',
+  getEventsError:'Could not get booked events',
+  proceedPaymentError: 'Could not proceed payment. Try again.',
+  paymentSuccess: 'Payment Successful.',
+  paymentError: 'Payment failed. Try again.'
 }

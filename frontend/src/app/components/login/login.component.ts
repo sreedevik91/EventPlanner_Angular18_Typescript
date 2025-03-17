@@ -65,6 +65,8 @@ export default class LoginComponent implements OnDestroy{
 
   login() {
     debugger
+    console.log(environment.apiUserUrl);
+
     this.userLoginForm.get('role')?.setValue(this.userRole)
     this.loginData = this.userLoginForm.value
     console.log(environment.apiUserUrl);
@@ -127,7 +129,9 @@ export default class LoginComponent implements OnDestroy{
         }
         else {
           this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
-          console.log('login error:', error.error.message);
+    console.log(environment.apiUserUrl);
+         
+          console.log('login error:', error.error.message, error,error.message);
 
         }
 

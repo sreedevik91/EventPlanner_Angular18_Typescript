@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 // import serviceServices from "../services/serviceServices"
-import { HttpStatusCodes, IChoice, IServiceController, IServicesService } from "../interfaces/serviceInterfaces";
+import { CONTROLLER_RESPONSES, HttpStatusCodes, IChoice, IServiceController, IServicesService } from "../interfaces/serviceInterfaces";
 import { getImgUrl } from "../utils/cloudinary";
 import { ResponseHandler } from "../utils/responseHandler";
 
@@ -19,7 +19,7 @@ export class ServiceController implements IServiceController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getTotalServices controller: ', error.message) : console.log('Unknown error from getTotalServices controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError})
         }
 
     }
@@ -82,7 +82,7 @@ export class ServiceController implements IServiceController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from createService controller: ', error.message) : console.log('Unknown error from createService controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
 
     }
@@ -97,7 +97,7 @@ export class ServiceController implements IServiceController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getAllServices controller: ', error.message) : console.log('Unknown error from getAllServices controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
 
     }
@@ -112,7 +112,7 @@ export class ServiceController implements IServiceController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from deleteService controller: ', error.message) : console.log('Unknown error from deleteService controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
 
     }
@@ -127,7 +127,7 @@ export class ServiceController implements IServiceController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getServiceById controller: ', error.message) : console.log('Unknown error from getServiceById controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
 
@@ -238,7 +238,7 @@ export class ServiceController implements IServiceController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from editService controller: ', error.message) : console.log('Unknown error from editService controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
 
     }
@@ -255,7 +255,7 @@ export class ServiceController implements IServiceController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from editStatus controller: ', error.message) : console.log('Unknown error from editStatus controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
     }
 
@@ -270,7 +270,7 @@ export class ServiceController implements IServiceController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from approveService controller: ', error.message) : console.log('Unknown error from approveService controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
     }
 
@@ -286,7 +286,7 @@ export class ServiceController implements IServiceController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getServiceByName controller: ', error.message) : console.log('Unknown error from getServiceByName controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
     }
 

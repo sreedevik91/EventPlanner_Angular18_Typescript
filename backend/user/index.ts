@@ -1,8 +1,6 @@
 import express from 'express'
 import { config } from 'dotenv'
 import startGrpcServer from './src/grpc/grpcUserServer'
-// import cors from 'cors'
-// import cookieParser from 'cookie-parser'
 import logger from './src/utils/logFile'
 import userRoute from './src/routes/userRoutes'
 import connectDb from './src/config/db'
@@ -12,21 +10,20 @@ const app = express()
 config()
 connectDb()
 
-// app.use(cookieParser())
-// app.use(cors({
-//     origin: 'http://localhost:4000', // API Gateway
-//     credentials: true,
-// }));
-
 app.use(logger)
 app.use('/', userRoute)
-
-
+// app.use('/api/user', userRoute)
 
 // app.use((req, res) => {
 //     res.json({ message: '404! Page not found' })
 // })
-
+// user-service index.ts
+app.use((req, res, next) => {
+    res.on('finish', () => {
+      console.log('Response Headers:', res.getHeaders()); // 👈 Log headers
+    });
+    next();
+  });
 const startExpressServer=()=>{
     return new Promise((resolve)=>{
         app.listen(process.env.PORT || 3001, () => {

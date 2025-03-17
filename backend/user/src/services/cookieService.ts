@@ -20,7 +20,8 @@ export class CookieService implements ICookieService {
             httpOnly: true,
             // maxAge: 86400,
             secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
-            // sameSite:'none'
+            sameSite: 'lax', // Required for cross-origin cookies
+            domain: 'localhost', // 👈 Match your frontend domain
         }
         return { payload, accessToken, refreshToken, options }
 

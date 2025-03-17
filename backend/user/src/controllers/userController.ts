@@ -1,4 +1,4 @@
-import { HttpStatusCodes, ICookie, IResponse, IUserController, IUserService, LoginData } from "../interfaces/userInterface";
+import { CONTROLLER_RESPONSES, HttpStatusCodes, ICookie, IResponse, IUserController, IUserService, LoginData } from "../interfaces/userInterface";
 import { Request, Response } from 'express'
 import { ResponseHandler } from "../utils/responseHandler";
 // import UserService from "../services/userServices";
@@ -18,13 +18,13 @@ export class UserController implements IUserController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from registerUser controller: ', error.message) : console.log('Unknown error from registerUser controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
     }
 
     async googleLogin(req: Request, res: Response) {
         try {
-            // console.log('google user: ', req.user);
+            console.log('google user: ', req.user);
 
             if (req.user) {
                 const login = await this.userService.login(req.user)
@@ -43,12 +43,12 @@ export class UserController implements IUserController {
 
                         } else {
                             console.log('sending login response from  controller to frontend: login fail emailVerified success fail');
-                            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+                            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
                         }
                     } else {
                         console.log('sending login response from  controller to frontend: login fail emailNotVerified success fail');
-                        ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+                        ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
                     }
 
@@ -56,13 +56,13 @@ export class UserController implements IUserController {
 
             } else {
                 console.log('No google user found');
-                ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'No google user found' })
+                ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.googleLoginError})
 
             }
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from googleLogin controller: ', error.message) : console.log('Unknown error from googleLogin controller: ', error)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -74,18 +74,18 @@ export class UserController implements IUserController {
             console.log('google user data from token: ', user);
 
             if (!user?.email) {
-                ResponseHandler.errorResponse(res, HttpStatusCodes.NOT_FOUND, { success: false, message: 'User not found !' })
+                ResponseHandler.errorResponse(res, HttpStatusCodes.NOT_FOUND, { success: false, message:CONTROLLER_RESPONSES.userNotFound })
             } else {
                 let userDb = await this.userService.getGoogleUser(user?.email)
                 // res.status(200).json({ success: true, data: user })
                 // userDb?.success ? res.status(200).json(userDb) : res.status(400).json(userDb)
-                userDb?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, userDb) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, userDb)
+                userDb?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, userDb) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, userDb)
             }
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getGoogleUser controller: ', error.message) : console.log('Unknown error from getGoogleUser controller: ', error)
             // res.status(500).json({ success: true, message: error.message })
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
 
@@ -129,7 +129,7 @@ export class UserController implements IUserController {
                     // res.cookie('accessToken', accessToken, options)
                     // res.status(200).json({ success: true, emailVerified: true, message: 'Logged in success', data: payload })
 
-                    ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, { success: true, emailVerified: true, message: 'Logged in success', data: payload }, cookie)
+                    ResponseHandler.successResponse(res, HttpStatusCodes.OK, { success: true, emailVerified: true, message:CONTROLLER_RESPONSES.loginSuccess , data: payload }, cookie)
                     console.log('sending login response from  controller to frontend: login success emailVerified success fail');
 
                 } else {
@@ -137,20 +137,20 @@ export class UserController implements IUserController {
                     let resData: IResponse = { success: false }
                     if (login.emailNotVerified) {
                         // res.status(400).json({ success: false, emailNotVerified: true, message: 'Email not verified' })
-                        resData = { success: false, emailNotVerified: true, message: 'Email not verified' }
+                        resData = { success: false, emailNotVerified: true, message: CONTROLLER_RESPONSES.emailNotVerified}
                     } else if (login.wrongCredentials) {
                         // res.status(400).json({ success: false, wrongCredentials: true, message: login.message ? login.message : 'Invalid username or password' })
-                        resData = { success: false, wrongCredentials: true, message: login.message ? login.message : 'Invalid username or password' }
+                        resData = { success: false, wrongCredentials: true, message: login.message ? login.message :CONTROLLER_RESPONSES.invalidCredentials }
 
                     } else if (login.blocked) {
                         // res.status(403).json({ success: false, blocked: true, message: login.message ? login.message : 'Your account has been blocked. Contact admin for more details.' })
                         status = HttpStatusCodes.FORBIDDEN
-                        resData = { success: false, blocked: true, message: login.message ? login.message : 'Your account has been blocked. Contact admin for more details.' }
+                        resData = { success: false, blocked: true, message: login.message ? login.message : CONTROLLER_RESPONSES.accountBlocked}
 
                     } else if (login.noUser) {
                         // res.status(400).json({ success: false, message: login.message ? login.message : 'User not found' })
                         status = HttpStatusCodes.NOT_FOUND
-                        resData = { success: false, message: login.message ? login.message : 'User not found' }
+                        resData = { success: false, message: login.message ? login.message : CONTROLLER_RESPONSES.userNotFound}
 
                     }
 
@@ -163,7 +163,7 @@ export class UserController implements IUserController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from userLogin controller: ', error.message) : console.log('Unknown error from userLogin controller: ', error)
             // res.status(500).json({ success: false, message: error.message })
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
     }
 
@@ -173,12 +173,12 @@ export class UserController implements IUserController {
             const resetEmailResponse = await this.userService.sendResetPasswordEmail(req.body.email)
             console.log("sendMail: ", resetEmailResponse);
             // resetEmailResponse?.success ? res.status(200).json(resetEmailResponse) : res.status(400).json(resetEmailResponse)
-            resetEmailResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, resetEmailResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, resetEmailResponse)
+            resetEmailResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, resetEmailResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, resetEmailResponse)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from sendResetEmail controller: ', error.message) : console.log('Unknown error from sendResetEmail controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -190,12 +190,12 @@ export class UserController implements IUserController {
             const resetPasswordResponse = await this.userService.resetUserPassword(req.body)
             // console.log('reset password response: ', resetPasswordResponse);
             // resetPasswordResponse?.success ? res.status(200).json(resetPasswordResponse) : res.status(400).json(resetPasswordResponse)
-            resetPasswordResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, resetPasswordResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, resetPasswordResponse)
+            resetPasswordResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, resetPasswordResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, resetPasswordResponse)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from resetPassword controller: ', error.message) : console.log('Unknown error from resetPassword controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -205,12 +205,12 @@ export class UserController implements IUserController {
         try {
             const verifyOtpResponse = await this.userService.verifyLoginOtp(req.body)
             // verifyOtpResponse?.success ? res.status(200).json(verifyOtpResponse) : res.status(400).json(verifyOtpResponse)
-            verifyOtpResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, verifyOtpResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, verifyOtpResponse)
+            verifyOtpResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, verifyOtpResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, verifyOtpResponse)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from verifyOtp controller: ', error.message) : console.log('Unknown error from verifyOtp controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -222,12 +222,12 @@ export class UserController implements IUserController {
 
             const resendOtpResponse = await this.userService.resendUserOtp(req.params.id)
             // resendOtpResponse?.success ? res.status(200).json(resendOtpResponse) : res.status(400).json(resendOtpResponse)
-            resendOtpResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, resendOtpResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, resendOtpResponse)
+            resendOtpResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, resendOtpResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, resendOtpResponse)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from resendOtp controller: ', error.message) : console.log('Unknown error from resendOtp controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
     }
 
@@ -240,11 +240,11 @@ export class UserController implements IUserController {
             const userLogoutResponse = await this.userService.userLogout(token)
 console.log('user logout response from controller: ', userLogoutResponse);
 
-            userLogoutResponse.success? ResponseHandler.logoutResponse(res,token,userLogoutResponse.data , HttpStatusCodes.SUCCESS, { success: true, message: 'User logged out'}) :  ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, userLogoutResponse)
+            userLogoutResponse.success? ResponseHandler.logoutResponse(res,token,userLogoutResponse.data , HttpStatusCodes.OK, { success: true, message: CONTROLLER_RESPONSES.loggedOut}) :  ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, userLogoutResponse)
         } catch (error: unknown) {
             // res.status(500).json(error.message)
             error instanceof Error ? console.log('Error message from userLogout controller: ', error.message) : console.log('Unknown error from userLogout controller: ', error)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
     }
 
@@ -253,12 +253,12 @@ console.log('user logout response from controller: ', userLogoutResponse);
         try {
             let users = await this.userService.getUsers(req.query)
             // users?.success ? res.status(200).json(users) : res.status(400).json(users)
-            users?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, users) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, users)
+            users?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, users) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, users)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getAllUsers controller: ', error.message) : console.log('Unknown error from getAllUsers controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -268,12 +268,12 @@ console.log('user logout response from controller: ', userLogoutResponse);
         try {
             let totalUsers = await this.userService.getUsersCount()
             // totalUsers?.success ? res.status(200).json(totalUsers) : res.status(400).json(totalUsers)
-            totalUsers?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, totalUsers) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, totalUsers)
+            totalUsers?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, totalUsers) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, totalUsers)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getUsersCount controller: ', error.message) : console.log('Unknown error from getUsersCount controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
     }
 
@@ -283,7 +283,7 @@ console.log('user logout response from controller: ', userLogoutResponse);
             console.log('refreshToken: ', refreshTokenOld);
             if (!refreshTokenOld) {
                 // res.json({ success: false, message: 'Refresh Token is missing' })
-                ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, { success: false, message: 'Refresh Token is missing' })
+                ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, { success: false, message: CONTROLLER_RESPONSES.refreshTokenMissing})
                 return
             }
             let tokenRes: IResponse = await this.userService.getNewToken(refreshTokenOld)
@@ -293,16 +293,16 @@ console.log('user logout response from controller: ', userLogoutResponse);
                 // res.cookie('refreshToken', refreshToken, options)
                 // res.status(200).json({ success: true, message: 'Token refreshed', data: payload })
                 let cookieData:ICookie={accessToken,refreshToken,options,payload}
-                ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, { success: true, message: 'Token refreshed', data: payload }, cookieData)
+                ResponseHandler.successResponse(res, HttpStatusCodes.OK, { success: true, message: CONTROLLER_RESPONSES.tokenRefresh , data: payload }, cookieData)
                 return
             }
             // res.status(400).json({ success: false, message: 'Token could not refresh' })
-            ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, { success: false, message: 'Token could not refresh' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, { success: false, message: CONTROLLER_RESPONSES.tokenRefreshError })
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from refreshToken controller: ', error.message) : console.log('Unknown error from refreshToken controller: ', error)
             // res.status(500).json({ success: false, message: 'Token could not refresh' })
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -315,12 +315,12 @@ console.log('user logout response from controller: ', userLogoutResponse);
 
             const newUserResponse = await this.userService.updateUser(userId, data)
             // newUserResponse?.success ? res.status(200).json(newUserResponse) : res.status(400).json(newUserResponse)
-            newUserResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, newUserResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newUserResponse)
+            newUserResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newUserResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newUserResponse)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from editUser controller: ', error.message) : console.log('Unknown error from editUser controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
     }
 
@@ -331,12 +331,12 @@ console.log('user logout response from controller: ', userLogoutResponse);
 
             const newStatusResponse = await this.userService.updateUserStatus(id)
             // newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
-            newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, newStatusResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newStatusResponse)
+            newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newStatusResponse)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from editStatus controller: ', error.message) : console.log('Unknown error from editStatus controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -350,12 +350,12 @@ console.log('user logout response from controller: ', userLogoutResponse);
             console.log('get user response:', userResponse);
 
             // userResponse?.success ? res.status(200).json(userResponse) : res.status(400).json(userResponse)
-            userResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, userResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, userResponse)
+            userResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, userResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, userResponse)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getUser controller: ', error.message) : console.log('Unknown error from getUser controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
         }
     }
 
@@ -365,12 +365,12 @@ console.log('user logout response from controller: ', userLogoutResponse);
             console.log('email to verify', req.body.email);
             const verifyEmailResponse = await this.userService.verifyUserEmail(email)
             // verifyEmailResponse?.success ? res.status(200).json(verifyEmailResponse) : res.status(400).json({ message: 'could not send otp to verify email' })
-            verifyEmailResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, verifyEmailResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, verifyEmailResponse)
+            verifyEmailResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, verifyEmailResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, verifyEmailResponse)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from verifyEmail controller: ', error.message) : console.log('Unknown error from verifyEmail controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -381,12 +381,12 @@ console.log('user logout response from controller: ', userLogoutResponse);
             console.log('id to verify', req.body.id);
             const verifyUser = await this.userService.verifyUser(id)
             // verifyUser?.success ? res.status(200).json(verifyUser) : res.status(400).json(verifyUser)
-            verifyUser?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.SUCCESS, verifyUser) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, verifyUser)
+            verifyUser?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, verifyUser) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, verifyUser)
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from verifyUser controller: ', error.message) : console.log('Unknown error from verifyUser controller: ', error)
             // res.status(500).json(error.message)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong !' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }

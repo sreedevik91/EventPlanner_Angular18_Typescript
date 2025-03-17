@@ -1,83 +1,106 @@
+
+
+
 <div class="overflow-x-hidden">
-  <div class="row flex-nowrap min-vh-100">
-    <div class="col-md-2 col-sm-2 d-flex flex-column">
 
-      <div class="d-flex flex-column p-2 text-white flex-grow-1" style="background-color: #47663B;">
-        <a routerLink="/" class="d-flex text-center align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-          <svg class="bi me-2" width="40" height="32">
-            <use xlink:href="#bootstrap"></use>
-          </svg>
-          <!-- <span style="font-family: 'Bokor', system-ui; font-weight: 400; font-size: xx-large;">Dream Events</span> -->
-          <span class="text-center p-0" style="font-family: 'Alex Brush', cursive; font-weight: 400; font-size: xx-large;">Dream Events</span>
-        </a>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-          @for (item of userMenus; track $index) {
-          <li class="nav-item">
-            <a [routerLink]="item.path" class="nav-link text-white text-decoration-none" routerLinkActive="active"
-              aria-current="page">
-              <svg class="bi me-2" width="16" height="16">
-                <use xlink:href="#home"></use>
-              </svg>
-              {{item.text}}
-            </a>
-          </li>
-          }
+  <!-- Mobile Hamburger Button -->
+<button class="btn d-md-none fixed-top m-3" 
+type="button" 
+data-bs-toggle="offcanvas" 
+data-bs-target="#sidebar"
+style="z-index: 1050; background-color: #47663B; color: white">
+☰ 
+</button>
 
-        </ul>
-        <div class="text-center">
-          <a routerLink="chat" class=" text-white text-decoration-none me-4"><i class="fa-solid fa-comment" style="color: #f3f631;margin: 5px;"></i> Chat with us</a>
-        </div>
-        <hr>
-        <div class="dropdown text-center">
-          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-            id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-            <!-- <img src="" alt="" width="32" height="32" class="rounded-circle me-2"> -->
-            <strong class=" ms-4">{{userName}}</strong>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-dark text-center text-small shadow" aria-labelledby="dropdownUser1">
-            <!-- <li><a class="dropdown-item" href="#">New project...</a></li>
-          <li><a class="dropdown-item" href="#">Settings</a></li>
-          <li><a class="dropdown-item" href="#">Profile</a></li> -->
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" (click)="logout()">Sign out</a></li>
-          </ul>
+<div class="row flex-nowrap min-vh-100">
+<!-- Offcanvas Sidebar -->
 
-          
-       <!-- Add footer at bottom of sidebar -->
-       <div class="mt-auto"> <!-- Pushes footer to bottom -->
-        <hr>
-        <div class="sidebar-footer text-center small">
-          <p class="mb-1">© 2025 Dream Events</p>
-          <div class="d-flex justify-content-center gap-2">
-            <a href="#" class="text-white"><i class="fab fa-facebook"></i></a>
-            <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="text-white"><i class="fas fa-envelope"></i></a>
-          </div>
-        </div>
-      </div>
+  <div class="offcanvas-md offcanvas-start sidebar col-md-3 col-sm-2 col-lg-2 d-flex flex-column" id="sidebar" data-bs-backdrop="false">
 
-
-        </div>
-      </div>
-
-    </div>
-    <!-- <div style="display: inline-block;width: 80%;"> -->
-
-    <div class="col-md-10 col-sm-10">
-      <router-outlet />
-    </div>
-
+    <div class="d-flex flex-column p-2 text-white flex-grow-1" style="background-color: #47663B;">
      
-  </div>  
+         <!-- Offcanvas Header (Mobile Only) -->
+    <div class="offcanvas-header d-md-none">
+        <h5 class="offcanvas-title" style="font-family: 'Alex Brush', cursive; font-size: x-large">Dream Events</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+    <!-- Sidebar Content -->
+
+        <a routerLink="/" class="d-flex text-center align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <svg class="bi me-2" width="40" height="32">
+          <use xlink:href="#bootstrap"></use>
+        </svg>
+        <!-- <span style="font-family: 'Bokor', system-ui; font-weight: 400; font-size: xx-large;">Dream Events</span> -->
+        <span class="text-center p-0 d-s-none" style="font-family: 'Alex Brush', cursive; font-weight: 400; font-size: xx-large;">Dream Events</span>
+      </a>
+      <hr>
+      <ul class="nav nav-pills flex-column mb-auto">
+        @for (item of userMenus; track $index) {
+        <li class="nav-item">
+          <a [routerLink]="item.path" class="nav-link text-white text-decoration-none" routerLinkActive="active"
+            aria-current="page">
+            <svg class="bi me-2" width="16" height="16">
+              <use xlink:href="#home"></use>
+            </svg>
+            {{item.text}}
+          </a>
+        </li>
+        }
+
+      </ul>
+
+      <div class="text-center">
+        <a routerLink="chat" class=" text-white text-decoration-none me-4"><i class="fa-solid fa-comment" style="color: #f3f631;margin: 5px;"></i> Chat with us</a>
+      </div>
+      <hr>
+      <div class="dropdown text-center">
+        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+          id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+          <!-- <img src="" alt="" width="32" height="32" class="rounded-circle me-2"> -->
+          <strong class=" ms-4">{{userName}}</strong>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark text-center text-small shadow" aria-labelledby="dropdownUser1">
+          <!-- <li><a class="dropdown-item" href="#">New project...</a></li>
+        <li><a class="dropdown-item" href="#">Settings</a></li>
+        <li><a class="dropdown-item" href="#">Profile</a></li> -->
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li><a class="dropdown-item" (click)="logout()">Sign out</a></li>
+        </ul>
+
+        
+     <!-- Add footer at bottom of sidebar -->
+     <div class="mt-auto"> <!-- Pushes footer to bottom -->
+      <hr>
+      <div class="sidebar-footer text-center small">
+        <p class="mb-1">© 2025 Dream Events</p>
+        <div class="d-flex justify-content-center gap-2">
+          <a href="#" class="text-white"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-white"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+    </div>
+
+
+      </div>
+
+
+
+    </div>
+
+  </div>
+  <!-- <div style="display: inline-block;width: 80%;"> -->
+
+  <div class="col-md-9 col-sm-10 col-lg-10">
+
+    <router-outlet />
+  </div>
+
+   
+</div>  
 </div>
-
-
-
-
-
 
 
 <!-- =============================================== -->

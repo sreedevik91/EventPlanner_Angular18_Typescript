@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { AppError } from "../utils/appError";
 // import chatServices from "../services/chatServices";
-import { HttpStatusCodes, IChatController, IChatService } from "../interfaces/chatInterfaces";
+import { CONTROLLER_RESPONSES, HttpStatusCodes, IChatController, IChatService } from "../interfaces/chatInterfaces";
 import { getFileType } from "../utils/cloudinary";
 import { ResponseHandler } from "../middlewares/responseHandler";
 
@@ -31,7 +31,7 @@ export class ChatController implements IChatController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getChatsByUserId controller: ', error.message) : console.log('Unknown error from getChatsByUserId controller: ', error)
             // next(new AppError(error.message, 500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
 
@@ -59,7 +59,7 @@ export class ChatController implements IChatController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from uploadToCloudinary controller: ', error.message) : console.log('Unknown error from uploadToCloudinary controller: ', error)
             // next(new AppError(error.message, 500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }
@@ -82,7 +82,7 @@ export class ChatController implements IChatController {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from uploadAudioToCloudinary controller: ', error.message) : console.log('Unknown error from uploadAudioToCloudinary controller: ', error)
             // next(new AppError(error.message, 500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: 'Something went wrong.' })
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
         }
     }

@@ -15,9 +15,39 @@ interface CustomRequest extends Request {
 
 const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction) => {
 
+    console.log('[Docker] Full Request URL:', req.originalUrl); // 👈 Log full URL
+    console.log('[Docker] req.path:', req.path); // 👈 Critical for debugging
+
+    console.log('[Gateway] Incoming request to:', req.originalUrl);
+    console.log('[Gateway] Headers:', req.headers);
+    console.log('[Gateway] Cookies:', req.cookies);
+
+    // Allow OPTIONS requests to bypass token checks
+    if (req.method === 'OPTIONS') {
+        next();
+        return;
+    }
+
     console.log('entered token verification ');
     console.log('Request Headers:', req.headers);
     console.log('Cookies:', req.cookies);
+
+    // const publicRoutes = [
+    //     '/',
+    //     '/email/verify',
+    //     '/login',
+    //     '/auth/google',
+    //     '/auth/google/callback',
+    //     '/register',
+    //     '/password/resetEmail',
+    //     '/password/reset',
+    //     '/otp/verify',
+    //     '/otp/:id',
+    //     '/token/refresh',
+    //     '/logout'
+    // ]
+
+
 
     const publicRoutes = [
         '/',
@@ -32,16 +62,31 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
         '/otp/:id',
         '/token/refresh',
         '/logout',
+        '/api/user/login',
+        '/api/user/email/verify',
+        '/api/user/auth/google',
+        '/api/user/auth/google/callback',
+        '/api/user/register',
+        '/api/user/password/resetEmail',
+        '/api/user/password/reset',
+        '/api/user/otp/verify',
+        '/api/user/otp/:id',
+        '/api/user/token/refresh',
+        '/api/user/logout'
     ]
 
 
     // let urlPath: string = req.path
     console.log('Incoming Request Path:', req.path);
     const isPublicRoute = (urlPath: string) => {
+        // Normalize path
+        const normalizedPath = urlPath.startsWith('/api/user')
+            ? urlPath.replace('/api/user', '')
+            : urlPath;
         return publicRoutes.some(route => {
             let matchValue = match(route, { decode: decodeURIComponent })
-            console.log(`Matching "${urlPath}" with "${route}"`);
-            const result = matchValue(urlPath)
+            console.log(`Matching "${normalizedPath}" with "${route}"`);
+            const result = matchValue(normalizedPath)
             console.log('Match Result:', result);
             return result !== false;
         })
@@ -59,7 +104,7 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
             res.status(401).json({ success: false, message: 'Unauthorized: Token Missing' })
             return
         }
-        
+
         try {
 
             // Check blacklist first
@@ -80,7 +125,7 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
                 console.error('Redis error:', error);
             }
 
-             // Verify JWT
+            // Verify JWT
             const decoded = <JwtPayload>verify(token, process.env.JWT_ACCESS_SECRET!)
             console.log('decoded token: ', decoded);
 
