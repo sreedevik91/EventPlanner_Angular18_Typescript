@@ -154,7 +154,7 @@ export class ServiceServices implements IServicesService {
     async getServices(params: IRequestParams) {
 
         try {
-            const { serviceName, isApproved, provider, pageNumber, pageSize, sortBy, sortOrder,role } = params
+            const { serviceName, isApproved, provider,providerId, pageNumber, pageSize, sortBy, sortOrder,role } = params
             console.log('search filter params:', serviceName, provider, pageNumber, pageSize, sortBy, sortOrder);
             
             let filterQ: FilterQuery<IService> = {}
@@ -165,8 +165,12 @@ export class ServiceServices implements IServicesService {
                 filterQ.name = { $regex: `.*${serviceName}.*`, $options: 'i' }
                 // { $regex: `.*${search}.*`, $options: 'i' } 
             }
-            if (provider !== undefined) {
-                filterQ.provider = { $regex: `.*${provider}.*`, $options: 'i' }
+            // if (provider !== undefined) {
+            //     filterQ.provider = { $regex: `.*${provider}.*`, $options: 'i' }
+            // }
+
+            if (providerId !== undefined) {
+                filterQ.provider = providerId
             }
 
             if (provider !== undefined) {
@@ -214,8 +218,8 @@ export class ServiceServices implements IServicesService {
 
             if (servicesData) {
                 const data = {
-                    services: servicesData[0].services,
-                    count: servicesData[0].servicesCount[0].totalServices || 0
+                    services: servicesData[0].services.length>0 ? servicesData[0].services : [],
+                    count: servicesData[0].servicesCount.length>0 ? servicesData[0].servicesCount[0].totalServices : 0
                 }
                 console.log('final data: ', data);
                 let extra: Record<string, string>[] = []

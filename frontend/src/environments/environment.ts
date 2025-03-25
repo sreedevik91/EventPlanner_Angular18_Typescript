@@ -44,12 +44,15 @@ export const environment = {
   apiChatUrl: 'http://localhost/api/chat/',
   
   // These should point to Nginx paths
-  serviceImgUrl: 'http://localhost/api/service/uploads/',
-  eventImgUrl: 'http://localhost/api/event/uploads/',
+  // serviceImgUrl: 'http://localhost/api/service/uploads/',
+  // eventImgUrl: 'http://localhost/api/event/uploads/',
   
   // WebSocket should use browser-accessible URL
   // socketBackendUrl: 'ws://localhost', 
-  socketBackendUrl: 'ws://localhost/socket.io/',
+  // socketBackendUrl: 'ws://localhost/socket.io/',
+  // socketBackendUrl: 'ws://localhost/socket.io/api/chat/',
+  socketBackendUrl: 'http://localhost', 
+
 
   googleAuthUrl:'http://localhost/api/user/auth/google',
   

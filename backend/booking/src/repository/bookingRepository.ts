@@ -21,9 +21,11 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
     }
 
     async getBookingByUserId(id: string): Promise<IBooking[] | null> {
+
         try {
+            let sort = { orderDate: -1 }
             // let booking =await Booking.find({userId:id})
-            let booking = await this.getAllBooking({ userId: id })
+            let booking = await this.getAllBooking({ userId: id }, { sort })
             return booking
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from Booking BookingRepository: ', error.message) : console.log('Unknown error from Booking BookingRepository: ', error)
@@ -218,7 +220,7 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
     async getBookingsByProvider(name: string) {
         try {
             const regexPattern = new RegExp(name, 'i')
-            return await this.model.find({ isConfirmed: true, services: { $elemMatch: { providerName: { $regex: regexPattern } } }, orderDate:{$gte:new Date()} }).sort({ deliveryDate: 1 })
+            return await this.model.find({ isConfirmed: true, services: { $elemMatch: { providerName: { $regex: regexPattern } } }, orderDate: { $gte: new Date() } }).sort({ deliveryDate: 1 })
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from Booking BookingRepository: ', error.message) : console.log('Unknown error from Booking BookingRepository: ', error)
             return null
@@ -255,7 +257,7 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                             }
                         ],
                         'bookingData': [
-                            { $match: {} },
+                            { $match: { createdAt: { $gt: new Date(new Date().setMonth(new Date().getMonth() - 1)), $lte: new Date() } } },
                             {
                                 $project: {
                                     _id: 0,
@@ -296,12 +298,12 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                 {
                     $facet: {
                         'servicesChartData': [
-                            { $match: {isConfirmed: true } },
+                            { $match: { isConfirmed: true } },
                             { $unwind: '$services' },
                             {
                                 $group: {
-                                    _id: { service: '$services.serviceName', date:dateFilter},
-                                    amount:{$sum:'$services.choicePrice'}
+                                    _id: { service: '$services.serviceName', date: dateFilter },
+                                    amount: { $sum: '$services.choicePrice' }
                                 }
                             }
                         ],
@@ -310,8 +312,8 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                             { $unwind: '$services' },
                             {
                                 $group: {
-                                    _id: { event: '$event', date:dateFilter},
-                                    amount:{$sum:'$services.choicePrice'}
+                                    _id: { event: '$event', date: dateFilter },
+                                    amount: { $sum: '$services.choicePrice' }
                                 }
                             }
                         ],
@@ -334,7 +336,7 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
         }
     }
 
-    async getProviderChartData(filter: string, name:string) {
+    async getProviderChartData(filter: string, name: string) {
         try {
             const regexPattern = new RegExp(name, 'i')
 
@@ -352,13 +354,13 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                 {
                     $facet: {
                         'providerChartData': [
-                            { $match: {isConfirmed: true, services:{$elemMatch:{providerName:{$regex:regexPattern}}} } },
+                            { $match: { isConfirmed: true, services: { $elemMatch: { providerName: { $regex: regexPattern } } } } },
                             { $unwind: '$services' },
 
                             {
                                 $group: {
-                                    _id: { provider: '$services.providerName', service: '$services.serviceName', date:dateFilter},
-                                    amount:{$sum:'$services.choicePrice'}
+                                    _id: { provider: '$services.providerName', service: '$services.serviceName', date: dateFilter },
+                                    amount: { $sum: '$services.choicePrice' }
                                 }
                             }
                         ]
@@ -369,7 +371,29 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
             error instanceof Error ? console.log('Error message from Booking BookingRepository: ', error.message) : console.log('Unknown error from Booking BookingRepository: ', error)
             return null
         }
+
     }
+
+    async getPaymentList() {
+        try {
+            return await this.model.aggregate([
+                {$match:{}},
+                {$project:{
+                    user:1,
+                    event:1,
+                    service:1,
+                    bookingDate:'$createdAt',
+                    totalAmount:{$sum:'$services.choicePrice'},
+                    isConfirmed:1
+                }}
+            ])
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from Booking BookingRepository: ', error.message) : console.log('Unknown error from Booking BookingRepository: ', error)
+            return null
+        }
+    }
+
 }
 
 // export default new BookingRepository()

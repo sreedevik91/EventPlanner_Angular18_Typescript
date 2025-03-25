@@ -49,7 +49,7 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
   servicesByName = signal<IService[]>([])
   selectedService: Partial<IService> = {}
   optionArray: any[] = []
-  serviceImgUrl = environment.serviceImgUrl
+  // serviceImgUrl = environment.serviceImgUrl
 
   step = signal<number>(1)
 

@@ -49,11 +49,12 @@ export interface IBookedServices {
 
 export class BookingSearchFilter {
     userName: string;
-    // isConfirmed: string;
+    isConfirmed?: string;
     pageNumber: string;
     pageSize: string;
     sortBy: string;
     sortOrder: string;
+    // isConfirmed?:boolean;
 
     constructor() {
         this.userName = ''

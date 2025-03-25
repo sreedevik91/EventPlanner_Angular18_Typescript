@@ -1,4 +1,4 @@
-import { CookieOptions } from "express";
+import { CookieOptions, NextFunction } from "express";
 import { Document, DeleteResult, FilterQuery, QueryOptions } from "mongoose";
 import { Request, Response } from 'express'
 import { JwtHeader, JwtPayload } from "jsonwebtoken";
@@ -119,10 +119,10 @@ export interface LoginData {
     password?: string
 }
 
-export interface IResponse {
+export interface IResponse<T=unknown> {
     success: boolean;
     message?: string;
-    data?: any;
+    data?: T;
     emailVerified?: boolean;
     cookieData?: ICookie;
     emailNotVerified?: boolean;
@@ -186,37 +186,37 @@ export interface IUserService {
 }
 
 export interface IUserController {
-    registerUser(req: Request, res: Response):Promise<void>
-    googleLogin(req: Request, res: Response):Promise<void>
-    getGoogleUser(req: Request, res: Response):Promise<void>
-    userLogin(req: Request, res: Response):Promise<void>
-    sendResetEmail(req: Request, res: Response):Promise<void>
-    resetPassword(req: Request, res: Response):Promise<void>
-    verifyOtp(req: Request, res: Response):Promise<void>
-    resendOtp(req: Request, res: Response):Promise<void>
-    userLogout(req: Request, res: Response):Promise<void>
-    getAllUsers(req: Request, res: Response):Promise<void>
-    getUsersCount(req: Request, res: Response):Promise<void>
-    refreshToken(req: Request, res: Response):Promise<void>
-    editUser(req: Request, res: Response):Promise<void>
-    editStatus(req: Request, res: Response):Promise<void>
-    getUser(req: Request, res: Response):Promise<void>
-    verifyEmail(req: Request, res: Response):Promise<void>
-    verifyUser(req: Request, res: Response):Promise<void>
+    registerUser(req: Request, res: Response,next:NextFunction):Promise<void>
+    googleLogin(req: Request, res: Response,next:NextFunction):Promise<void>
+    getGoogleUser(req: Request, res: Response,next:NextFunction):Promise<void>
+    userLogin(req: Request, res: Response,next:NextFunction):Promise<void>
+    sendResetEmail(req: Request, res: Response,next:NextFunction):Promise<void>
+    resetPassword(req: Request, res: Response,next:NextFunction):Promise<void>
+    verifyOtp(req: Request, res: Response,next:NextFunction):Promise<void>
+    resendOtp(req: Request, res: Response,next:NextFunction):Promise<void>
+    userLogout(req: Request, res: Response,next:NextFunction):Promise<void>
+    getAllUsers(req: Request, res: Response,next:NextFunction):Promise<void>
+    getUsersCount(req: Request, res: Response,next:NextFunction):Promise<void>
+    refreshToken(req: Request, res: Response,next:NextFunction):Promise<void>
+    editUser(req: Request, res: Response,next:NextFunction):Promise<void>
+    editStatus(req: Request, res: Response,next:NextFunction):Promise<void>
+    getUser(req: Request, res: Response,next:NextFunction):Promise<void>
+    verifyEmail(req: Request, res: Response,next:NextFunction):Promise<void>
+    verifyUser(req: Request, res: Response,next:NextFunction):Promise<void>
 }
 
 
-export interface IResponse {
-    success: boolean;
-    message?: string;
-    data?: any;
-    emailVerified?: boolean;
-    cookieData?: ICookie;
-    emailNotVerified?: boolean;
-    wrongCredentials?: boolean;
-    blocked?: boolean;
-    noUser?: boolean;
-}
+// export interface IResponse<T=unknown> {
+//     success: boolean;
+//     message?: string;
+//     data?: T;
+//     emailVerified?: boolean;
+//     cookieData?: ICookie;
+//     emailNotVerified?: boolean;
+//     wrongCredentials?: boolean;
+//     blocked?: boolean;
+//     noUser?: boolean;
+// }
 
 export enum HttpStatusCodes{
     OK=200,

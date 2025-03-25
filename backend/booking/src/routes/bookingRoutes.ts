@@ -60,6 +60,7 @@ router.get('/events',(req:Request,res:Response,next:NextFunction)=>bookingContro
 router.get('/providerSales',(req:Request,res:Response,next:NextFunction)=>bookingController.getProviderSales(req,res,next))
 router.get('/salesData/admin',(req:Request,res:Response,next:NextFunction)=>bookingController.getSalesData(req,res,next)) 
 router.get('/adminData',(req:Request,res:Response,next:NextFunction)=>bookingController.getAdminBookingData(req,res,next)) 
+router.get('/adminPaymentList',(req:Request,res:Response,next:NextFunction)=>bookingController.getAdminPaymentList(req,res,next)) 
 
 router.get('/events/service/:name',(req:Request,res:Response,next:NextFunction)=>bookingController.getServiceByEvent(req,res,next))
 router.get('/service/:name/:providerId',(req:Request,res:Response,next:NextFunction)=>bookingController.getEventService(req,res,next))

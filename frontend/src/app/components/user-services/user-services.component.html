@@ -87,67 +87,7 @@
 
 
 
-        <!-- Modal -->
-        <div class="modal" #serviceModal>
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-
-                        <h1 class="modal-title fs-5 text-center" id="staticBackdropLabel">{{servicesName}}</h1>
-
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                            (click)="hideModal()"></button>
-                    </div>
-                    <div class="modal-body">
-
-                        <div class="row">
-
-                            <div class="col-md-12 mb-3">
-                                <img [src]="serviceImgUrl + serviceImg" class="img-fluid" alt="" width="100%" height="80">
-                            </div>
-
-                        </div>
-
-                        @for (item of serviceByName(); track $index) {
-                           
-                            <div class="row border">
-                                <div class="col-md-4 mt-3 mb-3">
-                                    <img [src]="serviceImgUrl + item.choiceImg[0]" class="img-fluid" alt="" width="100%" height="30">
-                                </div>
-                                <div class="col-md-8  mt-3 mb-3 p-3">
-                                    <p><strong>{{item._id}}</strong></p>
-                                    @if(item.choicesType.length===0){
-                                        @if(item.minPrice===item.maxPrice){
-                                            <p>Price:₹ {{item.minPrice}}</p>
-
-                                        }@else {
-                                            <p>Price range:₹ {{item.minPrice}} - ₹ {{item.maxPrice}}</p>
-                                        }
-                                    }@else{
-                                        @for (type of item.choicesType; track $index) {
-                                            <!-- <div class="col-md-4"></div> -->
-                                            <div class="col-md-12">
-                                                <p>{{$index+1}}. {{type}}</p>
-                                                @if(item.minPrice===item.maxPrice){
-                                                    <p>Price:₹ {{item.minPrice}}</p>
-        
-                                                }@else {
-                                                    <p>Price range:₹ {{item.minPrice}} - ₹ {{item.maxPrice}}</p>
-                                                }
-                                            </div>
-                                        }
-                                        
-                                    }
-                                </div>
-                            </div>
-
-                            }
-                            
-    
-                    </div>
-                </div>
-            </div>
-        </div>
+      
 
 
 

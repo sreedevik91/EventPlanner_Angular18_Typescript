@@ -25,14 +25,14 @@ export class BookingController implements IBookingController {
             // // response?.success ? res.status(200).json(response) : res.status(400).json(response)
             // res.status(200).json(response) 
 
-            bookingCount?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookingCount) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, bookingCount)
+            // bookingCount?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookingCount) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, bookingCount)
+            bookingCount?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookingCount) : next(new AppError(bookingCount))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getTotalServices controller: ', error.message) : console.log('Unknown error from getTotalServices controller: ', error)
             // res.status(500).json(error.message)
-            // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
-
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+            // next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
         }
 
     }
@@ -53,8 +53,8 @@ export class BookingController implements IBookingController {
             // }
             // res.status(200).json(response) 
 
-            newBooking?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.CREATED, newBooking) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newBooking)
-
+            // newBooking?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.CREATED, newBooking) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newBooking)
+            newBooking?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newBooking) : next(new AppError(newBooking))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from createService controller: ', error.message) : console.log('Unknown error from createService controller: ', error)
@@ -62,7 +62,7 @@ export class BookingController implements IBookingController {
             // console.log('Error from createService controller: ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -71,6 +71,7 @@ export class BookingController implements IBookingController {
     async getAllBookings(req: Request, res: Response, next: NextFunction) {
 
         try {
+            // console.log('bokkings filter params:', req.query)
             let bookings = await this.bookingServices.getBookings(req.query)
 
             // if(!bookings || !bookings.success){
@@ -80,14 +81,15 @@ export class BookingController implements IBookingController {
 
             // services?.success ? res.status(200).json(bookings) : res.status(400).json(bookings)
 
-            bookings?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookings) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, bookings)
+            // bookings?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookings) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, bookings)
+            bookings?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookings) : next(new AppError(bookings))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getAllBookings controller: ', error.message) : console.log('Unknown error from getAllBookings controller: ', error)
             // console.log('Error from getAllBookings : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -105,7 +107,8 @@ export class BookingController implements IBookingController {
 
             // // deleteServices?.success ? res.status(200).json(deleteServices) : res.status(400).json(deleteServices)
 
-            deleteBooking?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteBooking) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, deleteBooking)
+            // deleteBooking?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteBooking) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, deleteBooking)
+            deleteBooking?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteBooking) : next(new AppError(deleteBooking))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from deleteBooking controller: ', error.message) : console.log('Unknown error from deleteBooking controller: ', error)
@@ -113,7 +116,7 @@ export class BookingController implements IBookingController {
             // console.log('Error from deleteEvent : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -134,7 +137,8 @@ export class BookingController implements IBookingController {
 
             // // deleteServices?.success ? res.status(200).json(deleteServices) : res.status(400).json(deleteServices)
 
-            deleteBookedServices?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteBookedServices) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, deleteBookedServices)
+            // deleteBookedServices?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteBookedServices) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, deleteBookedServices)
+            deleteBookedServices?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteBookedServices) : next(new AppError(deleteBookedServices))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from deleteBookedServices controller: ', error.message) : console.log('Unknown error from deleteBookedServices controller: ', error)
@@ -142,7 +146,7 @@ export class BookingController implements IBookingController {
             // console.log('Error from deleteEvent : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -160,7 +164,8 @@ export class BookingController implements IBookingController {
 
             // // services?.success ? res.status(200).json(services) : res.status(400).json(services)
 
-            booking?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, booking) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, booking)
+            // booking?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, booking) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, booking)
+            booking?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, booking) : next(new AppError(booking))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getBookingById controller: ', error.message) : console.log('Unknown error from getBookingById controller: ', error)
@@ -168,7 +173,7 @@ export class BookingController implements IBookingController {
             // console.log('Error from getEventById : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -184,7 +189,8 @@ export class BookingController implements IBookingController {
             // }
             // res.status(200).json(bookingsByUserId) 
 
-            bookingsByUserId?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookingsByUserId) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, bookingsByUserId)
+            // bookingsByUserId?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookingsByUserId) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, bookingsByUserId)
+            bookingsByUserId?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookingsByUserId) : next(new AppError(bookingsByUserId))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getBookingByUserId controller: ', error.message) : console.log('Unknown error from getBookingByUserId controller: ', error)
@@ -192,23 +198,24 @@ export class BookingController implements IBookingController {
             // console.log('Error from getEventById : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
-    } 
+    }
 
     async getBookingsByProvider(req: Request, res: Response, next: NextFunction) {
 
         try {
             let bookingsByProvider = await this.bookingServices.getBookingsByProvider(req.params.providerId)
 
-            bookingsByProvider?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookingsByProvider) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, bookingsByProvider)
+            // bookingsByProvider?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookingsByProvider) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, bookingsByProvider)
+            bookingsByProvider?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookingsByProvider) : next(new AppError(bookingsByProvider))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getBookingsByProvider controller: ', error.message) : console.log('Unknown error from getBookingsByProvider controller: ', error)
 
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
         }
 
     }
@@ -246,7 +253,8 @@ export class BookingController implements IBookingController {
 
             // // newServiceResponse?.success ? res.status(200).json(newServiceResponse) : res.status(400).json(newServiceResponse)
 
-            newServiceResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newServiceResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newServiceResponse)
+            // newServiceResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newServiceResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newServiceResponse)
+            newServiceResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newServiceResponse) : next(new AppError(newServiceResponse))
 
         } catch (error: unknown) {
 
@@ -255,7 +263,7 @@ export class BookingController implements IBookingController {
             // console.log('Error from edit service : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -274,7 +282,8 @@ export class BookingController implements IBookingController {
 
             // // newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
 
-            newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newStatusResponse)
+            // newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newStatusResponse)
+            newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : next(new AppError(newStatusResponse))
 
         } catch (error: unknown) {
 
@@ -283,7 +292,7 @@ export class BookingController implements IBookingController {
             // console.log('Error from edit status : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
     }
@@ -301,7 +310,8 @@ export class BookingController implements IBookingController {
 
             // // service?.success ? res.status(200).json(service) : res.status(400).json(getServiceByName)
 
-            service?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, service) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, service)
+            // service?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, service) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, service)
+            service?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, service) : next(new AppError(service))
 
         } catch (error: unknown) {
 
@@ -310,7 +320,7 @@ export class BookingController implements IBookingController {
             // console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message || 'Internal server error',500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
     }
@@ -326,7 +336,8 @@ export class BookingController implements IBookingController {
             // }
             // res.status(200).json(events)
 
-            events?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, events) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, events)
+            // events?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, events) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, events)
+            events?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, events) : next(new AppError(events))
 
         } catch (error: unknown) {
 
@@ -335,7 +346,7 @@ export class BookingController implements IBookingController {
             // console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message || 'Internal server error',500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
     }
@@ -352,7 +363,8 @@ export class BookingController implements IBookingController {
             // }
             // res.status(200).json(events)
 
-            events?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, events) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, events)
+            // events?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, events) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, events)
+            events?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, events) : next(new AppError(events))
 
         } catch (error: unknown) {
 
@@ -361,7 +373,7 @@ export class BookingController implements IBookingController {
             // console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message || 'Internal server error',500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
     }
@@ -371,115 +383,137 @@ export class BookingController implements IBookingController {
             const { bookingId } = req.body
 
             console.log('booking id to confirm booking:', bookingId);
-            
+
             const confirmationResponse = await this.bookingServices.confirmBooking(bookingId)
 
-            confirmationResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, confirmationResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, confirmationResponse)
+            // confirmationResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, confirmationResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, confirmationResponse)
+            confirmationResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, confirmationResponse) : next(new AppError(confirmationResponse))
 
         } catch (error) {
-            error instanceof Error ? console.log('Error message from getServiceByEvent controller: ', error.message) : console.log('Unknown error from getServiceByEvent controller: ', error)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            error instanceof Error ? console.log('Error message from confirmBooking controller: ', error.message) : console.log('Unknown error from confirmBooking controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
-    } 
+    }
 
     async verifyPayment(req: Request, res: Response, next: NextFunction) {
         try {
-            const { razorpay_order_id,razorpay_payment_id,razorpay_signature,bookingId } = req.body
+            const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingId } = req.body
 
-            console.log('razorpay_order_id:', razorpay_order_id,' ,razorpay_payment_id: ',razorpay_payment_id,' ,razorpay_signature: ',razorpay_signature, ' ,bookingId: ',bookingId );
-            
+            console.log('razorpay_order_id:', razorpay_order_id, ' ,razorpay_payment_id: ', razorpay_payment_id, ' ,razorpay_signature: ', razorpay_signature, ' ,bookingId: ', bookingId);
+
             const veryfyPaymentResponse = await this.bookingServices.verifyPayment(req.body)
 
-            veryfyPaymentResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, veryfyPaymentResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, veryfyPaymentResponse)
+            // veryfyPaymentResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, veryfyPaymentResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, veryfyPaymentResponse)
+            veryfyPaymentResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, veryfyPaymentResponse) : next(new AppError(veryfyPaymentResponse))
 
         } catch (error) {
-            error instanceof Error ? console.log('Error message from getServiceByEvent controller: ', error.message) : console.log('Unknown error from getServiceByEvent controller: ', error)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            error instanceof Error ? console.log('Error message from verifyPayment controller: ', error.message) : console.log('Unknown error from verifyPayment controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
-    } 
+    }
 
     async getSalesData(req: Request, res: Response, next: NextFunction) {
 
         try {
-            
+
             const salesResponse = await this.bookingServices.getSalesData(req.query)
 
-            salesResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, salesResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, salesResponse)
+            // salesResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, salesResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, salesResponse)
+            salesResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, salesResponse) : next(new AppError(salesResponse))
 
         } catch (error) {
-            error instanceof Error ? console.log('Error message from getServiceByEvent controller: ', error.message) : console.log('Unknown error from getServiceByEvent controller: ', error)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            error instanceof Error ? console.log('Error message from getSalesData controller: ', error.message) : console.log('Unknown error from getSalesData controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
-    } 
-    
+    }
+
     async getProviderSales(req: Request, res: Response, next: NextFunction) {
 
         try {
-            
+
             const salesResponse = await this.bookingServices.getProviderSales(req.query)
 
-            salesResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, salesResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, salesResponse)
+            // salesResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, salesResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, salesResponse)
+            salesResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, salesResponse) : next(new AppError(salesResponse))
 
         } catch (error) {
-            error instanceof Error ? console.log('Error message from getServiceByEvent controller: ', error.message) : console.log('Unknown error from getServiceByEvent controller: ', error)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            error instanceof Error ? console.log('Error message from getProviderSales controller: ', error.message) : console.log('Unknown error from getProviderSales controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
-    } 
+    }
 
     async getAdminBookingData(req: Request, res: Response, next: NextFunction) {
 
         try {
-            
+
             const adminBookingData = await this.bookingServices.getAdminBookingData()
 
-            adminBookingData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, adminBookingData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, adminBookingData)
+            // adminBookingData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, adminBookingData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, adminBookingData)
+            adminBookingData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, adminBookingData) : next(new AppError(adminBookingData))
 
         } catch (error) {
-            error instanceof Error ? console.log('Error message from getServiceByEvent controller: ', error.message) : console.log('Unknown error from getServiceByEvent controller: ', error)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            error instanceof Error ? console.log('Error message from getAdminBookingData controller: ', error.message) : console.log('Unknown error from getAdminBookingData controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
-    } 
+    }
 
     async getAdminChartData(req: Request, res: Response, next: NextFunction) {
 
         try {
 
-            const {filter}=req.params
-            console.log('get chart data filter value: ',filter);
-            
+            const { filter } = req.params
+            console.log('get chart data filter value: ', filter);
+
             const chartData = await this.bookingServices.getAdminChartData(filter)
 
-            chartData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, chartData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, chartData)
+            // chartData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, chartData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, chartData)
+            chartData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, chartData) : next(new AppError(chartData))
 
         } catch (error) {
-            error instanceof Error ? console.log('Error message from getServiceByEvent controller: ', error.message) : console.log('Unknown error from getServiceByEvent controller: ', error)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            error instanceof Error ? console.log('Error message from getAdminChartData controller: ', error.message) : console.log('Unknown error from getAdminChartData controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
-    } 
+    }
 
     async getProviderChartData(req: Request, res: Response, next: NextFunction) {
 
         try {
 
-            const {filter, name}=req.params
-            console.log('get chart data filter value: ',filter);
-            
+            const { filter, name } = req.params
+            console.log('get chart data filter value: ', filter);
+
             const chartData = await this.bookingServices.getProviderChartData(filter, name)
 
-            chartData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, chartData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, chartData)
+            // chartData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, chartData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, chartData)
+            chartData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, chartData) : next(new AppError(chartData))
 
         } catch (error) {
-            error instanceof Error ? console.log('Error message from getServiceByEvent controller: ', error.message) : console.log('Unknown error from getServiceByEvent controller: ', error)
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message:CONTROLLER_RESPONSES.commonError })
+            error instanceof Error ? console.log('Error message from getProviderChartData controller: ', error.message) : console.log('Unknown error from getProviderChartData controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
-    } 
+    }
+
+    async getAdminPaymentList(req: Request, res: Response, next: NextFunction) {
+
+        try {
+
+            const paymentList = await this.bookingServices.getAdminPaymentList()
+
+            // paymentList?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, paymentList) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, paymentList)
+            paymentList?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, paymentList) : next(new AppError(paymentList))
+
+        } catch (error) {
+            error instanceof Error ? console.log('Error message from getAdminPaymentList controller: ', error.message) : console.log('Unknown error from getAdminPaymentList controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+        }
+    }
 
 }
 

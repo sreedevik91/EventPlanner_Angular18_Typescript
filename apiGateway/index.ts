@@ -81,35 +81,35 @@ const allowedOrigins: string[] = [
 // ================================================================================================================
 
 
-// app.use(cors({
-//     // origin: ['http://localhost', 'http://localhost:4200', 'http://frontend', 'http://nginx'], // Ensure full URL
-//     origin: 'http://localhost', // Ensure full URL
-//     // origin: (origin, callback) => {
-//     //     console.log('Received Origin:', origin); // 👈 Log incoming origin
+app.use(cors({
+    // origin: ['http://localhost', 'http://localhost:4200', 'http://frontend', 'http://nginx'], // Ensure full URL
+    origin: 'http://localhost', // Ensure full URL
+    // origin: (origin, callback) => {
+    //     console.log('Received Origin:', origin); // 👈 Log incoming origin
 
-//     //     const allowedOrigins = [
-//     //       'http://localhost',
-//     //       'http://localhost:4200',
-//     //       'http://frontend',
-//     //       'http://nginx'
-//     //     ];
-//     //     if (origin && allowedOrigins.includes(origin)) {
-//     //       callback(null, origin); // 👈 Reflect request origin
-//     //     } else {
-//     //       callback(new Error('Not allowed by CORS'));
-//     //     }
+    //     const allowedOrigins = [
+    //       'http://localhost',
+    //       'http://localhost:4200',
+    //       'http://frontend',
+    //       'http://nginx'
+    //     ];
+    //     if (origin && allowedOrigins.includes(origin)) {
+    //       callback(null, origin); // 👈 Reflect request origin
+    //     } else {
+    //       callback(new Error('Not allowed by CORS'));
+    //     }
 
-//     //     // if (!origin || allowedOrigins.includes(origin)) {
-//     //     //     callback(null, true); // 👈 Reflect request origin
-//     //     //   } else {
-//     //     //     callback(new Error('Not allowed by CORS'));
-//     //     //   }
-//     //   },
-//     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-//     credentials: true,
-//     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-//     exposedHeaders: ['Set-Cookie'] // 👈 Expose cookie headers to frontend
-// }));
+    //     // if (!origin || allowedOrigins.includes(origin)) {
+    //     //     callback(null, true); // 👈 Reflect request origin
+    //     //   } else {
+    //     //     callback(new Error('Not allowed by CORS'));
+    //     //   }
+    //   },
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    exposedHeaders: ['Set-Cookie'] // 👈 Expose cookie headers to frontend
+}));
 
 // app.options('*', cors(corsOptions)); // Handle preflight requests
 // After setting up CORS middleware, add:
@@ -165,91 +165,161 @@ interface ProxyOptions {
 const createProxy = ({ path, target }: ProxyOptions) => {
 
   // if (!target) return
-
-  // if (path === '/api/chat') {
-  //     app.use(path, verifyToken, createProxyMiddleware({
-  //         target,
-  //         changeOrigin: true,
-  //         ws: true, // Enable WebSocket proxying
-  //         cookieDomainRewrite: 'localhost'
-  //     }))
-  // } else {
-  //     app.use(path,
-  //         path === '/' ?
-  //             createProxyMiddleware({
-  //                 target,
-  //                 changeOrigin: true,
-  //                 cookieDomainRewrite: 'localhost'
-  //             })
-  //             :
-  //             verifyToken, createProxyMiddleware({
-  //                 target,
-  //                 changeOrigin: true,
-  //                 cookieDomainRewrite: 'localhost'
-  //             })
-  //     )
-  // }
-
   if (!target) {
     throw new Error(`Proxy target for path "${path}" is undefined!`);
   }
 
-  const proxyOptions: Options = { // 👈 Explicitly type as Options
-    target,
-    changeOrigin: true,
-    // cookieDomainRewrite: 'localhost',
-    pathRewrite: {
-      [`^${path}`]: '', // 👈 Strip the base path (e.g., /api/user → '')
-    },
-    ws: path === '/api/chat',
-    on: { // 👈 Use "on" with event names
-      proxyRes: (proxyRes, req, res) => {
-        // Delete conflicting CORS headers
-        // delete proxyRes.headers['access-control-allow-origin'];
-        // delete proxyRes.headers['access-control-allow-credentials'];
-        // delete proxyRes.headers['access-control-allow-methods'];
-        // delete proxyRes.headers['access-control-allow-headers'];
-
-        // Case-insensitive deletion of backend CORS headers
-        // const headers = proxyRes.headers;
-        // const lowercaseHeaders = Object.keys(headers).reduce((acc, key) => {
-        //   acc[key.toLowerCase()] = headers[key];
-        //   return acc;
-        // }, {} as Record<string, any>);
-
-        // delete lowercaseHeaders['access-control-allow-origin'];
-        // delete lowercaseHeaders['access-control-allow-credentials'];
-        // delete lowercaseHeaders['access-control-allow-methods'];
-        // delete lowercaseHeaders['access-control-allow-headers'];
-
-        // // Reassign cleaned headers
-        // proxyRes.headers = lowercaseHeaders;
-        // Remove ALL CORS headers regardless of case
-        const headersToRemove = [
-          'access-control-allow-origin',
-          'access-control-allow-methods',
-          'access-control-allow-headers',
-          'access-control-allow-credentials',
-          'vary'
-        ];
-
-        headersToRemove.forEach(header => {
-          delete proxyRes.headers[header];
-          delete proxyRes.headers[header.toUpperCase()];
-        });
-
-      }
-    }
-  };
-
-  if (path === '/') {
-    app.use(path, createProxyMiddleware(proxyOptions));
+  if (path === '/api/chat') {
+      app.use(path, verifyToken, createProxyMiddleware({
+          target,
+          changeOrigin: true,
+          // pathRewrite: {
+          //   [`^${path}`]: '', // 👈 Strip the base path (e.g., /api/user → '')
+          // },
+          ws: true, // Enable WebSocket proxying
+          // cookieDomainRewrite: 'localhost'
+          // on: { // 👈 Use "on" with event names
+          //   proxyRes: (proxyRes, req, res) => {
+          //     const headersToRemove = [
+          //       'access-control-allow-origin',
+          //       'access-control-allow-methods',
+          //       'access-control-allow-headers',
+          //       'access-control-allow-credentials',
+          //       'vary'
+          //     ];
+      
+          //     headersToRemove.forEach(header => {
+          //       delete proxyRes.headers[header];
+          //       delete proxyRes.headers[header.toUpperCase()];
+          //     });
+      
+          //   }
+          // }
+      }))
   } else {
-    app.use(path, verifyToken, createProxyMiddleware(proxyOptions));
+      app.use(path,
+          path === '/' ?
+              createProxyMiddleware({
+                  target,
+                  changeOrigin: true,
+                  // pathRewrite: {
+                  //   [`^${path}`]: '', // 👈 Strip the base path (e.g., /api/user → '')
+                  // },
+                  // // cookieDomainRewrite: 'localhost'
+                  // on: { // 👈 Use "on" with event names
+                  //   proxyRes: (proxyRes, req, res) => {
+                  //     const headersToRemove = [
+                  //       'access-control-allow-origin',
+                  //       'access-control-allow-methods',
+                  //       'access-control-allow-headers',
+                  //       'access-control-allow-credentials',
+                  //       'vary'
+                  //     ];
+              
+                  //     headersToRemove.forEach(header => {
+                  //       delete proxyRes.headers[header];
+                  //       delete proxyRes.headers[header.toUpperCase()];
+                  //     });
+              
+                  //   }
+                  // }
+              })
+              :
+              verifyToken, createProxyMiddleware({
+                  target,
+                  changeOrigin: true,
+                  // pathRewrite: {
+                  //   [`^${path}`]: '', // 👈 Strip the base path (e.g., /api/user → '')
+                  // },
+                  // // cookieDomainRewrite: 'localhost'
+                  // on: { // 👈 Use "on" with event names
+                  //   proxyRes: (proxyRes, req, res) => {
+                  //     const headersToRemove = [
+                  //       'access-control-allow-origin',
+                  //       'access-control-allow-methods',
+                  //       'access-control-allow-headers',
+                  //       'access-control-allow-credentials',
+                  //       'vary'
+                  //     ];
+              
+                  //     headersToRemove.forEach(header => {
+                  //       delete proxyRes.headers[header];
+                  //       delete proxyRes.headers[header.toUpperCase()];
+                  //     });
+              
+                  //   }
+                  // }
+              })
+      )
   }
 
+// ==============================================================================================
+
+  // if (!target) {
+  //   throw new Error(`Proxy target for path "${path}" is undefined!`);
+  // }
+
+  // const proxyOptions: Options = { // 👈 Explicitly type as Options
+  //   target,
+  //   changeOrigin: true,
+  //   // cookieDomainRewrite: 'localhost',
+  //   pathRewrite: {
+  //     [`^${path}`]: '', // 👈 Strip the base path (e.g., /api/user → '')
+  //   },
+  //   // ws: path === '/api/chat',
+  //   ws: path === '/api/chat' ? true : false,
+  //   on: { // 👈 Use "on" with event names
+  //     proxyRes: (proxyRes, req, res) => {
+  //       // Delete conflicting CORS headers
+  //       // delete proxyRes.headers['access-control-allow-origin'];
+  //       // delete proxyRes.headers['access-control-allow-credentials'];
+  //       // delete proxyRes.headers['access-control-allow-methods'];
+  //       // delete proxyRes.headers['access-control-allow-headers'];
+
+  //       // Case-insensitive deletion of backend CORS headers
+  //       // const headers = proxyRes.headers;
+  //       // const lowercaseHeaders = Object.keys(headers).reduce((acc, key) => {
+  //       //   acc[key.toLowerCase()] = headers[key];
+  //       //   return acc;
+  //       // }, {} as Record<string, any>);
+
+  //       // delete lowercaseHeaders['access-control-allow-origin'];
+  //       // delete lowercaseHeaders['access-control-allow-credentials'];
+  //       // delete lowercaseHeaders['access-control-allow-methods'];
+  //       // delete lowercaseHeaders['access-control-allow-headers'];
+
+  //       // // Reassign cleaned headers
+  //       // proxyRes.headers = lowercaseHeaders;
+  //       // Remove ALL CORS headers regardless of case
+  //       const headersToRemove = [
+  //         'access-control-allow-origin',
+  //         'access-control-allow-methods',
+  //         'access-control-allow-headers',
+  //         'access-control-allow-credentials',
+  //         'vary'
+  //       ];
+
+  //       headersToRemove.forEach(header => {
+  //         delete proxyRes.headers[header];
+  //         delete proxyRes.headers[header.toUpperCase()];
+  //       });
+
+  //     }
+  //   }
+  // };
+
+  // if (path === '/') {
+  //   app.use(path, createProxyMiddleware(proxyOptions));
+  // } else {
+  //   app.use(path, verifyToken, createProxyMiddleware(proxyOptions));
+  // }
+
+// ===============================================================================
 
 
+  // if (!target) {
+  //   throw new Error(`Proxy target for path "${path}" is undefined!`);
+  // }
 
   // if (path === '/') {
   //     app.use(path, createProxyMiddleware({

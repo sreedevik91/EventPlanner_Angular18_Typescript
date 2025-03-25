@@ -60,7 +60,7 @@ export default class UserEventDetailsComponent implements OnInit,OnDestroy {
   cuisine: IServicesArray[] = []
   coverage: IServicesArray[] = []
 
-  serviceImgUrl = environment.serviceImgUrl
+  // serviceImgUrl = environment.serviceImgUrl
 
   ngOnInit(): void {
 
