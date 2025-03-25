@@ -9,9 +9,16 @@ const PROTO_PATH = path.join(__dirname, '../../../../proto/eventServices.proto')
 const packageDefinition = protoLoader.loadSync(PROTO_PATH)
 const serviceProto: any = grpc.loadPackageDefinition(packageDefinition).service
 
+// // Environment-based configuration
+// const GRPC_HOST = process.env.NODE_ENV === 'production' 
+//   ? 'services-service:50052' 
+//   : 'localhost:50052';
+
+const GRPC_HOST=process.env.GRPC_SERVICE_SERVER || '0.0.0.0:50052'
+
 // Create a gRPC client
 const client = new serviceProto.ServiceDetails(
-  'localhost:50052', // gRPC server address
+  GRPC_HOST, // gRPC server address
   grpc.credentials.createInsecure()
 )
 

@@ -194,7 +194,7 @@ export class BookingService implements IBookingService {
     async getBookings(params: IRequestParams) {
 
         try {
-            const { userName, pageNumber, pageSize, sortBy, sortOrder } = params
+            const { userName, pageNumber, pageSize,isConfirmed, sortBy, sortOrder } = params
             console.log('search filter params:', userName, pageNumber, pageSize, sortBy, sortOrder);
             let filterQ: FilterQuery<IBooking> = {}
             let sortQ: QueryOptions = {}
@@ -203,6 +203,13 @@ export class BookingService implements IBookingService {
                 filterQ.user = { $regex: `.*${userName}.*`, $options: 'i' }
                 // { $regex: `.*${search}.*`, $options: 'i' } 
             }
+
+            if(isConfirmed!==undefined){
+                let value:boolean= (isConfirmed==='true')? true : false
+                filterQ.isConfirmed=value
+            }
+
+            if(isConfirmed==='true') sortQ.orderDate=-1
 
             if (sortOrder !== undefined && sortBy !== undefined) {
                 let order = sortOrder === 'asc' ? 1 : -1
@@ -216,7 +223,9 @@ export class BookingService implements IBookingService {
             console.log('filterQ: ', filterQ);
             console.log('sortQ: ', sortQ);
 
-            skip = (Number(pageNumber) - 1) * Number(pageSize)
+            if(pageNumber!==undefined && pageSize!==undefined){
+                skip = (Number(pageNumber) - 1) * Number(pageSize)
+            }
 
             console.log('skip: ', skip);
 
@@ -225,11 +234,12 @@ export class BookingService implements IBookingService {
 
             // let bookings = await this.bookingRepository.getAllBooking(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
             let bookingsData = await this.bookingRepository.getBookingsAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+                console.log('all bookings data : ', bookingsData);
 
             let data: IBookingsDataOut = { bookings: [], count: 0 }
             if (bookingsData) {
                 // console.log('all bookings data : ', bookings);
-                console.log('all bookings and total count: ', bookingsData[0].bookings, bookingsData[0].bookingsCount[0].totalBookings);
+                console.log('all bookings and total count: ', bookingsData[0].bookings, bookingsData[0].bookingsCount);
 
                 // if (bookings) {
                 //     return { success: true, data:bookings }
@@ -238,8 +248,8 @@ export class BookingService implements IBookingService {
                 // }
 
                 data = {
-                    bookings: bookingsData[0].bookings,
-                    count: bookingsData[0].bookingsCount[0].totalBookings || 0
+                    bookings: bookingsData[0].bookings.length>0 ? bookingsData[0].bookings : [],
+                    count: bookingsData[0].bookingsCount.length>0 ?  bookingsData[0].bookingsCount[0].totalBookings : 0
                 }
             } else {
                 console.log('No data available: ', bookingsData);
@@ -726,9 +736,10 @@ export class BookingService implements IBookingService {
             // filterQService.service = { $exists: true } // not eeded as services sre there in events as well
             filterQService.isConfirmed = true
 
-            if (pageNumberEvent !== '' || pageNumberEvent !== undefined) {
+            if (pageNumberEvent !== '' && pageNumberEvent !== undefined) {
                 skipEvent = (Number(pageNumberEvent) - 1) * Number(pageSize)
-            } else if (pageNumberService !== '' || pageNumberService !== undefined) {
+            } 
+            if (pageNumberService !== '' && pageNumberService !== undefined) {
                 skipService = (Number(pageNumberService) - 1) * Number(pageSize)
             }
 
@@ -943,7 +954,7 @@ export class BookingService implements IBookingService {
             return chartData ? { success: true, data } : { success: false, message: SERVICE_RESPONSES.fetchDataError }
 
         } catch (error: unknown) {
-            error instanceof Error ? console.log('Error message from getAdminBookingData service: ', error.message) : console.log('Unknown error from getAdminBookingData service: ', error)
+            error instanceof Error ? console.log('Error message from getAdminChartData service: ', error.message) : console.log('Unknown error from getAdminChartData service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
         }
@@ -973,7 +984,38 @@ export class BookingService implements IBookingService {
             return chartData ? { success: true, data } : { success: false, message: SERVICE_RESPONSES.fetchDataError }
 
         } catch (error: unknown) {
-            error instanceof Error ? console.log('Error message from getAdminBookingData service: ', error.message) : console.log('Unknown error from getAdminBookingData service: ', error)
+            error instanceof Error ? console.log('Error message from getProviderChartData service: ', error.message) : console.log('Unknown error from getProviderChartData service: ', error)
+
+            return { success: false, message: SERVICE_RESPONSES.commonError }
+        }
+    } 
+
+    async getAdminPaymentList() {
+        try {
+
+            const paymentList = await this.bookingRepository.getPaymentList()
+
+            console.log('admin payment list:', paymentList);
+
+            // let data: IChartDataResponseProvider = { providerChartData: { label: [], amount: []} }
+
+            // if (chartData) {
+            //     console.log('chartData: ', chartData,
+            //         ', providerChartData amount response: ', chartData[0].providerChartData
+            //     );
+            //     data = {
+            //         providerChartData: { label: chartData[0].providerChartData.map(e => e._id.service), amount: chartData[0].providerChartData.map(e => e.amount) }
+            //     }
+            //     console.log('charts data response:', data);
+
+            // } else {
+            //     console.log('No data available: ', chartData);
+            // }
+
+            return paymentList ? { success: true, data:paymentList } : { success: false, message: SERVICE_RESPONSES.fetchDataError }
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getAdminPaymentList service: ', error.message) : console.log('Unknown error from getAdminPaymentList service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
         }

@@ -117,7 +117,7 @@ export class ProviderSalesComponent implements OnInit, OnDestroy {
     // debugger
     this.currentPageService = page
     this.searchFilterFormObj.pageNumberService = page.toString()
-    this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumberService)
+    this.searchParams = this.searchParams.set('pageNumberService', this.searchFilterFormObj.pageNumberService)
     console.log('pageNumberService: ', this.searchFilterFormObj.pageNumberService);
     this.getSalesData(this.searchParams)
   }

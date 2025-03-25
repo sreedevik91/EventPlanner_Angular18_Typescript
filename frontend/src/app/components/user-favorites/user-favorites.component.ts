@@ -7,9 +7,10 @@ import { HttpStatusCodes, IBooking, IRazorpayResponse, IResponse } from '../../m
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { AlertService } from '../../services/alertService/alert.service';
 import { BookingService } from '../../services/bookingService/booking.service';
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
+import { BookingSearchFilter } from '../../model/class/bookingClass';
 
 declare var Razorpay: any;
 
@@ -28,7 +29,6 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
 
   bookingsList = signal<IBooking[]>([])
 
-  totalBooking: number = 0
   isBookingSuccess: boolean= false
   confirmationMessage: string = ''
 
@@ -39,36 +39,71 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
   route = inject(Router)
   cdr=inject(ChangeDetectorRef)
 
+   bookingPaginationFormObj: BookingSearchFilter = new BookingSearchFilter()
+    paginationParams: HttpParams = new HttpParams()
+    currentPage: number = Number(this.bookingPaginationFormObj.pageNumber)
+    totalBooking=signal<number>(0)
+
   userId: string = ''
+  userName: string = ''
 
   ngOnInit(): void {
     this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user: any) => {
       this.userId = user.id
+      this.userName = user.user
     })
-    this.getBookingsByUser(this.userId)
+    this.paginationParams=this.paginationParams.set('userName', this.userName)
+    .set('pageNumber', this.bookingPaginationFormObj.pageNumber)
+    .set('pageSize', this.bookingPaginationFormObj.pageSize)
+    .set('isConfirmed', 'false')
+  this.getBookingsByUser(this.paginationParams)
+    // this.getBookingsByUser(this.userId)
   }
 
-  getBookingsByUser(userId: string) {
-    this.bookingService.getBookingsByUserId(userId).pipe(takeUntil(this.destroy$)).subscribe({
+  getBookingsByUser(params: HttpParams) {
+    // debugger
+    this.bookingService.getAllBookings(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === HttpStatusCodes.SUCCESS) {
-          this.bookingsList.set(res.body?.data)
-          this.bookingsList.update(bookings=>
-            bookings.filter(booking=>booking.isConfirmed===false)
-          )
-          console.log(this.bookingsList);
+        // console.log('bookings by user from user component:', res);
 
+        if (res.status === HttpStatusCodes.SUCCESS) {
+          this.bookingsList.set(res.body?.data.bookings)
+          console.log('confirmed bookings: ',this.bookingsList);
+          // this.bookingsList.update(bookings=>bookings.filter(booking=>booking.isConfirmed===true))
+          this.totalBooking.set(res.body?.data.count)
         } else {
           console.log(res.body?.message);
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
         }
       },
       error: (error: HttpErrorResponse) => {
-        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
+        this.alertService.getAlert("alert alert-danger", "Failed to fetch Booking Data", error.error.message)
 
       }
     })
   }
+
+  // getBookingsByUser(userId: string) {
+  //   this.bookingService.getBookingsByUserId(userId).pipe(takeUntil(this.destroy$)).subscribe({
+  //     next: (res: HttpResponse<IResponse>) => {
+  //       if (res.status === HttpStatusCodes.SUCCESS) {
+  //         this.bookingsList.set(res.body?.data)
+  //         this.bookingsList.update(bookings=>
+  //           bookings.filter(booking=>booking.isConfirmed===false)
+  //         )
+  //         console.log(this.bookingsList);
+
+  //       } else {
+  //         console.log(res.body?.message);
+  //         this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
+  //       }
+  //     },
+  //     error: (error: HttpErrorResponse) => {
+  //       this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
+
+  //     }
+  //   })
+  // }
 
   deleteBooking(bookingId: string) {
     // if (confirm('Do you want to delete the booking ?')) {
@@ -80,7 +115,7 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
           this.bookingsList.update(bookings =>
             bookings.filter(booking => booking._id !== bookingId)
           )
-          this.totalBooking -= 1
+          this.totalBooking.update(count=>count-1)
         } else {
           console.log(res.body?.message);
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
@@ -263,6 +298,24 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
     // debugger
     this.route.navigateByUrl('booking')
   }
+
+  onPageChange(page: number) {
+    this.currentPage = page
+    this.bookingPaginationFormObj.pageNumber = page.toString()
+    this.paginationParams = this.paginationParams.set('pageNumber', this.bookingPaginationFormObj.pageNumber)
+    this.getBookingsByUser(this.paginationParams)
+
+  }
+
+  getTotalPages() {
+    const totalPages = Math.ceil(this.totalBooking() / Number(this.bookingPaginationFormObj.pageSize))
+    return Array(totalPages).fill(0).map((e, i) => i + 1)
+  }
+
+  getLastpage() {
+    return Math.ceil(this.totalBooking() / Number(this.bookingPaginationFormObj.pageSize))
+  }
+
 
   ngOnDestroy(): void {
     this.destroy$.next()

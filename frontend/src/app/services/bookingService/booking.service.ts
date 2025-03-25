@@ -31,6 +31,7 @@ export class BookingService {
   }
 
   getAllBookings(params: HttpParams) {
+    // debugger
     return this.http.get(`${this.baseUrl}bookings`, { observe: 'response', params, withCredentials:true })
   }
 
@@ -98,6 +99,11 @@ export class BookingService {
 
   getChartDataProvider(filter:string,name:string){
     return this.http.get(`${this.baseUrl}chartDataProvider/${filter}/${name}`, { observe: 'response', withCredentials:true })
+  }
+
+  getAdminPaymrntList(){
+    // return this.http.get(`${this.baseUrl}provider/sales`, { observe: 'response', params })
+    return this.http.get(`${this.baseUrl}adminPaymentList`, { observe: 'response', withCredentials:true })
   }
 
 }

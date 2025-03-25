@@ -1,0 +1,5 @@
+POST /login 200 [23/Mar/2025:14:55:14 +0000] - 650.248 ms localhost
+GET /logout 200 [23/Mar/2025:14:55:42 +0000] - 38.582 ms localhost
+POST /login 200 [23/Mar/2025:14:55:53 +0000] - 104.270 ms localhost
+POST /login 200 [23/Mar/2025:16:04:55 +0000] - 295.154 ms localhost
+POST /login 200 [23/Mar/2025:16:06:26 +0000] - 292.852 ms localhost

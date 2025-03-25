@@ -99,7 +99,8 @@
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title">Reports <span><a (click)="creatServiceChart('Weekly')">/Products-Revenue</a></span></h5>
+                            <h5 class="card-title">Reports <span><a
+                                        (click)="creatServiceChart('Weekly')">/Products-Revenue</a></span></h5>
                             <div class="col">
                                 <canvas id="myChartService"></canvas>
                             </div>
@@ -129,7 +130,8 @@
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title">Reports <span><a (click)="creatEventChart('Weekly')">/Products-Revenue</a></span></h5>
+                            <h5 class="card-title">Reports <span><a
+                                        (click)="creatEventChart('Weekly')">/Products-Revenue</a></span></h5>
                             <div class="col">
                                 <canvas id="myChartEvents"></canvas>
                             </div>
@@ -140,6 +142,63 @@
 
                 </div>
 
+            </div>
+
+            <!-- Recent Bookings Table -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Payment List</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Event Name</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <!-- <th>Action</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if(adminPaymentList().length<=0){ No recent bookings... 
+                                }@else
+                                { 
+                                    @for (item of
+                                    adminPaymentList(); track $index) { <tr>
+                                    <td>
+                                        @if(item.event){
+                                        {{item.event}}
+                                        }@else if(item.service){
+                                        {{item.service}}
+                                        }
+                                    </td>
+                                    <td>{{item.user}}</td>
+                                    <td>{{item.bookingDate | date:'mediumDate'}}</td>
+                                    <td>{{item.totalAmount | currency:'INR':'symbol':'1.2-2'}}</td>
+                                    <td>
+                                        @if(item.isConfirmed){
+                                        <span class="badge bg-success">Complete</span>
+                                        }@else {
+                                        <span class="badge bg-warning">Pending</span>
+                                        }
+                                    </td>
+                                    <!-- <td>
+                                                    <button class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                </td> -->
+                                    </tr>
+                                    }
+
+                                    }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <!-- Recent Bookings Table -->
@@ -160,8 +219,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (item of adminBookingsList(); track $index) {
-                                <tr>
+                                @if(adminBookingsList().length<=0){ No recent bookings... }@else{ @for (item of
+                                    adminBookingsList(); track $index) { <tr>
                                     <td>{{item.type}}</td>
                                     <td>{{item.customer}}</td>
                                     <td>{{item.date | date:'mediumDate'}}</td>
@@ -173,12 +232,14 @@
                                         }
                                     </td>
                                     <!-- <td>
-                                            <button class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                        </td> -->
-                                </tr>
-                                }
+                                                    <button class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                </td> -->
+                                    </tr>
+                                    }
+
+                                    }
 
                             </tbody>
                         </table>

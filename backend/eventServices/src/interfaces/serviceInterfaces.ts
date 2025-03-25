@@ -1,5 +1,5 @@
 import { DeleteResult, Document, FilterQuery, QueryOptions } from "mongoose";
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 
 export interface IService extends Document {
     name: string;
@@ -53,18 +53,26 @@ export interface IRequestParams {
     sortBy?: string,
     sortOrder?: string,
     role?: string;
+    providerId?:string;
 }
 
 export interface IServiceDb extends IService, Document {
     _id: string;
 }
 
-export interface IResponse {
+// export interface IResponse {
+//     success: boolean;
+//     message?: string;
+//     data?: any;
+//     extra?: any
+// }
+
+export interface IResponse<T=unknown,U=unknown> {
     success: boolean;
     message?: string;
-    data?: any;
-    extra?: any
-}
+    data?: T;
+    extra?: U;
+  }
 
 export enum HttpStatusCodes {
     OK = 200,
@@ -122,14 +130,14 @@ export interface IServicesService {
 }
 
 export interface IServiceController {
-    getTotalServices(req: Request, res: Response): Promise<void>
-    createService(req: Request, res: Response): Promise<void>
-    getAllServices(req: Request, res: Response): Promise<void>
-    deleteService(req: Request, res: Response): Promise<void>
-    getServiceById(req: Request, res: Response): Promise<void>
-    editService(req: Request, res: Response): Promise<void>
-    approveService(req: Request, res: Response): Promise<void>
-    getServiceByName(req: Request, res: Response): Promise<void>
+    getTotalServices(req: Request, res: Response,next:NextFunction): Promise<void>
+    createService(req: Request, res: Response,next:NextFunction): Promise<void>
+    getAllServices(req: Request, res: Response,next:NextFunction): Promise<void>
+    deleteService(req: Request, res: Response,next:NextFunction): Promise<void>
+    getServiceById(req: Request, res: Response,next:NextFunction): Promise<void>
+    editService(req: Request, res: Response,next:NextFunction): Promise<void>
+    approveService(req: Request, res: Response,next:NextFunction): Promise<void>
+    getServiceByName(req: Request, res: Response,next:NextFunction): Promise<void>
 }
 
 export const SERVICE_RESPONSES = {

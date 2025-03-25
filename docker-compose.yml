@@ -43,10 +43,10 @@ services:
       - GOOGLE_SECRET=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
       - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
       - EMAIL_USER=sreedevisooraj15@gmail.com
-      # - EMAIL_URL=http://localhost/api/
-      # - GOOGLE_CALLBACK_URL=http://localhost/user/auth/google/callback
-      - EMAIL_URL=http://nginx/api/ # Was localhost
-      - GOOGLE_CALLBACK_URL=http://nginx/api/user/auth/google/callback # Fixed path
+      - EMAIL_URL=http://localhost/api/
+      - GOOGLE_CALLBACK_URL=http://localhost/api/user/auth/google/callback
+      # - EMAIL_URL=http://nginx/api/ # Was localhost
+      # - GOOGLE_CALLBACK_URL=http://nginx/api/user/auth/google/callback # Fixed path
       - SESSION_SECRET_KEY=eventplannerapplication
       - GRPC_USER_SERVER=user-service:50051
       - MONGO_URL=mongodb://mongodb:27017/userService
@@ -74,6 +74,9 @@ services:
       - CLOUDINARY_API_KEY=854145994395918
       - CLOUDINARY_API_SECRET=qyxATSp5Lb2CEZ-DhYaII2YVpKk
       - MONGO_URL=mongodb://mongodb:27017/serviceService
+      - GRPC_SERVICE_SERVER=services-service:50052
+      - GRPC_USER_SERVER=user-service:50051
+      - GRPC_EVENT_SERVER=event-service:50053
     networks:
       - event_planner_network
     depends_on:
@@ -96,6 +99,9 @@ services:
       - CLOUDINARY_API_KEY=854145994395918
       - CLOUDINARY_API_SECRET=qyxATSp5Lb2CEZ-DhYaII2YVpKk
       - MONGO_URL=mongodb://mongodb:27017/eventService
+      - GRPC_EVENT_SERVER=event-service:50053
+      - GRPC_USER_SERVER=user-service:50051
+      - GRPC_SERVICE_SERVER=services-service:50052
     networks:
       - event_planner_network
     depends_on:
@@ -114,6 +120,9 @@ services:
       - RAZORPAY_KEY_ID=rzp_test_85xo26IPuPICSY
       - RAZORPAY_SECRET=7r0r5ty9wj15t69rxcbQtzkL
       - MONGO_URL=mongodb://mongodb:27017/bookingService
+      - GRPC_USER_SERVER=user-service:50051
+      - GRPC_SERVICE_SERVER=services-service:50052
+      - GRPC_EVENT_SERVER=event-service:50053
     networks:
       - event_planner_network
     depends_on:
@@ -131,6 +140,9 @@ services:
       - CLOUDINARY_API_KEY=854145994395918
       - CLOUDINARY_API_SECRET=qyxATSp5Lb2CEZ-DhYaII2YVpKk
       - MONGO_URL=mongodb://mongodb:27017/chatService
+      - GRPC_USER_SERVER=user-service:50051
+      - GRPC_SERVICE_SERVER=services-service:50052
+      - GRPC_EVENT_SERVER=event-service:50053
     networks:
       - event_planner_network
     depends_on:
@@ -177,14 +189,14 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      # - mongodb_data:/data/db 
-      # - ./mongo-data:/data/db  # Bind mount to host directory
-      - /mnt/c/Users/USER/Documents/BroCampTasks/Angular_Project/mongo-data:/data/db
+      - mongodb_data:/data/db 
+      # - ./mongo-data:/data/db # Bind mount to host directory
+      # - /mnt/c/Users/USER/Documents/BroCampTasks/Angular_Project/mongo-data:/data/db
     networks:
       - event_planner_network
 
 volumes:
-  mongodb_data:  # Persist MongoDB
+  mongodb_data: # Persist MongoDB
   redis_data:
     # Persist Redis (optional)
 

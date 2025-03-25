@@ -24,15 +24,15 @@ export class EventController implements IEventController {
 
             // eventsCount?.success ? res.status(200).json(eventsCount) : res.status(400).json(eventsCount)
 
-            eventsCount?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, eventsCount) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, eventsCount)
-
+            // eventsCount?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, eventsCount) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, eventsCount)
+            eventsCount?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, eventsCount) : next(new AppError(eventsCount))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getTotalEvents controller: ', error.message) : console.log('Unknown error from getTotalEvents controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
-
+            // next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
         }
 
     }
@@ -68,13 +68,14 @@ export class EventController implements IEventController {
             // }
             // res.status(201).json(newEvent) 
 
-            newEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.CREATED, newEvent) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newEvent)
+            // newEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.CREATED, newEvent) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newEvent)
+            newEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newEvent) : next(new AppError(newEvent))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from createEvent controller: ', error.message) : console.log('Unknown error from createEvent controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
         }
 
     }
@@ -91,14 +92,14 @@ export class EventController implements IEventController {
 
             // events?.success ? res.status(200).json(events) : res.status(400).json(events)
 
-            events?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, events) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, events)
-
+            // events?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, events) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, events)
+            events?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, events) : next(new AppError(events))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getAllEvents controller: ', error.message) : console.log('Unknown error from getAllEvents controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -116,13 +117,14 @@ export class EventController implements IEventController {
 
             // deleteEvent?.success ? res.status(200).json(deleteEvent) : res.status(400).json(deleteEvent)
 
-            deleteEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteEvent) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, deleteEvent)
+            // deleteEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteEvent) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, deleteEvent)
+            deleteEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteEvent) : next(new AppError(deleteEvent))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from deleteEvent controller: ', error.message) : console.log('Unknown error from deleteEvent controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -140,14 +142,14 @@ export class EventController implements IEventController {
 
             // event?.success ? res.status(200).json(event) : res.status(400).json(event)
 
-            event?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, event) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, event)
-
+            // event?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, event) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, event)
+            event?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, event) : next(new AppError(event))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getEventById controller: ', error.message) : console.log('Unknown error from getEventById controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -190,13 +192,14 @@ export class EventController implements IEventController {
 
             // updatedEvent?.success ? res.status(200).json(updatedEvent) : res.status(400).json(updatedEvent)
 
-            updatedEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, updatedEvent) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, updatedEvent)
+            // updatedEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, updatedEvent) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, updatedEvent)
+            updatedEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, updatedEvent) : next(new AppError(updatedEvent))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from editEvent controller: ', error.message) : console.log('Unknown error from editEvent controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -216,13 +219,14 @@ export class EventController implements IEventController {
 
             // newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
 
-            newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newStatusResponse)
+            // newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newStatusResponse)
+            newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : next(new AppError(newStatusResponse))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from editStatus controller: ', error.message) : console.log('Unknown error from editStatus controller: ', error)
             // res.status(500).json(error.message)
             // next(new AppError(error.message,500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
     }
@@ -240,15 +244,15 @@ export class EventController implements IEventController {
 
             // getServiceByName?.success ? res.status(200).json(getServiceByName) : res.status(400).json(getServiceByName)
 
-            getServiceByName?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, getServiceByName) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, getServiceByName)
-
+            // getServiceByName?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, getServiceByName) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, getServiceByName)
+            getServiceByName?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, getServiceByName) : next(new AppError(getServiceByName))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getEventServiceByName controller: ', error.message) : console.log('Unknown error from getEventServiceByName controller: ', error)
             // console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message || 'Internal server error',500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
     }
@@ -266,15 +270,15 @@ export class EventController implements IEventController {
 
             // getEventsByName?.success ? res.status(200).json(getEventsByName) : res.status(400).json(getServiceByName)
 
-            getEventsByName?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, getEventsByName) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, getEventsByName)
-
+            // getEventsByName?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, getEventsByName) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, getEventsByName)
+            getEventsByName?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, getEventsByName) : next(new AppError(getEventsByName))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getEventsByName controller: ', error.message) : console.log('Unknown error from getEventsByName controller: ', error)
             // console.log('Error from getEventServiceByName : ', error.message);
             // res.status(500).json(error.message)
             // next(new AppError(error.message || 'Internal server error',500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
     }

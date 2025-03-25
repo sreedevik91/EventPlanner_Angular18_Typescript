@@ -1,4 +1,4 @@
-import express, { Request, Response, Router } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import cors from "cors";
 import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
@@ -61,20 +61,20 @@ serviceRoute.use(cors())
 
 // router.delete('/:id', serviceController.deleteService)
 
-router.get('/services/count', (req:Request,res:Response)=>serviceController.getTotalServices(req,res))
-router.get('/services', (req:Request,res:Response)=>serviceController.getAllServices(req,res))
+router.get('/services/count', (req: Request, res: Response,next:NextFunction)=>serviceController.getTotalServices(req,res,next))
+router.get('/services', (req: Request, res: Response,next:NextFunction)=>serviceController.getAllServices(req,res,next))
 
-router.post('/new', upload.fields([{ name: 'img' }, { name: 'choiceImg' }]), (req:Request,res:Response)=>serviceController.createService(req,res))
+router.post('/new', upload.fields([{ name: 'img' }, { name: 'choiceImg' }]), (req: Request, res: Response,next:NextFunction)=>serviceController.createService(req,res,next))
 
-router.patch('/status', (req:Request,res:Response)=>serviceController.editStatus(req,res))
-router.patch('/approve', (req:Request,res:Response)=>serviceController.approveService(req,res))
+router.patch('/status', (req: Request, res: Response,next:NextFunction)=>serviceController.editStatus(req,res,next))
+router.patch('/approve', (req: Request, res: Response,next:NextFunction)=>serviceController.approveService(req,res,next))
 
 router.route('/:id')
-    .get((req:Request,res:Response)=>serviceController.getServiceById(req,res))
-    .patch( upload.fields([{ name: 'img' }, { name: 'choiceImg' }]), (req:Request,res:Response)=>serviceController.editService(req,res))
-    .delete((req:Request,res:Response)=>serviceController.deleteService(req,res))
+    .get((req: Request, res: Response,next:NextFunction)=>serviceController.getServiceById(req,res,next))
+    .patch( upload.fields([{ name: 'img' }, { name: 'choiceImg' }]), (req: Request, res: Response,next:NextFunction)=>serviceController.editService(req,res,next))
+    .delete((req: Request, res: Response,next:NextFunction)=>serviceController.deleteService(req,res,next))
     
-router.get('/name/:name', (req:Request,res:Response)=>serviceController.getServiceByName(req,res))
+router.get('/name/:name', (req: Request, res: Response,next:NextFunction)=>serviceController.getServiceByName(req,res,next))
 
 serviceRoute.use(router)
 export default serviceRoute 

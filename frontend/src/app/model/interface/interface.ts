@@ -16,7 +16,7 @@ export interface ILoginData {
     googleId?: string;
 }
 
-export interface IResponse {
+export interface IResponse<T=unknown,U=unknown> {
     success?: boolean;
     message?: string;
     data?: any;
@@ -208,4 +208,13 @@ export interface ISales {
     date: Date;
     isConfirmed: boolean;
   }
+
+  export interface IPaymentList {
+  user: string;
+  event?: string;
+  service?: string;
+  bookingDate: Date;
+  totalAmount: number;
+  isConfirmed:boolean;
+}
 

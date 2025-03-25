@@ -49,7 +49,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
 
   eventOptions = ['Marriage', 'Engagement', 'Birthday']
 
-  eventImgUrl: string = environment.eventImgUrl
+  // eventImgUrl: string = environment.eventImgUrl
 
   imgUrl: string | ArrayBuffer | null = ''
 

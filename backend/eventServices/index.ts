@@ -4,6 +4,7 @@ import connectDb from "./src/config/db";
 import serviceRoute from "./src/routes/serviceRoutes";
 import path from "path";
 import startGrpcServer from "./src/grpc/grpcServiceServer";
+import { errorHandler } from "./src/middlewares/errorHandler";
 // import cors from 'cors'
 // import cookieParser from 'cookie-parser'
 const app=express()
@@ -24,6 +25,7 @@ connectDb()
 
 app.use('/',serviceRoute)
 // app.use('/api/service',serviceRoute)
+app.use(errorHandler)
 
 const startExpressServer=()=>{
     return new Promise(resolve=>{

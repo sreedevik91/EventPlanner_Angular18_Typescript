@@ -12,6 +12,7 @@ import { Catering, Decor, EventCoverage } from '../../model/constants/eventServi
 import { UserSrerviceService } from '../../services/userService/user-srervice.service';
 import { environment } from '../../../environments/environment';
 import { Subject, take, takeUntil } from 'rxjs';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-provider-services',
@@ -52,7 +53,7 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
   providerId: string = ''
   provider: string = ''
 
-  serviceImgUrl: string = environment.serviceImgUrl
+  // serviceImgUrl: string = environment.serviceImgUrl
 
   imgUrl: string | ArrayBuffer | null = ''
   choiceImageUrl: (string | ArrayBuffer | null)[] = []
@@ -71,6 +72,7 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
     })
     this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
       .set('pageSize', this.searchFilterFormObj.pageSize)
+      .set('providerId', this.providerId)
     this.getAllServices(this.searchParams)
   }
 
@@ -559,6 +561,29 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
       }
     })
   }
+
+//   toggleCollapse(id: string, event: Event) {
+//     // debugger
+//     console.log('toggler element id: ', id);
+    
+//     event.preventDefault();
+//     const collapseElement = document.getElementById(id);
+//     if (collapseElement) {
+//       const bsCollapse = new bootstrap.Collapse(collapseElement, { toggle: false });
+//       if (collapseElement.classList.contains('show')) {
+//           bsCollapse.hide(); // Collapse it
+//       } else {
+//           bsCollapse.show(); // Expand it
+//       }
+//       console.log('collapseElement class: ',  collapseElement.classList);
+
+//         const button = event.target as HTMLElement;
+//         button.setAttribute('aria-expanded', collapseElement.classList.contains('show') ? 'true' : 'false');
+//         console.log('button aria-expanded class: ',  button.getAttribute('aria-expanded'));
+       
+//       }
+// }
+
 
   onPageChange(page: number) {
     this.currentPage = page

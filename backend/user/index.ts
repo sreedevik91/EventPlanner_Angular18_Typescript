@@ -4,6 +4,7 @@ import startGrpcServer from './src/grpc/grpcUserServer'
 import logger from './src/utils/logFile'
 import userRoute from './src/routes/userRoutes'
 import connectDb from './src/config/db'
+import { errorHandler } from './src/middlewares/errorHandler'
 
 const app = express()
 
@@ -13,6 +14,7 @@ connectDb()
 app.use(logger)
 app.use('/', userRoute)
 // app.use('/api/user', userRoute)
+app.use(errorHandler)
 
 // app.use((req, res) => {
 //     res.json({ message: '404! Page not found' })

@@ -55,13 +55,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for (item of services(); track $index) {
+                    @for (item of services(); track item; let serviceIdx= $index) {
                     <tr>
-                        <th scope="row">{{$index + 1}}</th>
+                        <th scope="row">{{serviceIdx + 1}}</th>
                         <td>{{item.name}}</td>
                         <td>{{provider}}</td>
                         <td>
-                            @for (event of item.events; track $index) {
+                            @for (event of item.events; track event; let eventIdx= $index) {
                             <p>{{event}}</p>
                             }
                         </td>
@@ -69,18 +69,18 @@
 
                             <p class="d-inline-flex gap-1">
                                 <!-- <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                                See Options available
-                                </a> -->
-                                <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                                    [attr.data-bs-target]="'#collapseExample'+ $index" aria-expanded="false"
-                                    [attr.aria-controls]="'collapseExample'+ $index">
+        See Options available
+        </a> -->
+                                <button class="btn btn-primary collapsed" type="button" data-bs-toggle="collapse"
+                                    [attr.data-bs-target]="'#collapseExample'+ serviceIdx" aria-expanded="false"
+                                    [attr.aria-controls]="'collapseExample'+ serviceIdx">
                                     See Options
                                 </button>
                             </p>
-                            <div class="collapse" [id]="'collapseExample'+ $index">
-                                @for (choice of item.choices; track $index) {
+                            <div class="collapse" [id]="'collapseExample'+ serviceIdx">
+                                @for (choice of item.choices; track choice;let choiceIdx= $index) {
                                 <div class="card card-body">
-                                    {{$index + 1}}<p>Name:{{choice.choiceName}}</p>
+                                    {{choiceIdx + 1}}<p>Name:{{choice.choiceName}}</p>
                                     @if(choice.choiceType !==''){
                                     <p>Type:{{choice.choiceType}}</p>
                                     }
@@ -88,6 +88,9 @@
                                 </div>
                                 }
                             </div>
+
+
+
 
                             <!-- @for (choice of item.choices; track $index) {
                             <p>Name:{{choice.choiceName}}</p>

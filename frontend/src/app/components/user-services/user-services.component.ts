@@ -23,7 +23,7 @@ export class UserServicesComponent implements OnInit, OnDestroy {
 
   destroy$: Subject<void> = new Subject<void>()
 
-  @ViewChild('serviceModal') serviceModal!: ElementRef
+  // @ViewChild('serviceModal') serviceModal!: ElementRef
 
   serviceServices = inject(ServiceService)
   alertService = inject(AlertService)
@@ -44,7 +44,7 @@ export class UserServicesComponent implements OnInit, OnDestroy {
   serviceChoices = new Set<string>()
   servicePrizeRange: string = ''
 
-  serviceImgUrl = environment.serviceImgUrl
+  // serviceImgUrl = environment.serviceImgUrl
   serviceImg: string = ''
   role: string = ''
 
@@ -120,14 +120,14 @@ export class UserServicesComponent implements OnInit, OnDestroy {
   getChoices() {
     return Array.from(this.serviceChoices)
   }
-  showModal() {
-    this.serviceModal.nativeElement.style.display = 'block'
-  }
+  // showModal() {
+  //   this.serviceModal.nativeElement.style.display = 'block'
+  // }
 
-  hideModal() {
-    this.serviceModal.nativeElement.style.display = 'none'
-    this.onLoad()
-  }
+  // hideModal() {
+  //   this.serviceModal.nativeElement.style.display = 'none'
+  //   this.onLoad()
+  // }
 
   ngOnDestroy(): void {
     this.destroy$.next()
