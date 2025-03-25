@@ -1,17 +1,28 @@
 import { NextFunction, Request, Response } from "express"
 import { AppError } from "../utils/appError"
+import { ResponseHandler } from "./responseHandler";
+import { CONTROLLER_RESPONSES, HttpStatusCodes } from "../interfaces/bookingInterfaces";
 
 export const errorHandler = (error: AppError, req: Request, res: Response, next: NextFunction) => {
 
     console.log('Errors: ', error, error.stack);
 
-    const statusCode = error.status || 500
-    const message = error.message || 'Internal Server Error'
+    // const statusCode = error.status
+    const responseData = error.responseData
 
-    res.status(statusCode).json({
-        success: error.success,
-        message,
-        ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
-    })
+    if (error instanceof AppError) {
+
+        ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, responseData)
+    }
+
+    ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+
+
+
+    // res.status(statusCode).json({
+    //     success: error.success,
+    //     message,
+    //     ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    // })
 
 }

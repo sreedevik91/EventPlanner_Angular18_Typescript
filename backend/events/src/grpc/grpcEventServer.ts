@@ -173,7 +173,8 @@ export default function startGrpcServer() {
     server.addService(eventsProto.EventsService.service, { GetEvents, GetEventByName, GetEventImg, UpdateEventWithNewService });
 
     server.bindAsync(
-      '0.0.0.0:50053',
+      // '0.0.0.0:50053',
+      process.env.GRPC_EVENT_SERVER!,
       grpc.ServerCredentials.createInsecure(),
       () => {
         console.log('gRPC Server running on port 50053');

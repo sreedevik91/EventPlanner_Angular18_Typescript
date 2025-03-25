@@ -136,7 +136,7 @@ export class AdminSalesComponent implements OnInit,OnDestroy{
     // debugger
     this.currentPageService = page
     this.searchFilterFormObj.pageNumberService = page.toString()
-    this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumberService)
+    this.searchParams = this.searchParams.set('pageNumberService', this.searchFilterFormObj.pageNumberService)
     console.log('pageNumberService: ', this.searchFilterFormObj.pageNumberService);
     this.getSalesData(this.searchParams)
   }
@@ -156,7 +156,7 @@ export class AdminSalesComponent implements OnInit,OnDestroy{
     // debugger
     this.currentPageEvent = page
     this.searchFilterFormObj.pageNumberEvent = page.toString()
-    this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumberEvent)
+    this.searchParams = this.searchParams.set('pageNumberEvent', this.searchFilterFormObj.pageNumberEvent)
     console.log('pageNumber: ', this.searchFilterFormObj.pageNumberEvent);
     this.getSalesData(this.searchParams)
   }

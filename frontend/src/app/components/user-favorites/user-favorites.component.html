@@ -5,8 +5,8 @@
     <div>
         <app-alert></app-alert>
     </div>
-    @for (item of bookingsList(); track $index) {
-    <div class="row border border-success rounded border-4 m-3 mt-4">
+    @if(bookingsList().length<=0){ No favorites added... }@else{ @for (item of bookingsList(); track $index) { <div
+        class="row border border-success rounded border-4 m-3 mt-4">
         <div class="col-md-3">
             <img [src]="item.img" width="100%" height="100%" alt="Booking img">
         </div>
@@ -63,9 +63,9 @@
         <div class="accordion-item">
             <!-- <h2 class="accordion-header"> -->
             <!-- <button class="btn btn-dark" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                    View Details
-                </button> -->
+                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        View Details
+                    </button> -->
             <!-- </h2> -->
             <div [id]="'collapseOne'+$index" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
@@ -142,17 +142,42 @@
                             </ul>
                         </div>
                         <!-- <div class="col-md-3 mt-4">
-                            <app-button [btnClass]="'btn-danger rounded-pill'" (onBtnClick)="deleteChoice()"></app-button>
-                            <button>Delete</button>
-                        </div> -->
+                                <app-button [btnClass]="'btn-danger rounded-pill'" (onBtnClick)="deleteChoice()"></app-button>
+                                <button>Delete</button>
+                            </div> -->
                     </div>
 
                 </div>
             </div>
         </div>
 
-    </div>
-    }
+</div>
+}
+
+
+}
+
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage===1">
+            <a class="page-link" (click)="onPageChange(currentPage-1)" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        @for(item of getTotalPages(); track $index){
+        <li class="page-item"><a class="page-link" [class.active]="currentPage===item"
+                (click)="onPageChange(item)">{{item}}</a></li>
+        }
+        <!-- <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li> -->
+        <li class="page-item" [class.disabled]="currentPage===getLastpage()">
+            <a class="page-link" (click)="onPageChange(currentPage+1)" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
 
 </div>
 
@@ -167,7 +192,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Booking Confirmation</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="hideModal()"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="hideModal()"></button>
             </div>
             <div class="modal-body">
                 <span> {{confirmationMessage}}</span>

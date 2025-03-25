@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import { IBooking } from "../interfaces/bookingInterfaces";
 
 
@@ -10,6 +10,7 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
   },
   userId: {
     type: String,
+    // type: Types.ObjectId,
     required: true
   },
   service: {

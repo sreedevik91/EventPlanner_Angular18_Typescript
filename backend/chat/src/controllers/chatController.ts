@@ -26,12 +26,13 @@ export class ChatController implements IChatController {
             // }
             // res.status(200).json(chats)
 
-            chats?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, chats) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, chats)
+            // chats?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, chats) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, chats)
+            chats?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, chats) : next(new AppError(chats))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getChatsByUserId controller: ', error.message) : console.log('Unknown error from getChatsByUserId controller: ', error)
             // next(new AppError(error.message, 500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
 
@@ -54,12 +55,13 @@ export class ChatController implements IChatController {
             // }
             // res.status(200).json(imgUrlData)
 
-            imgUrlData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, imgUrlData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, imgUrlData)
+            // imgUrlData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, imgUrlData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, imgUrlData)
+            imgUrlData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, imgUrlData) : next(new AppError(imgUrlData))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from uploadToCloudinary controller: ', error.message) : console.log('Unknown error from uploadToCloudinary controller: ', error)
             // next(new AppError(error.message, 500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
     }
@@ -77,12 +79,13 @@ export class ChatController implements IChatController {
             // }
             // res.status(200).json(audioUrlData)
 
-            audioUrlData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, audioUrlData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, audioUrlData)
+            // audioUrlData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, audioUrlData) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, audioUrlData)
+            audioUrlData?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, audioUrlData) : next(new AppError(audioUrlData))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from uploadAudioToCloudinary controller: ', error.message) : console.log('Unknown error from uploadAudioToCloudinary controller: ', error)
             // next(new AppError(error.message, 500))
-            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
     }

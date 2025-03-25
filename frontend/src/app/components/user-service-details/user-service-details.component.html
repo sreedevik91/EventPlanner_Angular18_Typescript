@@ -12,9 +12,9 @@
             <div class="row">
                 @for (item of servicesByName(); track $index) {
                 <div class="col-md-4">
-                    <div class="card" style="width: 20rem;">
+                    <div class="card rounded-bottom shadow" style="width: 20rem;">
                         <!-- <img [src]="serviceImgUrl+item.img" class="card-img-top" alt="..."> -->
-                        <img [src]="item.img" class="card-img-top" alt="...">
+                        <img [src]="item.img" class="card-img-top" height="300" alt="...">
                         <div class="card-body">
                             <h5 class="card-title">{{item.name}}</h5>
 
@@ -29,53 +29,53 @@
 
                                 <ul class="list-group list-group-flush">
                                     @for (choice of item.choices; track $index) {
-                                        @if(choice.choiceType){
-                                            <h5 class="text-center">{{choice.choiceName}}</h5>
-                                            <li class="list-group-item">
+                                    @if(choice.choiceType){
+                                    <h5 class="text-center">{{choice.choiceName}}</h5>
+                                    <li class="list-group-item">
 
-                                                <div class="row border">
-                                                    <div class="col-md-4 mt-2 p-2">
-                                                        <!-- <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
+                                        <div class="row border">
+                                            <div class="col-md-4 mt-2 p-2">
+                                                <!-- <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
                                                             width="100%" height="20"> -->
 
-                                                            <img [src]="choice.choiceImg" class="img-fluid" alt=""
-                                                            width="100%" height="20">
-                                                    </div>
-                                                    <div class="col-md-7 mt-2 p-2">
-                                                        <h6>{{choice.choiceType}}</h6>
-                                                        <!-- @if(choice.choiceType){
+                                                <img [src]="choice.choiceImg" class="img-fluid" alt="" width="100%"
+                                                    height="20">
+                                            </div>
+                                            <div class="col-md-7 mt-2 p-2">
+                                                <h6>{{choice.choiceType}}</h6>
+                                                <!-- @if(choice.choiceType){
                                                         <h6>{{choice.choiceType}}</h6>
                                                         } -->
-                                                        <h6>₹ {{choice.choicePrice}}</h6>
-                                                    </div>
-                                                </div>
-        
-                                            </li>
-                                            }@else{
-                                                <li class="list-group-item">
+                                                <h6>₹ {{choice.choicePrice}}</h6>
+                                            </div>
+                                        </div>
 
-                                                    <div class="row border">
-                                                        <div class="col-md-4 mt-2 p-2">
-                                                            <!-- <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
+                                    </li>
+                                    }@else{
+                                    <li class="list-group-item">
+
+                                        <div class="row border">
+                                            <div class="col-md-4 mt-2 p-2">
+                                                <!-- <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
                                                                 width="100%" height="20"> -->
 
-                                                                <img [src]="choice.choiceImg" class="img-fluid" alt=""
-                                                                width="100%" height="20">
-                                                        </div>
-                                                        <div class="col-md-7 mt-2 p-2">
-                                                            <h6>{{choice.choiceName}}</h6>
-                                                            <!-- @if(choice.choiceType){
+                                                <img [src]="choice.choiceImg" class="img-fluid" alt="" width="100%"
+                                                    height="20">
+                                            </div>
+                                            <div class="col-md-7 mt-2 p-2">
+                                                <h6>{{choice.choiceName}}</h6>
+                                                <!-- @if(choice.choiceType){
                                                             <h6>{{choice.choiceType}}</h6>
                                                             } -->
-                                                            <h6>{{choice.choicePrice}}</h6>
-                                                        </div>
-                                                    </div>
-            
-                                                </li>
-                                            }
-                                    
+                                                <h6>{{choice.choicePrice}}</h6>
+                                            </div>
+                                        </div>
+
+                                    </li>
                                     }
-                                    
+
+                                    }
+
                                 </ul>
                             </div>
                             <app-button [btnClass]=" 'btn-dark btn-sm rounded-pill m-2' "
@@ -87,7 +87,8 @@
 
                 }
                 <br>
-                <hr>
+                <br>
+                <hr class="mt-5">
             </div>
 
         </div>
@@ -95,153 +96,152 @@
 
 
 
-<!-- Modal -->
-<div class="modal" #modal>
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
+    <!-- Modal -->
+    <div class="modal" #modal>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
 
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Book Service</h1>
-
-
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                    (click)="hideModal()"></button>
-            </div>
-            <div class="modal-body">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Book Service</h1>
 
 
-                <form [formGroup]="bookingForm">
-
-<!-- @if(step()===1){ -->
-    <div>
-
-<h2>Service Details</h2><br>
-<h5>You have selected {{selectedService.name}} by {{selectedService.provider}}</h5><hr>
-    <div [formArrayName]="'services'">
-<app-form [label]=" 'Select service options:' " [tooltip]=" 'Select option' " ><br>
-
-    @for (item of optionArray; track $index) {
-        
-        <input type="checkbox" (change)="setChoices($event,$index,item.choiceName,item.choiceType,item.choicePrice)" [checked]="isOption(item.choiceName,item.choiceType,item.choiceImg)" >
-        
-        @if(item.choiceType){
-            <label for="" class="ms-1"> {{item.choiceName}}-{{item.choiceType}}-₹ {{item.choicePrice}}</label>
-        }@else {
-            <label for="" class="ms-1"> {{item.choiceName}}-₹ {{item.choicePrice}}</label>
-        }
-        <br>
-    }
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="hideModal()"></button>
+                </div>
+                <div class="modal-body">
 
 
-</app-form>
+                    <form [formGroup]="bookingForm">
 
-</div>
+                        <!-- @if(step()===1){ -->
+                        <div>
 
-<!-- <app-button [btnClass]=" 'm-3' " (onBtnClick)="formNext()"><i class="fa-solid fa-circle-chevron-right" style="color: #1d624e;"></i></app-button> -->
+                            <h2>Service Details</h2><br>
+                            <h5>You have selected {{selectedService.name}} by {{selectedService.provider}}</h5>
+                            <hr>
+                            <div [formArrayName]="'services'">
+                                <app-form [label]=" 'Select service options:' " [tooltip]=" 'Select option' "><br>
 
-</div><br>
-<!-- } -->
+                                    @for (item of optionArray; track $index) {
+
+                                    <input type="checkbox"
+                                        (change)="setChoices($event,$index,item.choiceName,item.choiceType,item.choicePrice)"
+                                        [checked]="isOption(item.choiceName,item.choiceType,item.choiceImg)">
+
+                                    @if(item.choiceType){
+                                    <label for="" class="ms-1"> {{item.choiceName}}-{{item.choiceType}}-₹
+                                        {{item.choicePrice}}</label>
+                                    }@else {
+                                    <label for="" class="ms-1"> {{item.choiceName}}-₹ {{item.choicePrice}}</label>
+                                    }
+                                    <br>
+                                    }
 
 
-<!-- @if (step()===2){ -->
-    <div>
-<h2>Booking Details</h2>
-        <app-form [label]=" 'Date of service Delivery:' " [tooltip]=" 'Select Date' " [Validation]="bookingForm.controls['deliveryDate'].touched &&
+                                </app-form>
+
+                            </div>
+
+                            <!-- <app-button [btnClass]=" 'm-3' " (onBtnClick)="formNext()"><i class="fa-solid fa-circle-chevron-right" style="color: #1d624e;"></i></app-button> -->
+
+                        </div><br>
+                        <!-- } -->
+
+
+                        <!-- @if (step()===2){ -->
+                        <div>
+                            <h2>Booking Details</h2>
+                            <app-form [label]=" 'Date of service Delivery:' " [tooltip]=" 'Select Date' " [Validation]="bookingForm.controls['deliveryDate'].touched &&
         bookingForm.controls['deliveryDate'].errors ? bookingForm.controls['deliveryDate'].errors : {}">
-            <input type="date" class="form-control" placeholder="Enter service delivery date"
-                formControlName="deliveryDate">
-        </app-form>
-    
-        <app-form [label]=" 'Number of guests:' " [tooltip]=" 'Enter guests count' " [Validation]="bookingForm.controls['totalCount'].touched &&
+                                <input type="date" class="form-control" placeholder="Enter service delivery date"
+                                    formControlName="deliveryDate">
+                            </app-form>
+
+                            <app-form [label]=" 'Number of guests:' " [tooltip]=" 'Enter guests count' " [Validation]="bookingForm.controls['totalCount'].touched &&
             bookingForm.controls['totalCount'].errors ? bookingForm.controls['totalCount'].errors : {}">
-            <input type="number" class="form-control" placeholder="Enter total guests"
-                formControlName="totalCount">
-        </app-form>
-    
-       
-    
-        <div id="choices" [formGroupName]="'venue'">
-    
-            <app-form [label]=" 'Building:' " [tooltip]=" 'Enter building / house name' "
-                [Validation]="bookingForm.get('venue.building')?.touched &&
+                                <input type="number" class="form-control" placeholder="Enter total guests"
+                                    formControlName="totalCount">
+                            </app-form>
+
+
+
+                            <div id="choices" [formGroupName]="'venue'">
+
+                                <app-form [label]=" 'Building:' " [tooltip]=" 'Enter building / house name' "
+                                    [Validation]="bookingForm.get('venue.building')?.touched &&
             bookingForm.get('venue.building')?.errors ? bookingForm.get('venue.building')?.errors : {}">
-                <input type="string" class="form-control" placeholder="Enter building / house name"
-                    formControlName="building">
-            </app-form>
-    
-            <app-form [label]=" 'Street:' " [tooltip]=" 'Enter street' "
-                [Validation]="bookingForm.get('venue.street')?.touched &&
+                                    <input type="string" class="form-control" placeholder="Enter building / house name"
+                                        formControlName="building">
+                                </app-form>
+
+                                <app-form [label]=" 'Street:' " [tooltip]=" 'Enter street' " [Validation]="bookingForm.get('venue.street')?.touched &&
             bookingForm.get('venue.street') ? bookingForm.get('venue.street')?.errors : {}">
-                <input type="string" class="form-control" placeholder="Enter street name"
-                    formControlName="street">
-            </app-form>
-    
-            <app-form [label]=" 'State:' " [tooltip]=" 'Enter state' "
-            [Validation]="bookingForm.get('venue.state')?.touched &&
+                                    <input type="string" class="form-control" placeholder="Enter street name"
+                                        formControlName="street">
+                                </app-form>
+
+                                <app-form [label]=" 'State:' " [tooltip]=" 'Enter state' " [Validation]="bookingForm.get('venue.state')?.touched &&
         bookingForm.get('venue.state')?.errors ? bookingForm.get('venue.state')?.errors : {}">
-          
-                <select name="" id="" class="form-control" formControlName="state" (change)="getDistricts($event)">
-                    <option value="" selected disabled>Select state</option>
-                    @for (item of statesList; track $index) {
-                        <option [value]="item">{{item}}</option>
-                    }
-                </select>
-        </app-form>
-    
-            <app-form [label]=" 'District:' " [tooltip]=" 'Enter district' "
-                [Validation]="bookingForm.get('venue.district')?.touched &&
+
+                                    <select name="" id="" class="form-control" formControlName="state"
+                                        (change)="getDistricts($event)">
+                                        <option value="" selected disabled>Select state</option>
+                                        @for (item of statesList; track $index) {
+                                        <option [value]="item">{{item}}</option>
+                                        }
+                                    </select>
+                                </app-form>
+
+                                <app-form [label]=" 'District:' " [tooltip]=" 'Enter district' " [Validation]="bookingForm.get('venue.district')?.touched &&
             bookingForm.get('venue.district')?.errors ? bookingForm.get('venue.district')?.errors : {}">
-               
-                    <select name="" id="" class="form-control" formControlName="district" >
-                        <option value="" selected disabled>Select District</option>
-                        @for (item of districtsList; track $index) {
-                            <option [value]="item">{{item}}</option>
-                        }
-                    </select>
-            </app-form>
-    
-          
-            <app-form [label]=" 'City:' " [tooltip]=" 'Enter city' "
-                [Validation]="bookingForm.get('venue.city')?.touched &&
+
+                                    <select name="" id="" class="form-control" formControlName="district">
+                                        <option value="" selected disabled>Select District</option>
+                                        @for (item of districtsList; track $index) {
+                                        <option [value]="item">{{item}}</option>
+                                        }
+                                    </select>
+                                </app-form>
+
+
+                                <app-form [label]=" 'City:' " [tooltip]=" 'Enter city' " [Validation]="bookingForm.get('venue.city')?.touched &&
             bookingForm.get('venue.city')?.errors ? bookingForm.get('venue.city')?.errors : {}">
-                <input type="string" class="form-control" placeholder="Enter city"
-                    formControlName="city">
-            </app-form>
-    
-            <app-form [label]=" 'Post Box:' " [tooltip]=" 'Enter post box number' "
-                [Validation]="bookingForm.get('venue.pbNo')?.touched &&
+                                    <input type="string" class="form-control" placeholder="Enter city"
+                                        formControlName="city">
+                                </app-form>
+
+                                <app-form [label]=" 'Post Box:' " [tooltip]=" 'Enter post box number' " [Validation]="bookingForm.get('venue.pbNo')?.touched &&
             bookingForm.get('venue.pbNo')?.errors ? bookingForm.get('venue.pbNo')?.errors : {}">
-                <input type="number" class="form-control" placeholder="Enter post box number"
-                    formControlName="pbNo">
-            </app-form>
-    
-        </div>
-        
-<!-- <app-button [btnClass]=" 'm-3' " (onBtnClick)="formPrevious()"> <i class="fa-solid fa-circle-chevron-left" style="color: #1d624e;"></i> </app-button> -->
-    
-        <div class="d-grid gap-2 d-md-block">
-    
-    
-            <app-button [btnClass]=" 'btn-success m-3' " (onBtnClick)="saveBooking()" >Continue</app-button>
-    
-            <app-button [btnClass]=" 'btn-info m-3' " (onBtnClick)="hideModal()">Cancel</app-button>
-    
-        </div>
-    
-    </div>
-<!-- } -->
+                                    <input type="number" class="form-control" placeholder="Enter post box number"
+                                        formControlName="pbNo">
+                                </app-form>
 
-                   
-                </form>
+                            </div>
+
+                            <!-- <app-button [btnClass]=" 'm-3' " (onBtnClick)="formPrevious()"> <i class="fa-solid fa-circle-chevron-left" style="color: #1d624e;"></i> </app-button> -->
+
+                            <div class="d-grid gap-2 d-md-block">
 
 
-                
+                                <app-button [btnClass]=" 'btn-success m-3' "
+                                    (onBtnClick)="saveBooking()">Continue</app-button>
+
+                                <app-button [btnClass]=" 'btn-info m-3' " (onBtnClick)="hideModal()">Cancel</app-button>
+
+                            </div>
+
+                        </div>
+                        <!-- } -->
+
+
+                    </form>
+
+
+
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 </div>
-
-

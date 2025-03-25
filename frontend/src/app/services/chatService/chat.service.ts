@@ -21,6 +21,7 @@ export class ChatService {
   baseUrl: string = environment.apiChatUrl
 
   constructor() {
+    debugger
     // Log when the socket connects successfully
     this.socket.on('connect', () => {
       console.log('Socket connected to backend');

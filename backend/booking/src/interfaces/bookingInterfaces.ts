@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { Date, DeleteResult, Document, FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
+import { Date, DeleteResult, Document, FilterQuery, ObjectId, QueryOptions, UpdateQuery } from "mongoose";
 
 export interface IBooking extends Document {
   userId: string;
+  // userId: ObjectId;
   user: string;
   serviceId?: string;
   providerId?: string;
@@ -103,7 +104,8 @@ export interface IRequestParams {
   startDate?: string;
   endDate?:string;
   filterBy?:string;
-  providerId?:string
+  providerId?:string,
+  isConfirmed?:string
 }
 
 export interface IGetAvailableServicesResponse {
@@ -143,11 +145,18 @@ export interface IChoice {
 //     }>;
 // }
 
-export interface IResponse {
+// export interface IResponse {
+//   success: boolean;
+//   message?: string;
+//   data?: any;
+//   extra?: any
+// }
+
+export interface IResponse<T=unknown,U=unknown> {
   success: boolean;
   message?: string;
-  data?: any;
-  extra?: any
+  data?: T;
+  extra?: U;
 }
 
 export enum HttpStatusCodes {
@@ -179,7 +188,7 @@ export interface ISalesDataOut{
   eventSales: ISales[];
   eventSalesCount: number;
   servicesSales: ISales[];
-  serviceSalesCount: any;
+  serviceSalesCount: number;
 }
 
 export interface ISalesData{
@@ -254,6 +263,16 @@ export interface IProviderBookings {
   services: IBookedServices[];
 }
 
+export interface IPaymentList {
+  user: string;
+  event?: string;
+  service?: string;
+  bookingDate: Date;
+  totalAmount: number;
+  isConfirmed:boolean;
+}
+
+
 export interface IBookingAdminData {
   bookingData: {
       type: string;
@@ -295,6 +314,7 @@ export interface IBookingRepository {
   getTotalBookingData(): Promise<IAdminBookingData[] | null>
   getAdminChartData(filter: string): Promise<IChartsDataAdmin[] | null>
   getProviderChartData(filter: string, id:string): Promise<IChartsDataProvider[] | null>
+  getPaymentList():Promise<IPaymentList[] | null>
 }
 
 export interface IEmailService {
@@ -322,6 +342,7 @@ export interface IBookingService {
   getAdminBookingData(): Promise<IResponse>
   getAdminChartData(filter:string): Promise<IResponse>
   getProviderChartData(filter:string, id:string): Promise<IResponse>
+  getAdminPaymentList(): Promise<IResponse>
 }
 
 export interface IBookingController {
@@ -345,6 +366,7 @@ export interface IBookingController {
   getAdminBookingData(req: Request, res: Response, next: NextFunction): Promise<void>
   getAdminChartData(req: Request, res: Response, next: NextFunction): Promise<void>
   getProviderChartData(req: Request, res: Response, next: NextFunction): Promise<void>
+  getAdminPaymentList(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
 export interface IPaymentService{
@@ -353,7 +375,8 @@ export interface IPaymentService{
 }
 
 export const CONTROLLER_RESPONSES = {
-  commonError: 'Something went wrong.'
+  commonError: 'Something went wrong.',
+  internalServerError:'Internal server error'
 }
 
 export const SERVICE_RESPONSES = {
@@ -362,7 +385,7 @@ export const SERVICE_RESPONSES = {
   addBookingSuccess:'Booking added successfully',
   addBookingError: 'Could not create service',
   fetchDataError: 'Fetching data failed. Try again.',
-  deleteBookingSuccess:'Booking deleted successfuly',
+  deleteBookingSuccess:'Booking deleted successfuly. Amount would be refunded to original payment method.',
   deleteBookingError: 'Could not delete booking, Something went wrong',
   deleteServicesSuccess:'Booked service deleted successfuly' ,
   deleteServicesError: 'Could not delete booked service, Something went wrong',

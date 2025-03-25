@@ -9,9 +9,11 @@ const packageDefinition=protoLoader.loadSync(PROTO_PATH_GATEWAY)
 const userGatewayProto:any=grpc.loadPackageDefinition(packageDefinition).user
 
 // Environment-based configuration
-const GRPC_HOST = process.env.NODE_ENV === 'production' 
-  ? 'user-service:50051' 
-  : 'localhost:50051';
+// const GRPC_HOST = process.env.NODE_ENV === 'production' 
+//   ? 'user-service:50051' 
+//   : 'localhost:50051';
+
+const GRPC_HOST=process.env.GRPC_USER_SERVER || '0.0.0.0:50051'
 
 const client=new userGatewayProto.UserService(
     GRPC_HOST,

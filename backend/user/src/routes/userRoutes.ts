@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
@@ -43,7 +43,7 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
 
 // router.get('/auth/google/callback',passport.authenticate('google'), userController.googleLogin)
 
-router.get('/auth/google/callback',passport.authenticate('google'),(req:Request,res:Response)=> userController.googleLogin(req,res))
+router.get('/auth/google/callback',passport.authenticate('google'),(req: Request, res: Response,next:NextFunction)=> userController.googleLogin(req,res,next))
 
 
 // router.post('/register',userController.registerUser)
@@ -68,24 +68,24 @@ router.get('/auth/google/callback',passport.authenticate('google'),(req:Request,
 // // router.post('/edit/:userId',userController.editUser)
 // router.patch('/:userId',userController.editUser)
 
-router.post('/register',(req:Request,res:Response)=>userController.registerUser(req, res))
-router.post('/email/verify',(req:Request,res:Response)=>userController.verifyEmail(req, res))
-router.post('/login',(req:Request, res:Response) => userController.userLogin(req, res)) 
-router.post('/password/resetEmail',(req:Request,res:Response)=>userController.sendResetEmail(req, res))
-router.post('/password/reset',(req:Request,res:Response)=>userController.resetPassword(req, res))
-router.post('/otp/verify',(req:Request,res:Response)=>userController.verifyOtp(req, res))
+router.post('/register',(req: Request, res: Response,next:NextFunction)=>userController.registerUser(req,res,next))
+router.post('/email/verify',(req: Request, res: Response,next:NextFunction)=>userController.verifyEmail(req,res,next))
+router.post('/login',(req:Request, res:Response,next:NextFunction) => userController.userLogin(req,res,next)) 
+router.post('/password/resetEmail',(req: Request, res: Response,next:NextFunction)=>userController.sendResetEmail(req,res,next))
+router.post('/password/reset',(req: Request, res: Response,next:NextFunction)=>userController.resetPassword(req,res,next))
+router.post('/otp/verify',(req: Request, res: Response,next:NextFunction)=>userController.verifyOtp(req,res,next))
 
-router.patch('/verify',(req:Request,res:Response)=>userController.verifyUser(req, res))
-router.patch('/status',(req:Request,res:Response)=>userController.editStatus(req, res))
-router.patch('/:userId',(req:Request,res:Response)=>userController.editUser(req, res))
+router.patch('/verify',(req: Request, res: Response,next:NextFunction)=>userController.verifyUser(req,res,next))
+router.patch('/status',(req: Request, res: Response,next:NextFunction)=>userController.editStatus(req,res,next))
+router.patch('/:userId',(req: Request, res: Response,next:NextFunction)=>userController.editUser(req,res,next))
 
-router.get('/logout',(req:Request,res:Response)=>userController.userLogout(req, res))
-router.get('/data',(req:Request,res:Response)=>userController.getGoogleUser(req, res))
-router.get('/otp/:id',(req:Request,res:Response)=>userController.resendOtp(req, res))
-router.get('/token/refresh',(req:Request,res:Response)=>userController.refreshToken(req, res))
-router.get('/users',(req:Request,res:Response)=>userController.getAllUsers(req, res))
-router.get('/users/count',(req:Request,res:Response)=>userController.getUsersCount(req, res))
-router.get('/:id',(req:Request,res:Response)=>userController.getUser(req, res))
+router.get('/logout',(req: Request, res: Response,next:NextFunction)=>userController.userLogout(req,res,next))
+router.get('/data',(req: Request, res: Response,next:NextFunction)=>userController.getGoogleUser(req,res,next))
+router.get('/otp/:id',(req: Request, res: Response,next:NextFunction)=>userController.resendOtp(req,res,next))
+router.get('/token/refresh',(req: Request, res: Response,next:NextFunction)=>userController.refreshToken(req,res,next))
+router.get('/users',(req: Request, res: Response,next:NextFunction)=>userController.getAllUsers(req,res,next))
+router.get('/users/count',(req: Request, res: Response,next:NextFunction)=>userController.getUsersCount(req,res,next))
+router.get('/:id',(req: Request, res: Response,next:NextFunction)=>userController.getUser(req,res,next))
 
 
 userRouter.use(router)

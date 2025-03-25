@@ -12,14 +12,14 @@ const PROTO_PATH = path.join(__dirname, '../../../../proto/eventServices.proto')
 const packageDefinition = protoLoader.loadSync(PROTO_PATH)
 const serviceProto: any = grpc.loadPackageDefinition(packageDefinition).service
 
-const serviceRepository:IServiceRepository=new ServiceRepository()
+const serviceRepository: IServiceRepository = new ServiceRepository()
 
 async function GetAvailableServices(call: any, callback: any) {
     try {
         const services: IService[] | null = await serviceRepository.getAllServiceByEventName(call.request.serviceName)
 
         if (services) {
-            callback(null, {serviceData:services});
+            callback(null, { serviceData: services });
         } else {
             callback({
                 code: grpc.status.NOT_FOUND,
@@ -39,7 +39,7 @@ async function GetAvailableServicesByProvider(call: any, callback: any) {
         const services: IService[] | null = await serviceRepository.getAllServiceByProvider(call.request.providerId)
 
         if (services) {
-            callback(null, {serviceData:services});
+            callback(null, { serviceData: services });
         } else {
             callback({
                 code: grpc.status.NOT_FOUND,
@@ -57,12 +57,12 @@ async function GetAvailableServicesByProvider(call: any, callback: any) {
 async function GetAvailableServiceByProviderAndName(call: any, callback: any) {
     try {
 
-        const {serviceName,providerId}= call.request
+        const { serviceName, providerId } = call.request
 
-        const service: IService | null= await serviceRepository.getServiceByProvider(serviceName,providerId)
+        const service: IService | null = await serviceRepository.getServiceByProvider(serviceName, providerId)
 
         if (service) {
-            callback(null, {serviceDetails:service});
+            callback(null, { serviceDetails: service });
         } else {
             callback({
                 code: grpc.status.NOT_FOUND,
@@ -79,35 +79,39 @@ async function GetAvailableServiceByProviderAndName(call: any, callback: any) {
 
 async function GetServiceImg(call: any, callback: any) {
     try {
-  
-  const imgPath=`${process.env.SERVICE_IMG_URL}${call.request.img}`
 
-    if (imgPath) {
-      callback(null, {imgPath});
-    } else {
-      callback({
-        code: grpc.status.NOT_FOUND,
-        message: 'User not found',
-      });
-    }
+        const imgPath = `${process.env.SERVICE_IMG_URL}${call.request.img}`
+
+        if (imgPath) {
+            callback(null, { imgPath });
+        } else {
+            callback({
+                code: grpc.status.NOT_FOUND,
+                message: 'User not found',
+            });
+        }
     } catch (error) {
-      callback({
-        code: grpc.status.INTERNAL,
-        message: 'An internal error occurred',
-      });
+        callback({
+            code: grpc.status.INTERNAL,
+            message: 'An internal error occurred',
+        });
     }
-    
-  }
-  
+
+}
+
 
 export default function startGrpcServer() {
     return new Promise<void>(resolve => {
         const server = new grpc.Server()
-        server.addService(serviceProto.ServiceDetails.service, { GetAvailableServices , GetAvailableServicesByProvider,GetAvailableServiceByProviderAndName,GetServiceImg})
-        
-        server.bindAsync('0.0.0.0:50052', grpc.ServerCredentials.createInsecure(), () => {
-            console.log('gRPC Server running on port 50052');
-            resolve();
-        })
+        server.addService(serviceProto.ServiceDetails.service, { GetAvailableServices, GetAvailableServicesByProvider, GetAvailableServiceByProviderAndName, GetServiceImg })
+
+        server.bindAsync(
+            // '0.0.0.0:50052',
+            process.env.GRPC_SERVICE_SERVER!,
+            grpc.ServerCredentials.createInsecure(), () => {
+                console.log('gRPC Server running on port 50052');
+                resolve();
+            })
     })
 }
+

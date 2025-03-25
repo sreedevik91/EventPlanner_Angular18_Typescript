@@ -93,11 +93,18 @@ export interface IRequestParams {
   sortOrder?: string
 }
 
-export interface IResponse {
+// export interface IResponse {
+//   success: boolean;
+//   message?: string;
+//   data?: any;
+//   extra?: any
+// }
+
+export interface IResponse<T=unknown,U=unknown> {
   success: boolean;
   message?: string;
-  data?: any;
-  extra?: any
+  data?: T;
+  extra?: U;
 }
 
 export enum HttpStatusCodes {

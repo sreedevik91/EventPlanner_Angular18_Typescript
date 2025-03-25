@@ -1,15 +1,19 @@
 
-export class AppError extends Error {
-     status: number
-     success: boolean
-     isOperational: boolean
-    constructor(message: string, statusCode: number) {
-        
-        super(message)
-        this.status = statusCode
-        this.success = false
+import { CONTROLLER_RESPONSES, IResponse } from "../interfaces/chatInterfaces"
 
+export class AppError extends Error {
+
+    responseData: IResponse
+    isOperational: boolean
+
+    constructor(responseData: IResponse) {
+
+        super(responseData.message || CONTROLLER_RESPONSES.commonError)
+
+        this.responseData = responseData
         this.isOperational = true
+
         Error.captureStackTrace(this, this.constructor)
     }
 }
+
