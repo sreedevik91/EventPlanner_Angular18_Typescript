@@ -11,16 +11,6 @@ const EventSchema: Schema<IEvent> = new Schema<IEvent>({
     type: String,
     required: true
   },
-  // services: [{
-  //   service:{
-  //     type: String,
-  //   required: true
-  //   },
-  //   providerId:{
-  //     type: String,
-  //   required: true
-  //   }
-  // }],
   services: [{
     type: String,
     required: true

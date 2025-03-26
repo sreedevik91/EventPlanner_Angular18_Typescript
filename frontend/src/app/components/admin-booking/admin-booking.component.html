@@ -8,7 +8,6 @@
 
     </div>
     <div class="row d-flex flex-row" [formGroup]="searchFilterForm">
-        <!-- <form [formGroup]="searchFilterForm"> -->
         <div class="col-md-3">
             <label for=""> User: </label><input type="text" class="form-control" formControlName="userName">
         </div>
@@ -28,7 +27,6 @@
                 <option value="100">100</option>
             </select>
         </div>
-        <!-- </form> -->
     </div>
     <div>
         <app-alert></app-alert>
@@ -59,18 +57,12 @@
                         }@else if(item.event){
                             <td>{{item.event}}</td>
                         }
-                        <!-- <td>
-                            @for (event of item.events; track $index) {
-                            <p>{{event}}</p>
-                            }
-                        </td> -->
+                       
 
                         <td>
 
                             <p class="d-inline-flex gap-1">
-                                <!-- <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                                See Options available
-                                </a> -->
+                              
                                 <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                     [attr.data-bs-target]="'#collapseExample'+ $index" aria-expanded="false"
                                     [attr.aria-controls]="'collapseExample'+ $index">
@@ -78,17 +70,7 @@
                                 </button>
                             </p>
                             <div class="collapse" [id]="'collapseExample'+ $index">
-                                <!-- @for (service of item.services; track $index) {
-                                <div class="card card-body">
-                                    <p>{{$index + 1}} Service: {{service.serviceName}}</p>
-                                    <p>Name:{{service.choiceName}}</p>
-                                    @if(service.choiceType !==''){
-                                    <p>Type:{{service.choiceType}}</p>
-                                    }
-                                    <p>Price:{{service.choicePrice}}</p>
-                                </div>
-                                } -->
-
+                              
                                 <div class="accordion-body">
                                     <div class="row">
                                         <div class="col-md-8 mt-4">
@@ -107,7 +89,6 @@
                 
                                                     <div class="d-flex justify-content-between">
                                                         <p>{{service.serviceName}}</p>
-                                            <!-- <app-button [btnClass]="'btn-danger rounded-pill'" (onBtnClick)="deleteChoice(item._id,service.serviceName,service._id!)">Delete</app-button> -->
                 
                                                     </div>
                 
@@ -132,10 +113,7 @@
                 
                                             </ul>
                                         </div>
-                                        <!-- <div class="col-md-3 mt-4">
-                                            <app-button [btnClass]="'btn-danger rounded-pill'" (onBtnClick)="deleteChoice()"></app-button>
-                                            <button>Delete</button>
-                                        </div> -->
+                                       
                                     </div>
                 
                                 </div>
@@ -160,10 +138,6 @@
                                     class="fa-regular fa-thumbs-down"></i></app-button>
                             }
 
-                            <!-- <i class="fa-solid fa-x"></i> -->
-                            <!-- <i class="fa-solid fa-check"></i> -->
-                            <!-- <i class="fa-solid fa-lock"></i> -->
-                            <!-- <i class="fa-solid fa-unlock"></i> -->
                         </td>
                     </tr>
                     }
@@ -191,9 +165,6 @@
             </ul>
         </nav>
     </div>
-
-
-
 
 
 </section>

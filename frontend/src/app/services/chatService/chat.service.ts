@@ -4,9 +4,7 @@ import { IChat } from '../../model/class/chatClass';
 import { Observable } from 'rxjs';
 import { IChatJoiningResponse } from '../../model/interface/interface';
 import { HttpClient } from '@angular/common/http';
-// import { environment } from '../../../environments/environment.development';
 import { environment } from '../../../environments/environment';
-// import { io, Socket } from 'socket.io-client';
 
 
 @Injectable({
@@ -106,14 +104,6 @@ export class ChatService {
   getActiveUsers(): Observable<any> {
     return this.socket.fromEvent<any>('updatedActiveUsers')
   }
-
-  // private socket: Socket;
-
-  // constructor() {
-  //   this.socket = io('http://localhost:4000'); // Connect to Socket.IO server
-  // }
-
-
 
 }
 

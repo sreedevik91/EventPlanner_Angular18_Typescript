@@ -19,21 +19,6 @@ export interface IChoice {
     choiceImgCategory?: string;
 }
 
-
-// export interface IService extends Document {
-//     name: string;
-//     events: string[];
-//     provider: string;
-//     choices: IChoice[];
-//     isApproved: boolean;
-//     isActive: boolean;
-// }
-// export interface IChoice {
-//     choiceName: string;
-//     choiceType: string;
-//     choicePrice: number;
-// }
-
 export interface IAggregateResponse {
     _id: string,
     maxPrice: number,
@@ -59,13 +44,6 @@ export interface IRequestParams {
 export interface IServiceDb extends IService, Document {
     _id: string;
 }
-
-// export interface IResponse {
-//     success: boolean;
-//     message?: string;
-//     data?: any;
-//     extra?: any
-// }
 
 export interface IResponse<T=unknown,U=unknown> {
     success: boolean;

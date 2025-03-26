@@ -44,12 +44,9 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
   totalEvents: number = 0
   events = signal<IEvent[]>([])
   services = signal<any[]>([])
-  // eventServicesList = signal<IEventServiceResponse[]>([])
   eventServicesList = signal<string[]>([])
 
   eventOptions = ['Marriage', 'Engagement', 'Birthday']
-
-  // eventImgUrl: string = environment.eventImgUrl
 
   imgUrl: string | ArrayBuffer | null = ''
 
@@ -57,14 +54,8 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initialiseEventForm()
-    // this.getTotalEvents()
     this.initialiseSearchFilterForm()
-    // this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user: any) => {
-    //   this.providerId = user.id
-    //   this.provider = user.user
-    //   console.log(this.providerId, user);
-
-    // })
+   
     this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
       .set('pageSize', this.searchFilterFormObj.pageSize)
     this.getAllEvents(this.searchParams)
@@ -75,16 +66,6 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
       _id: new FormControl(this.eventFromObj._id),
       name: new FormControl(this.eventFromObj.name, [Validators.required]),
       img: new FormControl(this.eventFromObj.img || null, [Validators.required]),
-
-      // services: this.isAddEvent ? new FormArray([]) : new FormArray(
-      //   (this.eventFromObj.services).map((service) => {
-      //     return new FormGroup({
-      //       service: new FormControl(service.service, [Validators.required]),
-      //       providerId: new FormControl(service.providerId, [Validators.required]),
-      //     })
-      //   })
-      // )
-
       services: new FormArray(
         (this.eventFromObj.services).map((service) => {
           return new FormControl(service, [Validators.required])
@@ -176,11 +157,9 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
   }
 
   getAllEvents(params: HttpParams) {
-    // debugger
     this.eventService.getAllEvents(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
-          // this.totalEvents=res.body.data.length
           this.events.set(res.body?.data.events)
           this.totalEvents = res.body?.data.count
 
@@ -230,34 +209,6 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
     const eventInput = <HTMLInputElement>event?.target
     const eventName: string | undefined = eventInput?.value
     this.getServices(eventName)
-
-    //  let eventName:string=''
-    //   if(eventInput){
-    //     eventName=eventInput.value 
-    //   }else if(eventNameValue){
-    //     eventName=eventNameValue
-    //   }
-
-    // this.eventService.getServicesByName(eventName).pipe(takeUntil(this.destroy$)).subscribe({
-    //   next: (res: HttpResponse<IResponse>) => {
-    //     console.log('getEventServices res: ', res);
-    //     if (res.status === HttpStatusCodes.SUCCESS) {
-    //       this.services.set(res.body?.data)
-    //       this.eventServicesList.set(res.body?.extra)
-    //       this.showServices = true
-    //     } else {
-    //       console.log('could not get services', res.body?.message);
-    //       this.alertService.getAlert('alert alert-danger', 'Failed!', res.body?.message ? res.body?.message : '')
-
-    //     }
-
-    //   },
-    //   error: (error: HttpErrorResponse) => {
-    //     console.log('getEventServices error: ', error);
-    //     this.alertService.getAlert('alert alert-danger', 'Failed!', error.error.message || error.statusText)
-    //   }
-    // })
-
   }
 
   setServiceValues(event: Event, service: string, id?: string, index?: number) {
@@ -277,17 +228,6 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
         formArray.removeAt(index)
       }
     }
-
-
-    // if ((<HTMLInputElement>event.target).checked) {
-    //   const eventFormGroup = new FormGroup({
-    //     service: new FormControl(service),
-    //     providerId: new FormControl(id)
-    //   });
-
-    //   (<FormArray>this.eventForm.get('services')).push(eventFormGroup)
-
-    // }
 
   }
 
@@ -311,7 +251,6 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          // this.getAllEvents(this.searchParams)
           this.events.update(events =>
             events.map(event => event._id === id ? { ...event, isActive: !event.isActive } : event)
           )
@@ -356,8 +295,6 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
 
 
   saveEvent() {
-    // console.log(this.eventForm.errors);
-    // console.log(this.eventForm.value);
     const { _id, ...rest } = this.eventForm.value
     console.log('data to add new service: ', rest);
 
@@ -367,20 +304,6 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
     formData.append('name', this.eventForm.get('name')?.value)
     formData.append('img', this.eventForm.get('img')?.value)
     formData.append('services', JSON.stringify(services))
-
-    // let services = this.eventForm.get('services')?.value || []
-    // // formData.append('choices',[])
-    // services = services.map((service: any, index: number) => {
-    //   const newChoices = {
-    //     serviceId: service.serviceId,
-    //     providerId: service.providerId
-
-    //   }
-    //   return newChoices
-    // })
-
-    // formData.append('choices', JSON.stringify(services))
-    // console.log('data to add new service: ', formData);
 
     this.eventService.createEvent(formData).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
@@ -404,7 +327,6 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
 
   editEvent(id: string) {
 
-    // console.log('service data to edit: ', this.eventFromObj);
     let { _id, ...rest } = this.eventForm.value
     let data = rest
     console.log('updated event data:', data);
@@ -415,22 +337,10 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
     formData.append('img', this.eventForm.get('img')?.value || data.img)
     formData.append('services', JSON.stringify(services))
 
-    // let services = this.eventForm.get('services')?.value || []
-    // services = services.map((service: IEventService, index: number) => {
-    //   const newChoices = {
-    //     serviceId: service.service,
-    //     providerId: service.providerId
-    //   }
-    //   return newChoices
-    // })
-    // formData.append('services', JSON.stringify(services))
-
     console.log('edited event data: ', formData);
     formData.forEach((value, key) => {
       console.log(key, value);
     });
-
-    // debugger
 
     this.eventService.editEvent(formData, id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
@@ -438,7 +348,6 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
           console.log('update event response: ', res.body);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || 'Service updated')
           this.hideModal()
-          // this.getTotalEvents()
           this.getAllEvents(this.searchParams)
         } else {
           console.log('could not get event', res.body?.message || '');
@@ -458,8 +367,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
-          // this.getTotalEvents()
-          // this.getAllEvents(this.searchParams)
+      
           this.events.update(events =>
             events.filter(event => event._id !== id)
           )

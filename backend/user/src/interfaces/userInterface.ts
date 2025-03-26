@@ -26,25 +26,6 @@ export interface IUserDb extends IUser, Document {
     _id: string
 }
 
-// export type IUserDb= IUser & Document
-
-// export interface IUserDb extends Document {
-//     otpData: IOtpData;
-//     _id: string;
-//     name: string;
-//     email: string;
-//     username?: string;
-//     password?: string;
-//     mobile?: number;
-//     googleId?:string;
-//     role: string;
-//     createdAt: string;
-//     updatedAt: string;
-//     __v: number;
-//     isActive: boolean;
-//     isVerified: boolean;
-//   }
-
 export interface IRequestParams {
     userName?: string,
     userStatus?:string;
@@ -63,7 +44,6 @@ export interface IRequestParams {
   }
 
 export interface IRepository<T> {
-    // getAllUsers(filter:any,sort:any,limit:number,skip:number): Promise<T[]>;
     getAllUsers(query: FilterQuery<T>, options: QueryOptions): Promise<T[] | null>;
     getUserById(userId: string): Promise<T | null>;
     createUser(userData: Partial<T>): Promise<T | null>;
@@ -97,19 +77,12 @@ export interface IJwtPayload extends JwtPayload {
 
 
 export interface ICookie {
-    // payload: IJwtPayload | undefined;
-    // refreshToken: string | undefined;
-    // accessToken: string | undefined;
-    // options: CookieOptions | undefined;
-
     success?:boolean;
     payload: IJwtPayload;
     accessToken: string;
     refreshToken: string;
     options: CookieOptions;
 }
-
-
 
 export interface LoginData {
     name?: string;
@@ -204,19 +177,6 @@ export interface IUserController {
     verifyEmail(req: Request, res: Response,next:NextFunction):Promise<void>
     verifyUser(req: Request, res: Response,next:NextFunction):Promise<void>
 }
-
-
-// export interface IResponse<T=unknown> {
-//     success: boolean;
-//     message?: string;
-//     data?: T;
-//     emailVerified?: boolean;
-//     cookieData?: ICookie;
-//     emailNotVerified?: boolean;
-//     wrongCredentials?: boolean;
-//     blocked?: boolean;
-//     noUser?: boolean;
-// }
 
 export enum HttpStatusCodes{
     OK=200,

@@ -60,7 +60,6 @@ export default class UserEventDetailsComponent implements OnInit,OnDestroy {
   cuisine: IServicesArray[] = []
   coverage: IServicesArray[] = []
 
-  // serviceImgUrl = environment.serviceImgUrl
 
   ngOnInit(): void {
 
@@ -94,7 +93,6 @@ export default class UserEventDetailsComponent implements OnInit,OnDestroy {
       userId: new FormControl(this.bookingFromObj.userId, [Validators.required]),
       serviceId: new FormControl(this.bookingFromObj.serviceId, [Validators.required]),
       providerId: new FormControl(this.bookingFromObj.providerId, [Validators.required]),
-      // eventId: new FormControl(this.bookingFromObj.eventId, [Validators.required]),
       event: new FormControl(this.bookingFromObj.event, [Validators.required]),
       style: new FormControl(this.bookingFromObj.style, [Validators.required]),
       services: new FormArray(
@@ -153,11 +151,7 @@ export default class UserEventDetailsComponent implements OnInit,OnDestroy {
     const state = (<HTMLSelectElement>event.target).value
     console.log(Districts[state]);
     this.districtsList = Districts[state]
-    // if(event in Districts){
-    //   console.log(Districts[event]);
-    // }else {
-    //   console.log("No districts found for the provided state.");
-    // }
+   
   }
 
   saveBooking() {
@@ -184,13 +178,11 @@ export default class UserEventDetailsComponent implements OnInit,OnDestroy {
   }
 
   isOption(name: string) {
-    // console.log('choiceName to check isOption: ', name);
-
+   
     const serviceArray = <FormArray>this.bookingForm.get('services')
     const isOption = serviceArray.value.some((service: any) => {
       return service.choiceName === name
     })
-    // console.log('value of isOption: ', isOption);
     return isOption
   }
 
@@ -253,19 +245,7 @@ export default class UserEventDetailsComponent implements OnInit,OnDestroy {
       choicePriceSelected = selectedServiceArray[0].price
       serviceNameSelected = 'Catering'
     } 
-    // else if (service === 'cuisine') {
-    //   let selectedServiceArray = this.cuisine.filter(service => service.providerId === providerId && service.name === target.value)
-    //   choiceNameSelected = 'Menu'
-    //   choiceTypeSelected = selectedServiceArray[0].name
-    //   choicePriceSelected = selectedServiceArray[0].price
-    //   serviceNameSelected = 'Catering'
-    // } else if (service === 'coverage') {
-    //   let selectedServiceArray = this.coverage.filter(service => service.providerId === providerId && service.name === target.value)
-    //   choiceNameSelected = selectedServiceArray[0].name
-    //   choicePriceSelected = selectedServiceArray[0].price
-    //   serviceNameSelected = 'Event Coverage'
-    // }
-
+   
     choicesArray.push(new FormGroup({
       serviceName: new FormControl(serviceNameSelected),
       providerId: new FormControl(providerId),
@@ -273,8 +253,6 @@ export default class UserEventDetailsComponent implements OnInit,OnDestroy {
       choiceType: new FormControl(choiceTypeSelected),
       choicePrice: new FormControl(choicePriceSelected),
     }))
-
-    // console.log('choiceArray value: ', choicesArray);
 
   }
 
@@ -296,24 +274,7 @@ export default class UserEventDetailsComponent implements OnInit,OnDestroy {
     const formArray = (<FormArray>this.bookingForm.get('services'))
     console.log('step 2 formArray value: ', formArray.value);
 
-    // this.optionArray = formArray.value
-    // formArray.value.forEach((service: any) => {
-    //     this.isOption(service.serviceName)
-    //   })
-
-    // formArray.controls.forEach((control: any) => {
-    //  const serviceName= control.get('serviceName')?.value
-    //  const isChecked=this.isOption(serviceName)
-    //  control.patchValue({checked:isChecked})
-
-    // })
-
   }
-
-  //   onOptionClick(name:string,price:number,providerId:string,serviceName:string){
-  // console.log('selected service details:',name,price,providerId,serviceName);
-
-  //   }
 
   showModal() {
     this.formModal.nativeElement.style.display = 'block'

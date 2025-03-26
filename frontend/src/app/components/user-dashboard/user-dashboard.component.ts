@@ -16,9 +16,7 @@ export class UserDashboardComponent implements OnInit,AfterViewInit{
       ride: 'carousel'
     });
   }
-  ngOnInit(): void {
-    // throw new Error('Method not implemented.');
-  }
+  ngOnInit(): void { }
 
   services = [
     { title: 'Wedding', image: 'https://www.shaadidukaan.com/vogue/wp-content/uploads/2020/03/resort-in-jodhpur.jpg', description:'',path:'/events' },

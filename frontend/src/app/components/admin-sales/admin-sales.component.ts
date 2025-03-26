@@ -11,7 +11,7 @@ import { BookingService } from '../../services/bookingService/booking.service';
 @Component({
   selector: 'app-admin-sales',
   standalone: true,
-  imports: [AlertComponent, ButtonComponent, ReactiveFormsModule],
+  imports: [AlertComponent, ReactiveFormsModule],
   templateUrl: './admin-sales.component.html',
   styleUrl: './admin-sales.component.css'
 })

@@ -19,65 +19,15 @@ export class BookingService implements IBookingService {
 
     ) { }
 
-    // async sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> {
-
-    //     return new Promise((resolve, reject) => {
-    //         const transporter = nodemailer.createTransport({
-    //             service: 'gmail',
-    //             auth: {
-    //                 user: process.env.EMAIL_USER,
-    //                 pass: process.env.EMAIL_APP_PASSWORD
-    //             }
-    //         })
-
-    //         let mailOptions = {
-    //             from: process.env.EMAIL_USER,
-    //             to: email,
-    //             subject: `${subject}`,
-    //             html: `
-    //             <div>
-    //             <p>Dear ${name}, </p>
-    //             <p></p>
-    //             <p>${content}</p>
-    //             <p></p>
-    //             <p>Warm Regards,</p>
-    //             <p>Admin</p>
-    //             <p>Dream Events</p>
-    //             </div>
-    //             `
-    //         }
-
-    //         transporter.sendMail(mailOptions, (error, info) => {
-    //             // console.log(error)
-    //             if (error) {
-    //                 console.log(error);
-    //                 resolve(false)
-    //             } else {
-    //                 resolve(true)
-    //             }
-
-    //         })
-
-    //     })
-
-    // }
-
-
     async totalBookings() {
 
         try {
             const bookingCount = await this.bookingRepository.getTotalBookings()
             console.log('getTotalServices service response: ', bookingCount);
-            // if (bookingCount) {
-            //     return { success: true, data: bookingCount }
-            // } else {
-            //     return { success: false, message: 'Could not get the total document' }
-            // }
-
+           
             return bookingCount ? { success: true, data: bookingCount } : { success: false, message: SERVICE_RESPONSES.totalBookingError }
 
         } catch (error: unknown) {
-            // console.log('Error from getTotalServices service: ', error.message);
             error instanceof Error ? console.log('Error message from getTotalServices service: ', error.message) : console.log('Unknown error from getTotalServices service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -104,11 +54,9 @@ export class BookingService implements IBookingService {
                 console.log('service selected for booking: ', service);
 
                 const provider = await getUserByIdGrpc(service[0].provider)
-                // const img = await getServiceImgGrpc(service[0].img)
 
                 services?.forEach(s => {
                     s.serviceName = service[0].name
-                    // s.providerName= service[0].provider
                     s.providerName = provider.name
                 })
 
@@ -118,7 +66,6 @@ export class BookingService implements IBookingService {
                     user,
                     userId,
                     service: service[0].name,
-                    // img: img.imgPath,
                     img: service[0].img,
                     services,
                     deliveryDate,
@@ -132,20 +79,13 @@ export class BookingService implements IBookingService {
                 console.log('bookingData data: ', bookingData);
 
                 console.log('bookingData service response: ', newBooking);
-                // if (newBooking) {
-                //     return= { success: true, data: newBooking }
-                // } else {
-                //     return { success: false, message: 'Could not create service' }
-                // }
-
+               
                 addBookingResponse = newBooking ? { success: true, data: newBooking, message: SERVICE_RESPONSES.addBookingSuccess } : { success: false, message: SERVICE_RESPONSES.addBookingError }
 
             } else if (event) {
 
                 const eventData = await getEventByNameGrpc(event)
                 console.log('getEventByNameGrpc response: ', eventData);
-
-                // const img = await getEventImgGrpc(eventData.event[0].img)
 
                 for (let s of services || []) {
                     const provider = await getUserByIdGrpc(s.providerId!)
@@ -170,12 +110,7 @@ export class BookingService implements IBookingService {
                 console.log('bookingData data: ', bookingData);
 
                 console.log('bookingData service response: ', newBooking);
-                // if (newBooking) {
-                //     return { success: true, data: newBooking }
-                // } else {
-                //     return { success: false, message: 'Could not create service' }
-                // }
-
+              
                 addBookingResponse = newBooking ? { success: true, data: newBooking } : { success: false, message: SERVICE_RESPONSES.addBookingError }
 
             }
@@ -185,7 +120,6 @@ export class BookingService implements IBookingService {
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from addBooking service: ', error.message) : console.log('Unknown error from addBooking service: ', error)
 
-            // console.log('Error from addBooking service: ', error.message);
             return { success: false, message: SERVICE_RESPONSES.commonError }
         }
 
@@ -201,7 +135,6 @@ export class BookingService implements IBookingService {
             let skip = 0
             if (userName !== undefined) {
                 filterQ.user = { $regex: `.*${userName}.*`, $options: 'i' }
-                // { $regex: `.*${search}.*`, $options: 'i' } 
             }
 
             if(isConfirmed!==undefined){
@@ -229,23 +162,12 @@ export class BookingService implements IBookingService {
 
             console.log('skip: ', skip);
 
-
-            // let data = await bookingRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
-
-            // let bookings = await this.bookingRepository.getAllBooking(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
             let bookingsData = await this.bookingRepository.getBookingsAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
                 console.log('all bookings data : ', bookingsData);
 
             let data: IBookingsDataOut = { bookings: [], count: 0 }
             if (bookingsData) {
-                // console.log('all bookings data : ', bookings);
                 console.log('all bookings and total count: ', bookingsData[0].bookings, bookingsData[0].bookingsCount);
-
-                // if (bookings) {
-                //     return { success: true, data:bookings }
-                // } else {
-                //     return { success: false, message: 'Could not fetch data' }
-                // }
 
                 data = {
                     bookings: bookingsData[0].bookings.length>0 ? bookingsData[0].bookings : [],
@@ -259,7 +181,6 @@ export class BookingService implements IBookingService {
             return bookingsData ? { success: true, data } : { success: false, message: SERVICE_RESPONSES.fetchDataError }
 
         } catch (error: unknown) {
-            // console.log('Error from getServices: ', error.message);
             error instanceof Error ? console.log('Error message from getBookings service: ', error.message) : console.log('Unknown error from getBookings service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -272,16 +193,10 @@ export class BookingService implements IBookingService {
             const deleteBooking = await this.bookingRepository.deleteBooking(id)
 
             console.log('deleteBooking service response: ', deleteBooking);
-            // if (deleteBooking) {
-            //     return { success: true, data: deleteBooking, message: 'Event deleted successfuly' }
-            // } else {
-            //     return { success: false, message: 'Could not delete booking, Something went wrong' }
-            // }
-
+           
             return deleteBooking ? { success: true, data: deleteBooking, message: SERVICE_RESPONSES.deleteBookingSuccess } : { success: false, message: SERVICE_RESPONSES.deleteBookingError }
 
         } catch (error: unknown) {
-            // console.log('Error from deleteBooking service: ', error.message);
             error instanceof Error ? console.log('Error message from deleteBooking service: ', error.message) : console.log('Unknown error from deleteBooking service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -305,7 +220,6 @@ export class BookingService implements IBookingService {
                 return { success: false, message: SERVICE_RESPONSES.deleteServicesError }
             }
         } catch (error: unknown) {
-            // console.log('Error from deleteBookedServices service: ', error.message);
             error instanceof Error ? console.log('Error message from deleteBookedServices service: ', error.message) : console.log('Unknown error from deleteBookedServices service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -318,16 +232,10 @@ export class BookingService implements IBookingService {
             const booking = await this.bookingRepository.getBookingById(id)
 
             console.log('getEventById service response: ', booking);
-            // if (booking) {
-            //     return { success: true, data: booking }
-            // } else {
-            //     return { success: false, message: 'Could not get booking, Something went wrong' }
-            // }
-
+         
             return booking ? { success: true, data: booking } : { success: false, message: SERVICE_RESPONSES.getBookingError }
 
         } catch (error: unknown) {
-            // console.log('Error from getEventById service: ', error.message);
             error instanceof Error ? console.log('Error message from getBookingById service: ', error.message) : console.log('Unknown error from getBookingById service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -340,16 +248,10 @@ export class BookingService implements IBookingService {
             const booking = await this.bookingRepository.getBookingByUserId(id)
 
             console.log('getEventById service response: ', booking);
-            // if (booking) {
-            //     return { success: true, data: booking }
-            // } else {
-            //     return { success: false, message: 'Could not get booking, Something went wrong' }
-            // }
-
+           
             return booking ? { success: true, data: booking } : { success: false, message: SERVICE_RESPONSES.getBookingError }
 
         } catch (error: unknown) {
-            // console.log('Error from getEventById service: ', error.message);
             error instanceof Error ? console.log('Error message from getBookingByUserId service: ', error.message) : console.log('Unknown error from getBookingByUserId service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -363,7 +265,6 @@ export class BookingService implements IBookingService {
             const bookings = await this.bookingRepository.getBookingsByProvider(provider.name)
 
             console.log('getEventById service response: ', bookings);
-            // const { user, event, service, services, deliveryDate, tag, totalCount, orderDate } = booking
 
             let newBookings: Partial<IBooking>[] = (bookings || []).map(booking => {
                 return {
@@ -399,16 +300,9 @@ export class BookingService implements IBookingService {
 
             console.log('updatedEvent: ', updatedBooking);
 
-            // if (updatedBooking) {
-            //     return { success: true, data: updatedBooking, message: 'Event updated successfuly' }
-            // } else {
-            //     return { success: false, message: 'Could not updated booking' }
-            // }
-
             return updatedBooking ? { success: true, data: updatedBooking, message: SERVICE_RESPONSES.editBookingSuccess } : { success: false, message: SERVICE_RESPONSES.editBookingError }
 
         } catch (error: unknown) {
-            // console.log('Error from updatedEvent: ', error.message);
             error instanceof Error ? console.log('Error message from editBooking service: ', error.message) : console.log('Unknown error from editBooking service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -417,7 +311,6 @@ export class BookingService implements IBookingService {
     }
 
     async editStatus(id: string) {
-        // provider making the service active or block
         try {
             const booking = await this.bookingRepository.getBookingById(id)
 
@@ -426,12 +319,6 @@ export class BookingService implements IBookingService {
 
                 console.log('editStatus service: ', booking, bookingUpdated);
 
-                // if (bookingUpdated) {
-                //     return { success: true, data: bookingUpdated, message: 'Event status updated' }
-                // } else {
-                //     return { success: false, message: 'Could not updated booking status' }
-                // }
-
                 return bookingUpdated ? { success: true, data: bookingUpdated, message: SERVICE_RESPONSES.editStatusSuccess } : { success: false, message: SERVICE_RESPONSES.editStatusError }
 
             } else {
@@ -439,7 +326,6 @@ export class BookingService implements IBookingService {
             }
 
         } catch (error: unknown) {
-            // console.log('Error from editStatus booking: ', error.message);
             error instanceof Error ? console.log('Error message from editStatus service: ', error.message) : console.log('Unknown error from editStatus service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -455,40 +341,6 @@ export class BookingService implements IBookingService {
             if (service && user) {
 
                 service.serviceDetails.provider = user.name
-                // let obj: any = {}
-
-                // service.serviceData.forEach(async (e: any) => {
-
-                //     obj[e.provider] = obj[e.provider] || new Set()
-                //     obj[e.provider].add(e.name)
-
-                // })
-
-                // let servicesArray: any = []
-
-                // for (let key in obj) {
-                //     let id = key
-                //     console.log('id to get user from getServiceByName: ', id);
-
-                //     const user = await getUserByIdGrpc(id)
-                //     let newObj: any = {}
-                //     if (user) {
-                //         newObj.provider = user.name
-                //         newObj.providerId = key
-                //         newObj.services = Array.from(obj[key])
-                //         servicesArray.push(newObj)
-                //     }
-
-                //     obj[key]=Array.from(obj[key])
-                // }
-
-                // console.log('getServiceByName array: ', servicesArray);
-                // let serviceSet = new Set()
-                // service.serviceData.forEach(async (e: any) => {
-                //     serviceSet.add(e.name)
-                // })
-                // let servicesArray = Array.from(serviceSet)
-                // console.log('getServiceByName array: ', servicesArray);
 
                 return { success: true, data: service.serviceDetails }
             } else {
@@ -496,7 +348,6 @@ export class BookingService implements IBookingService {
             }
 
         } catch (error: unknown) {
-            // console.log('Error from getServiceByName service: ', error, error.message);
             error instanceof Error ? console.log('Error message from getService service: ', error.message) : console.log('Unknown error from getService service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -504,44 +355,8 @@ export class BookingService implements IBookingService {
 
     }
 
-    // async getBookingsByName(name: string) {
-    //     try {
-    //         // const service = await getServicesByNameGrpc(name)
-    //         const events: IBookingDb[] = await bookingRepository.getBookingByName(name)
-
-    //         console.log('getServiceByName response: ', events);
-
-    //         const services = await getServicesByEventNameGrpc(name)
-    //         console.log(`Decor services for ${name}: `, services);
-
-    //         let servicesObj: any = {}
-    //         if (events && services) {
-    //             services.serviceData.forEach((service: any) => {
-    //                 let serviceName = service.name
-    //                 if (!(serviceName in servicesObj)) {
-    //                     servicesObj[serviceName] = []
-    //                 }
-    //                 servicesObj[serviceName].push(service)
-
-    //             })
-
-    //             console.log(`sorted services for ${name}: `, servicesObj);
-
-    //             return { success: true, data: events, extra: servicesObj }
-    //         } else {
-    //             return { success: false, message: 'Could not get booking service' }
-    //         }
-
-    //     } catch (error: unknown) {
-    //         console.log('Error from getServiceByName service: ', error, error.message);
-    //         return { success: false, message: SERVICE_RESPONSES.commonError }
-    //     }
-
-    // }
-
     async getAllEvents() {
         try {
-            // const service = await getServicesByNameGrpc(name)
             const eventsList = await getEventsByGrpc()
 
             console.log('getEventsByGrpc response: ', eventsList);
@@ -576,7 +391,6 @@ export class BookingService implements IBookingService {
             }
 
         } catch (error: unknown) {
-            // console.log('Error from getServiceByName service: ', error, error.message);
             error instanceof Error ? console.log('Error message from getAllEvents service: ', error.message) : console.log('Unknown error from getAllEvents service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -628,7 +442,6 @@ export class BookingService implements IBookingService {
             }
 
         } catch (error: unknown) {
-            // console.log('Error from getServiceByName service: ', error, error.message);
             error instanceof Error ? console.log('Error message from getServiceByEvent service: ', error.message) : console.log('Unknown error from getServiceByEvent service: ', error)
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
@@ -675,7 +488,6 @@ export class BookingService implements IBookingService {
             <p>Please visit our website for more details. Happy events!</p>
            `
                 let subject = "Booking Confirmation"
-                // let provider = providerData.data
                 const isSentMail = await this.emailService.sendMail(userData.name, userData.email, content, subject)
                 if (!isSentMail) {
                     console.log('could not sent booking confirmation email: ', isSentMail);
@@ -733,7 +545,6 @@ export class BookingService implements IBookingService {
             filterQEvent.event = { $exists: true }
             filterQEvent.isConfirmed = true
 
-            // filterQService.service = { $exists: true } // not eeded as services sre there in events as well
             filterQService.isConfirmed = true
 
             if (pageNumberEvent !== '' && pageNumberEvent !== undefined) {
@@ -766,9 +577,6 @@ export class BookingService implements IBookingService {
                 filterQEvent.orderDate = { $gte: (fromDate), $lte: (toDate) }
                 filterQService.orderDate = { $gte: (fromDate), $lte: (toDate) }
             }
-
-            // filterQEvent.createdAt = fromDate && toDate ? { $gte: (fromDate), $lte: (toDate) } : {}
-            // filterQService.createdAt = fromDate && toDate ? { $gte: (fromDate), $lte: (toDate) } : {}
 
             console.log('filterQService: ', filterQService, ', filterQEvent: ', filterQEvent);
             console.log('sortQEvent: ', sortQEvent, ',sortQService: ', sortQService);
@@ -829,7 +637,6 @@ export class BookingService implements IBookingService {
                 sortQService.date = 1
             }
 
-            // filterQService.service = { $exists: true } // not eeded as services sre there in events as well
             const regexPattern = new RegExp(provider, 'i')
             filterQService.isConfirmed = true
             filterQService.services = {
@@ -861,8 +668,6 @@ export class BookingService implements IBookingService {
                 toDate = new Date()
                 filterQService.orderDate = { $gte: (fromDate), $lte: (toDate) }
             }
-
-            // filterQService.createdAt = fromDate && toDate ? { $gte: (fromDate), $lte: (toDate) } : {}
 
             console.log('filterQService: ', filterQService);
             console.log('sortQService: ', sortQService);
@@ -930,21 +735,16 @@ export class BookingService implements IBookingService {
 
             const chartData = await this.bookingRepository.getAdminChartData(filter)
 
-            // console.log('charts data:', chartData);
-
             let data: IChartDataResponseAdmin = { servicesChartData: { label: [], amount: [] }, eventsChartData: { label: [], amount: [] } }
-            // let data:IChartDataResponse= { servicesChartData: { label: [], amount:[]}, eventsChartData:{ label: [], amount:[]},providerChartData:{ label: [], amount:[]}}
-
+          
             if (chartData) {
                 console.log('chartData: ', chartData,
                     ', servicesChartData response: ', chartData[0].servicesChartData,
                     ', eventsChartData count response: ', chartData[0].eventsChartData,
-                    // ', providerChartData amount response: ', chartData[0].providerChartData
                 );
                 data = {
                     servicesChartData: { label: chartData[0].servicesChartData.map(e => e._id.service), amount: chartData[0].servicesChartData.map(e => e.amount) },
                     eventsChartData: { label: chartData[0].eventsChartData.map(e => e._id.event), amount: chartData[0].eventsChartData.map(e => e.amount) },
-                    // providerChartData: {label:chartData[0].providerChartData.map(e=>e._id.provider),amount:chartData[0].providerChartData.map(e=>e.amount)}
                 }
                 console.log('charts data response:', data);
 
@@ -964,8 +764,6 @@ export class BookingService implements IBookingService {
         try {
 
             const chartData = await this.bookingRepository.getProviderChartData(filter, name)
-
-            // console.log('charts data:', chartData);
 
             let data: IChartDataResponseProvider = { providerChartData: { label: [], amount: []} }
 
@@ -997,21 +795,6 @@ export class BookingService implements IBookingService {
 
             console.log('admin payment list:', paymentList);
 
-            // let data: IChartDataResponseProvider = { providerChartData: { label: [], amount: []} }
-
-            // if (chartData) {
-            //     console.log('chartData: ', chartData,
-            //         ', providerChartData amount response: ', chartData[0].providerChartData
-            //     );
-            //     data = {
-            //         providerChartData: { label: chartData[0].providerChartData.map(e => e._id.service), amount: chartData[0].providerChartData.map(e => e.amount) }
-            //     }
-            //     console.log('charts data response:', data);
-
-            // } else {
-            //     console.log('No data available: ', chartData);
-            // }
-
             return paymentList ? { success: true, data:paymentList } : { success: false, message: SERVICE_RESPONSES.fetchDataError }
 
         } catch (error: unknown) {
@@ -1022,6 +805,3 @@ export class BookingService implements IBookingService {
     }
 
 }
-
-
-// export default new EventServices()

@@ -9,8 +9,7 @@ const ChatSchema: Schema<IChat> = new Schema<IChat>({
     required: true
   },
   roomId: {
-    type: String,
-    // required: true
+    type: String
   },
   chats: [{
     sender: {

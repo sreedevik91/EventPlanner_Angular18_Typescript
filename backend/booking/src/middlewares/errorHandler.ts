@@ -7,7 +7,6 @@ export const errorHandler = (error: AppError, req: Request, res: Response, next:
 
     console.log('Errors: ', error, error.stack);
 
-    // const statusCode = error.status
     const responseData = error.responseData
 
     if (error instanceof AppError) {
@@ -16,13 +15,5 @@ export const errorHandler = (error: AppError, req: Request, res: Response, next:
     }
 
     ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
-
-
-
-    // res.status(statusCode).json({
-    //     success: error.success,
-    //     message,
-    //     ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
-    // })
 
 }

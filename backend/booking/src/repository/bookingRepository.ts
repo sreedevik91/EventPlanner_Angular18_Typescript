@@ -12,7 +12,6 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
 
     async getTotalBookings(): Promise<number | null> {
         try {
-            // return await Booking.find().countDocuments()
             return await this.model.find().countDocuments()
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from Booking BookingRepository: ', error.message) : console.log('Unknown error from Booking BookingRepository: ', error)
@@ -24,7 +23,6 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
 
         try {
             let sort = { orderDate: -1 }
-            // let booking =await Booking.find({userId:id})
             let booking = await this.getAllBooking({ userId: id }, { sort })
             return booking
         } catch (error: unknown) {
@@ -68,7 +66,6 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                 {
                     $facet: {
                         'eventsData': [
-                            // { $match: { event: { $exists: true }, isConfirmed: true } },
                             { $match: filterQEvent },
                             {
                                 $addFields: {
@@ -101,14 +98,11 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                             {
                                 $group: {
                                     _id: { event: '$event', date: { $dateToString: { format: '%d-%m-%Y', date: '$orderDate' } } },
-                                    // totalAmount: { $sum: '$services.choicePrice' },
-                                    // totalCount: { $sum: 1 }
                                 }
                             },
                             { $count: 'totalSale' }
                         ],
                         'serviceData': [
-                            // { $match: { service: { $exists: true }, isConfirmed: true } },
                             { $match: filterQService },
                             { $unwind: '$services' },
                             {
@@ -137,9 +131,7 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                             { $unwind: '$services' },
                             {
                                 $group: {
-                                    _id: { service: '$services.serviceName', date: { $dateToString: { format: '%d-%m-%Y', date: '$orderDate' } } },
-                                    // totalAmount: { $sum: '$services.choicePrice' },
-                                    // totalCount: { $sum: 1 }
+                                    _id: { service: '$services.serviceName', date: { $dateToString: { format: '%d-%m-%Y', date: '$orderDate' } } }
                                 }
                             },
                             { $count: 'totalSale' }
@@ -167,7 +159,6 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                     $facet: {
 
                         'serviceData': [
-                            // { $match: { service: { $exists: true }, isConfirmed: true } },
                             { $match: query },
                             { $unwind: '$services' },
                             {
@@ -317,16 +308,7 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                                 }
                             }
                         ],
-                        // 'providerChartData': [
-                        //     { $match: {isConfirmed: true } },
-                        //     { $unwind: '$services' },
-                        //     {
-                        //         $group: {
-                        //             _id: { provider: '$services.providerName', date:dateFilter},
-                        //             amount:{$sum:'$services.choicePrice'}
-                        //         }
-                        //     }
-                        // ]
+                       
                     }
                 }
             ])
@@ -395,5 +377,3 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
     }
 
 }
-
-// export default new BookingRepository()

@@ -1,6 +1,4 @@
 export class salesSearchFilter {
-    // userName: string;
-    // isConfirmed: string;
     pageNumberService: string;
     pageNumberEvent: string;
     pageSize: string;
@@ -14,8 +12,6 @@ export class salesSearchFilter {
    
 
     constructor() {
-        // this.userName = ''
-        // this.isConfirmed = ''
         this.pageNumberService = '1'
         this.pageNumberEvent = '1'
         this.pageSize = '2'

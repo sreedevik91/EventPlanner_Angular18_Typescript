@@ -99,7 +99,6 @@ async function GetServiceImg(call: any, callback: any) {
 
 }
 
-
 export default function startGrpcServer() {
     return new Promise<void>(resolve => {
         const server = new grpc.Server()

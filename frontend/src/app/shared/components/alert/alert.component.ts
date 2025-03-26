@@ -21,11 +21,6 @@ export class AlertComponent {
   constructor() {
     this.alertService.alert$.subscribe((state: IAlert) => {
 
-      // if (state.alertText === "Success!") {
-      //   this.alertClass = 'alert alert-success'
-      // } else if (state.alertText === "Failed!") {
-      //   this.alertClass = 'alert alert-danger'
-      // }
       this.showAlert = state.alertOn
       this.alertMessage = state.alertMessage
       this.alertClass = state.alertClass

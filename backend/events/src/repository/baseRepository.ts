@@ -48,7 +48,6 @@ export abstract class BaseRepository<T extends Document> implements IRepository<
             if (data.$set) {
                 updateQuery.$set = data.$set
             }
-            // return await this.model.findOneAndUpdate({_id:id},{$set:data},{new:true})
             return await this.model.findOneAndUpdate({ _id: id }, updateQuery, { new: true })
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from event BaseRepository: ', error.message) : console.log('Unknown error from event BaseRepository: ', error)

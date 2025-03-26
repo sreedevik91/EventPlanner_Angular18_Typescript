@@ -23,18 +23,11 @@
 
                 <div class="col-md-4">
                     <div class="card rounded-bottom shadow" style="width: 20rem;">
-                        <!-- <img [src]="serviceImgUrl+services.img" class="card-img-top" alt="..."> -->
                         <img [src]="services.img" class="card-img-top" height="300" alt="...">
                         <div class="card-body">
-                            <!-- <h5 class="card-title">{{services.name}}</h5> -->
 
                             <div class="card">
-                                <!-- <div class="card-header">
-                                    <h4> Available for: </h4>
-                                    @for (event of services.events; track $index) {
-                                    <h6>* {{event}}</h6>
-                                    }
-                                </div> -->
+                              
                                 <h5>Options</h5>
                                 <hr>
 
@@ -44,8 +37,7 @@
 
                                         <div class="row border">
                                             <div class="col-md-4 mt-2 p-2">
-                                                <!-- <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
-                                                    width="100%" height="20"> -->
+                                               
                                                     <img [src]="choice.choiceImg" class="img-fluid" alt=""
                                                     width="100%" height="20">
                                             </div>
@@ -64,10 +56,7 @@
 
                                 </ul>
                             </div>
-                            <!-- <app-button [btnClass]=" 'btn-dark btn-sm rounded-pill m-2' "
-                                (onBtnClick)="bookEvent(services.id,services.provider)">Book Now</app-button> -->
-
-                            <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+                          
                         </div>
                     </div>
                 </div>
@@ -100,13 +89,10 @@
 
                     <form [formGroup]="bookingForm">
 
-                        <!-- @if(step()===1){ -->
                         <div>
 
                             <h2>Event Details</h2>
 
-
-                            <!-- <h5>Select services for your event.</h5> -->
                             <hr>
 
                             <app-form [label]=" 'Select Event:' " [tooltip]=" 'Select Event' "><br>
@@ -130,9 +116,7 @@
                             </app-form>
 
                             <div [formArrayName]="'services'">
-                                <!-- get service options available for the selected event, get the responsecontaining arrays of decor, dining, menu, -->
-                                <!-- @for (item of services.controls; track $index) {
-                                <div [formGroupName]="$index"> -->
+                              
                                     @if(decor.length>0){
 
                                     <app-form [label]=" 'Select Decor:' " [tooltip]=" 'Select option' "><br>
@@ -142,8 +126,7 @@
                                             @for (item of decor; track $index) {
                                             <option [value]="item.name" [attr.data-extra]="item.providerId">{{item.name}}-₹ {{item.price}}</option>
                                             }
-                                            <!-- The data-* attributes are custom attributes you can add to any HTML element to store additional data. These attributes follow the data- prefix, making them valid and accessible via JavaScript. -->
-                                       <!-- The [attr.data-extra] dynamically sets the data-extra attribute using the extra property -->
+                                         
                                         </select>
 
                                     </app-form>
@@ -165,14 +148,6 @@
 
                                     <app-form [label]=" 'Select Cuisine:' " [tooltip]=" 'Select option' "><br>
 
-                                        <!-- <select class="form-select" (change)="setServiceDropdowns($event,'cuisine')">
-                                            <option selected disabled>Select Cuisine</option>
-
-                                            @for (item of cuisine; track $index) {
-                                            <option [value]="item.name" [attr.data-extra]="item.providerId">{{item.name}}-₹ {{item.price}}</option>
-                                            }
-                                        </select> -->
-                                        
                                         @for (item of cuisine; track $index) {
                                         <input type="checkbox" class="form-check-input" [value]="item.name" (change)="setServiceCheckboxes(item.name,item.price,item.providerId,'cuisine')"><label for="" class="form-check-label">{{item.name}}-₹ {{item.price}}</label><br>
                                         }
@@ -181,13 +156,6 @@
                                     @if(coverage.length>0){
 
                                     <app-form [label]=" 'Select Event Coverage:' " [tooltip]=" 'Select option' "><br>
-
-                                        <!-- <select class="form-control" (change)="setServiceDropdowns($event,'coverage')">
-                                            <option selected disabled>Select Coverage</option>
-                                            @for (item of coverage; track $index) {
-                                            <option [value]="item.name" [attr.data-extra]="item.providerId">{{item.name}}-{{item.price}}</option>
-                                            }
-                                        </select> -->
 
                                         @for (item of coverage; track $index) {
                                             <input type="checkbox" class="form-check-input" [value]="item.name" (change)="setServiceCheckboxes(item.name,item.price,item.providerId,'cuisine')"><label for="" class="form-check-label">{{item.name}}-₹ {{item.price}}</label><br>
@@ -198,18 +166,8 @@
 
                                 </div>
 
-                            <!-- }
-                            </div> -->
-
-                            <!-- <app-button [btnClass]=" 'm-3' " (onBtnClick)="formNext()"><i
-                                    class="fa-solid fa-circle-chevron-right" style="color: #1d624e;"></i></app-button> -->
-
+                          
                         </div><br>
-
-                        <!-- } -->
-
-
-                        <!-- @if (step()===2){ -->
 
                         <div>
                             <h2>Booking Details</h2>
@@ -285,9 +243,6 @@
 
                             </div>
 
-                            <!-- <app-button [btnClass]=" 'm-3' " (onBtnClick)="formPrevious()"> <i
-                                    class="fa-solid fa-circle-chevron-left" style="color: #1d624e;"></i> </app-button> -->
-
                             <div class="d-grid gap-2 d-md-block">
 
 
@@ -298,12 +253,8 @@
                             </div>
 
                         </div>
-                        <!-- } -->
-
-
+                      
                     </form>
-
-
 
                 </div>
             </div>

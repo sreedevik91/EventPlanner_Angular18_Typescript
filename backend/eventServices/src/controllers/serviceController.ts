@@ -15,14 +15,11 @@ export class ServiceController implements IServiceController {
             const servicesCount = await this.serviceServices.totalServices()
             console.log('getTotalServices controller response: ', servicesCount);
 
-            // servicesCount?.success ? res.status(200).json(servicesCount) : res.status(400).json(servicesCount)
-            // servicesCount?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, servicesCount) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, servicesCount)
             servicesCount?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, servicesCount) : next(new AppError(servicesCount))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getTotalServices controller: ', error.message) : console.log('Unknown error from getTotalServices controller: ', error)
-            // res.status(500).json(error.message)
-            // ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError})
+           
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
@@ -32,22 +29,14 @@ export class ServiceController implements IServiceController {
     async createService(req: Request, res: Response, next: NextFunction) {
 
         try {
-            // const {name,provider,events,choices}= req.body
             console.log('new service to register from angular: ', req.body);
 
             console.log('new service images to register: ', req.files);
             const { name, events, provider, choices } = req.body
-            // const files: { [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[] | undefined = req.files
             const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
 
             let imgName: string = files?.img ? files?.img[0].filename : ''
             let imgPath = files?.img ? files?.img[0].path : ''
-
-            // let imgFiles = files?.img ?? []; // Ensure imgFiles is always an array
-            // let imgName = imgFiles.length > 0 ? imgFiles[0].filename : '';
-            // let imgPath = imgFiles.length > 0 ? imgFiles[0].path : '';
-
-            // let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName ,type:"authenticated",sign_url: true})
 
             let cloudinaryImgData = await getImgUrl(imgPath, { public_id: imgName, type: "authenticated", sign_url: true })
             let img = cloudinaryImgData.data?.imgUrl
@@ -68,7 +57,6 @@ export class ServiceController implements IServiceController {
                 return rest
             }))
 
-
             const data = {
                 name,
                 img,
@@ -81,13 +69,10 @@ export class ServiceController implements IServiceController {
             const newService = await this.serviceServices.addService(data)
             console.log('createService controller response: ', newService);
 
-            // response?.success ? res.status(201).json(response) : res.status(400).json(response)
-            // newService?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.CREATED, newService) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newService)
             newService?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newService) : next(new AppError(newService))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from createService controller: ', error.message) : console.log('Unknown error from createService controller: ', error)
-            // res.status(500).json(error.message)
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
@@ -98,13 +83,11 @@ export class ServiceController implements IServiceController {
 
         try {
             let services = await this.serviceServices.getServices(req.query)
-            // services?.success ? res.status(200).json(services) : res.status(400).json(services)
-            // services?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, services) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, services)
+           
             services?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, services) : next(new AppError(services))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getAllServices controller: ', error.message) : console.log('Unknown error from getAllServices controller: ', error)
-            // res.status(500).json(error.message)
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
@@ -115,13 +98,11 @@ export class ServiceController implements IServiceController {
 
         try {
             let deleteServices = await this.serviceServices.deleteService(req.params.id)
-            // deleteServices?.success ? res.status(200).json(deleteServices) : res.status(400).json(deleteServices)
-            // deleteServices?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteServices) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, deleteServices)
+           
             deleteServices?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteServices) : next(new AppError(deleteServices))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from deleteService controller: ', error.message) : console.log('Unknown error from deleteService controller: ', error)
-            // res.status(500).json(error.message)
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
@@ -132,13 +113,11 @@ export class ServiceController implements IServiceController {
 
         try {
             let service = await this.serviceServices.getServiceById(req.params.id)
-            // services?.success ? res.status(200).json(services) : res.status(400).json(services)
-            // service?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, service) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, service)
+           
             service?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, service) : next(new AppError(service))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getServiceById controller: ', error.message) : console.log('Unknown error from getServiceById controller: ', error)
-            // res.status(500).json(error.message)
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
 
@@ -150,12 +129,10 @@ export class ServiceController implements IServiceController {
 
         try {
             const { id } = req.params
-            // const { data } = req.body
             console.log('service details to update: ', id, req.body);
 
             const { name, img, events, provider, choices } = req.body
 
-            // const files: any = req.files
             const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
             console.log('service images to update: ', files);
             console.log('service choices to update: ', JSON.parse(choices));
@@ -168,15 +145,6 @@ export class ServiceController implements IServiceController {
                 let imgName = files?.img ? files?.img[0].filename : ''
                 let imgPath = files?.img ? files?.img[0].path : ''
 
-                // if (imgPath) {
-                //     try {
-                //         let cloudinaryImgData = await cloudinary.uploader.upload(imgPath, { public_id: imgName })
-                //         imgNew = cloudinaryImgData.url || img
-                //     } catch (error: unknown) {
-                //         console.error('Error uploading service image to cloudinary:', error.message);
-                //     }
-                // }
-
                 if (!imgPath) {
                     console.warn('No valid image file path provided for upload.');
                     imgNew = img;
@@ -185,32 +153,13 @@ export class ServiceController implements IServiceController {
                     imgNew = cloudinaryImgData.data?.imgUrl || img
                 }
 
-
-                // imgNew = files?.img ? files?.img[0].filename : img
                 let parsedArray = JSON.parse(choices)
                 choicesWithImg = await Promise.all(parsedArray.map(async (choice: IChoice, index: number) => {
                     const choiceImgFile = files?.choiceImg
                     console.log('choiceImgFileName: ', files?.choiceImg[index]?.filename);
                     const { choiceImgCategory, ...rest } = choice
 
-                    // choiceImgFile.forEach((img: any) => {
-                    //     if (choiceImgCategory === img.originalname) {
-                    //         rest.choiceImg = img.filename
-                    //     }
-                    // })
-
                     for (let img of choiceImgFile) {
-
-                        // if (img?.path) {
-                        //     try {
-                        //         let cloudinaryImgData = await cloudinary.uploader.upload(img.path, { public_id: img.filename })
-                        //         let imgUrl = cloudinaryImgData.url
-                        //         rest.choiceImg = imgUrl
-                        //     } catch (error: unknown) {
-                        //         console.error('Error uploading service image to cloudinary:', error.message);
-
-                        //     }
-                        // }
 
                         if (!img?.path) {
                             console.warn(`No valid path for choice image at index ${index}.`);
@@ -226,11 +175,6 @@ export class ServiceController implements IServiceController {
                 })
                 )
             }
-            // else {
-            //     imgNew = img
-            //     choicesWithImg = JSON.parse(choices)
-            // }
-
 
             console.log('choicesWithImg: ', choicesWithImg);
 
@@ -245,13 +189,11 @@ export class ServiceController implements IServiceController {
             console.log('final service data to edit: ', newData);
 
             const updatedServiceResponse = await this.serviceServices.editService(id, newData)
-            // newServiceResponse?.success ? res.status(200).json(newServiceResponse) : res.status(400).json(newServiceResponse)
-            // updatedServiceResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, updatedServiceResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, updatedServiceResponse)
+           
             updatedServiceResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, updatedServiceResponse) : next(new AppError(updatedServiceResponse))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from editService controller: ', error.message) : console.log('Unknown error from editService controller: ', error)
-            // res.status(500).json(error.message)
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
@@ -261,16 +203,13 @@ export class ServiceController implements IServiceController {
     async editStatus(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.body
-            // console.log('id to edit user',id);
 
             const newStatusResponse = await this.serviceServices.editStatus(id)
-            // newStatusResponse?.success ? res.status(200).json(newStatusResponse) : res.status(400).json(newStatusResponse)
-            // newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, newStatusResponse)
+            
             newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : next(new AppError(newStatusResponse))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from editStatus controller: ', error.message) : console.log('Unknown error from editStatus controller: ', error)
-            // res.status(500).json(error.message)
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
@@ -281,13 +220,11 @@ export class ServiceController implements IServiceController {
             const { id } = req.body
             console.log('id to verify', req.body);
             const approveServiceResponse = await this.serviceServices.approveService(id)
-            // approveServiceResponse?.success ? res.status(200).json(approveServiceResponse) : res.status(400).json(approveServiceResponse)
-            // approveServiceResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, approveServiceResponse) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, approveServiceResponse)
+           
             approveServiceResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, approveServiceResponse) : next(new AppError(approveServiceResponse))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from approveService controller: ', error.message) : console.log('Unknown error from approveService controller: ', error)
-            // res.status(500).json(error.message)
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
@@ -298,18 +235,14 @@ export class ServiceController implements IServiceController {
             const { name } = req.params
             console.log('name to get service', req.params.name);
             const serviceByName = await this.serviceServices.getServiceByName(name)
-            // getServiceByName?.success ? res.status(200).json(getServiceByName) : res.status(400).json(getServiceByName)
-            // serviceByName?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, serviceByName) : ResponseHandler.errorResponse(res, HttpStatusCodes.BAD_REQUEST, serviceByName)
+          
             serviceByName?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, serviceByName) : next(new AppError(serviceByName))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getServiceByName controller: ', error.message) : console.log('Unknown error from getServiceByName controller: ', error)
-            // res.status(500).json(error.message)
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
 
         }
     }
 
 }
-
-// export default new ServiceController()

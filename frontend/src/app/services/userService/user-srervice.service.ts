@@ -15,7 +15,6 @@ export class UserSrerviceService {
 
   constructor() { }
 
-  // loggedUserSubject:BehaviorSubject<ILoggedUserData>= new BehaviorSubject<ILoggedUserData>({_id: '',user: '',role: '', username: '',email: ''})
   loggedUserSubject: BehaviorSubject<ILoggedUserData | null> = new BehaviorSubject<ILoggedUserData | null>(null)
 
   loggedUser$ = this.loggedUserSubject.asObservable()
@@ -29,13 +28,10 @@ export class UserSrerviceService {
   }
 
   userLogin(data: ILoginData) {
-    // debugger
     console.log('userlogin url:',`${this.baseUrl}login` );
     
     return this.http.post(`${this.baseUrl}login`, data, { observe: 'response', withCredentials:true })
     
-    // { observe: 'response' } will incluse status codes in response which could be get be response.status
-    // backend response data would be accessed by response.body.keyName
   }
 
   googleSignin() {
@@ -56,8 +52,6 @@ export class UserSrerviceService {
   }
 
   userLogout() {
-    // debugger
-    // this.loggedUserSubject.next(null)
      // First make the logout API call
     return this.http.get(`${this.baseUrl}logout`, { observe: 'response', withCredentials:true  }).pipe(
       tap(()=>{
@@ -76,7 +70,6 @@ export class UserSrerviceService {
   }
 
   verifyUser(id: string) {
-    // return this.http.post(`${this.baseUrl}verifyUser`, { id },  { observe: 'response' })
     return this.http.patch(`${this.baseUrl}verify`, { id },  { observe: 'response', withCredentials:true  })
   }
 
@@ -85,17 +78,14 @@ export class UserSrerviceService {
   }
 
   getAllUsers(params: any) {
-    // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
     return this.http.get(`${this.baseUrl}users`, { observe: 'response',params, withCredentials:true  })
   }
 
   getUsersCount() {
-    // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
     return this.http.get(`${this.baseUrl}users/count`, { observe: 'response', withCredentials:true  })
   }
 
   getUserById(id: string) {
-    // return this.http.get(`${this.baseUrl}users`,{withCredentials:true})
     return this.http.get(`${this.baseUrl}${id}`, { observe: 'response', withCredentials:true  })
   }
 
@@ -104,12 +94,10 @@ export class UserSrerviceService {
   }
 
   editUser(data: any, id: string) {
-    // return this.http.post(`${this.baseUrl}edit/${id}`, { data }, { observe: 'response' })
     return this.http.patch(`${this.baseUrl}${id}`, { data }, { observe: 'response', withCredentials:true  })
   }
 
   editStatus(id: string) {
-    // return this.http.post(`${this.baseUrl}editStatus`, { id }, { observe: 'response' })
     return this.http.patch(`${this.baseUrl}status`, { id }, { observe: 'response', withCredentials:true  })
   }
 

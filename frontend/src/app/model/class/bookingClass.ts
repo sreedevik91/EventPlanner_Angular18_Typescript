@@ -4,7 +4,6 @@ export class Booking {
     user: string;
     serviceId?: string;
     providerId?: string;
-    // eventId?: string;
     event?: string;
     style?:string;
     services: IBookedServices[];
@@ -17,7 +16,6 @@ export class Booking {
         this.userId = ''
         this.user = ''
         this.serviceId = ''
-        // this.eventId = ''
         this.event= ''
         this.style = ''
         this.providerId = ''
@@ -38,10 +36,8 @@ export interface IAddress {
 }
 
 export interface IBookedServices {
-    // serviceId: string;
     providerId?: string;
     serviceName?:string;
-    // providerName:string;
     choiceName:string;
     choiceType:string;
    choicePrice:string;
@@ -54,11 +50,9 @@ export class BookingSearchFilter {
     pageSize: string;
     sortBy: string;
     sortOrder: string;
-    // isConfirmed?:boolean;
 
     constructor() {
         this.userName = ''
-        // this.isConfirmed = ''
         this.pageNumber = '1'
         this.pageSize = '2'
         this.sortBy = ''

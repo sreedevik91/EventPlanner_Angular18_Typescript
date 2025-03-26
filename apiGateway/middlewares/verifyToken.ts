@@ -32,22 +32,6 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
     console.log('Request Headers:', req.headers);
     console.log('Cookies:', req.cookies);
 
-    // const publicRoutes = [
-    //     '/',
-    //     '/email/verify',
-    //     '/login',
-    //     '/auth/google',
-    //     '/auth/google/callback',
-    //     '/register',
-    //     '/password/resetEmail',
-    //     '/password/reset',
-    //     '/otp/verify',
-    //     '/otp/:id',
-    //     '/token/refresh',
-    //     '/logout'
-    // ]
-
-
 
     const publicRoutes = [
         '/',
@@ -107,13 +91,6 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
 
         try {
 
-            // Check blacklist first
-            // const isBlacklisted = await redisClient.get(`blacklist:${token}`);
-            // if (isBlacklisted) {
-            //     console.log('Token blocklisted');
-            //     res.status(401).json({ success: false, message: 'Token revoked' });
-            //     return
-            // }
             try {
                 const isBlacklisted = await redisClient.get(`blacklist:${token}`);
                 if (isBlacklisted) {
