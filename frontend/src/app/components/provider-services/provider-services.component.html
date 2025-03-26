@@ -10,7 +10,6 @@
         </div>
     </div>
     <div class="row d-flex flex-row" [formGroup]="searchFilterForm">
-        <!-- <form> -->
         <div class="col-md-3">
             <label for=""> Name: </label><input type="text" class="form-control" formControlName="serviceName">
         </div>
@@ -33,7 +32,6 @@
                 <option value="100">100</option>
             </select>
         </div>
-        <!-- </form> -->
     </div>
     <div>
         <app-alert></app-alert>
@@ -68,9 +66,7 @@
                         <td>
 
                             <p class="d-inline-flex gap-1">
-                                <!-- <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-        See Options available
-        </a> -->
+                               
                                 <button class="btn btn-primary collapsed" type="button" data-bs-toggle="collapse"
                                     [attr.data-bs-target]="'#collapseExample'+ serviceIdx" aria-expanded="false"
                                     [attr.aria-controls]="'collapseExample'+ serviceIdx">
@@ -88,17 +84,6 @@
                                 </div>
                                 }
                             </div>
-
-
-
-
-                            <!-- @for (choice of item.choices; track $index) {
-                            <p>Name:{{choice.choiceName}}</p>
-                            @if(choice.choiceType !==''){
-                            <p>Type:{{choice.choiceType}}</p>
-                            }
-                            <p>Price:{{choice.choicePrice}}</p>
-                            } -->
 
                         </td>
                         <td>
@@ -130,26 +115,6 @@
                             <app-button [btnTitle]="'Delete Service'" (onBtnClick)="deleteService(item._id)"><i
                                     class="fa-solid fa-trash-can"></i></app-button>
 
-                            <!-- <app-button (onBtnClick)="setStatus(item._id)"
-                                [btnTitle]="item.isActive ? 'Block User' : 'Unblock User' ">
-                                @if(item.isActive){
-                                <i class="fa-solid fa-eye"></i>
-                                } @else {
-                                <i class="fa-solid fa-eye-slash"></i>
-                                }
-                            </app-button>
-
-                            @if(item.isApproved){
-                            <app-button [btnTitle]="'User Verified'" [disabled]="true"><i
-                                    class="fa-solid fa-user-check"></i></app-button>
-                            }@else {
-                            <app-button [btnTitle]="'Verify User'" (onBtnClick)="approveService(item._id)"><i
-                                    class="fa-solid fa-user-xmark"></i></app-button>
-                            } -->
-
-                            <!--  -->
-                            <!-- <i class="fa-solid fa-lock"></i> -->
-                            <!-- <i class="fa-solid fa-unlock"></i> -->
                         </td>
                     </tr>
                     }
@@ -210,18 +175,13 @@
 
                         <app-form [label]=" 'Image of service:' " [tooltip]=" 'Select img' " [Validation]="serviceForm.controls['img'].touched &&
                         serviceForm.controls['img'].errors ? serviceForm.controls['img'].errors : {}">
-                            <!--===================================  -->
-
-                            <!-- <img [src]="imgUrl? imgUrl : serviceImgUrl + serviceForm.controls['img'].value " alt=""
-                                width="50" height="50"> -->
-
+                           
                             <img [src]="imgUrl? imgUrl : serviceForm.controls['img'].value " alt="" width="50"
                                 height="50">
 
                             <input type="file" class="form-control" #serviceImgInput
                                 placeholder="Upload an image of your service" (change)="onImageUpload($event,'img')">
-                            <!--===================================  -->
-
+                          
                         </app-form>
 
                         <div id="events" formArrayName="events">
@@ -280,43 +240,30 @@
                                                 <option [value]="i">{{i}}</option>
                                                 }
 
-                                                <!-- @for (i of getChoiceTypes($index); track $index) {
-                                                    <option [value]="i">{{i}}</option>
-                                                    } -->
-
                                             </select>
                                         </app-form>
 
                                         <app-form [label]=" 'Image of choice:' " [tooltip]=" 'Select img' ">
-                                            <!--===================================  -->
-
-                                            <!-- <img [src]="getChoiceImg($index)" alt="" width="50" height="50"> -->
-
+                                          
                                             <img [src]="choiceImageUrl[$index] ? choiceImageUrl[$index] : getChoiceImg($index)"
                                                 alt="" width="50" height="50">
 
                                             <input type="file" class="form-control" #choiceImgInput
                                                 placeholder="Upload an image of your choice"
                                                 (change)="onImageUpload($event,'choiceImg',$index)">
-
-                                            <!--===================================  -->
 
                                         </app-form>
 
                                         }@else{
                                         <app-form [label]=" 'Image of choice:' " [tooltip]=" 'Select img' ">
-                                            <!--===================================  -->
-
-                                            <!-- <img [src]="getChoiceImg($index)" alt="" width="50" height="50"> -->
-
+                                          
                                             <img [src]="choiceImageUrl[$index] ? choiceImageUrl[$index] : getChoiceImg($index)"
                                                 alt="" width="50" height="50">
 
                                             <input type="file" class="form-control" #choiceImgInput
                                                 placeholder="Upload an image of your choice"
                                                 (change)="onImageUpload($event,'choiceImg',$index)">
-                                            <!--===================================  -->
-
+                                           
                                         </app-form>
                                         }
 

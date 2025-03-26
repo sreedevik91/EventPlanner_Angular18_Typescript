@@ -11,23 +11,6 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>
   const router = inject(Router)
   const alert = inject(AlertService)
 
-  // return next(req).pipe(
-  //   catchError((error: HttpErrorResponse) => {
-  //     if (error.status === 401) {
-  //       return userService.refreshToken().pipe(
-  //         switchMap((res: any) => {
-  //           console.log('Entered refreshtoken', res.body.data);
-  //           console.log('setLoggedUser',res.body.data);
-  //           userService.setLoggedUser(res.body.data)
-  //           return next(req)
-  //         })
-  //       )
-  //     } 
-  //     return throwError(() => error)
-  //   })
-
-  // );
-
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === HttpStatusCodes.UNAUTHORIZED) {

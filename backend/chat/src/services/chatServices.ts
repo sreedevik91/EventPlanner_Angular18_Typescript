@@ -14,15 +14,6 @@ export class ChatServices implements IChatService {
             const data = await this.chatRepository.getChatsByUserId(userId)
             const today = new Date()
 
-            // filter chats only for today
-            // const chatDataToday = data.filter((item: any) => {
-            //     const chatDate = new Date(item.createdAt)
-            //     return (today.getDate() === chatDate.getDate() &&
-            //         today.getMonth() === chatDate.getMonth() &&
-            //         today.getFullYear() === chatDate.getFullYear()
-            //     )
-            // })
-
             console.log('getChatsByUserId service response: ', data);
 
             if (data) {
@@ -40,7 +31,6 @@ export class ChatServices implements IChatService {
     async saveChats(data: IChat) {
         try {
             console.log('new chat to save: ', data);
-            // const prevChats = await chatRepository.getChatsByUserId(data.userId)
             const prevChats = await this.chatRepository.getChatsByRoomId(data.roomId)
             console.log('prevChats: ', prevChats);
 
@@ -68,8 +58,6 @@ export class ChatServices implements IChatService {
     async uploadToCloudinary(img: string, name: string, type: "image" | "video" | "raw" | "auto" | undefined) {
 
         try {
-            // const result= await cloudinary.uploader.upload(img,{public_id:name, resource_type:type})
-            // console.log('cloudinary img/video upload result: ', result);
 
             const uploadImgVideo = await getImgVideoUrl(img, { public_id: name, resource_type: type, type:"authenticated",sign_url: true })
             console.log('cloudinary img/video upload result: ', uploadImgVideo);
@@ -85,12 +73,7 @@ export class ChatServices implements IChatService {
     async uploadAudioToCloudinary(audio: string, name: string) {
 
         try {
-            // to process audio file resource_type should be mentioned as 'video'
-
-            // const result= await cloudinary.uploader.upload(audio,{public_id:name, resource_type:'video'})
-            // console.log('cloudinary audio upload result: ', result);
-            // return { success: true, data: {imgUrl:result?.url, type:'audio'} }
-
+            
             const uploadAudio = await getAudioUrl(audio, { public_id: name, resource_type: 'video',type:"authenticated",sign_url: true})
             console.log('cloudinary audio upload result: ', uploadAudio);
             return uploadAudio
@@ -105,4 +88,3 @@ export class ChatServices implements IChatService {
 
 }
 
-// export default new ChatServices()

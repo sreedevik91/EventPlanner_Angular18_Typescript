@@ -74,7 +74,6 @@ const UserSchema:Schema<IUserDb> = new Schema<IUserDb>({
 
 UserSchema.pre<IUser>('save', async function (next) {
 
-    // console.log(this);
     const user = this
     // isModified will check if that particular field is modified or updated or added new
     if (user.password && user.isModified('password')) {

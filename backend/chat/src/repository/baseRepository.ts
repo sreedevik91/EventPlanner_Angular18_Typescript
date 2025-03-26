@@ -3,7 +3,6 @@ import { IRepository } from "../interfaces/chatInterfaces";
 
 export default class BaseRepository<T extends Document> implements IRepository<T> {
 
-    // private model: Model<T>
 
     protected model: Model<T>
 

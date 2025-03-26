@@ -4,7 +4,7 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-form',
   standalone: true,
-  imports: [JsonPipe],
+  imports: [],
   templateUrl: './form.component.html',
   styleUrl: './form.component.css'
 })

@@ -14,22 +14,6 @@ export interface IEventServices {
   ProviderId: number;
 }
 
-
-// export interface IService extends Document {
-//     name: string;
-//     events: string[];
-//     provider: string;
-//     choices: IChoice[];
-//     isApproved: boolean;
-//     isActive: boolean;
-// }
-// export interface IChoice {
-//     choiceName: string;
-//     choiceType: string;
-//     choicePrice: number;
-// }
-
-
 export interface IEventDb extends IEvent, Document {
   _id: string;
 }
@@ -49,22 +33,6 @@ export interface IGetAvailableServicesResponse {
     }>;
   }>;
 }
-
-// export interface IGetAvailableServicesResponse {
-
-//     id: string;
-//     name: string;
-//     provider: string;
-//     img: string;
-//     events: string[];
-//     choices: Array<{
-//       choiceName: string;
-//       choiceType: string;
-//       choicePrice: number;
-//       choiceImg: string;
-//     }>;
-
-// }
 
 export interface IServiceGrpcType {
   id: string;
@@ -92,13 +60,6 @@ export interface IRequestParams {
   sortBy?: string,
   sortOrder?: string
 }
-
-// export interface IResponse {
-//   success: boolean;
-//   message?: string;
-//   data?: any;
-//   extra?: any
-// }
 
 export interface IResponse<T=unknown,U=unknown> {
   success: boolean;

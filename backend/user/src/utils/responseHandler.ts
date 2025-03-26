@@ -1,11 +1,5 @@
 import { CookieOptions, Response } from "express";
 import { HttpStatusCodes, ICookie, IResponse } from "../interfaces/userInterface";
-// import redisClient from "../../../../redis/redisClient"
-
-// import redisClient from "../../redis/redisClient"
-
-// import redisClient from "@redis/redisClient";
-
 import redisClient from "../middlewares/redisClient";
 
 export class ResponseHandler {
@@ -36,9 +30,7 @@ export class ResponseHandler {
 
         const options: CookieOptions = {
             httpOnly: true,
-            // maxAge: 86400,
             secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
-            // sameSite:'none'
         }
 
         try {

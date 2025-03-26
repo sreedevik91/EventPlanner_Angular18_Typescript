@@ -4,8 +4,6 @@ import { IRepository } from "../interfaces/userInterface";
 
 export default abstract class BaseRepository<T extends Document> implements IRepository<T> {
 
-    // private model: Model<T>
-
     constructor(protected model: Model<T>) {
 
         this.model = model
@@ -24,7 +22,6 @@ export default abstract class BaseRepository<T extends Document> implements IRep
 
     async getUserById(userId: string): Promise<T | null> {
         try {
-            // return await this.model.findOne({ _id: id })
             return await this.model.findById(userId)
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from user BaseRepository: ', error.message) : console.log('Unknown error from user BaseRepository: ', error)
@@ -32,11 +29,6 @@ export default abstract class BaseRepository<T extends Document> implements IRep
         }
 
     }
-
-    // async getAllUsers(query: FilterQuery<T> = {}, options: { sort?: any, limit?: number, skip?: number } = {}): Promise<T[] | null> {
-    //     const { sort, limit, skip } = options
-    //     return await this.model.find(query).sort(sort).limit(limit!).skip(skip!)
-    // }
 
     async getAllUsers(query: FilterQuery<T> = {}, options: QueryOptions = {}): Promise<T[] | null> {
         try {

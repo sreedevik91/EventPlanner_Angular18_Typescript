@@ -23,8 +23,6 @@ export class UserServicesComponent implements OnInit, OnDestroy {
 
   destroy$: Subject<void> = new Subject<void>()
 
-  // @ViewChild('serviceModal') serviceModal!: ElementRef
-
   serviceServices = inject(ServiceService)
   alertService = inject(AlertService)
   dataService = inject(DataService)
@@ -39,12 +37,10 @@ export class UserServicesComponent implements OnInit, OnDestroy {
 
   servicesName: string = ''
   serviceEvents = new Set<string>()
-  // serviceChoices=new Set<IChoice>()
   serviceChoicesDb: IChoice[] = []
   serviceChoices = new Set<string>()
   servicePrizeRange: string = ''
 
-  // serviceImgUrl = environment.serviceImgUrl
   serviceImg: string = ''
   role: string = ''
 
@@ -92,12 +88,9 @@ export class UserServicesComponent implements OnInit, OnDestroy {
           console.log('getServiceByName response: ', res.body?.data);
           this.serviceByName.set(res.body?.data)
           this.serviceImg = res.body?.data[0].img[0]
-          // this.showModal()
-          // this.services.set(res.body?.extra)
           const extra = this.services().filter(e => e.name === name)
           console.log('user service extra: ', extra);
           this.dataService.setServiceData(name, extra)
-          // this.router.navigate(['services/details'],{queryParams:{data:JSON.stringify(extra),service:name}})
           this.router.navigate(['services/details'])
         } else {
           console.log(res.body?.message);
@@ -120,15 +113,7 @@ export class UserServicesComponent implements OnInit, OnDestroy {
   getChoices() {
     return Array.from(this.serviceChoices)
   }
-  // showModal() {
-  //   this.serviceModal.nativeElement.style.display = 'block'
-  // }
-
-  // hideModal() {
-  //   this.serviceModal.nativeElement.style.display = 'none'
-  //   this.onLoad()
-  // }
-
+ 
   ngOnDestroy(): void {
     this.destroy$.next()
     this.destroy$.complete()

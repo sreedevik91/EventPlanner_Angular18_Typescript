@@ -9,7 +9,6 @@ const Storage=multer.diskStorage({
     },
     filename:function(req,file,cb){
     
-        // const name=Date.now()+'_'+file.originalname
         const name=`${Date.now()}_${file.originalname}`
         cb(null,name)
     }

@@ -33,7 +33,6 @@ export default class LayoutComponent implements OnDestroy{
       }
     })
   
-    // console.log('User role: ',this.role);
     this.menus.forEach((element:any)=>{
      let isRole=element.roles.includes(this.role)
      if(isRole){
@@ -45,7 +44,6 @@ export default class LayoutComponent implements OnDestroy{
   }
 
   logout() {
-    // debugger
     this.userService.userLogout().pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: HttpResponse<IResponse>)=>{
         this.router.navigate(['login']);

@@ -24,31 +24,14 @@ export default class SubmitOtpComponent implements OnInit,OnDestroy {
   isOtpExpired: boolean = false
   interval: any
 
-  // class: string = ''
-  // message: string = ''
-  // alert: boolean = false
-  // text: string = ''
-
   router = inject(Router)
   activatedRoute = inject(ActivatedRoute)
   userService = inject(UserSrerviceService)
   alertService = inject(AlertService)
 
-
-  // callAlert(classValue: string, text: string, message: string) {
-  //   this.alert = true
-  //   this.class = classValue
-  //   this.text = text
-  //   this.message = message
-  //   setTimeout(() => {
-  //     this.alert = false
-  //   }, 2000)
-  // }
-
   ngOnInit(): void {
     this.startTimer()
   }
-
 
   otpForm: FormGroup = new FormGroup({
     otp: new FormControl('', Validators.required)
@@ -118,7 +101,6 @@ export default class SubmitOtpComponent implements OnInit,OnDestroy {
         }
       },
       error: (error) => {
-        // this.callAlert("alert alert-danger", "Login Failed", error.message)
         this.alertService.getAlert("alert alert-danger", "Login Failed", error.message)
 
       }

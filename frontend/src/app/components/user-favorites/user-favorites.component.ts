@@ -57,19 +57,15 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
     .set('pageSize', this.bookingPaginationFormObj.pageSize)
     .set('isConfirmed', 'false')
   this.getBookingsByUser(this.paginationParams)
-    // this.getBookingsByUser(this.userId)
   }
 
   getBookingsByUser(params: HttpParams) {
-    // debugger
     this.bookingService.getAllBookings(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        // console.log('bookings by user from user component:', res);
 
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.bookingsList.set(res.body?.data.bookings)
           console.log('confirmed bookings: ',this.bookingsList);
-          // this.bookingsList.update(bookings=>bookings.filter(booking=>booking.isConfirmed===true))
           this.totalBooking.set(res.body?.data.count)
         } else {
           console.log(res.body?.message);
@@ -83,35 +79,11 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
     })
   }
 
-  // getBookingsByUser(userId: string) {
-  //   this.bookingService.getBookingsByUserId(userId).pipe(takeUntil(this.destroy$)).subscribe({
-  //     next: (res: HttpResponse<IResponse>) => {
-  //       if (res.status === HttpStatusCodes.SUCCESS) {
-  //         this.bookingsList.set(res.body?.data)
-  //         this.bookingsList.update(bookings=>
-  //           bookings.filter(booking=>booking.isConfirmed===false)
-  //         )
-  //         console.log(this.bookingsList);
-
-  //       } else {
-  //         console.log(res.body?.message);
-  //         this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
-  //       }
-  //     },
-  //     error: (error: HttpErrorResponse) => {
-  //       this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
-
-  //     }
-  //   })
-  // }
-
   deleteBooking(bookingId: string) {
-    // if (confirm('Do you want to delete the booking ?')) {
     this.bookingService.deleteBooking(bookingId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           console.log(res.body);
-          // this.getBookingsByUser(this.userId)
           this.bookingsList.update(bookings =>
             bookings.filter(booking => booking._id !== bookingId)
           )
@@ -126,16 +98,13 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
 
       }
     })
-    // }
   }
 
   deleteChoice(bookingId: string, name: string, id: string) {
-    // if (confirm('Do you want to delete the service ?')) {
     this.bookingService.deleteBookedServices(bookingId, name, id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           console.log(res.body);
-          // this.getBookingsByUser(this.userId)
           this.bookingsList.update(bookings =>
             // flatMap - Handles both updating services and potential booking removal
             bookings.flatMap(booking => {
@@ -192,9 +161,6 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
         "image": "https://example.com/your_logo",
         "order_id": razorpayOrderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
         "handler": (response: any) => {
-          // alert(response.razorpay_payment_id);
-          // alert(response.razorpay_order_id);
-          // alert(response.razorpay_signature)
           console.log('razorpay payment id: ', response.razorpay_payment_id, ' ,razorpay order id: ', response.razorpay_order_id, ' ,razorpay signature: ', response.razorpay_signature);
           this.verifyPayment({ razorpay_payment_id: response.razorpay_payment_id, razorpay_order_id: response.razorpay_order_id, razorpay_signature: response.razorpay_signature, bookingId })
         },
@@ -265,14 +231,12 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
           console.log(res.body?.message);
           this.confirmationMessage = 'Sorry! Payment failed, please try again!'
 
-          // this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
           this.cdr.detectChanges()
 
           this.showModal()
         }
       },
       error: (error: HttpErrorResponse) => {
-        // this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
         console.log('verifyPayment error: ', error.error.message);
         this.confirmationMessage = 'Sorry! Payment failed, please try again!'
         this.cdr.detectChanges()
@@ -289,13 +253,10 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
   }
 
   hideModal() {
-    // debugger
     this.bookingConfirmModal.nativeElement.style.display = 'none'
-    // this.isBookingSuccess = false
   }
 
   goToBookings() {
-    // debugger
     this.route.navigateByUrl('booking')
   }
 
@@ -315,7 +276,6 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
   getLastpage() {
     return Math.ceil(this.totalBooking() / Number(this.bookingPaginationFormObj.pageSize))
   }
-
 
   ngOnDestroy(): void {
     this.destroy$.next()

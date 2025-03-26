@@ -75,7 +75,6 @@ export class UserChatComponent implements OnInit, OnDestroy {
         } else {
           this.chatForm.get('chats')?.patchValue({ sender: user.user })
         }
-        // this.chatForm.get('chats.sender')?.setValue(user.username) // alternate way
       }
     })
 
@@ -91,7 +90,6 @@ export class UserChatComponent implements OnInit, OnDestroy {
 
   initialiseChatForm() {
     this.chatForm = new FormGroup({
-      // _id: new FormControl(this.chatFormObj._id),
       userId: new FormControl(this.chatFormObj.userId, [Validators.required]),
       roomId: new FormControl(this.chatFormObj.roomId, [Validators.required]),
       chats: new FormGroup({
@@ -172,7 +170,6 @@ export class UserChatComponent implements OnInit, OnDestroy {
         console.log('sent message from server:', data);
         this.messages.push(data.chats)
         this.newChats.push(data)
-        // this.newChats=data
         console.log('user messages array:', this.messages);
       },
       error: (error: any) => {
@@ -212,7 +209,6 @@ export class UserChatComponent implements OnInit, OnDestroy {
         this.roomId = notification.roomId
         console.log('user room id from start chat notificatrion: ', this.roomId);
 
-        // this.chatForm.get('roomId')?.setValue(this.roomId)
         this.chatForm.patchValue({ roomId: this.roomId })
         this.notification.push(notification.message)
       },
@@ -346,6 +342,5 @@ export class UserChatComponent implements OnInit, OnDestroy {
     this.destroy$.next()
     this.destroy$.complete()
   }
-
 
 }

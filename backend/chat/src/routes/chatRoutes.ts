@@ -6,7 +6,6 @@ import { upload } from "../middlewares/multer";
 import { ChatRepository } from "../repository/chatRepository";
 import { ChatServices } from "../services/chatServices";
 import { ChatController } from "../controllers/chatController";
-// import chatController from "../controllers/chatController";
 
 const router=Router()
 const chatRoute=express()

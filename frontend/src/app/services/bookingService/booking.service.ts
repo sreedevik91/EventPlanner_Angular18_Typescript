@@ -79,17 +79,14 @@ export class BookingService {
   }
 
   getSales(params:HttpParams){
-    // return this.http.get(`${this.baseUrl}admin/salesData`, { observe: 'response', params })
     return this.http.get(`${this.baseUrl}salesData/admin`, { observe: 'response', params , withCredentials:true })
   }
 
   getProviderSales(params:HttpParams){
-    // return this.http.get(`${this.baseUrl}provider/sales`, { observe: 'response', params })
     return this.http.get(`${this.baseUrl}providerSales`, { observe: 'response', params, withCredentials:true })
   }
 
   getAdminBookingsData(){
-    // return this.http.get(`${this.baseUrl}provider/sales`, { observe: 'response', params })
     return this.http.get(`${this.baseUrl}adminData`, { observe: 'response', withCredentials:true })
   }
 
@@ -102,7 +99,6 @@ export class BookingService {
   }
 
   getAdminPaymrntList(){
-    // return this.http.get(`${this.baseUrl}provider/sales`, { observe: 'response', params })
     return this.http.get(`${this.baseUrl}adminPaymentList`, { observe: 'response', withCredentials:true })
   }
 

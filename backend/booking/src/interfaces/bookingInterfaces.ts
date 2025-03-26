@@ -131,27 +131,6 @@ export interface IChoice {
   choiceImg: string;
 }
 
-// export interface IGetAvailableServicesResponse {
-//     id: string;
-//     name: string;
-//     provider: string;
-//     img: string;
-//     events: string[];
-//     choices: Array<{
-//       choiceName: string;
-//       choiceType: string;
-//       choicePrice: number;
-//       choiceImg: string;
-//     }>;
-// }
-
-// export interface IResponse {
-//   success: boolean;
-//   message?: string;
-//   data?: any;
-//   extra?: any
-// }
-
 export interface IResponse<T=unknown,U=unknown> {
   success: boolean;
   message?: string;

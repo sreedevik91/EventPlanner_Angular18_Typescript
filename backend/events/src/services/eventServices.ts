@@ -15,50 +15,6 @@ export class EventServices implements IEventService{
         private emailService: IEmailService
     ) { }
 
-    // async sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> {
-
-    //     return new Promise((resolve, reject) => {
-    //         const transporter = nodemailer.createTransport({
-    //             service: 'gmail',
-    //             auth: {
-    //                 user: process.env.EMAIL_USER,
-    //                 pass: process.env.EMAIL_APP_PASSWORD
-    //             }
-    //         })
-
-    //         let mailOptions = {
-    //             from: process.env.EMAIL_USER,
-    //             to: email,
-    //             subject: `${subject}`,
-    //             html: `
-    //             <div>
-    //             <p>Dear ${name}, </p>
-    //             <p></p>
-    //             <p>${content}</p>
-    //             <p></p>
-    //             <p>Warm Regards,</p>
-    //             <p>Admin</p>
-    //             <p>Dream Events</p>
-    //             </div>
-    //             `
-    //         }
-
-    //         transporter.sendMail(mailOptions, (error, info) => {
-    //             // console.log(error)
-    //             if (error) {
-    //                 console.log(error);
-    //                 resolve(false)
-    //             } else {
-    //                 resolve(true)
-    //             }
-
-    //         })
-
-    //     })
-
-    // }
-
-
     async totalEvents() {
 
         try {
@@ -129,10 +85,6 @@ export class EventServices implements IEventService{
 
             console.log('skip: ', skip);
 
-
-            // let data = await eventRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
-
-            // let events = await this.eventRepository.getAllEvents(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
             let events = await this.eventRepository.getEventsAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
             console.log('all events and total count: ', events);
@@ -244,34 +196,6 @@ export class EventServices implements IEventService{
             console.log('getServiceByName response: ', service.serviceData);
             if (service) {
 
-                // let obj: any = {}
-
-                // service.serviceData.forEach(async (e: any) => {
-
-                //     obj[e.provider] = obj[e.provider] || new Set()
-                //     obj[e.provider].add(e.name)
-
-                // })
-
-                // let servicesArray: any = []
-
-                // for (let key in obj) {
-                //     let id = key
-                //     console.log('id to get user from getServiceByName: ', id);
-
-                //     const user = await getUserByIdGrpc(id)
-                //     let newObj: any = {}
-                //     if (user) {
-                //         newObj.provider = user.name
-                //         newObj.providerId = key
-                //         newObj.services = Array.from(obj[key])
-                //         servicesArray.push(newObj)
-                //     }
-
-                //     obj[key]=Array.from(obj[key])
-                // }
-
-                // console.log('getServiceByName array: ', servicesArray);
                 let serviceSet = new Set()
                 service.serviceData.forEach(async (e: IServiceGrpcType) => {
                     serviceSet.add(e.name)
@@ -294,7 +218,6 @@ export class EventServices implements IEventService{
 
     async getEventsByName(name: string) {
         try {
-            // const service = await getServicesByNameGrpc(name)
             const events: IEvent[] | null = await this.eventRepository.getEventByName(name)
 
             console.log('getServiceByName response: ', events);
@@ -330,4 +253,3 @@ export class EventServices implements IEventService{
 
 }
 
-// export default new EventServices()

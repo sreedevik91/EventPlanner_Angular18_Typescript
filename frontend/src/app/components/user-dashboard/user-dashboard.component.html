@@ -2,7 +2,6 @@
     <div class="row">
 
         <div class="col-md-12 col-12 background position-relative">
-            <!-- <div class="bg-white rounded-bottom w-50 mt-4 position-absolute"> -->
             <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel" data-bs-interval="1000">
                 <div class="carousel-inner">
                     @for (item of eventImages; track $index) {
@@ -31,16 +30,6 @@
                 @for(service of services;track $index){
 
                 <div class="col-md-3 col-lg-3 col-6">
-
-                    <!-- <div class="card bg-white rounded-bottom shadow" style="width: 18rem;">
-                        <img [src]="service.image" height="250" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">{{service.title}}</h5>
-                            <p class="card-text">{{service.description}}</p>
-                            <a [routerLink]="service.path" class="btn btn-dark">Know more</a>
-                        </div>
-                    </div> -->
-
 
                     <div class="card h-100 bg-white rounded-bottom shadow">
                         <img [src]="service.image" class="card-img-top" height="250" alt="...">

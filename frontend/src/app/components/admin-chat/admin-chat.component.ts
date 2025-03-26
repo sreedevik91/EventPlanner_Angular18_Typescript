@@ -76,7 +76,6 @@ export class AdminChatComponent implements OnInit, OnDestroy {
         } else {
           this.chatForm.get('chats')?.patchValue({ sender: user.user })
         }
-        // this.chatForm.get('chats.sender')?.setValue(user.username) // alternate way
       }
     })
 
@@ -92,7 +91,6 @@ export class AdminChatComponent implements OnInit, OnDestroy {
 
   initialiseChatForm() {
     this.chatForm = new FormGroup({
-      // _id: new FormControl(this.chatFormObj._id),
       userId: new FormControl(this.chatFormObj.userId, [Validators.required]),
       roomId: new FormControl(this.chatFormObj.roomId, [Validators.required]),
       chats: new FormGroup({
@@ -381,8 +379,6 @@ export class AdminChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // this.messages=[]
-    // this.newChats=[]
     this.destroy$.next()
     this.destroy$.complete()
   }

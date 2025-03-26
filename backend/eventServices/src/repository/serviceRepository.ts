@@ -3,28 +3,6 @@ import { IAggregateResponse, IService, IServiceDb, IServiceRepository, IServices
 import Service from "../models/serviceSchema";
 import { BaseRepository } from "./baseRepository";
 
-// class ServiceRepository implements IServiceRepository{
-//     async createService(serviceData: Partial<IService>): Promise<IService> {
-//         const newService= new Service(serviceData)
-//         return await newService.save()
-//     }
-//     async deleteService(id: string): Promise<DeleteResult> {
-//         return await Service.deleteOne({_id:id})
-//     }
-//     async getAllServices(filter:any,sort:any,limit:number,skip:number): Promise<IService[]> {
-//         return await Service.find(filter).sort(sort).limit(limit).skip(skip)
-//     }
-//     async getServiceById(id: string): Promise<IServiceDb | null> {
-//         return await Service.findOne({_id:id})
-//     }
-//     async getTotalServices(): Promise<number> {
-//         return await Service.find().countDocuments()
-//     }
-//     async updateService(id:string,serviceData: Partial<IService>): Promise<IServiceDb | null> {
-//         return await Service.findOneAndUpdate({_id:id},{$set:serviceData},{new:true})
-//     }
-// }
-
 export class ServiceRepository extends BaseRepository<IService> implements IServiceRepository {
 
     constructor() {
@@ -53,7 +31,6 @@ export class ServiceRepository extends BaseRepository<IService> implements IServ
 
     async getAllServiceByEventName(name: string): Promise<IService[] | null> {
         try {
-            // return await Service.find({ events: { $in: [name] } })
             return await this.getAllServices({ events: { $in: [name] } })
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from service ServiceRepository: ', error.message) : console.log('Unknown error from service ServiceRepository: ', error)
@@ -105,8 +82,7 @@ export class ServiceRepository extends BaseRepository<IService> implements IServ
                         events: { $push: '$events' },
                         choicesType: { $push: '$choices.choiceType' },
                         choiceImg: { $push: '$choices.choiceImg' },
-                        // choices:{$push:{choiceName:'$choices.choiceName',choiceType:'$choices.choiceType',choicePrice:'$choices.choicePrice',choiceImg:'$choices.choiceImg'}},
-
+                      
                     }
                 }
 
@@ -140,12 +116,6 @@ export class ServiceRepository extends BaseRepository<IService> implements IServ
             return await this.model.aggregate([
                 {
                     $facet: {
-                        // 'services':[
-                        //     {$match:query},
-                        //     {$sort:sort},
-                        //     {$skip:skip},
-                        //     {$limit:limit}
-                        // ],
                         'services': aggregatePipeline,
                         'servicesCount': [
                             { $match: query },
@@ -162,5 +132,3 @@ export class ServiceRepository extends BaseRepository<IService> implements IServ
     }
 
 }
-
-// export default new ServiceRepository()

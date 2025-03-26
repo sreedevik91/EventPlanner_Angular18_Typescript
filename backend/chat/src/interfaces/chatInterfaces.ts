@@ -14,13 +14,6 @@ export interface IUserChat {
   date: Date;
 }
 
-// export interface IResponse {
-//   success: boolean;
-//   message?: string;
-//   data?: any;
-//   extra?: any
-// }
-
 export interface IResponse<T=unknown,U=unknown> {
   success: boolean;
   message?: string;

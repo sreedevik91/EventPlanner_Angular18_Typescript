@@ -19,12 +19,6 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
       return !this.event
     }
   },
-  // serviceId: {
-  //   type: String,
-  //   required: function () {
-  //     return !this.eventId
-  //   }
-  // },
   event: {
     type: String,
     required: function () {
@@ -37,12 +31,6 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
       return !this.service
     }
   },
-  // eventId: {
-  //   type: String,
-  //   required: function () {
-  //     return !this.serviceId
-  //   }
-  // },
   img: {
     type: String,
     required: true

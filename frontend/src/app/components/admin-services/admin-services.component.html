@@ -7,16 +7,12 @@
 
     </div>
     <div class="row d-flex flex-row" [formGroup]="searchFilterForm">
-        <!-- <form [formGroup]="searchFilterForm"> -->
         <div class="col-md-3">
             <label for=""> Name: </label><input type="text" class="form-control" formControlName="serviceName">
         </div>
         <div class="col-md-3">
             <label for=""> Provider: </label><input type="text" class="form-control" formControlName="provider">
         </div>
-        <!-- <div class="col-md-3">
-            <label for=""> Role: </label><input type="text" class="form-control" formControlName="role">
-        </div> -->
         <div class="col-md-3">
             <app-button [btnClass]="'btn-dark mt-4 rounded-pill'" (onBtnClick)="onSearch()">Search</app-button>
             <app-button [btnClass]="'btn-dark mt-4 ms-3 rounded-pill'" (onBtnClick)="onRefresh()">Refresh</app-button>
@@ -32,7 +28,6 @@
                 <option value="100">100</option>
             </select>
         </div>
-        <!-- </form> -->
     </div>
     <div>
         <app-alert></app-alert>
@@ -58,7 +53,6 @@
                     <tr>
                         <th scope="row">{{$index + 1}}</th>
                         <td>{{item.name}}</td>
-                        <!-- <td>{{item.provider}}</td> -->
                          @if(extra.length>0){
                             <td>{{extra[$index].name}}</td>
                          }@else {
@@ -72,9 +66,7 @@
                         <td>
 
                             <p class="d-inline-flex gap-1">
-                                <!-- <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                                See Options available
-                                </a> -->
+                             
                                 <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                     [attr.data-bs-target]="'#collapseExample'+ $index" aria-expanded="false"
                                     [attr.aria-controls]="'collapseExample'+ $index">
@@ -93,13 +85,6 @@
                                 }
                             </div>
 
-                            <!-- @for (choice of item.choices; track $index) {
-                            <p>Name:{{choice.choiceName}}</p>
-                            @if(choice.choiceType !==''){
-                            <p>Type:{{choice.choiceType}}</p>
-                            }
-                            <p>Price:{{choice.choicePrice}}</p>
-                            } -->
                         </td>
                         <td>
                             @if(item.isActive){
@@ -124,11 +109,6 @@
                             <app-button [btnTitle]="'Approve service'" (onBtnClick)="approveService(item._id)"><i
                                     class="fa-regular fa-thumbs-down"></i></app-button>
                             }
-
-                            <!-- <i class="fa-solid fa-x"></i> -->
-                            <!-- <i class="fa-solid fa-check"></i> -->
-                            <!-- <i class="fa-solid fa-lock"></i> -->
-                            <!-- <i class="fa-solid fa-unlock"></i> -->
                         </td>
                     </tr>
                     }
@@ -156,9 +136,6 @@
             </ul>
         </nav>
     </div>
-
-
-
 
 
 </section>

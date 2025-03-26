@@ -51,19 +51,15 @@ export class UserBookingComponent implements OnInit, OnDestroy {
       .set('pageSize', this.bookingPaginationFormObj.pageSize)
       .set('isConfirmed', 'true')
     this.getBookingsByUser(this.paginationParams)
-    // this.getBookingsByUser(this.userId)
   }
 
   getBookingsByUser(params: HttpParams) {
-    // debugger
     this.bookingService.getAllBookings(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        // console.log('bookings by user from user component:', res);
 
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.bookingsList.set(res.body?.data.bookings)
           console.log('confirmed bookings: ',this.bookingsList);
-          // this.bookingsList.update(bookings=>bookings.filter(booking=>booking.isConfirmed===true))
           this.totalBooking.set(res.body?.data.count)
         } else {
           console.log(res.body?.message);
@@ -77,34 +73,11 @@ export class UserBookingComponent implements OnInit, OnDestroy {
     })
   }
 
-  // getBookingsByUser(userId: string) {
-  //   // debugger
-  //   this.bookingService.getBookingsByUserId(userId).pipe(takeUntil(this.destroy$)).subscribe({
-  //     next: (res: HttpResponse<IResponse>) => {
-  //       if (res.status === HttpStatusCodes.SUCCESS) {
-  //         this.bookingsList.set(res.body?.data)
-  //         console.log('confirmed bookings: ',this.bookingsList);
-  //         this.bookingsList.update(bookings=>bookings.filter(booking=>booking.isConfirmed===true))
-
-  //       } else {
-  //         console.log(res.body?.message);
-  //         this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
-  //       }
-  //     },
-  //     error: (error: HttpErrorResponse) => {
-  //       this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
-
-  //     }
-  //   })
-  // }
-
   deleteBooking(bookingId: string) {
-    // if (confirm('Do you want to delete the booking ?')) {
     this.bookingService.deleteBooking(bookingId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           console.log(res.body);
-          // this.getBookingsByUser(this.userId)
           this.bookingsList.update(bookings =>
             bookings.filter(booking => booking._id !== bookingId)
           )
@@ -119,16 +92,13 @@ export class UserBookingComponent implements OnInit, OnDestroy {
 
       }
     })
-    // }
   }
 
   deleteChoice(bookingId: string, name: string, id: string) {
-    // if (confirm('Do you want to delete the service ?')) {
     this.bookingService.deleteBookedServices(bookingId, name, id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           console.log(res.body);
-          // this.getBookingsByUser(this.userId)
           this.bookingsList.update(bookings =>
             // flatMap - Handles both updating services and potential booking removal
             bookings.flatMap(booking => {

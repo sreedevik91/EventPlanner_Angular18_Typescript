@@ -49,7 +49,6 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
   servicesByName = signal<IService[]>([])
   selectedService: Partial<IService> = {}
   optionArray: any[] = []
-  // serviceImgUrl = environment.serviceImgUrl
 
   step = signal<number>(1)
 
@@ -75,14 +74,10 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
       userId: new FormControl(this.bookingFromObj.userId, [Validators.required]),
       serviceId: new FormControl(this.bookingFromObj.serviceId, [Validators.required]),
       providerId: new FormControl(this.bookingFromObj.providerId, [Validators.required]),
-      // eventId: new FormControl(this.bookingFromObj.eventId, [Validators.required]),
       event: new FormControl(this.bookingFromObj.event, [Validators.required]),
       services: new FormArray(
         this.bookingFromObj.services.map((service) => {
           return new FormGroup({
-            // providerId: new FormControl(service.providerId),
-            // serviceId: new FormControl(service.serviceId)
-            // serviceName: new FormControl(service.serviceName),
             choiceName: new FormControl(service.choiceName),
             choiceType: new FormControl(service.choiceType),
             choicePrice: new FormControl(service.choicePrice),
@@ -121,13 +116,6 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
       }
     })
 
-    // const servicesArray = <FormArray>this.bookingForm.get('services')
-    // servicesArray.push(new FormGroup({
-    //   serviceId: new FormControl(serviceId),
-    //   providerId: new FormControl(providerId)
-    // })
-    // )
-
     this.showModal()
   }
 
@@ -136,22 +124,11 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
     const state = (<HTMLSelectElement>event.target).value
     console.log(Districts[state]);
     this.districtsList = Districts[state]
-    // if(event in Districts){
-    //   console.log(Districts[event]);
-    // }else {
-    //   console.log("No districts found for the provided state.");
-    // }
   }
 
   saveBooking() {
-    // debugger
     console.log('service booking form values: ', this.bookingForm.value);
     console.log('is service booking form valid: ', this.bookingForm.valid);
-
-    // this.bookingService.createBooking(this.bookingForm.value).pipe(takeUntil(this.destroy$)).subscribe(res=>{
-    //   console.log('saveBooking response from backend: ', res);
-      
-    // })
 
     this.bookingService.createBooking(this.bookingForm.value).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
@@ -228,18 +205,6 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
 
     const formArray = (<FormArray>this.bookingForm.get('services'))
     console.log('step 2 formArray value: ', formArray.value);
-
-    // this.optionArray = formArray.value
-    // formArray.value.forEach((service: any) => {
-    //     this.isOption(service.serviceName)
-    //   })
-
-    // formArray.controls.forEach((control: any) => {
-    //  const serviceName= control.get('serviceName')?.value
-    //  const isChecked=this.isOption(serviceName)
-    //  control.patchValue({checked:isChecked})
-
-    // })
 
   }
 

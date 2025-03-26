@@ -76,8 +76,6 @@ export default class LoginComponent implements OnDestroy{
         // debugger
         console.log(res);
         console.log(res.body);
-        // console.log(res.body.emailVerified);
-        // if (res.body.emailVerified) {
         if (res.status === HttpStatusCodes.SUCCESS) {
           console.log(this.router);
 
@@ -90,27 +88,6 @@ export default class LoginComponent implements OnDestroy{
           this.alertService.getAlert("alert alert-danger", "Login Failed", res.body?.message ? res.body?.message : '')
 
         }
-        // else if (res.status === 400) {
-        //   if (res.body.emailNotVerified) {
-        //     this.alertService.getAlert("alert alert-danger", "Login Failed!", res.body.message)
-        //     this.router.navigateByUrl(`verifyEmail`)
-        //   } else {
-        //     this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
-        //   }
-
-        // } else if (res.status === 403) {
-        //   this.userService.userLogout().pipe(takeUntil(this.destroy$)).subscribe((res: HttpResponse<any>) => {
-        //     this.router.navigateByUrl('login')
-        //   })
-        //   this.alertService.getAlert("alert alert-danger", "Login Failed", res.body.message)
-
-        // }
-        // } else {
-        //   this.alertService.getAlert("alert alert-danger", "Login Failed!", res.body.message)
-
-        //   this.router.navigateByUrl(`verifyEmail`)
-        // }
-
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
@@ -149,7 +126,6 @@ export default class LoginComponent implements OnDestroy{
   }
 
   register() {
-    // debugger
     this.userRegistrationForm.get('role')?.setValue(this.userRole)
     const { confirmPassword, ...rest } = this.userRegistrationForm.value
     this.registrationData = rest
@@ -158,12 +134,9 @@ export default class LoginComponent implements OnDestroy{
       next: (res: HttpResponse<IResponse>) => {
         console.log('response from register user: ', res);
         if (res.status === HttpStatusCodes.CREATED) {
-          // this.callAlert("alert alert-success", "Success!", res.message)
           this.alertService.getAlert("alert alert-success", "Success!", res.body?.message ? res.body?.message : '')
           this.router.navigateByUrl(`/otp/${res.body?.data._id}`)
-          // this.isLoginForm = true
         } else {
-          // this.callAlert("alert alert-danger", "Failed!", res.message)
           this.alertService.getAlert("alert alert-danger", "Failed!", res.body?.message!)
 
         }
@@ -171,7 +144,6 @@ export default class LoginComponent implements OnDestroy{
 
       },
       error: (error: HttpErrorResponse) => {
-        // this.callAlert("alert alert-danger", "Register User Failed", error.message)
         this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
 
       }
@@ -186,11 +158,9 @@ export default class LoginComponent implements OnDestroy{
       next: (res: HttpResponse<IResponse>) => {
         console.log('send mail response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          // this.callAlert('alert alert-success', 'Email sent', res.message)
           this.alertService.getAlert('alert alert-success', 'Email sent', res.body?.message ? res.body?.message : '')
 
         } else {
-          // this.callAlert('alert alert-danger', 'Sent email failed', res.message)
           this.alertService.getAlert('alert alert-danger', 'Sent email failed', res.body?.message ? res.body?.message : '')
 
         }
@@ -198,10 +168,7 @@ export default class LoginComponent implements OnDestroy{
 
       },
       error: (error: HttpErrorResponse) => {
-        // this.callAlert("alert alert-danger", "Sent email Failed", error.message)
         this.alertService.getAlert("alert alert-danger", "Sent email Failed", error.error.message)
-
-
       }
     })
   }

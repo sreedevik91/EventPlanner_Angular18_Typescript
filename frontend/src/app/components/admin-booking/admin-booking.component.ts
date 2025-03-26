@@ -38,15 +38,12 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
 
   errMessage: string = 'Some error occured'
 
-  constructor() {
-    // this.getTotalBookings()
-  }
+  constructor() { }
  
   ngOnInit(): void {
      this.searchParams = this.searchParams.set('pageNumber', this.bookingFilterFormObj.pageNumber)
       .set('pageSize', this.bookingFilterFormObj.pageSize)
     this.initialiseSearchFilterForm()
-    // this.getAllBookings(this.searchParams)
     this.onRefresh()
   }
 
@@ -57,7 +54,6 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
       pageSize: new FormControl(this.bookingFilterFormObj.pageSize),
       sortBy: new FormControl(this.bookingFilterFormObj.sortBy),
       sortOrder: new FormControl(this.bookingFilterFormObj.sortOrder),
-      // isConfirmed:new FormControl(this.bookingFilterFormObj.isConfirmed),
     })
   }
 
@@ -118,12 +114,10 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
     this.bookingService.getAllBookings(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
-          // this.totalServices=res.body.data.length
           this.bookings.set(res.body?.data.bookings)
           this.totalBookings = res.body?.data.count
 
           console.log('all services: ', this.bookings());
-          // this.searchParams = new HttpParams()
         } else {
           console.log('could not get users');
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : this.errMessage)
@@ -142,7 +136,6 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          // this.getAllBookings(this.searchParams)
           this.bookings.update(bookings=>
             bookings.map(booking=>booking._id===id ? {...booking,isConfirmed:true}:booking)
           )
@@ -166,7 +159,6 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service deleted successfully')
-          // this.getAllBookings(this.searchParams)
           this.bookings.update(bookings =>
             bookings.filter(booking => booking._id !== id)
           )
@@ -197,7 +189,6 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
   }
 
   getLastpage() {
-    // console.log('total bookings:',this.totalBookings);
     return Math.ceil(this.totalBookings / Number(this.bookingFilterFormObj.pageSize))
   }
 

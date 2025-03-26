@@ -19,11 +19,6 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export default class ResetComponent implements OnInit, OnDestroy {
 
-  // class: string = ''
-  // message: string = ''
-  // alert: boolean = false
-  // text: string = ''
-
   destroy$: Subject<void> = new Subject<void>()
 
   token: string | null = null
@@ -40,52 +35,31 @@ export default class ResetComponent implements OnInit, OnDestroy {
       console.log(this.token);
 
     })
-
-    // this.activeRoute.paramMap.pipe(takeUntil(this.destroy$)).subscribe((value)=>{
-    //   this.token=value.get('token')
-    //   console.log(this.token);
-
-    // })
   }
-
-  // callAlert(classValue: string, text: string, message: string) {
-  //   this.alert = true
-  //   this.class = classValue
-  //   this.text = text
-  //   this.message = message
-  //   setTimeout(() => {
-  //     this.alert = false
-  //   }, 2000)
-  // }
 
   resetForm: FormGroup = new FormGroup(
     {
       password: new FormControl('', [Validators.required, Validators.minLength(8)]),
       confirmPassword: new FormControl('', [Validators.required, PasswordMatchValidator])
     },
-    // { validators: PasswordMatchValidator }
+   
   )
 
   resetPassword() {
-    // console.log(this.activeRoute.snapshot.params['token'])
     debugger
     let resetData = this.resetForm.value
-    // resetData.token=this.token
     const data = {
       password: resetData.password,
       token: this.token
     }
-    // console.log('resetData: ', resetData, data);
     debugger
     this.userServices.resetPassword(data).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         console.log('resetPassword res: ', res.body);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          // this.callAlert('alert alert-success', 'Password Reset Success', res.message)
           this.alertService.getAlert('alert alert-success', 'Password Reset Success', res.body?.message || '')
 
         } else {
-          // this.callAlert('alert alert-danger', 'Password Reset failed', res.message)
           this.alertService.getAlert('alert alert-danger', 'Password Reset failed', res.body?.message || '')
 
         }
@@ -97,7 +71,6 @@ export default class ResetComponent implements OnInit, OnDestroy {
         this.resetForm.reset()
       },
       error: (err: HttpErrorResponse) => {
-        // this.callAlert('alert alert-danger', 'Password Reset failed', err.message)
         this.alertService.getAlert('alert alert-danger', 'Password Reset failed', err.error.message)
 
       }

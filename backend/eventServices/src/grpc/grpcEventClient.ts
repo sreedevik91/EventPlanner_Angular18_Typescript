@@ -9,11 +9,6 @@ const PROTO_PATH = path.join(__dirname, '../../../../proto/events.proto');
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const eventsProto: any = grpc.loadPackageDefinition(packageDefinition).events;
 
-// // Environment-based configuration
-// const GRPC_HOST = process.env.NODE_ENV === 'production' 
-//   ? 'event-service:50053' 
-//   : 'localhost:50053';
-
 const GRPC_HOST=process.env.GRPC_EVENT_SERVER || '0.0.0.0:50053'
 
 // Create a gRPC client

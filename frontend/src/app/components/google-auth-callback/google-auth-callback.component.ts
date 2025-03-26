@@ -51,7 +51,6 @@ export default class GoogleAuthCallbackComponent implements OnInit,OnDestroy {
         }
       },
       error: (error) => {
-        // console.log(error.error.message);
         this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
         this.router.navigateByUrl('login')
 

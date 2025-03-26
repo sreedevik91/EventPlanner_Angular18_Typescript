@@ -21,20 +21,15 @@ export default class UsersComponent implements OnInit, OnDestroy {
 
   destroy$: Subject<void> = new Subject<void>()
 
-  // users$: any = []
   users = signal<IUser[]>([])
 
   userFormObj: User = new User()
   searchFilterFormObj: UserSearchFilter = new UserSearchFilter()
-  // searchParams:any
 
   isAddUser: boolean = false
 
   searchParams = new HttpParams()
   totalUsers:number=0
-  // totalUsers= signal<number>(0)
-  // totalUsers= computed(()=>this.users().length)
-
 
   @ViewChild('modal') formModal!: ElementRef
 
@@ -49,11 +44,7 @@ export default class UsersComponent implements OnInit, OnDestroy {
   constructor() { }
 
   ngOnInit() {
-    // this.searchParams = this.searchParams
-    //   .set('pageNumber', this.searchFilterFormObj.pageNumber)
-    //   .set('pageSize', this.searchFilterFormObj.pageSize)
-    // this.getUsers(this.searchParams)
-    // this.getTotalUsers()
+    
     this.initialiseUserForm()
     this.initialiseSearchFilterForm()
     this.onRefresh()
@@ -132,7 +123,6 @@ export default class UsersComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.totalUsers = res.body?.data
-          // this.totalUsers.set( res.body?.data)
           console.log('total users count: ', this.totalUsers);
 
         } else {
@@ -148,18 +138,15 @@ export default class UsersComponent implements OnInit, OnDestroy {
   }
 
   getTotalPages() {
-    // console.log('total users count from getTotalPages: ', this.totalUsers);
     let totalPages = Math.ceil(this.totalUsers / Number(this.searchFilterFormObj.pageSize))
     return Array(totalPages).fill(0).map((e, i) => i + 1)
   }
 
   getLastpage() {
-    // console.log('total users count from getLastpage: ', this.totalUsers);
     return Math.ceil(this.totalUsers / Number(this.searchFilterFormObj.pageSize))
   }
 
   onPageChange(page: number) {
-    // debugger
     this.currentPage = page
     this.searchFilterFormObj.pageNumber = page.toString()
     this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
@@ -171,7 +158,6 @@ export default class UsersComponent implements OnInit, OnDestroy {
     this.userServices.getAllUsers(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
-          // this.users$ = res.body?.data
           console.log('get users response: ', res.body?.data);
           
           this.users.set(res.body?.data.users)
@@ -202,7 +188,6 @@ export default class UsersComponent implements OnInit, OnDestroy {
           console.log('update user response: ', res.body?.data);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
           this.getUsers(this.searchParams)
-          // this.getUsers()
           this.hideModal()
         } else {
           console.log('could not get users', res.body?.message);
@@ -222,7 +207,6 @@ export default class UsersComponent implements OnInit, OnDestroy {
   saveUser() {
     const { id, _id, ...rest } = this.userForm.value
     const data = rest
-    // this.userFormObj.id=0
     console.log('create user data:', this.userForm.value);
     this.userServices.registerUser(data).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
@@ -231,7 +215,6 @@ export default class UsersComponent implements OnInit, OnDestroy {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || '')
           this.getUsers(this.searchParams)
           this.totalUsers+=1
-          // this.getTotalUsers()
           this.hideModal()
         } else {
           console.log('could not get users', res.body?.message);
@@ -252,7 +235,6 @@ export default class UsersComponent implements OnInit, OnDestroy {
     this.userServices.getUserById(userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         this.userFormObj = res.body?.data
-        // console.log(this.userFormObj);
         this.initialiseUserForm()
         this.showModal()
       },
@@ -270,7 +252,6 @@ export default class UsersComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         console.log('edit status response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          // this.getUsers(this.searchParams)
           this.users.update(users =>
             users.map(user =>
               user._id === userId ? { ...user, isActive: !user.isActive } : user
@@ -298,7 +279,6 @@ export default class UsersComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          // this.getUsers(this.searchParams)
           this.users.update(users =>
             users.map(user =>
               user._id === userId ? { ...user, isUserVerified: !user.isUserVerified } : user

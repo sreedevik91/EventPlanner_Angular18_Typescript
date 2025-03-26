@@ -1,9 +1,0 @@
-POST /login 200 [20/Jan/2025:18:46:53 +0000] - 301.592 ms localhost
-POST /login 200 [20/Jan/2025:18:47:26 +0000] - 197.375 ms localhost
-POST /login 200 [21/Jan/2025:05:55:20 +0000] - 634.064 ms localhost
-POST /login 200 [21/Jan/2025:05:57:09 +0000] - 385.392 ms localhost
-POST /login 200 [21/Jan/2025:06:19:42 +0000] - 326.660 ms localhost
-POST /login 200 [21/Jan/2025:06:21:18 +0000] - 112.694 ms localhost
-POST /login 200 [21/Jan/2025:06:22:30 +0000] - 177.859 ms localhost
-POST /login 200 [21/Jan/2025:10:17:00 +0000] - 710.791 ms localhost
-POST /login 200 [21/Jan/2025:10:21:25 +0000] - 683.859 ms localhost

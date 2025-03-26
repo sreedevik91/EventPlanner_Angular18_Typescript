@@ -4,8 +4,6 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import session from 'express-session'
 import passport from '../middlewares/passportConfig'
-// import userController from '../controllers/userController'
-// import verifyToken from '../middlewares/tokenMiddleware'
 import { UserController } from '../controllers/userController'
 import { UserServices } from '../services/userServices'
 import { UserRepository } from '../repository/userRepository'
@@ -41,32 +39,7 @@ userRouter.use(passport.session())
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// router.get('/auth/google/callback',passport.authenticate('google'), userController.googleLogin)
-
 router.get('/auth/google/callback',passport.authenticate('google'),(req: Request, res: Response,next:NextFunction)=> userController.googleLogin(req,res,next))
-
-
-// router.post('/register',userController.registerUser)
-// router.post('/email/verify',userController.verifyEmail)
-// router.post('/login',userController.userLogin)
-// router.post('/password/resetEmail',userController.sendResetEmail)
-// router.post('/password/reset',userController.resetPassword)
-// router.post('/otp/verify',userController.verifyOtp)
-
-// router.patch('/verify',userController.verifyUser)
-
-// router.get('/logout',userController.userLogout)
-// router.get('/data',userController.getGoogleUser)
-// router.get('/otp/:id',userController.resendOtp)
-// router.get('/token/refresh',userController.refreshToken)
-// router.get('/users',userController.getAllUsers)
-// router.get('/users/count',userController.getUsersCount)
-// router.get('/:id',userController.getUser)
-
-// // router.post('/editStatus',userController.editStatus)
-// router.patch('/status',userController.editStatus)
-// // router.post('/edit/:userId',userController.editUser)
-// router.patch('/:userId',userController.editUser)
 
 router.post('/register',(req: Request, res: Response,next:NextFunction)=>userController.registerUser(req,res,next))
 router.post('/email/verify',(req: Request, res: Response,next:NextFunction)=>userController.verifyEmail(req,res,next))
@@ -86,7 +59,6 @@ router.get('/token/refresh',(req: Request, res: Response,next:NextFunction)=>use
 router.get('/users',(req: Request, res: Response,next:NextFunction)=>userController.getAllUsers(req,res,next))
 router.get('/users/count',(req: Request, res: Response,next:NextFunction)=>userController.getUsersCount(req,res,next))
 router.get('/:id',(req: Request, res: Response,next:NextFunction)=>userController.getUser(req,res,next))
-
 
 userRouter.use(router)
 
