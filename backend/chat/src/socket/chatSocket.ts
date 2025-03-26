@@ -25,7 +25,6 @@ export const handleSocketConnection = (io: Server) => {
             socket.join(roomId)
             console.log(`${userName} joined room ${roomId}`);
             socket.to(roomId).emit('startChatNotification', { roomId, message: `${userName} started the chat` })
-            // console.log(`updatedActiveUsers: `, Array.from(activeUsers));
             io.to(roomId).emit('roomId', roomId)
         })
 
@@ -47,7 +46,6 @@ export const handleSocketConnection = (io: Server) => {
             socket.join(roomId)
             console.log(`Admin joined room ${roomId}`);
             socket.to(roomId).emit('joiningNotification', { roomId, message: `Admin joined the chat` })
-            // io.to(roomId).emit('roomId', roomId)
             io.to(roomId).emit('receiveUserMessage', messages)
         })
 
@@ -60,7 +58,6 @@ export const handleSocketConnection = (io: Server) => {
             console.log('saved chat: ', saveChat);
             messages.push(data)
             io.to(roomId).emit('receivedMessage', data)
-            // io.emit('receivedMessage', data)
         })
 
         socket.on('adminSentMessage', async ({userId,data}) => {
@@ -71,7 +68,6 @@ export const handleSocketConnection = (io: Server) => {
             const saveChat = await chatServices.saveChats(data)
             console.log('saved chat: ', saveChat,socket.id);
             io.to(roomId).emit('receivedMessage', data)
-            // io.emit('receivedMessage', data)
         })
 
         socket.on('typing', ({ userName, userId }) => {

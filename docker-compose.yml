@@ -1,4 +1,3 @@
-# version: '3.9'
 
 services:
   api-gateway:
@@ -13,8 +12,6 @@ services:
       - EVENT_SERVICE=http://event-service:3003
       - BOOKING_SERVICE=http://booking-service:3004
       - CHAT_SERVICE=http://chat-service:3005
-      # - FRONTEND=http://frontend:4200
-      # - FRONTEND=http://nginx:80
       - FRONTEND=http://nginx
       - JWT_ACCESS_SECRET=sreedeviEventPlannerApplicationAccessToken
       - JWT_REFRESH_SECRET=sreedeviEventPlannerApplicationRefreshToken
@@ -33,7 +30,6 @@ services:
       context: .
       dockerfile: backend/user/Dockerfile
     ports:
-      # - "3001:3001"
       - "50051:50051"
     environment:
       - PORT=3001
@@ -45,8 +41,6 @@ services:
       - EMAIL_USER=sreedevisooraj15@gmail.com
       - EMAIL_URL=http://localhost/api/
       - GOOGLE_CALLBACK_URL=http://localhost/api/user/auth/google/callback
-      # - EMAIL_URL=http://nginx/api/ # Was localhost
-      # - GOOGLE_CALLBACK_URL=http://nginx/api/user/auth/google/callback # Fixed path
       - SESSION_SECRET_KEY=eventplannerapplication
       - GRPC_USER_SERVER=user-service:50051
       - MONGO_URL=mongodb://mongodb:27017/userService
@@ -62,11 +56,9 @@ services:
       context: .
       dockerfile: backend/eventServices/Dockerfile
     ports:
-      # - "3002:3002"
       - "50052:50052"
     environment:
       - PORT=3002
-      # - SERVICE_IMG_URL=http://localhost/api/service/uploads/
       - SERVICE_IMG_URL=http://nginx/api/service/uploads/ # Add nginx prefix
       - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
       - EMAIL_USER=sreedevisooraj15@gmail.com
@@ -87,11 +79,9 @@ services:
       context: .
       dockerfile: backend/events/Dockerfile
     ports:
-      # - "3003:3003"
       - "50053:50053"
     environment:
       - PORT=3003
-      # - EVENT_IMG_URL=http://localhost/api/event/uploads/
       - EVENT_IMG_URL=http://nginx/api/event/uploads/ # Add nginx prefix
       - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
       - EMAIL_USER=sreedevisooraj15@gmail.com
@@ -111,8 +101,6 @@ services:
     build:
       context: .
       dockerfile: backend/booking/Dockerfile
-    # ports:
-    #   - "3004:3004"
     environment:
       - PORT=3004
       - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
@@ -132,8 +120,6 @@ services:
     build:
       context: .
       dockerfile: backend/chat/Dockerfile
-    # ports:
-    #   - "3005:3005"
     environment:
       - PORT=3005
       - CLOUDINARY_CLOUD_NAME=dqsfjbusg
@@ -148,15 +134,6 @@ services:
     depends_on:
       - mongodb
 
-  # frontend:
-  #   build:
-  #     context: .
-  #     dockerfile: frontend/Dockerfile
-  #   networks:
-  #     - event_planner_network
-  #   depends_on:
-  #     - api-gateway
-
   nginx:
     image: nginx:latest
     ports:
@@ -166,7 +143,6 @@ services:
       - ./frontend/dist/browser:/usr/share/nginx/html
     entrypoint: [ "nginx", "-g", "daemon off;" ] # Skip entrypoint scripts
     depends_on:
-      # - frontend
       - api-gateway
     networks:
       - event_planner_network
@@ -190,8 +166,6 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db 
-      # - ./mongo-data:/data/db # Bind mount to host directory
-      # - /mnt/c/Users/USER/Documents/BroCampTasks/Angular_Project/mongo-data:/data/db
     networks:
       - event_planner_network
 

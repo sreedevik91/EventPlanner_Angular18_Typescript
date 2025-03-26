@@ -24,7 +24,6 @@
                     [attr.aria-controls]="'collapseOne'+$index">
                     View Details
                 </button>
-                <!-- <button class="btn btn-dark ms-3" (click)="deleteBooking(item._id)">Delete</button> -->
 
                 <button class="btn btn-dark ms-3" data-bs-toggle="modal"
                     [attr.data-bs-target]="'#exampleModal' + item._id">Delete</button>
@@ -58,12 +57,7 @@
         </div>
 
         <div class="accordion-item">
-            <!-- <h2 class="accordion-header"> -->
-            <!-- <button class="btn btn-dark" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                    View Details
-                </button> -->
-            <!-- </h2> -->
+           
             <div [id]="'collapseOne'+$index" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
                     <div class="row">
@@ -86,8 +80,6 @@
 
                                         <app-button [btnClass]="'btn-danger rounded-pill'" data-bs-toggle="modal"
                                             [attr.data-bs-target]="'#exampleModal' + service._id">Delete</app-button>
-
-                                        <!-- <button class="btn btn-dark ms-3" data-bs-toggle="modal" [attr.data-bs-target]="'#exampleModal' + item._id">Delete</button> -->
 
                                         <!-- Modal -->
                                         <div class="modal fade" [id]="'exampleModal' + service._id" tabindex="-1"
@@ -138,10 +130,7 @@
 
                             </ul>
                         </div>
-                        <!-- <div class="col-md-3 mt-4">
-                            <app-button [btnClass]="'btn-danger rounded-pill'" (onBtnClick)="deleteChoice()"></app-button>
-                            <button>Delete</button>
-                        </div> -->
+                       
                     </div>
 
                 </div>
@@ -161,8 +150,7 @@
           @for(item of getTotalPages(); track $index){
             <li class="page-item"><a class="page-link" [class.active]="currentPage===item" (click)="onPageChange(item)">{{item}}</a></li>
           }
-          <!-- <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li> -->
+        
           <li class="page-item" [class.disabled]="currentPage===getLastpage()">
             <a class="page-link" (click)="onPageChange(currentPage+1)" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>

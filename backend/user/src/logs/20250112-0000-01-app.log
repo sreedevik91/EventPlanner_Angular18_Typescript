@@ -1,2 +1,0 @@
-GET /token/refresh 304 [10/Jan/2025:18:31:28 +0000] - 13.303 ms localhost
-POST /login 200 [11/Jan/2025:17:27:46 +0000] - 485.670 ms localhost

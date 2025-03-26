@@ -82,28 +82,6 @@ async function UpdateEventWithNewService(call: any, callback: any) {
     const { serviceName, events } = call.request
     console.log('getEventByName serviceName, events from grpc: ', serviceName, events);
 
-    // for (let event of events) {
-    //   const eventData = await eventRepository.getEventByName(event)
-    //   console.log('getEventByName response from grpc: ',eventData);
-
-    //   let success: boolean = false
-    //   if (eventData) {
-    //     if (!eventData[0].services.includes(serviceName)) {
-    //       let eventId: string = eventData[0]._id
-    //       const updatedEvent = await eventRepository.updateEvent(eventId, { $push: { services: serviceName } })
-    //       if (updatedEvent) {
-    //         callback(null, { updatedEvent });
-    //       } else {
-    //         callback({
-    //           code: grpc.status.NOT_FOUND,
-    //           message: 'User not found',
-    //         });
-    //       }
-    //     }
-    //   }
-
-    // }
-
     if (!serviceName || !events || !Array.isArray(events)) {
       return callback({
         code: grpc.status.INVALID_ARGUMENT,

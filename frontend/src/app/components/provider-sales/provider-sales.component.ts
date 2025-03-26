@@ -46,7 +46,6 @@ export class ProviderSalesComponent implements OnInit, OnDestroy {
     })
     this.onRefresh()
     this.initialiseSearchFilterForm()
-    // this.getSalesData(this.searchParams)
   }
 
   initialiseSearchFilterForm() {

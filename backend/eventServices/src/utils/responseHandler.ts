@@ -4,14 +4,6 @@ import { HttpStatusCodes, IResponse } from "../interfaces/serviceInterfaces";
 
 export class ResponseHandler {
 
-    // static successResponse(res: Response, statusCode: number = HttpStatusCodes.SUCCESS, responseData: IResponse) {
-    //     res.status(statusCode).json(responseData)
-    // }
-
-    // static errorResponse(res: Response, statusCode: number = HttpStatusCodes.INTERNAL_SERVER_ERROR, responseData: IResponse) {
-    //     res.status(statusCode).json(responseData)
-    // }
-
     static successResponse(res: Response, statusCode: number = HttpStatusCodes.OK, responseData: IResponse) {
 
         try {

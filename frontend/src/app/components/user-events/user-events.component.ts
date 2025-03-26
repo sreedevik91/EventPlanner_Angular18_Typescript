@@ -43,7 +43,6 @@ export class UserEventsComponent implements OnInit,OnDestroy {
           console.log(`services for ${name}`, res.body?.extra);
           this.events.set(res.body?.data)
           this.dataService.setEventServiceData(res.body?.extra)
-          // this.router.navigate(['events/details'],{queryParams:{data:JSON.stringify(res.body?.extra)}})
           this.router.navigate(['events/details'])
         } else {
           console.log(res.body?.message);

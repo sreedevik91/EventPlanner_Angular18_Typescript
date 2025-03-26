@@ -13,7 +13,6 @@
                 @for (item of servicesByName(); track $index) {
                 <div class="col-md-4">
                     <div class="card rounded-bottom shadow" style="width: 20rem;">
-                        <!-- <img [src]="serviceImgUrl+item.img" class="card-img-top" alt="..."> -->
                         <img [src]="item.img" class="card-img-top" height="300" alt="...">
                         <div class="card-body">
                             <h5 class="card-title">{{item.name}}</h5>
@@ -35,17 +34,13 @@
 
                                         <div class="row border">
                                             <div class="col-md-4 mt-2 p-2">
-                                                <!-- <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
-                                                            width="100%" height="20"> -->
 
                                                 <img [src]="choice.choiceImg" class="img-fluid" alt="" width="100%"
                                                     height="20">
                                             </div>
                                             <div class="col-md-7 mt-2 p-2">
                                                 <h6>{{choice.choiceType}}</h6>
-                                                <!-- @if(choice.choiceType){
-                                                        <h6>{{choice.choiceType}}</h6>
-                                                        } -->
+
                                                 <h6>₹ {{choice.choicePrice}}</h6>
                                             </div>
                                         </div>
@@ -56,17 +51,13 @@
 
                                         <div class="row border">
                                             <div class="col-md-4 mt-2 p-2">
-                                                <!-- <img [src]="serviceImgUrl + choice.choiceImg" class="img-fluid" alt=""
-                                                                width="100%" height="20"> -->
 
                                                 <img [src]="choice.choiceImg" class="img-fluid" alt="" width="100%"
                                                     height="20">
                                             </div>
                                             <div class="col-md-7 mt-2 p-2">
                                                 <h6>{{choice.choiceName}}</h6>
-                                                <!-- @if(choice.choiceType){
-                                                            <h6>{{choice.choiceType}}</h6>
-                                                            } -->
+
                                                 <h6>{{choice.choicePrice}}</h6>
                                             </div>
                                         </div>
@@ -80,7 +71,6 @@
                             </div>
                             <app-button [btnClass]=" 'btn-dark btn-sm rounded-pill m-2' "
                                 (onBtnClick)="bookService(item.name,item._id,item.provider)">Book Now</app-button>
-                            <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
                         </div>
                     </div>
                 </div>
@@ -113,7 +103,6 @@
 
                     <form [formGroup]="bookingForm">
 
-                        <!-- @if(step()===1){ -->
                         <div>
 
                             <h2>Service Details</h2><br>
@@ -142,13 +131,9 @@
 
                             </div>
 
-                            <!-- <app-button [btnClass]=" 'm-3' " (onBtnClick)="formNext()"><i class="fa-solid fa-circle-chevron-right" style="color: #1d624e;"></i></app-button> -->
 
                         </div><br>
-                        <!-- } -->
 
-
-                        <!-- @if (step()===2){ -->
                         <div>
                             <h2>Booking Details</h2>
                             <app-form [label]=" 'Date of service Delivery:' " [tooltip]=" 'Select Date' " [Validation]="bookingForm.controls['deliveryDate'].touched &&
@@ -162,8 +147,6 @@
                                 <input type="number" class="form-control" placeholder="Enter total guests"
                                     formControlName="totalCount">
                             </app-form>
-
-
 
                             <div id="choices" [formGroupName]="'venue'">
 
@@ -218,8 +201,6 @@
 
                             </div>
 
-                            <!-- <app-button [btnClass]=" 'm-3' " (onBtnClick)="formPrevious()"> <i class="fa-solid fa-circle-chevron-left" style="color: #1d624e;"></i> </app-button> -->
-
                             <div class="d-grid gap-2 d-md-block">
 
 
@@ -231,12 +212,8 @@
                             </div>
 
                         </div>
-                        <!-- } -->
-
 
                     </form>
-
-
 
                 </div>
             </div>

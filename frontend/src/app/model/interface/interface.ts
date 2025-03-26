@@ -135,8 +135,6 @@ export interface IEventServiceResponse {
 }
 
 export interface IBookedServices {
-    // serviceId: string;
-    // providerId: string;
     _id?: string;
     serviceName: string;
     providerName: string;

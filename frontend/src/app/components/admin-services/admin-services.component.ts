@@ -41,9 +41,6 @@ export class AdminServicesComponent implements OnDestroy{
   }
  
   ngOnInit(): void {
-    //  this.searchParams = this.searchParams.set('pageNumber', this.searchFilterFormObj.pageNumber)
-    //   .set('pageSize', this.searchFilterFormObj.pageSize)
-    // this.getAllServices(this.searchParams)
     this.getTotalServices()
     this.initialiseSearchFilterForm()
     this.onRefresh()
@@ -145,7 +142,6 @@ export class AdminServicesComponent implements OnDestroy{
       next: (res: HttpResponse<IResponse>) => {
         console.log('verify user response: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
-          // this.getAllServices(this.searchParams)
           this.services.update(services =>
             services.map(service =>
               service._id === id ? { ...service, isApproved: !service.isApproved } : service
@@ -172,7 +168,6 @@ export class AdminServicesComponent implements OnDestroy{
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : 'Service deleted successfully')
-          // this.getAllServices(this.searchParams)
           this.services.update(services =>
             services.filter(service => service._id !== id)
           )

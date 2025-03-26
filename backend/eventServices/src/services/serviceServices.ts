@@ -17,57 +17,6 @@ export class ServiceServices implements IServicesService {
         private emailService: IEmailService
     ) { }
 
-    // axiosInstance = axios.create({
-    //     baseURL: process.env.USER_SERVICE_URL,     // USER_SERVICE_URL='http://localhost:4000'
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //     },
-    //     withCredentials: true
-    // })
-
-    // async sendMail(name: string, email: string, content: string, subject: string): Promise<boolean> {
-
-    //     return new Promise((resolve, reject) => {
-    //         const transporter = nodemailer.createTransport({
-    //             service: 'gmail',
-    //             auth: {
-    //                 user: process.env.EMAIL_USER,
-    //                 pass: process.env.EMAIL_APP_PASSWORD
-    //             }
-    //         })
-
-    //         let mailOptions = {
-    //             from: process.env.EMAIL_USER,
-    //             to: email,
-    //             subject: `${subject}`,
-    //             html: `
-    //             <div>
-    //             <p>Dear ${name}, </p>
-    //             <p></p>
-    //             <p>${content}</p>
-    //             <p></p>
-    //             <p>Warm Regards,</p>
-    //             <p>Admin</p>
-    //             <p>Dream Events</p>
-    //             </div>
-    //             `
-    //         }
-
-    //         transporter.sendMail(mailOptions, (error, info) => {
-    //             // console.log(error)
-    //             if (error) {
-    //                 console.log(error);
-    //                 resolve(false)
-    //             } else {
-    //                 resolve(true)
-    //             }
-
-    //         })
-
-    //     })
-
-    // }
-
     async totalServices() {
 
         try {
@@ -138,7 +87,6 @@ export class ServiceServices implements IServicesService {
                 console.log('grpc updateEventWithService response: ', updateEventWithService);
             } catch (grpcError: unknown) {
                 grpcError instanceof Error ? console.log('Error message from addService service, grpc updateEventWithService error: ', grpcError.message) : console.log('Unknown error from addService service,grpc updateEventWithService error: ', grpcError)
-                // console.log('grpc updateEventWithService error: ', grpcError.message);
             }
 
             return updatedService ? { success: true, data: updatedService, message: service ? SERVICE_RESPONSES.addServiceSuccessWithService : SERVICE_RESPONSES.addServiceSuccess } : { success: false, message: SERVICE_RESPONSES.addServiceError }
@@ -163,12 +111,8 @@ export class ServiceServices implements IServicesService {
             let limit:number | undefined = undefined
             if (serviceName !== undefined) {
                 filterQ.name = { $regex: `.*${serviceName}.*`, $options: 'i' }
-                // { $regex: `.*${search}.*`, $options: 'i' } 
             }
-            // if (provider !== undefined) {
-            //     filterQ.provider = { $regex: `.*${provider}.*`, $options: 'i' }
-            // }
-
+           
             if (providerId !== undefined) {
                 filterQ.provider = providerId
             }
@@ -195,13 +139,6 @@ export class ServiceServices implements IServicesService {
                 skip = (Number(pageNumber) - 1) * Number(pageSize)
             }
             if(pageSize !== undefined && role!=='user') limit=Number(pageSize)
-
-            // console.log('skip: ', skip);
-            // console.log('limit: ', limit);
-
-            // let data = await serviceRepository.getAllServices(filterQ, sortQ, Number(pageSize), skip)
-
-            // let data = await this.serviceRepository.getAllServices(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
 
             const options:{sort:QueryOptions,skip:number,limit?:number}={
                 sort: sortQ,
@@ -292,7 +229,6 @@ export class ServiceServices implements IServicesService {
             } catch (grpcError: unknown) {
                 grpcError instanceof Error ? console.log('Error message from editService service,grpc updateEventWithService error: ', grpcError.message) : console.log('Unknown error from editService service,grpc updateEventWithService error: ', grpcError)
 
-                // console.log('grpc updateEventWithService error: ', grpcError.message);
             }
 
             return updatedService ? { success: true, data: updatedService, message:SERVICE_RESPONSES.editServiceSuccess } : { success: false, message:SERVICE_RESPONSES.editServiceError }
@@ -310,10 +246,8 @@ export class ServiceServices implements IServicesService {
             const service = await this.serviceRepository.getServiceById(id)
 
             if (service) {
-                // service.isActive = !service.isActive
                 const serviceUpdated = await this.serviceRepository.updateService(id, { isActive: !service.isActive })
 
-                // let res = await service.save()
                 console.log('editStatus service: ', service, serviceUpdated);
 
                 if (serviceUpdated) {
@@ -335,15 +269,7 @@ export class ServiceServices implements IServicesService {
     async approveService(id: string) {
 
         try {
-            // const { email } = data
-            // const service = await serviceRepository.getServiceById(id)
             const serviceApproved = await this.serviceRepository.updateService(id, { isApproved: true })
-
-
-            // if (service) {
-            //     let providerData = await getUserByIdGrpc(service?.provider)
-            //     console.log('provider while admin approving the service: ', providerData);
-            // }
 
             if (serviceApproved) {
                 // service.isApproved = true
@@ -354,17 +280,9 @@ export class ServiceServices implements IServicesService {
 
                 let providerId = serviceApproved.provider
 
-                // USER_SERVICE_URL='http://localhost:4000/user/'
-                // let url = `${process.env.USER_SERVICE_URL}/user/user/${providerId}`
-                // console.log('user service url and providerId to get provider data:', url, providerId);
-
-                // let providerData = await this.getProvider(providerId)
-
                 let providerData = await getUserByIdGrpc(providerId)
 
-
                 console.log('provider while admin approving the service: ', providerData)
-
 
                 // get provider details from user service using provider id and send mail
                 let content = `
@@ -372,7 +290,6 @@ export class ServiceServices implements IServicesService {
             <p>May your events get more memorable with us. Happy events!</p>
            `
                 let subject = "Approve Service"
-                // let provider = providerData.data
                 const isSentMail = await this.emailService.sendMail(providerData.name, providerData.email, content, subject)
                 if (!isSentMail) {
                     console.log('Could not send Approve Service email');
@@ -400,8 +317,7 @@ export class ServiceServices implements IServicesService {
                     e.events = Array.from(new Set(e.events))
                     e.choicesType = Array.from(new Set(e.choicesType)).filter((e: string) => e !== null && e !== "")
                     e.choiceImg = Array.from(new Set(e.choiceImg))
-                    // e.choices.forEach((e:IChoice)=>console.log(e)
-                    // )
+                   
                 })
 
                 console.log('getServiceByName aggregatedServiceData: ', aggregatedServiceData);
@@ -420,4 +336,3 @@ export class ServiceServices implements IServicesService {
 
 }
 
-// export default new ServiceServices()

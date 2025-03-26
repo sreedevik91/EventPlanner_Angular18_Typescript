@@ -8,11 +8,6 @@ const PROTO_PATH=path.join(__dirname,'../../../../proto/eventServices.proto')
 const packageDefinition=protoLoader.loadSync(PROTO_PATH)
 const serviceProto:any=grpc.loadPackageDefinition(packageDefinition).service
 
-// // Environment-based configuration
-// const GRPC_HOST = process.env.NODE_ENV === 'production' 
-//   ? 'services-service:50052' 
-//   : 'localhost:50052';
-
 const GRPC_HOST=process.env.GRPC_SERVICE_SERVER || '0.0.0.0:50052'
 
 // Create a gRPC client
@@ -20,18 +15,6 @@ const client=new serviceProto.ServiceDetails(
   GRPC_HOST, // gRPC server address
   grpc.credentials.createInsecure()
 )
-
-// export const getServicesByEventNameGrpc=(name:string):Promise<IGetAvailableServicesResponse[]>=>{
-// return new Promise((resolve,reject)=>{
-//   client.GetAvailableServices({serviceName:name}, (err: grpc.ServiceError, response: IGetAvailableServicesResponse[]) => {
-//     if (err) {
-//       reject(new Error(`Failed to fetch services: ${err.message}`));
-//     } else {
-//       resolve(response);
-//     }
-//   })
-// })
-// }
 
 export const getServicesByEventNameGrpc=(name:string):Promise<any>=>{
   return new Promise((resolve,reject)=>{

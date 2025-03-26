@@ -38,7 +38,6 @@ export class ServiceService {
   }
   
   editStatus(id: string) {
-    // return this.http.get(`${this.baseUrl}editStatus/${id}`, { observe: 'response' })
     return this.http.patch(`${this.baseUrl}status`, { id }, { observe: 'response', withCredentials:true })
   }
 

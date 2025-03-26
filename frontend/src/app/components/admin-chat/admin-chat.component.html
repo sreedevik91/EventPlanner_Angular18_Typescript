@@ -45,7 +45,6 @@
                     @for(item of messages; track $index){
                     @if(item.sender===userName){
                     <div class="row pt-2">
-                        <!-- <div class="col-md-6"></div> -->
         
                         <div class="col-md-6 offset-md-6">
                             @if(item.message!==''){
@@ -53,9 +52,7 @@
                                     <small class="col-12 d-block text-end text-muted" style="font-size: 0.75em">{{item.date |
                                         date:'longDate'}}</small>
                                 </div>
-                            <!-- <small class="d-block">{{item.date | date:'shortDate'}}</small> -->
                             <div class="alert alert-success d-inline-block float-end" role="alert">
-                                <!-- {{item.message}} -->
                                 @if(item.type === 'image'){
                                     <img [src]="item.message" alt="" class="img-fluid">
                                 }@else if(item.type === 'video'){
@@ -93,9 +90,7 @@
                                     <small class="col-12 d-block text-start text-muted" style="font-size: 0.75em">{{item.date |
                                         date:'longDate'}}</small>
                                 </div>
-                            <!-- <small class="d-block">{{item.date | date:'shortDate'}}</small> -->
                             <div class="alert alert-primary d-inline-block" role="alert">
-                                <!-- {{item.message}} -->
                                 @if(item.type === 'image'){
                                     <img [src]="item.message" alt="" class="img-fluid">
                                 }@else if(item.type === 'video'){
@@ -122,7 +117,6 @@
                             </div>
                             }
                         </div>
-                        <!-- <div class="col-md-6"></div> -->
                     </div>
                     }
         
@@ -132,7 +126,6 @@
                     @for(item of newChats; track $index){
                     @if(item.chats.sender===userName){
                     <div class="row pt-2">
-                        <!-- <div class="col-md-6"></div> -->
         
                         <div class="col-md-6 offset-md-6">
                             @if(item.chats.message!==''){
@@ -140,9 +133,7 @@
                                     <small class="col-12 d-block text-end text-muted" style="font-size: 0.75em">{{item.chats.date |
                                         date:'longDate'}}</small>
                                 </div>
-                            <!-- <small class="d-block">{{item.chats.date | date:'shortDate'}}</small> -->
                             <div class="alert alert-success d-inline-block float-end" role="alert">
-                                <!-- {{item.chats.message}} -->
                                 @if(item.chats.type === 'image'){
                                     <img [src]="item.chats.message" alt="" class="img-fluid">
                                 }@else if(item.chats.type === 'video'){
@@ -179,9 +170,7 @@
                                     <small class="col-12 d-block text-start text-muted" style="font-size: 0.75em">{{item.chats.date |
                                         date:'longDate'}}</small>
                                 </div>
-                            <!-- <small class="d-block">{{item.chats.date | date:'shortDate'}}</small> -->
                             <div class="alert alert-primary d-inline-block" role="alert">
-                                <!-- {{item.chats.message}} -->
                                 @if(item.chats.type === 'image'){
                                     <img [src]="item.chats.message" alt="" class="img-fluid">
                                 }@else if(item.chats.type === 'video'){
@@ -208,7 +197,6 @@
                             </div>
                             }
                         </div>
-                        <!-- <div class="col-md-6"></div> -->
                     </div>
                     }
         
@@ -216,32 +204,8 @@
                     }
         
         
-                    <!-- <p class="message-container"></p> -->
                 </div>
-        
-<!--         
-                <div class="chat-footer">
-        
-                    <form [formGroup]="chatForm">
-                    <div class="row">
-        
-                        <div class="col-md-10">
-                            <div class="form-group mb-0" formGroupName="chats">
-                                <input type="text" placeholder="Type a message" class="form-control"
-                                    (input)="startedTyping()" formControlName="message" />
-                            </div>
-                        </div>
-        
-                        <div class="col-md-2 text-center align-self-center">
-                            <button class="btn btn-primary btn-sm px-3 rounded-pill" type="submit" (click)="sendMessage()">Send
-                            </button>
-                        </div>
-        
-                    </div>
-                    </form>
-                </div>
-         -->
-           
+      
          <div class="chat-footer">
             <form [formGroup]="chatForm">
               <div class="row align-items-center">

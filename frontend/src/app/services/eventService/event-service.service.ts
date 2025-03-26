@@ -22,7 +22,6 @@ export class EventServiceService {
   }
 
   getAllEvents(params: HttpParams) {
-    // debugger
     return this.http.get(`${this.baseUrl}events`, { observe: 'response', params, withCredentials:true })
   }
 

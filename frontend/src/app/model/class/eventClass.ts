@@ -2,14 +2,12 @@ export class Events {
     _id: string;
     name: string;
     img: string;
-    // services: IEventService[];
     services:string[];
 
     constructor() {
         this._id = ''
         this.name = ''
         this.img = ''
-        // this.services = [{ service: '', providerId: '' }]
         this.services=[]
     }
 }

@@ -9,11 +9,6 @@ const PROTO_PATH = path.join(__dirname, '../../../../proto/user.proto');
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const userProto: any = grpc.loadPackageDefinition(packageDefinition).user;
 
-// // Environment-based configuration
-// const GRPC_HOST = process.env.NODE_ENV === 'production' 
-//   ? 'user-service:50051' 
-//   : 'localhost:50051';
-
 const GRPC_HOST=process.env.GRPC_USER_SERVER || '0.0.0.0:50051'
 
 // Create a gRPC client

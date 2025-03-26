@@ -16,7 +16,6 @@ export abstract class BaseRepository<T extends Document> implements IRepository<
             return await booking.save()
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from Booking BaseRepository: ', error.message) : console.log('Unknown error from Booking BaseRepository: ', error)
-            // throw new Error("Failed to create user");
             return null
         }
 
@@ -27,7 +26,6 @@ export abstract class BaseRepository<T extends Document> implements IRepository<
             return await this.model.findById(bookingId)
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from Booking BaseRepository: ', error.message) : console.log('Unknown error from Booking BaseRepository: ', error)
-            // throw new Error("Failed to create user");
             return null
         }
     }
