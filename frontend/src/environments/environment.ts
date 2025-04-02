@@ -7,7 +7,7 @@ export const environment = {
   apiEventUrl: 'http://localhost/api/event/',
   apiBookingUrl: 'http://localhost/api/booking/',
   apiChatUrl: 'http://localhost/api/chat/',
- 
+  apiWalletUrl:'http://localhost/api/wallet/',
   socketBackendUrl: 'http://localhost', 
 
   googleAuthUrl:'http://localhost/api/user/auth/google',

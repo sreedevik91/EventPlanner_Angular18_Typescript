@@ -28,10 +28,16 @@
                 <app-button [btnClass]="'btn btn-dark ms-3'" data-bs-toggle="modal"
                     [attr.data-bs-target]="'#exampleModal' + item._id">Delete</app-button>
 
-                <app-button [btnClass]=" 'btn btn-dark ms-3' " (onBtnClick)="confirmBooking(item._id)"> Pay &
-                    Confirm</app-button>
+                @if(walletAmount>=bookingAmount){
+                    <app-button [btnClass]="'btn btn-dark ms-3'" data-bs-toggle="modal"
+                    [attr.data-bs-target]="'#exampleModal1' + item._id"> Pay &
+                    Confirm</app-button>  
+                }@else {
+                    <app-button [btnClass]=" 'btn btn-dark ms-3' " (onBtnClick)="confirmBooking(item._id)"> Pay &
+                        Confirm</app-button>
+                }
 
-                <!-- Modal -->
+                <!--Delete Modal -->
                 <div class="modal fade" [id]="'exampleModal' + item._id" tabindex="-1"
                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -52,7 +58,31 @@
                         </div>
                     </div>
                 </div>
-                <!-- Modal -->
+                <!--Delete Modal -->
+
+
+                  <!--Payment Modal -->
+                  <div class="modal fade" [id]="'exampleModal1' + item._id" tabindex="-1"
+                  aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Confirmation</h1>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                  aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                              Choose Payment Method.
+                          </div>
+                          <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="confirmWalletBooking(item._id,'Wallet Payment')">Wallet</button>
+                              <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                              (click)="confirmBooking(item._id)">Online Payment</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!--Payment Modal -->
 
             </div>
 

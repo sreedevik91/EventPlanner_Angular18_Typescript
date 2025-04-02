@@ -241,11 +241,11 @@ export class BookingController implements IBookingController {
 
     async confirmBooking(req: Request, res: Response, next: NextFunction) {
         try {
-            const { bookingId } = req.body
+            const { bookingId,paymentType } = req.body
 
             console.log('booking id to confirm booking:', bookingId);
 
-            const confirmationResponse = await this.bookingServices.confirmBooking(bookingId)
+            const confirmationResponse = await this.bookingServices.confirmBooking(bookingId,paymentType)
 
             confirmationResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, confirmationResponse) : next(new AppError(confirmationResponse))
 

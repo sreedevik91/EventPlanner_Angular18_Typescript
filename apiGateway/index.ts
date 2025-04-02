@@ -46,6 +46,7 @@ const services = [
   { path: '/api/event', target: getEnvVal('EVENT_SERVICE') || 'http://event-service:3003' },
   { path: '/api/booking', target: getEnvVal('BOOKING_SERVICE') || 'http://booking-service:3004' },
   { path: '/api/chat', target: getEnvVal('CHAT_SERVICE') || 'http://chat-service:3005' },
+  { path: '/api/wallet', target: getEnvVal('WALLET_SERVICE') || 'http://wallet-service:3006'},
   { path: '/', target: getEnvVal('FRONTEND') || 'http://nginx:80' },
 ]
 

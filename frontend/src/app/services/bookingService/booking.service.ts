@@ -18,8 +18,8 @@ export class BookingService {
     return this.http.post(`${this.baseUrl}new`, data, { observe: 'response', withCredentials:true })
   }
 
-  confirmBooking(bookingId:string) {
-    return this.http.post(`${this.baseUrl}confirm`, {bookingId}, { observe: 'response', withCredentials:true })
+  confirmBooking(bookingId:string,paymentType?:string) {
+    return this.http.post(`${this.baseUrl}confirm`, {bookingId,paymentType}, { observe: 'response', withCredentials:true })
   }
 
   verifyPayment(razorpayResponse:any) {

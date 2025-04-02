@@ -216,3 +216,14 @@ export interface ISales {
   isConfirmed:boolean;
 }
 
+export interface IWallet{
+    userId: string;
+    amount: number;
+    transactions:IWalletTransactions[]
+  }
+  
+  export interface IWalletTransactions {
+    type: String,
+    amount: number,
+    date: Date
+  }

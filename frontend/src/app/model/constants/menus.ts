@@ -34,4 +34,9 @@ export const Menus=[
         text:'Sales',
         roles:['provider','admin']
     },
+    {
+        path:'wallet',
+        text:'Wallet',
+        roles:['user']
+    },
 ]

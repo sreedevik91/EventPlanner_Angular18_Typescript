@@ -56,6 +56,11 @@ const childRoutes: Routes = [
                 path:'sales',
                 loadComponent:()=>import('../../components/sales/sales.component'),
                 canActivate: [authGuard]
+            },
+            {
+                path:'wallet',
+                loadComponent:()=>import('../../components/user-wallet/user-wallet.component'),
+                canActivate: [authGuard]
             }
 
         ]

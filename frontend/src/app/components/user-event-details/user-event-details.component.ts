@@ -160,7 +160,7 @@ export default class UserEventDetailsComponent implements OnInit,OnDestroy {
 
     this.bookingService.createBooking(this.bookingForm.value).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
-        if (res.status === HttpStatusCodes.CREATED) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('service booking response: ', res.body?.data);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || 'Booking complete.')
           this.hideModal()

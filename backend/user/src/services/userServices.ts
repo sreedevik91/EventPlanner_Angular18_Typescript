@@ -315,6 +315,7 @@ export class UserServices implements IUserService {
             let filterQ: FilterQuery<IUser> = {}
             let sortQ: QueryOptions = {}
             let skip = 0
+            filterQ.role={$ne:'admin'}
             if (userName !== undefined) {
                 filterQ.name = { $regex: `.*${userName}.*`, $options: 'i' }
             }
@@ -322,7 +323,7 @@ export class UserServices implements IUserService {
                 filterQ.isActive = userStatus.toLowerCase().includes('active') ? true : false
             }
             if (role !== undefined) {
-                filterQ.role = { $regex: `.*${role}.*`, $options: 'i' }
+                filterQ.role = { $regex: `.*${role}.*`, $options: 'i' ,$ne:'admin'}
             }
             if (sortOrder !== undefined && sortBy !== undefined) {
                 let order = sortOrder === 'asc' ? 1 : -1

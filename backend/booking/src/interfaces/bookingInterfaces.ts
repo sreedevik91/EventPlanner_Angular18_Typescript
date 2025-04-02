@@ -12,6 +12,7 @@ export interface IBooking extends Document {
   eventId?: string;
   event?: string;
   style?: string;
+  paymentType: string;
   services: IBookedServices[];
   deliveryDate: Date;
   venue: IAddress;
@@ -313,7 +314,7 @@ export interface IBookingService {
   getService(name: string, providerId: string): Promise<IResponse>
   getAllEvents(): Promise<IResponse>
   getServiceByEvent(name: string): Promise<IResponse>
-  confirmBooking(bookingId: string): Promise<IResponse>
+  confirmBooking(bookingId: string,paymentType:string): Promise<IResponse>
   verifyPayment(razorpayResponse:IRazorpayResponse): Promise<IResponse>
   getSalesData(params: IRequestParams): Promise<IResponse>
   getProviderSales(params: IRequestParams): Promise<IResponse>

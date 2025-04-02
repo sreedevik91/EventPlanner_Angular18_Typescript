@@ -11,6 +11,7 @@ import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/htt
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { BookingSearchFilter } from '../../model/class/bookingClass';
+import { WalletServiceService } from '../../services/walletService/wallet-service.service';
 
 declare var Razorpay: any;
 
@@ -29,34 +30,55 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
 
   bookingsList = signal<IBooking[]>([])
 
-  isBookingSuccess: boolean= false
+  isBookingSuccess: boolean = false
   confirmationMessage: string = ''
 
   userService = inject(UserSrerviceService)
   alertService = inject(AlertService)
   bookingService = inject(BookingService)
+  walletService = inject(WalletServiceService)
 
   route = inject(Router)
-  cdr=inject(ChangeDetectorRef)
+  cdr = inject(ChangeDetectorRef)
 
-   bookingPaginationFormObj: BookingSearchFilter = new BookingSearchFilter()
-    paginationParams: HttpParams = new HttpParams()
-    currentPage: number = Number(this.bookingPaginationFormObj.pageNumber)
-    totalBooking=signal<number>(0)
+  bookingPaginationFormObj: BookingSearchFilter = new BookingSearchFilter()
+  paginationParams: HttpParams = new HttpParams()
+  currentPage: number = Number(this.bookingPaginationFormObj.pageNumber)
+  totalBooking = signal<number>(0)
 
   userId: string = ''
   userName: string = ''
+
+  bookingAmount: number = 0
+  walletAmount: number = 0
 
   ngOnInit(): void {
     this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user: any) => {
       this.userId = user.id
       this.userName = user.user
     })
-    this.paginationParams=this.paginationParams.set('userName', this.userName)
-    .set('pageNumber', this.bookingPaginationFormObj.pageNumber)
-    .set('pageSize', this.bookingPaginationFormObj.pageSize)
-    .set('isConfirmed', 'false')
-  this.getBookingsByUser(this.paginationParams)
+    this.paginationParams = this.paginationParams.set('userName', this.userName)
+      .set('pageNumber', this.bookingPaginationFormObj.pageNumber)
+      .set('pageSize', this.bookingPaginationFormObj.pageSize)
+      .set('isConfirmed', 'false')
+    this.getBookingsByUser(this.paginationParams)
+  }
+
+  getUserWallet() {
+    this.walletService.getWallet(this.userId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: HttpResponse<IResponse>) => {
+        if (res.status === HttpStatusCodes.SUCCESS) {
+          this.walletAmount=res.body?.data.amount
+          console.log('walletAmount: ', this.walletAmount);
+        } else {
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
+        }
+      },
+      error: (error: HttpErrorResponse) => {
+        this.alertService.getAlert("alert alert-danger", "Failed to fetch Booking Data", error.error.message)
+      }
+    })
   }
 
   getBookingsByUser(params: HttpParams) {
@@ -65,7 +87,7 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
 
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.bookingsList.set(res.body?.data.bookings)
-          console.log('confirmed bookings: ',this.bookingsList);
+          console.log('confirmed bookings: ', this.bookingsList);
           this.totalBooking.set(res.body?.data.count)
         } else {
           console.log(res.body?.message);
@@ -74,7 +96,6 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
       },
       error: (error: HttpErrorResponse) => {
         this.alertService.getAlert("alert alert-danger", "Failed to fetch Booking Data", error.error.message)
-
       }
     })
   }
@@ -87,7 +108,7 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
           this.bookingsList.update(bookings =>
             bookings.filter(booking => booking._id !== bookingId)
           )
-          this.totalBooking.update(count=>count-1)
+          this.totalBooking.update(count => count - 1)
         } else {
           console.log(res.body?.message);
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
@@ -130,13 +151,46 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
     })
     // }
   }
+  
+  confirmWalletBooking(bookingId: string,paymentType:string) {
+    this.bookingService.confirmBooking(bookingId,paymentType).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: HttpResponse<IResponse>) => {
+        if (res.status === HttpStatusCodes.SUCCESS) {
+          console.log('confirmWalletBooking: ',res.body?.data);
+          if (res.body?.success) {
+            this.isBookingSuccess = true
+            this.confirmationMessage = 'Booking confirmed.'
+          } else {
+            this.isBookingSuccess = false
+            this.confirmationMessage = 'Sorry! Payment failed, please try again!'
+          }
+
+          console.log('razorpay verifyPayment: ', res.body);
+          console.log('isBookingSuccess value: ', this.isBookingSuccess);
+          this.cdr.detectChanges()
+          this.showModal()
+        } else {
+          console.log(res.body?.message);
+          this.confirmationMessage = 'Sorry! Payment failed, please try again!'
+
+          this.cdr.detectChanges()
+
+          this.showModal()
+        }
+      },
+      error: (error: HttpErrorResponse) => {
+        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
+      }
+    })
+  }
 
   confirmBooking(bookingId: string) {
     this.bookingService.confirmBooking(bookingId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           const { razorpayOrderId, amount } = res.body?.data
-          console.log('razorpay orderId: ', razorpayOrderId, ' ,razorpay payment amount:  ', amount);
+          this.bookingAmount=amount
+          console.log('razorpay orderId: ', razorpayOrderId, ' ,razorpay payment amount:  ', amount, ' ,bookingAmount:  ', this.bookingAmount);
           this.openRazorpayModal(amount, razorpayOrderId, bookingId)
         } else {
           console.log(res.body?.message);
@@ -145,7 +199,6 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
       },
       error: (error: HttpErrorResponse) => {
         this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
-
       }
     })
   }
@@ -180,14 +233,14 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
       const rzp = new Razorpay(options);
       rzp.open();
 
-      rzp.on('payment.failed',(response:any)=>{
-        console.log('razorpay error code: ',response.error.code);
-        console.log('razorpay error description',response.error.description);
-        console.log('razorpay error source',response.error.source);
-        console.log('razorpay error step',response.error.step);
-        console.log('razorpay error reason',response.error.reason);
-        console.log('razorpay order id',response.error.metadata.order_id);
-        console.log('razorpay payment id',response.error.metadata.payment_id);
+      rzp.on('payment.failed', (response: any) => {
+        console.log('razorpay error code: ', response.error.code);
+        console.log('razorpay error description', response.error.description);
+        console.log('razorpay error source', response.error.source);
+        console.log('razorpay error step', response.error.step);
+        console.log('razorpay error reason', response.error.reason);
+        console.log('razorpay order id', response.error.metadata.order_id);
+        console.log('razorpay payment id', response.error.metadata.payment_id);
 
         if (response.error.reason === 'payment_cancelled') {
           // User explicitly closed the Razorpay modal
@@ -197,11 +250,11 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
           // Handle other failure reasons
           console.log('Payment failed:', response.error.reason);
           this.alertService.getAlert("alert alert-danger", "Failed", 'Payment failed')
-        }else{
+        } else {
           this.alertService.getAlert("alert alert-danger", "Failed", response.error.reason)
 
         }
-});
+      });
 
     } catch (error) {
       console.log('openRazorpayModal error: ', error);
@@ -214,17 +267,16 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
     this.bookingService.verifyPayment(razorpayResponse).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
-          if(res.body?.success){
+          if (res.body?.success) {
             this.isBookingSuccess = true
             this.confirmationMessage = 'Booking confirmed.'
-          }else{
+          } else {
             this.isBookingSuccess = false
-            this.confirmationMessage =  'Sorry! Payment failed, please try again!'
+            this.confirmationMessage = 'Sorry! Payment failed, please try again!'
           }
 
           console.log('razorpay verifyPayment: ', res.body);
-
-          console.log('isBookingSuccess value: ',this.isBookingSuccess);
+          console.log('isBookingSuccess value: ', this.isBookingSuccess);
           this.cdr.detectChanges()
           this.showModal()
         } else {
@@ -246,8 +298,8 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
   }
 
   showModal() {
-    console.log('isBookingSuccess value when model opens: ',this.isBookingSuccess);
-    console.log('confirmationMessage message when model opens: ',this.confirmationMessage);
+    console.log('isBookingSuccess value when model opens: ', this.isBookingSuccess);
+    console.log('confirmationMessage message when model opens: ', this.confirmationMessage);
 
     this.bookingConfirmModal.nativeElement.style.display = 'block'
   }

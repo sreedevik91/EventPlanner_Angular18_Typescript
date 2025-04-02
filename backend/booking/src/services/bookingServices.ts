@@ -7,6 +7,7 @@ import { getEventByNameGrpc, getEventImgGrpc, getEventsByGrpc } from "../grpc/gr
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
 import { FilterQuery, QueryOptions } from "mongoose";
 import { log } from "@grpc/grpc-js/build/src/logging";
+import { updateWalletByGrpc } from "../grpc/grpcWalletClient";
 
 config()
 
@@ -24,7 +25,7 @@ export class BookingService implements IBookingService {
         try {
             const bookingCount = await this.bookingRepository.getTotalBookings()
             console.log('getTotalServices service response: ', bookingCount);
-           
+
             return bookingCount ? { success: true, data: bookingCount } : { success: false, message: SERVICE_RESPONSES.totalBookingError }
 
         } catch (error: unknown) {
@@ -79,7 +80,7 @@ export class BookingService implements IBookingService {
                 console.log('bookingData data: ', bookingData);
 
                 console.log('bookingData service response: ', newBooking);
-               
+
                 addBookingResponse = newBooking ? { success: true, data: newBooking, message: SERVICE_RESPONSES.addBookingSuccess } : { success: false, message: SERVICE_RESPONSES.addBookingError }
 
             } else if (event) {
@@ -110,7 +111,7 @@ export class BookingService implements IBookingService {
                 console.log('bookingData data: ', bookingData);
 
                 console.log('bookingData service response: ', newBooking);
-              
+
                 addBookingResponse = newBooking ? { success: true, data: newBooking } : { success: false, message: SERVICE_RESPONSES.addBookingError }
 
             }
@@ -128,7 +129,7 @@ export class BookingService implements IBookingService {
     async getBookings(params: IRequestParams) {
 
         try {
-            const { userName, pageNumber, pageSize,isConfirmed, sortBy, sortOrder } = params
+            const { userName, pageNumber, pageSize, isConfirmed, sortBy, sortOrder } = params
             console.log('search filter params:', userName, pageNumber, pageSize, sortBy, sortOrder);
             let filterQ: FilterQuery<IBooking> = {}
             let sortQ: QueryOptions = {}
@@ -137,12 +138,12 @@ export class BookingService implements IBookingService {
                 filterQ.user = { $regex: `.*${userName}.*`, $options: 'i' }
             }
 
-            if(isConfirmed!==undefined){
-                let value:boolean= (isConfirmed==='true')? true : false
-                filterQ.isConfirmed=value
+            if (isConfirmed !== undefined) {
+                let value: boolean = (isConfirmed === 'true') ? true : false
+                filterQ.isConfirmed = value
             }
 
-            if(isConfirmed==='true') sortQ.orderDate=-1
+            if (isConfirmed === 'true') sortQ.orderDate = -1
 
             if (sortOrder !== undefined && sortBy !== undefined) {
                 let order = sortOrder === 'asc' ? 1 : -1
@@ -156,22 +157,22 @@ export class BookingService implements IBookingService {
             console.log('filterQ: ', filterQ);
             console.log('sortQ: ', sortQ);
 
-            if(pageNumber!==undefined && pageSize!==undefined){
+            if (pageNumber !== undefined && pageSize !== undefined) {
                 skip = (Number(pageNumber) - 1) * Number(pageSize)
             }
 
             console.log('skip: ', skip);
 
             let bookingsData = await this.bookingRepository.getBookingsAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
-                console.log('all bookings data : ', bookingsData);
+            console.log('all bookings data : ', bookingsData);
 
             let data: IBookingsDataOut = { bookings: [], count: 0 }
             if (bookingsData) {
                 console.log('all bookings and total count: ', bookingsData[0].bookings, bookingsData[0].bookingsCount);
 
                 data = {
-                    bookings: bookingsData[0].bookings.length>0 ? bookingsData[0].bookings : [],
-                    count: bookingsData[0].bookingsCount.length>0 ?  bookingsData[0].bookingsCount[0].totalBookings : 0
+                    bookings: bookingsData[0].bookings.length > 0 ? bookingsData[0].bookings : [],
+                    count: bookingsData[0].bookingsCount.length > 0 ? bookingsData[0].bookingsCount[0].totalBookings : 0
                 }
             } else {
                 console.log('No data available: ', bookingsData);
@@ -190,10 +191,25 @@ export class BookingService implements IBookingService {
 
     async deleteBooking(id: string) {
         try {
+            let amount = 0
+            const booking = await this.bookingRepository.getBookingById(id)
+
+            if (booking) {
+                booking.services.forEach(e => {
+                    amount += e.choicePrice
+                })
+
+                console.log('booking total amount:', amount);
+
+                const updateWallet = await updateWalletByGrpc(booking?.userId, 'credit', amount)
+                console.log('update wallet response: ', updateWallet);
+
+            }
+
             const deleteBooking = await this.bookingRepository.deleteBooking(id)
 
             console.log('deleteBooking service response: ', deleteBooking);
-           
+
             return deleteBooking ? { success: true, data: deleteBooking, message: SERVICE_RESPONSES.deleteBookingSuccess } : { success: false, message: SERVICE_RESPONSES.deleteBookingError }
 
         } catch (error: unknown) {
@@ -206,6 +222,7 @@ export class BookingService implements IBookingService {
 
     async deleteBookedServices(bookingId: string, serviceName: string, serviceId: string) {
         try {
+            
             const data = await this.bookingRepository.updateBooking(bookingId, { $pull: { services: { _id: serviceId, serviceName } } })
 
             console.log('deleteBookedServices service response: ', data);
@@ -232,7 +249,7 @@ export class BookingService implements IBookingService {
             const booking = await this.bookingRepository.getBookingById(id)
 
             console.log('getEventById service response: ', booking);
-         
+
             return booking ? { success: true, data: booking } : { success: false, message: SERVICE_RESPONSES.getBookingError }
 
         } catch (error: unknown) {
@@ -248,7 +265,7 @@ export class BookingService implements IBookingService {
             const booking = await this.bookingRepository.getBookingByUserId(id)
 
             console.log('getEventById service response: ', booking);
-           
+
             return booking ? { success: true, data: booking } : { success: false, message: SERVICE_RESPONSES.getBookingError }
 
         } catch (error: unknown) {
@@ -449,7 +466,7 @@ export class BookingService implements IBookingService {
 
     }
 
-    async confirmBooking(bookingId: string) {
+    async confirmBooking(bookingId: string,paymentMethod:string) {
         try {
 
             const booking = await this.bookingRepository.getBookingById(bookingId)
@@ -458,13 +475,24 @@ export class BookingService implements IBookingService {
                 sum += b.choicePrice
                 return sum
             }, 0)
-            console.log('booking Id for razorpay order id: ', bookingId, ' ,total amount for razorpay order id: ', totalAmount);
 
-            const razorpayOrderId = await this.paymentService.createOrder(bookingId, totalAmount!)
-            console.log('razorpay order id: ', razorpayOrderId);
+            if(paymentMethod && booking){
+                const updateBooking = await this.bookingRepository.updateBooking(bookingId, { $set: { isConfirmed: true, orderDate: Date.now(),paymentType: paymentMethod} })
+                const updateWallet= await updateWalletByGrpc(booking?.userId,'debit',totalAmount!)
+                console.log('updated wallet:',updateWallet);
+                
+                return updateBooking ? { success: true, data: {} } : { success: false, message: SERVICE_RESPONSES.paymentError }
 
-            return razorpayOrderId ? { success: true, data: { razorpayOrderId, amount: totalAmount! * 100 } } : { success: false, message: SERVICE_RESPONSES.proceedPaymentError }
-
+            }else{
+                console.log('booking Id for razorpay order id: ', bookingId, ' ,total amount for razorpay order id: ', totalAmount);
+    
+                const razorpayOrderId = await this.paymentService.createOrder(bookingId, totalAmount!)
+                console.log('razorpay order id: ', razorpayOrderId);
+    
+                return razorpayOrderId ? { success: true, data: { razorpayOrderId, amount: totalAmount! * 100 } } : { success: false, message: SERVICE_RESPONSES.proceedPaymentError }
+    
+            }
+            
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getServiceByEvent service: ', error.message) : console.log('Unknown error from getServiceByEvent service: ', error)
 
@@ -549,7 +577,7 @@ export class BookingService implements IBookingService {
 
             if (pageNumberEvent !== '' && pageNumberEvent !== undefined) {
                 skipEvent = (Number(pageNumberEvent) - 1) * Number(pageSize)
-            } 
+            }
             if (pageNumberService !== '' && pageNumberService !== undefined) {
                 skipService = (Number(pageNumberService) - 1) * Number(pageSize)
             }
@@ -736,7 +764,7 @@ export class BookingService implements IBookingService {
             const chartData = await this.bookingRepository.getAdminChartData(filter)
 
             let data: IChartDataResponseAdmin = { servicesChartData: { label: [], amount: [] }, eventsChartData: { label: [], amount: [] } }
-          
+
             if (chartData) {
                 console.log('chartData: ', chartData,
                     ', servicesChartData response: ', chartData[0].servicesChartData,
@@ -765,7 +793,7 @@ export class BookingService implements IBookingService {
 
             const chartData = await this.bookingRepository.getProviderChartData(filter, name)
 
-            let data: IChartDataResponseProvider = { providerChartData: { label: [], amount: []} }
+            let data: IChartDataResponseProvider = { providerChartData: { label: [], amount: [] } }
 
             if (chartData) {
                 console.log('chartData: ', chartData,
@@ -786,7 +814,7 @@ export class BookingService implements IBookingService {
 
             return { success: false, message: SERVICE_RESPONSES.commonError }
         }
-    } 
+    }
 
     async getAdminPaymentList() {
         try {
@@ -795,7 +823,7 @@ export class BookingService implements IBookingService {
 
             console.log('admin payment list:', paymentList);
 
-            return paymentList ? { success: true, data:paymentList } : { success: false, message: SERVICE_RESPONSES.fetchDataError }
+            return paymentList ? { success: true, data: paymentList } : { success: false, message: SERVICE_RESPONSES.fetchDataError }
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getAdminPaymentList service: ', error.message) : console.log('Unknown error from getAdminPaymentList service: ', error)

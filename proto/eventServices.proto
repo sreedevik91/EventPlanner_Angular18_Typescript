@@ -7,7 +7,6 @@ service ServiceDetails{
     rpc GetAvailableServicesByProvider(ServiceByProviderRequest) returns (AvailableServiceResponse);
     rpc GetAvailableServiceByProviderAndName(ServiceRequest) returns (ServiceResponse);
     rpc GetServiceImg(ServiceImgRequest) returns (ServiceImgResponse); 
-
 }
 
 message serviceType{
