@@ -69,6 +69,7 @@ services:
       - GRPC_SERVICE_SERVER=services-service:50052
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_EVENT_SERVER=event-service:50053
+      - GRPC_WALLET_SERVER=wallet-service:50054
     networks:
       - event_planner_network
     depends_on:
@@ -92,6 +93,7 @@ services:
       - GRPC_EVENT_SERVER=event-service:50053
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_SERVICE_SERVER=services-service:50052
+      - GRPC_WALLET_SERVER=wallet-service:50054
     networks:
       - event_planner_network
     depends_on:
@@ -111,6 +113,7 @@ services:
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_SERVICE_SERVER=services-service:50052
       - GRPC_EVENT_SERVER=event-service:50053
+      - GRPC_WALLET_SERVER=wallet-service:50054
     networks:
       - event_planner_network
     depends_on:
@@ -129,6 +132,25 @@ services:
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_SERVICE_SERVER=services-service:50052
       - GRPC_EVENT_SERVER=event-service:50053
+      - GRPC_WALLET_SERVER=wallet-service:50054
+    networks:
+      - event_planner_network
+    depends_on:
+      - mongodb
+
+  wallet-service:
+    build:
+      context: .
+      dockerfile: backend/wallet/Dockerfile
+    ports:
+      - "50054:50054"
+    environment:
+      - PORT=3006
+      - MONGO_URL=mongodb://mongodb:27017/walletService
+      - GRPC_USER_SERVER=user-service:50051
+      - GRPC_SERVICE_SERVER=services-service:50052
+      - GRPC_EVENT_SERVER=event-service:50053
+      - GRPC_WALLET_SERVER=wallet-service:50054
     networks:
       - event_planner_network
     depends_on:

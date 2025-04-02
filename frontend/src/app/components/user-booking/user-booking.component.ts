@@ -14,7 +14,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-user-booking',
   standalone: true,
-  imports: [DatePipe, ButtonComponent, AlertComponent],
+  imports: [DatePipe, AlertComponent],
   templateUrl: './user-booking.component.html',
   styleUrl: './user-booking.component.css'
 })

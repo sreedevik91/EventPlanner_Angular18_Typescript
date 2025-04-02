@@ -88,6 +88,10 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
     type: String,
     required: true
   },
+  paymentType: {
+    type: String,
+    default:'Online Payment'
+  },
   totalCount: {
     type: Number,
     required: true

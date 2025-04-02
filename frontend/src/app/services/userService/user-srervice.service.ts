@@ -35,12 +35,12 @@ export class UserSrerviceService {
   }
 
   googleSignin() {
-    debugger
+    // debugger
     window.location.href = environment.googleAuthUrl;
   }
 
   handleGoogleSignin() {
-    return this.http.get(`${this.baseUrl}data`, { observe: 'response', withCredentials:true  })
+    return this.http.get(`${this.baseUrl}data`, { observe: 'response', withCredentials:true })
   }
 
   sendResetEmail(data: any) {
@@ -66,7 +66,7 @@ export class UserSrerviceService {
   }
 
   verifyUserEmail(data: any) {
-    return this.http.post(`${this.baseUrl}email/verify`, data,  { observe: 'response', withCredentials:true  })
+    return this.http.post(`${this.baseUrl}email/verify`, data,  { observe: 'response', withCredentials:true })
   }
 
   verifyUser(id: string) {

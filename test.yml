@@ -1,0 +1,116 @@
+services:
+  api-gateway:
+    image: dreamevents.azurecr.io/angular_project-api-gateway:latest
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - USER_SERVICE=http://user-service:3001
+      - SERVICES_SERVICE=http://services-service:3002
+      - EVENT_SERVICE=http://event-service:3003
+      - BOOKING_SERVICE=http://booking-service:3004
+      - CHAT_SERVICE=http://chat-service:3005
+      - FRONTEND=http://nginx
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - GRPC_USER_SERVER=user-service:50051
+      - REDIS_CONNECTION_STRING=${REDIS_CONNECTION_STRING}
+    networks:
+      - event_planner_network
+    depends_on:
+      - user-service
+
+  user-service:
+    image: dreamevents.azurecr.io/angular_project-user-service:latest
+    environment:
+      - PORT=3001
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - GOOGLE_ID=${GOOGLE_ID}
+      - GOOGLE_SECRET=${GOOGLE_SECRET}
+      - EMAIL_APP_PASSWORD=${EMAIL_APP_PASSWORD}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_URL=http://nginx/api/
+      - GOOGLE_CALLBACK_URL=http://nginx/api/user/auth/google/callback
+      - SESSION_SECRET_KEY=${SESSION_SECRET_KEY}
+      - GRPC_USER_SERVER=user-service:50051
+      - MONGO_URL=${USER_MONGO_URL}
+      - REDIS_CONNECTION_STRING=${REDIS_CONNECTION_STRING}
+    networks:
+      - event_planner_network
+
+  services-service:
+    image: dreamevents.azurecr.io/angular_project-services-service:latest
+    environment:
+      - PORT=3002
+      - SERVICE_IMG_URL=http://nginx/api/service/uploads/
+      - EMAIL_APP_PASSWORD=${EMAIL_APP_PASSWORD}
+      - EMAIL_USER=${EMAIL_USER}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - MONGO_URL=${SERVICES_MONGO_URL}
+      - GRPC_SERVICE_SERVER=services-service:50052
+      - GRPC_USER_SERVER=user-service:50051
+      - GRPC_EVENT_SERVER=event-service:50053
+    networks:
+      - event_planner_network
+
+  event-service:
+    image: dreamevents.azurecr.io/angular_project-event-service:latest
+    environment:
+      - PORT=3003
+      - EVENT_IMG_URL=http://nginx/api/event/uploads/
+      - EMAIL_APP_PASSWORD=${EMAIL_APP_PASSWORD}
+      - EMAIL_USER=${EMAIL_USER}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - MONGO_URL=${EVENT_MONGO_URL}
+      - GRPC_EVENT_SERVER=event-service:50053
+      - GRPC_USER_SERVER=user-service:50051
+      - GRPC_SERVICE_SERVER=services-service:50052
+    networks:
+      - event_planner_network
+
+  booking-service:
+    image: dreamevents.azurecr.io/angular_project-booking-service:latest
+    environment:
+      - PORT=3004
+      - EMAIL_APP_PASSWORD=${EMAIL_APP_PASSWORD}
+      - EMAIL_USER=${EMAIL_USER}
+      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
+      - RAZORPAY_SECRET=${RAZORPAY_SECRET}
+      - MONGO_URL=${BOOKING_MONGO_URL}
+      - GRPC_USER_SERVER=user-service:50051
+      - GRPC_SERVICE_SERVER=services-service:50052
+      - GRPC_EVENT_SERVER=event-service:50053
+    networks:
+      - event_planner_network
+
+  chat-service:
+    image: dreamevents.azurecr.io/angular_project-chat-service:latest
+    environment:
+      - PORT=3005
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - MONGO_URL=${CHAT_MONGO_URL}
+      - GRPC_USER_SERVER=user-service:50051
+      - GRPC_SERVICE_SERVER=services-service:50052
+      - GRPC_EVENT_SERVER=event-service:50053
+    networks:
+      - event_planner_network
+
+  nginx:
+    image: dreamevents.azurecr.io/frontend-nginx:latest
+    ports:
+      - "80:80"
+    networks:
+      - event_planner_network
+    depends_on:
+      - api-gateway
+
+networks:
+  event_planner_network:
+    driver: bridge
+

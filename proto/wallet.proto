@@ -1,0 +1,33 @@
+
+  syntax = "proto3";
+
+  package wallet;
+
+  service WalletProto {
+    rpc UpdateWallet (UpdateRequest) returns (GetResponse);
+    rpc GetWallet (GetRequest) returns (GetResponse);
+  }
+
+ message transaction {
+    string type=1;
+    int32 amount=2;
+    string date=3;
+  }
+
+  message UpdateRequest {
+    string userId = 1;
+    string type = 2;
+    int32 amount = 3;
+  }
+
+  message GetResponse {
+    string id = 1;   
+    string userId = 2;   
+    int32 amount = 3;  
+    repeated transaction transactions = 4;
+  }
+
+ message GetRequest {
+    string userId = 1; 
+  }
+

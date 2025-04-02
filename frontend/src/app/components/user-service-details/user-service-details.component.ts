@@ -127,14 +127,15 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
   }
 
   saveBooking() {
-    console.log('service booking form values: ', this.bookingForm.value);
-    console.log('is service booking form valid: ', this.bookingForm.valid);
+    // console.log('service booking form values: ', this.bookingForm.value);
+    // console.log('is service booking form valid: ', this.bookingForm.valid);
 
     this.bookingService.createBooking(this.bookingForm.value).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
+        debugger
         console.log('saveBooking response from backend: ', res);
         
-        if (res.status === HttpStatusCodes.CREATED) {
+        if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('service booking response: ', res.body?.data);
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message || 'Booking complete')
           this.hideModal()
@@ -152,22 +153,22 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
   }
 
   isOption(name: string, choiceType:string,choiceImg:string) {
-    console.log('choiceName to check isOption: ', name,choiceType,choiceImg);
+    // console.log('choiceName to check isOption: ', name,choiceType,choiceImg);
 
     const serviceArray = <FormArray>this.bookingForm.get('services')
-    console.log('serviceArray: ', serviceArray);
+    // console.log('serviceArray: ', serviceArray);
     
     const isOption = serviceArray.value.some((service: any) => {
       return service.choiceName === name && service.choiceType===choiceType && service.choiceImg===choiceImg
     })
-    console.log('value of isOption: ', isOption);
+    // console.log('value of isOption: ', isOption);
     return isOption
   }
 
   setChoices(event: Event, index: number, name: string, type: string, price: number) {
     let target = <HTMLInputElement>event.target
-    console.log('setChoices target value:', target, target?.checked);
-    console.log('setChoices index value:', index);
+    // console.log('setChoices target value:', target, target?.checked);
+    // console.log('setChoices index value:', index);
     const choicesArray = <FormArray>this.bookingForm.get('services')
 
     if (target?.checked) {
@@ -190,7 +191,7 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
 
   formNext() {
     this.step.set(this.step() + 1)
-    console.log('step 1 from value: ', this.bookingForm.value);
+    // console.log('step 1 from value: ', this.bookingForm.value);
     this.dataService.setBookingFormData(this.bookingForm.value)
     this.bookingFromObj = this.dataService.getBookingFormData()
     this.initialiseBookingForm()
@@ -198,13 +199,13 @@ export default class UserServiceDetailsComponent implements OnInit,OnDestroy {
 
   formPrevious() {
     this.step.set(this.step() - 1)
-    console.log('step 2 from value: ', this.bookingForm.value);
+    // console.log('step 2 from value: ', this.bookingForm.value);
     this.dataService.setBookingFormData(this.bookingForm.value)
     this.bookingFromObj = this.dataService.getBookingFormData()
     this.initialiseBookingForm()
 
     const formArray = (<FormArray>this.bookingForm.get('services'))
-    console.log('step 2 formArray value: ', formArray.value);
+    // console.log('step 2 formArray value: ', formArray.value);
 
   }
 
