@@ -13,6 +13,6 @@ app.use(express.json())
 app.use('/',bookingRoute)
 app.use(errorHandler)
 
-app.listen(process.env.PORT || 3004, () => {
+app.listen(Number(process.env.PORT) || 3004,"0.0.0.0", () => {
     console.log('booking server running on port 3004');
 })
