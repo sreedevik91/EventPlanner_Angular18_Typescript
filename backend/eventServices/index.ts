@@ -9,6 +9,10 @@ const app=express()
 config()
 connectDb()
 
+app.get('/health', (req, res) => {
+    res.status(200).send('Welcome to services service');
+  });
+
 app.use('/',serviceRoute)
 app.use(errorHandler)
 

@@ -10,6 +10,11 @@ config()
 connectDb()
 
 app.use(express.json())
+
+app.get('/health', (req, res) => {
+    res.status(200).send('Welcome to backend-service');
+  });
+
 app.use('/',bookingRoute)
 app.use(errorHandler)
 

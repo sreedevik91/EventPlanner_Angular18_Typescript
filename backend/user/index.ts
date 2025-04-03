@@ -10,6 +10,10 @@ const app = express()
 config()
 connectDb()
 
+app.get('/health', (req, res) => {
+  res.status(200).send('Welcome to user service');
+});
+
 app.use('/', userRoute)
 app.use(errorHandler)
 

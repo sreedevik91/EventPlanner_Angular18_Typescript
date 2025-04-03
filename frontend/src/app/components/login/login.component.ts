@@ -96,7 +96,7 @@ export default class LoginComponent implements OnDestroy{
             this.alertService.getAlert("alert alert-danger", "Login Failed!", error.error.message)
             this.router.navigateByUrl(`verifyEmail`)
           } else {
-            this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
+            this.alertService.getAlert("alert alert-danger", "Login Failed", error.message||'')
           } 
 
         } else if (error.status === HttpStatusCodes.FORBIDDEN) {

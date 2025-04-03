@@ -11,6 +11,9 @@ config()
 connectDb()
 
 app.use(express.json())
+app.get('/health', (req, res) => {
+    res.status(200).send('Welcome to event service');
+  });
 app.use('/',eventRoute)
 app.use(errorHandler)
 

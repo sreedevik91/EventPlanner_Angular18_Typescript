@@ -40,6 +40,10 @@ morgan.token('host', function (req: Request, res: Response) { return req.hostnam
 
 app.use(morgan(':method :url :status [:date[clf]] - :response-time ms :host', { stream: writeStream }))
 
+app.get('/health', (req, res) => {
+  res.status(200).send('Welcome to api gateway');
+});
+
 const services = [
   { path: '/api/user', target: getEnvVal('USER_SERVICE') || 'http://user-service:3001' },
   { path: '/api/service', target: getEnvVal('SERVICES_SERVICE') || 'http://services-service:3002' },
@@ -95,12 +99,12 @@ const createProxy = ({ path, target }: ProxyOptions) => {
 
 }
 
-
 services.forEach(createProxy)
 
-app.listen(Number(process.env.PORT) || 4000, "0.0.0.0", () => {
-  console.log('Server running on port 4000');
-
+const serverPort = Number(process.env.PORT) || 4000;
+console.log(`Starting server on port ${serverPort}...`);
+app.listen(serverPort, "0.0.0.0", () => {
+  console.log(`Server running on port ${serverPort}`);
 })
 
 
