@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   });
 const startExpressServer=()=>{
     return new Promise((resolve)=>{
-        app.listen(process.env.PORT || 3001, () => {
+        app.listen(Number(process.env.PORT) || 3001,"0.0.0.0", () => {
             console.log('user server running on port 3001');
             resolve(true)
         })

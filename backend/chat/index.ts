@@ -28,7 +28,7 @@ app.use(express.json())
 app.use('/',chatRoute)
 app.use(errorHandler)
 
-httpServer.listen(process.env.PORT || 3005, () => {
+httpServer.listen(Number(process.env.PORT) || 3005,"0.0.0.0", () => {
     console.log('chat server running on port 3005');
 })
 

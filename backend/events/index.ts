@@ -16,7 +16,7 @@ app.use(errorHandler)
 
 const startExpressServer=()=>{
     return new Promise((resolve)=>{
-        app.listen(process.env.PORT || 3003, () => {
+        app.listen(Number(process.env.PORT) || 3003,"0.0.0.0", () => {
             console.log('events server running on port 3003');
         })
         resolve(true)

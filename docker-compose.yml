@@ -12,6 +12,7 @@ services:
       - EVENT_SERVICE=http://event-service:3003
       - BOOKING_SERVICE=http://booking-service:3004
       - CHAT_SERVICE=http://chat-service:3005
+      - WALLET_SERVICE=http://wallet-service:3006
       - FRONTEND=http://nginx
       - JWT_ACCESS_SECRET=sreedeviEventPlannerApplicationAccessToken
       - JWT_REFRESH_SECRET=sreedeviEventPlannerApplicationRefreshToken

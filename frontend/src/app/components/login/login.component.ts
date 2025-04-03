@@ -92,7 +92,7 @@ export default class LoginComponent implements OnDestroy{
       error: (error: HttpErrorResponse) => {
         console.log(error);
         if (error.status === HttpStatusCodes.BAD_REQUEST) {
-          if (error.error.emailNotVerified) {
+          if (error.error && error.error.emailNotVerified) {
             this.alertService.getAlert("alert alert-danger", "Login Failed!", error.error.message)
             this.router.navigateByUrl(`verifyEmail`)
           } else {
