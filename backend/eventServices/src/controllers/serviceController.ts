@@ -69,7 +69,7 @@ export class ServiceController implements IServiceController {
             const newService = await this.serviceServices.addService(data)
             console.log('createService controller response: ', newService);
 
-            newService?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newService) : next(new AppError(newService))
+            newService?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.CREATED, newService) : next(new AppError(newService))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from createService controller: ', error.message) : console.log('Unknown error from createService controller: ', error)

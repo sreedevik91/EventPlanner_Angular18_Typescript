@@ -4,7 +4,6 @@ import path from 'path'
 
 const PROTO_PATH_GATEWAY=path.join(__dirname,'../../proto/user.proto')
 
-
 const packageDefinition=protoLoader.loadSync(PROTO_PATH_GATEWAY)
 const userGatewayProto:any=grpc.loadPackageDefinition(packageDefinition).user
 

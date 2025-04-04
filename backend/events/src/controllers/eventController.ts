@@ -48,7 +48,7 @@ export class EventController implements IEventController {
             const newEvent = await this.eventServices.addEvent(eventData)
             console.log('createService controller response: ', newEvent);
 
-            newEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newEvent) : next(new AppError(newEvent))
+            newEvent?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.CREATED, newEvent) : next(new AppError(newEvent))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from createEvent controller: ', error.message) : console.log('Unknown error from createEvent controller: ', error)
