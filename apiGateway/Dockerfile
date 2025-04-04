@@ -1,7 +1,7 @@
 
 # Stage 1: Build environment
  
-FROM node:18 AS builder 
+FROM node:18-slim AS builder 
 
 # Install system build tools (Debian)
 RUN apt-get update && apt-get install -y python3 make g++
@@ -39,7 +39,7 @@ RUN ln -s /app/proto ./dist/proto
 
 # Stage 2: Production environment
 
-FROM node:18
+FROM node:18-slim
 
 # Set working directory
 WORKDIR /app/apiGateway

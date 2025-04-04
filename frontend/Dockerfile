@@ -1,7 +1,7 @@
 
 # Step 1: Build the Angular app
 
-FROM node:18 AS build-stage
+FROM node:18-slim AS build-stage
 WORKDIR /app/frontend
 # COPY package*.json ./
 COPY frontend/package.json frontend/package-lock.json ./
