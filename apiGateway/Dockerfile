@@ -6,6 +6,8 @@ FROM node:18 AS builder
 # Install system build tools (Debian)
 RUN apt-get update && apt-get install -y python3 make g++
 
+USER root
+
 # Set working directory inside container
 WORKDIR /app/apiGateway
 

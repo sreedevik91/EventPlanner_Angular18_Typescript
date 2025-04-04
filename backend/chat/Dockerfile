@@ -4,6 +4,8 @@ FROM node:18
 # Install system build tools (Debian)
 RUN apt-get update && apt-get install -y python3 make g++
 
+USER root
+
 # Navigate to the service directory
 WORKDIR /app/backend/chat
 
