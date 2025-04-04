@@ -19,7 +19,6 @@ const allowedOrigins: string[] = [
   'http://localhost:4200'   // Angular dev server
 ];
 
-
 app.use(cors({
   origin: 'http://localhost', // Ensure full URL
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
