@@ -1,7 +1,7 @@
 
 # Stage 1: Build environment
  
-FROM node:18-slim AS builder 
+FROM node:18 AS builder 
 
 # Install system build tools (Debian)
 RUN apt-get update && apt-get install -y python3 make g++
@@ -18,9 +18,14 @@ COPY apiGateway/package.json apiGateway/package-lock.json ./
 # Install production dependencies (including grpc/proto-loader)
 
 RUN npm ci 
+# Ensure global TypeScript
+RUN npm install -g typescript 
 
 # Verify TypeScript installation and set execute permissions
 RUN ls -la node_modules/.bin/tsc && chmod +x node_modules/.bin/tsc
+
+# Update PATH to include local node_modules/.bin
+ENV PATH="/app/apiGateway/node_modules/.bin:/usr/local/lib/node_modules/.bin:$PATH"
 
 # Copy proto files from root directory
 
@@ -39,7 +44,7 @@ RUN ln -s /app/proto ./dist/proto
 
 # Stage 2: Production environment
 
-FROM node:18-slim
+FROM node:18
 
 # Set working directory
 WORKDIR /app/apiGateway

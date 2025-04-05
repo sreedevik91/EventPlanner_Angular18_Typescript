@@ -1,11 +1,15 @@
 
 # Step 1: Build the Angular app
 
-FROM node:18-slim AS build-stage
+FROM node:18 AS build-stage
 WORKDIR /app/frontend
 # COPY package*.json ./
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
+RUN npm install -g typescript
+
+ENV PATH="/app/frontend/node_modules/.bin:/usr/local/lib/node_modules/.bin:$PATH"
+
 COPY frontend/ .
 # RUN npm run build --prod 
 
