@@ -236,4 +236,5 @@ export const SERVICE_RESPONSES = {
     usersCountError: 'Could not get users count',
     verifyUserError:'Could not verify user',
     verifyUserSuccess: 'User verified',
+    googleUserUpdateError:'Could not update user, try login in using gmail account'
 }

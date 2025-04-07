@@ -7,3 +7,4 @@ C:\Users\USER\Documents\BroCampTasks\Angular_Project\apiGateway\logs\20250327-00
 C:\Users\USER\Documents\BroCampTasks\Angular_Project\apiGateway\logs\20250401-0000-01-app.log
 C:\Users\USER\Documents\BroCampTasks\Angular_Project\apiGateway\logs\20250402-1127-01-app.log
 C:\Users\USER\Documents\BroCampTasks\Angular_Project\apiGateway\logs\20250405-0000-01-app.log
+C:\Users\USER\Documents\BroCampTasks\Angular_Project\apiGateway\logs\20250408-0000-01-app.log

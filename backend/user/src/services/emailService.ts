@@ -38,7 +38,7 @@ export class EmailService implements IEmailService{
             transporter.sendMail(mailOptions, (error, info) => {
                 // console.log(error)
                 if (error) {
-                    console.log(error);
+                    console.log('Email send error: ',error);
                     resolve(false)
                 } else {
                     resolve(true)

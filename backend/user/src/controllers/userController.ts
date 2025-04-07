@@ -12,7 +12,7 @@ export class UserController implements IUserController {
             const isUser = await this.userService.register(req.body)
             console.log('response from register user: ', isUser);
 
-            isUser?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, isUser) : next(new AppError(isUser))
+            isUser?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.CREATED, isUser) : next(new AppError(isUser))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from registerUser controller: ', error.message) : console.log('Unknown error from registerUser controller: ', error)
