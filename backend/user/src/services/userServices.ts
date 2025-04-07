@@ -223,6 +223,8 @@ export class UserServices implements IUserService {
                         console.log('No token generated');
                     }
 
+                    
+
                     let cookieData = await this.cookieService.getCookieOptions(user, accessToken!, refreshToken!)
 
                     return { cookieData, success: true, emailVerified: true }

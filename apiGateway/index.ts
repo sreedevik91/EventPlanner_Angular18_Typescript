@@ -15,12 +15,14 @@ const app = express()
 dotenv.config()
 
 const allowedOrigins: string[] = [
-  'http://localhost',       // Frontend on port 80 (Nginx)
-  'http://localhost:4200'   // Angular dev server
+  'http://localhost',      // Frontend on port 80 (Nginx)
+  'http://localhost:4200', // Angular dev server
+  'https://dreamevents.shop'  
 ];
 
 app.use(cors({
-  origin: 'http://localhost', // Ensure full URL
+  // origin: 'http://localhost', // Ensure full URL
+  origin: 'https://dreamevents.shop', // Ensure full URL
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

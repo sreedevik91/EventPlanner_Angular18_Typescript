@@ -20,7 +20,8 @@ export class CookieService implements ICookieService {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
             sameSite: 'lax', // Required for cross-origin cookies
-            domain: process.env.NODE_ENV === 'production' ? 'dreamevents.shop' : 'localhost', // 👈 Match your frontend domain
+            // domain: process.env.NODE_ENV === 'production' ? '.dreamevents.shop' : 'localhost', // 👈 Match your frontend domain,// Use '.dreamevents.shop' for subdomains
+            ...(process.env.NODE_ENV === 'production' && { domain: '.dreamevents.shop' }) // only set in prod
         }
         return { payload, accessToken, refreshToken, options }
 
