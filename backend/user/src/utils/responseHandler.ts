@@ -23,7 +23,8 @@ export class ResponseHandler {
         const { refreshToken, accessToken, options } = cookieData
         res.cookie('refreshToken', refreshToken, options)
         res.cookie('accessToken', accessToken, options)
-        console.log('Cookies set:', { refreshToken, accessToken, options });
+        console.log('Response headers:', res.getHeaders());
+        console.log('Cookies set:', { refreshToken, accessToken, options }, res.cookie);
         res.redirect('/googleLogin/callback')
     }
 
