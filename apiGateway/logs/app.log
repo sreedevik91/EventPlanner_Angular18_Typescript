@@ -414,3 +414,9 @@ GET /googleLogin/login.component.css.map 404 [07/Apr/2025:19:13:28 +0000] - 9.07
 POST /api/user/register 201 [07/Apr/2025:19:14:09 +0000] - 425.420 ms localhost
 GET /chunk-3W7M4UWT.js 200 [07/Apr/2025:19:14:09 +0000] - 8.509 ms localhost
 GET /?token=og3B50q2tGZW - [07/Apr/2025:19:17:05 +0000] - - ms localhost
+GET /login 200 [08/Apr/2025:07:36:41 +0000] - 456.351 ms localhost
+GET /@vite/client 200 [08/Apr/2025:07:36:41 +0000] - 253.605 ms localhost
+GET /styles.css 200 [08/Apr/2025:07:36:41 +0000] - 32.338 ms localhost
+GET /polyfills.js - [08/Apr/2025:07:36:42 +0000] - - ms localhost
+GET /scripts.js - [08/Apr/2025:07:36:42 +0000] - - ms localhost
+GET /main.js - [08/Apr/2025:07:36:42 +0000] - - ms localhost

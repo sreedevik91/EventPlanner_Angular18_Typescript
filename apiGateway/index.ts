@@ -20,14 +20,14 @@ const allowedOrigins: string[] = [
   'https://dreamevents.shop'  
 ];
 
-app.use(cors({
-  // origin: 'http://localhost', // Ensure full URL
-  origin: 'https://dreamevents.shop', // Ensure full URL
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  exposedHeaders: ['Set-Cookie'] // 👈 Expose cookie headers to frontend
-}));
+// app.use(cors({
+//   // origin: 'http://localhost', // Ensure full URL
+//   origin: 'https://dreamevents.shop', // Ensure full URL
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+//   exposedHeaders: ['Set-Cookie'] // 👈 Expose cookie headers to frontend
+// }));
 
 app.use(cookieParser())
 
