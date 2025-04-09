@@ -163,7 +163,7 @@ const createProxy = ({ path, target }: ProxyOptions) => {
         console.log('Proxy Request Headers:', req.headers);
       },
     }
-    
+
   };
 
   if (path === '/api/chat') {
@@ -171,19 +171,22 @@ const createProxy = ({ path, target }: ProxyOptions) => {
       ...proxyOptions,
       ws: true,
     }));
-  } else if (path === '/api/user') {
-    // Specific handling for /api/user/auth/google
-    app.use(`${path}/auth/google`, (req, res, next) => {
-      // Ensure public route for Google callback
-      console.log(`Handling /api/user/auth/google for ${req.url}`);
-      next();
-    }, createProxyMiddleware({
-      ...proxyOptions,
-      pathRewrite: { [`^${path}/auth/google`]: '/auth/google' },
-    }));
-    // Catch-all for other /api/user routes
-    app.use(path, verifyToken, createProxyMiddleware(proxyOptions));
-  } else {
+  } 
+  // else if (path === '/api/user') {
+  //   // Specific handling for /api/user/auth/google
+  //   app.use(`${path}/auth/google`, (req, res, next) => {
+  //     // Ensure public route for Google callback
+  //     // console.log(`Handling /api/user/auth/google for ${req.url}`);
+  //     console.log(`Public route hit: ${req.url}, Original URL: ${req.originalUrl}`);
+  //     next();
+  //   }, createProxyMiddleware({
+  //     ...proxyOptions,
+  //     pathRewrite: { [`^${path}/auth/google`]: '/auth/google' },
+  //   }));
+  //   // Catch-all for other /api/user routes
+  //   app.use(path, verifyToken, createProxyMiddleware(proxyOptions));
+  // } 
+  else {
     app.use(path, path === '/' ? createProxyMiddleware(proxyOptions) : verifyToken, createProxyMiddleware(proxyOptions));
   }
 };
