@@ -21,7 +21,7 @@ const io=new Server(httpServer,{
 
     cors: {
         origin: "https://dreamevents.shop",
-        methods: ["GET", "POST"],
+        // methods: ["GET", "POST"],
         credentials: true
     },
     transports: ['websocket', 'polling']
