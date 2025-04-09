@@ -131,6 +131,9 @@ const createProxy = ({ path, target }: ProxyOptions) => {
     target,
     changeOrigin: true,
     cookieDomainRewrite: 'dreamevents.shop',
+    pathRewrite: {
+      [`^${path}`]: '', // 👈 Strip the base path (e.g., /api/user → '')
+    },
     // logLevel: 'debug',
     on: { // 👈 Use "on" with event names
       proxyRes: (proxyRes, req, res) => {
