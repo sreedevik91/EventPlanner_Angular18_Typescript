@@ -29,10 +29,10 @@ const userController= new UserController(userService)
 userRouter.use(cookieParser())
 userRouter.use(express.json())
 userRouter.use(session({ secret: process.env.SESSION_SECRET_KEY!, cookie: { maxAge: 600000 }, resave: false, saveUninitialized: false }))
-userRouter.use(cors({
-    origin: 'http://localhost:4200', // Allow requests from this origin
-    credentials: true, // Enable credentials (cookies, authorization headers, etc.)
-  }))
+// userRouter.use(cors({
+//     origin: 'http://localhost:4200', // Allow requests from this origin
+//     credentials: true, // Enable credentials (cookies, authorization headers, etc.)
+//   }))
 userRouter.use(bodyParser.urlencoded({extended:true}))
 userRouter.use(passport.initialize())
 userRouter.use(passport.session())

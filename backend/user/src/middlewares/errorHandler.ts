@@ -10,11 +10,21 @@ export const errorHandler = (error: AppError, req: Request, res: Response, next:
     const responseData = error.responseData
     const status=error.statusCode
 
-    if (error instanceof AppError) {
+    // if (error instanceof AppError) {
 
-        ResponseHandler.errorResponse(res, status || HttpStatusCodes.BAD_REQUEST, responseData)
+    //     ResponseHandler.errorResponse(res, status || HttpStatusCodes.BAD_REQUEST, responseData)
+    // }
+
+    // ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
+
+    if (!res.headersSent) {
+        if (error instanceof AppError) {
+            ResponseHandler.errorResponse(res,  status || HttpStatusCodes.BAD_REQUEST, responseData);
+        } else {
+            ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError });
+        }
+    } else {
+        console.error('Headers already sent, skipping error response');
     }
-
-    ResponseHandler.errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, { success: false, message: CONTROLLER_RESPONSES.commonError })
 
 }

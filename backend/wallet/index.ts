@@ -7,6 +7,8 @@ import { errorHandler } from './src/middlewares/errorHandler'
 
 const app = express()
 
+app.set('trust proxy', true);
+
 config()
 connectDb()
 

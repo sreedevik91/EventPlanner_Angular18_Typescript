@@ -25,7 +25,12 @@ export class ResponseHandler {
         res.cookie('accessToken', accessToken, options)
         console.log('Response headers:', res.getHeaders());
         console.log('Cookies set:', { refreshToken, accessToken, options }, res.cookie);
-        res.redirect('/googleLogin/callback')
+        // res.redirect('/googleLogin/callback')
+
+        // Set Location header and send 302 manually
+        res.set('Location', '/googleLogin/callback');
+        res.status(302).end(); // Ensure redirect with cookies
+
     }
 
     static async logoutResponse(res: Response, token: string, expTime: number, statusCode: number = HttpStatusCodes.OK, responseData: IResponse) {
@@ -42,7 +47,7 @@ export class ResponseHandler {
             if (expirationTime > currentTime) {
                 const ttl = expirationTime - currentTime
                 await redisClient.set(`blackList:${token}`, 'true', { PX: ttl })
-                console.log('token blacklisted in redis');     
+                console.log('token blacklisted in redis');
             }
 
             res.clearCookie('accessToken', options)

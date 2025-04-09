@@ -23,7 +23,7 @@ serviceRoute.use(cookieParser())
 serviceRoute.use(express.json({ limit: '50mb' }))
 serviceRoute.use('/uploads', express.static('src/public'));
 serviceRoute.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
-serviceRoute.use(cors())
+// serviceRoute.use(cors())
 
 router.get('/services/count', (req: Request, res: Response,next:NextFunction)=>serviceController.getTotalServices(req,res,next))
 router.get('/services', (req: Request, res: Response,next:NextFunction)=>serviceController.getAllServices(req,res,next))

@@ -20,46 +20,79 @@ export class UserController implements IUserController {
         }
     }
 
+    // async googleLogin(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         console.log('google user: ', req.user);
+
+    //         if (req.user) {
+    //             const login = await this.userService.login(req.user)
+    //             if (login) {
+    //                 if (login.emailVerified) {
+    //                     if (login.success && login.cookieData) {
+    //                         const cookie: ICookie = login.cookieData
+
+    //                         ResponseHandler.googleResponse(res, cookie)
+    //                         console.log('sending login response from  controller to frontend: login success emailVerified success fail');
+
+    //                     } else {
+    //                         console.log('sending login response from  controller to frontend: login fail emailVerified success fail');
+    //                         next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+
+    //                     }
+    //                 } else {
+    //                     console.log('sending login response from  controller to frontend: login fail emailNotVerified success fail');
+    //                     next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+
+    //                 }
+
+    //             }
+
+    //         } else {
+    //             console.log('No google user found');
+    //             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.googleLoginError }))
+
+    //         }
+
+    //     } catch (error: unknown) {
+    //         error instanceof Error ? console.log('Error message from googleLogin controller: ', error.message) : console.log('Unknown error from googleLogin controller: ', error)
+    //         next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+
+    //     }
+    // }
+
     async googleLogin(req: Request, res: Response, next: NextFunction) {
         try {
             console.log('google user: ', req.user);
 
-            if (req.user) {
-                const login = await this.userService.login(req.user)
-                if (login) {
-                    if (login.emailVerified) {
-                        if (login.success && login.cookieData) {
-                            const cookie: ICookie = login.cookieData
-                           
-                            ResponseHandler.googleResponse(res, cookie)
-                            console.log('sending login response from  controller to frontend: login success emailVerified success fail');
-
-                        } else {
-                            console.log('sending login response from  controller to frontend: login fail emailVerified success fail');
-                            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
-
-                        }
-                    } else {
-                        console.log('sending login response from  controller to frontend: login fail emailNotVerified success fail');
-                        next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
-
-                    }
-
-                }
-
-            } else {
+            if (!req.user) {
                 console.log('No google user found');
-                next(new AppError({ success: false, message: CONTROLLER_RESPONSES.googleLoginError }))
-
+                return next(new AppError({ success: false, message: CONTROLLER_RESPONSES.googleLoginError }));
             }
 
-        } catch (error: unknown) {
-            error instanceof Error ? console.log('Error message from googleLogin controller: ', error.message) : console.log('Unknown error from googleLogin controller: ', error)
-            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+            const login = await this.userService.login(req,req.user);
+            if (!login) {
+                console.log('sending login response from controller to frontend: login fail emailVerified success fail');
+                return next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }));
+            }
 
+            if (!login.emailVerified) {
+                console.log('sending login response from controller to frontend: login fail emailNotVerified success fail');
+                return next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }));
+            }
+
+            if (login.success && login.cookieData) {
+                const cookie: ICookie = login.cookieData;
+                ResponseHandler.googleResponse(res, cookie);
+                console.log('sending login response from controller to frontend: login success emailVerified success fail');
+            } else {
+                console.log('sending login response from controller to frontend: login fail emailVerified success fail');
+                return next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }));
+            }
+        } catch (error: unknown) {
+            console.log('Error message from googleLogin controller: ', error instanceof Error ? error.message : 'Unknown error');
+            return next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }));
         }
     }
-
 
     async getGoogleUser(req: Request, res: Response, next: NextFunction) {
         try {
@@ -70,7 +103,7 @@ export class UserController implements IUserController {
                 next(new AppError({ success: false, message: CONTROLLER_RESPONSES.userNotFound }, HttpStatusCodes.NOT_FOUND))
             } else {
                 let userDb = await this.userService.getGoogleUser(user?.email)
-               
+
                 userDb?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, userDb) : next(new AppError(userDb))
 
             }
@@ -86,13 +119,13 @@ export class UserController implements IUserController {
 
     async userLogin(req: Request, res: Response, next: NextFunction) {
         try {
-            const login = await this.userService.login(req.body)
+            const login = await this.userService.login(req,req.body)
             if (login) {
 
                 if (login.success && login.cookieData) {
                     const cookie: ICookie = login.cookieData
                     const { payload, refreshToken, accessToken, options } = cookie
-                   
+
                     ResponseHandler.successResponse(res, HttpStatusCodes.OK, { success: true, emailVerified: true, message: CONTROLLER_RESPONSES.loginSuccess, data: payload }, cookie)
                     console.log('sending login response from  controller to frontend: login success emailVerified success fail');
 
@@ -131,7 +164,7 @@ export class UserController implements IUserController {
             console.log(req.body.email);
             const resetEmailResponse = await this.userService.sendResetPasswordEmail(req.body.email)
             console.log("sendMail: ", resetEmailResponse);
-           
+
             resetEmailResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, resetEmailResponse) : next(new AppError(resetEmailResponse))
 
         } catch (error: unknown) {
@@ -146,7 +179,7 @@ export class UserController implements IUserController {
             console.log('resetPassword data from req body:', req.body);
 
             const resetPasswordResponse = await this.userService.resetUserPassword(req.body)
-           
+
             resetPasswordResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, resetPasswordResponse) : next(new AppError(resetPasswordResponse))
 
         } catch (error: unknown) {
@@ -160,7 +193,7 @@ export class UserController implements IUserController {
     async verifyOtp(req: Request, res: Response, next: NextFunction) {
         try {
             const verifyOtpResponse = await this.userService.verifyLoginOtp(req.body)
-            
+
             verifyOtpResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, verifyOtpResponse) : next(new AppError(verifyOtpResponse))
 
         } catch (error: unknown) {
@@ -176,7 +209,7 @@ export class UserController implements IUserController {
             console.log("id to resend otp: ", id);
 
             const resendOtpResponse = await this.userService.resendUserOtp(req.params.id)
-           
+
             resendOtpResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, resendOtpResponse) : next(new AppError(resendOtpResponse))
 
         } catch (error: unknown) {
@@ -187,13 +220,13 @@ export class UserController implements IUserController {
 
     async userLogout(req: Request, res: Response, next: NextFunction) {
         try {
-           
+
             const token = req.cookies?.accessToken
             const userLogoutResponse = await this.userService.userLogout(token)
             console.log('user logout response from controller: ', userLogoutResponse);
 
             userLogoutResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, userLogoutResponse) : next(new AppError(userLogoutResponse))
-       
+
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from userLogout controller: ', error.message) : console.log('Unknown error from userLogout controller: ', error)
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
@@ -204,7 +237,7 @@ export class UserController implements IUserController {
 
         try {
             let users = await this.userService.getUsers(req.query)
-           
+
             users?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, users) : next(new AppError(users))
 
         } catch (error: unknown) {
@@ -218,7 +251,7 @@ export class UserController implements IUserController {
 
         try {
             let totalUsers = await this.userService.getUsersCount()
-           
+
             totalUsers?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, totalUsers) : next(new AppError(totalUsers))
 
         } catch (error: unknown) {
@@ -235,15 +268,15 @@ export class UserController implements IUserController {
                 next(new AppError({ success: false, message: CONTROLLER_RESPONSES.refreshTokenMissing }))
                 return
             }
-            let tokenRes: IResponse = await this.userService.getNewToken(refreshTokenOld)
+            let tokenRes: IResponse = await this.userService.getNewToken(req,refreshTokenOld)
             const { accessToken, refreshToken, options, payload } = tokenRes
             if (accessToken && refreshToken && options && payload) {
-               
+
                 let cookieData: ICookie = { accessToken, refreshToken, options, payload }
                 ResponseHandler.successResponse(res, HttpStatusCodes.OK, { success: true, message: CONTROLLER_RESPONSES.tokenRefresh, data: payload }, cookieData)
                 return
             }
-           
+
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.tokenRefreshError }))
 
         } catch (error: unknown) {
@@ -260,7 +293,7 @@ export class UserController implements IUserController {
             console.log('user details to update: ', userId, data);
 
             const newUserResponse = await this.userService.updateUser(userId, data)
-           
+
             newUserResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newUserResponse) : next(new AppError(newUserResponse))
 
         } catch (error: unknown) {
@@ -274,7 +307,7 @@ export class UserController implements IUserController {
             const { id } = req.body
 
             const newStatusResponse = await this.userService.updateUserStatus(id)
-           
+
             newStatusResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newStatusResponse) : next(new AppError(newStatusResponse))
 
         } catch (error: unknown) {
@@ -305,7 +338,7 @@ export class UserController implements IUserController {
             const { email } = req.body
             console.log('email to verify', req.body.email);
             const verifyEmailResponse = await this.userService.verifyUserEmail(email)
-            
+
             verifyEmailResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, verifyEmailResponse) : next(new AppError(verifyEmailResponse))
 
         } catch (error: unknown) {
@@ -320,12 +353,12 @@ export class UserController implements IUserController {
             const { id } = req.body
             console.log('id to verify', req.body.id);
             const verifyUser = await this.userService.verifyUser(id)
-          
+
             verifyUser?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, verifyUser) : next(new AppError(verifyUser))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from verifyUser controller: ', error.message) : console.log('Unknown error from verifyUser controller: ', error)
-           
+
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
         }
     }

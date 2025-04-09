@@ -22,7 +22,7 @@ bookingRoute.use(express.json({limit:'50mb'}))
 
 bookingRoute.use('/uploads',express.static('src/public'));
 bookingRoute.use(bodyParser.urlencoded({limit:'50mb',extended:true}))
-bookingRoute.use(cors())
+// bookingRoute.use(cors())
 
 router.get('/bookings/count',(req:Request,res:Response,next:NextFunction)=>bookingController.getTotalBookings(req,res,next))
 router.get('/bookings',(req:Request,res:Response,next:NextFunction)=>bookingController.getAllBookings(req,res,next))

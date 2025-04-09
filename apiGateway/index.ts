@@ -9,15 +9,19 @@ import dotenv from 'dotenv'
 import morgan from 'morgan'
 import logger from './utils/logFile'
 import verifyToken from './middlewares/verifyToken'
+import { IncomingMessage, ServerResponse } from 'http'
+import { Socket } from 'net'
 
 const app = express()
 
 dotenv.config()
 
+app.set('trust proxy', true);
+
 const allowedOrigins: string[] = [
   'http://localhost',      // Frontend on port 80 (Nginx)
   'http://localhost:4200', // Angular dev server
-  'https://dreamevents.shop'  
+  'https://dreamevents.shop'
 ];
 
 // app.use(cors({
@@ -52,7 +56,7 @@ const services = [
   { path: '/api/event', target: getEnvVal('EVENT_SERVICE') || 'http://event-service:3003' },
   { path: '/api/booking', target: getEnvVal('BOOKING_SERVICE') || 'http://booking-service:3004' },
   { path: '/api/chat', target: getEnvVal('CHAT_SERVICE') || 'http://chat-service:3005' },
-  { path: '/api/wallet', target: getEnvVal('WALLET_SERVICE') || 'http://wallet-service:3006'},
+  { path: '/api/wallet', target: getEnvVal('WALLET_SERVICE') || 'http://wallet-service:3006' },
   { path: '/', target: getEnvVal('FRONTEND') || 'http://nginx:80' },
 ]
 
@@ -70,37 +74,97 @@ interface ProxyOptions {
   target: string;
 }
 // here each object in the service array is destructured to path and target variables so that it could be used directly
-const createProxy = ({ path, target }: ProxyOptions) => {
+// const createProxy = ({ path, target }: ProxyOptions) => {
 
-  // if (!target) return
+//   // if (!target) return
+//   if (!target) {
+//     throw new Error(`Proxy target for path "${path}" is undefined!`);
+//   }
+
+//   if (path === '/api/chat') {
+//     app.use(path, verifyToken, createProxyMiddleware({
+//       target,
+//       changeOrigin: true,
+//       ws: true, // Enable WebSocket proxying
+//     }))
+//   } else {
+//     app.use(path,
+//       path === '/' ?
+//         createProxyMiddleware({
+//           target,
+//           changeOrigin: true,
+//         })
+//         :
+//         verifyToken, createProxyMiddleware({
+//           target,
+//           changeOrigin: true,
+//         })
+//     )
+//   }
+
+// }
+
+const createProxy = ({ path, target }: ProxyOptions) => {
   if (!target) {
     throw new Error(`Proxy target for path "${path}" is undefined!`);
   }
 
+  const proxyOptions: Options = {
+    target,
+    changeOrigin: true,
+    // logLevel: 'debug',
+    on: { // 👈 Use "on" with event names
+      proxyRes: (proxyRes, req, res) => {
+        const cookies = proxyRes.headers['set-cookie'];
+        if (cookies && Array.isArray(cookies)) {
+          res.setHeader('Set-Cookie', cookies);
+          console.log(`Forwarded Cookies for ${req.url}:`, cookies);
+        } else if (cookies) {
+          res.setHeader('Set-Cookie', [cookies]);
+          console.log(`Forwarded Cookie for ${req.url}:`, cookies);
+        }
+
+      },
+      error: (err: Error, req: IncomingMessage, res: ServerResponse<IncomingMessage> | Socket) => {
+        console.error(`Proxy Error for ${req.url}:`, err.message);
+        if (res instanceof ServerResponse) {
+          const serverRes = res as ServerResponse<IncomingMessage>; // ✅ cast after check
+          if (!serverRes.headersSent) {
+            serverRes.writeHead(500, { 'Content-Type': 'application/json' });
+            serverRes.end(JSON.stringify({ error: 'Proxy Error' }));
+          }
+        }
+        // res.status(500).json({ error: 'Proxy Error' });
+      },
+      proxyReq: (proxyReq, req) => {
+        proxyReq.setHeader('X-Forwarded-Proto', 'https');
+        console.log('Proxy Request Headers:', req.headers);
+      },
+    }
+    
+  };
+
   if (path === '/api/chat') {
     app.use(path, verifyToken, createProxyMiddleware({
-      target,
-      changeOrigin: true,
-      ws: true, // Enable WebSocket proxying
-    }))
+      ...proxyOptions,
+      ws: true,
+    }));
+  } else if (path === '/api/user') {
+    // Specific handling for /api/user/auth/google
+    app.use(`${path}/auth/google`, (req, res, next) => {
+      // Ensure public route for Google callback
+      console.log(`Handling /api/user/auth/google for ${req.url}`);
+      next();
+    }, createProxyMiddleware({
+      ...proxyOptions,
+      pathRewrite: { [`^${path}/auth/google`]: '/auth/google' },
+    }));
+    // Catch-all for other /api/user routes
+    app.use(path, verifyToken, createProxyMiddleware(proxyOptions));
   } else {
-    app.use(path,
-      path === '/' ?
-        createProxyMiddleware({
-          target,
-          changeOrigin: true,
-        })
-        :
-        verifyToken, createProxyMiddleware({
-          target,
-          changeOrigin: true,
-        })
-    )
+    app.use(path, path === '/' ? createProxyMiddleware(proxyOptions) : verifyToken, createProxyMiddleware(proxyOptions));
   }
-
-}
-
-
+};
 
 services.forEach(createProxy)
 

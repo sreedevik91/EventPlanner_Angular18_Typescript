@@ -18,7 +18,7 @@ chatRoute.use(cookieParser())
 chatRoute.use(express.json({limit:'50mb'}))
 chatRoute.use('/uploads',express.static('src/public'));
 chatRoute.use(bodyParser.urlencoded({limit:'50mb',extended:true}))
-chatRoute.use(cors())
+// chatRoute.use(cors())
 
 router.get('/:userId',(req:Request,res:Response,next:NextFunction)=>chatController.getChatsByUserId(req,res,next))
 router.post('/upload',upload.single('img'),(req:Request,res:Response,next:NextFunction)=>chatController.uploadToCloudinary(req,res,next))

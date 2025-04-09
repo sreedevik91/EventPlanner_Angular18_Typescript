@@ -7,6 +7,8 @@ import startGrpcServer from "./src/grpc/grpcEventServer";
 
 const app=express()
 
+app.set('trust proxy', true);
+
 config()
 connectDb()
 

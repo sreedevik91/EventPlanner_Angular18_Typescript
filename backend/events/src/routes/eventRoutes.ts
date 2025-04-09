@@ -22,7 +22,7 @@ eventRoute.use(cookieParser())
 eventRoute.use(express.json({limit:'50mb'}))
 eventRoute.use('/uploads',express.static('src/public'));
 eventRoute.use(bodyParser.urlencoded({limit:'50mb',extended:true}))
-eventRoute.use(cors())
+// eventRoute.use(cors())
 
 router.get('/events/count',(req:Request,res:Response,next:NextFunction)=>eventController.getTotalEvents(req,res,next))
 router.get('/events',(req:Request,res:Response,next:NextFunction)=>eventController.getAllEvents(req,res,next))

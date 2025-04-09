@@ -115,7 +115,7 @@ export interface IGoogleUser {
 }
 
 export interface ICookieService {
-    getCookieOptions(user: IUserDb, accessToken: string, refreshToken: string): Promise<{ payload: IJwtPayload, accessToken: string, refreshToken: string, options: CookieOptions }>
+    getCookieOptions(req:Request,user: IUserDb, accessToken: string, refreshToken: string): Promise<{ payload: IJwtPayload, accessToken: string, refreshToken: string, options: CookieOptions }>
 }
 
 export interface ITokenService {
@@ -144,11 +144,11 @@ export interface IUserService {
     resendUserOtp(id: string): Promise<IResponse>
     resetUserPassword(data: { password: string, token: string }): Promise<IResponse>
     register(userData: IUserDb): Promise<IResponse>
-    login(loginData: LoginData): Promise<IResponse>
+    login(req: Request,loginData: LoginData): Promise<IResponse>
     verifyLoginOtp(data: { id: string, otp: string }): Promise<IResponse>
     verifyUserEmail(email: string): Promise<IResponse>
     getUsers(params: any): Promise<IResponse>
-    getNewToken(refreshToken: string): Promise<IResponse>
+    getNewToken(req: Request,refreshToken: string): Promise<IResponse>
     updateUser(userId: string, data: Partial<IUserDb>): Promise<IResponse>
     updateUserStatus(userId: string): Promise<IResponse>
     getUser(id: string): Promise<IResponse>
