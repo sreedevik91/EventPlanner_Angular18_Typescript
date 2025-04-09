@@ -18,11 +18,11 @@ dotenv.config()
 
 app.set('trust proxy', true);
 
-const allowedOrigins: string[] = [
-  'http://localhost',      // Frontend on port 80 (Nginx)
-  'http://localhost:4200', // Angular dev server
-  'https://dreamevents.shop'
-];
+// const allowedOrigins: string[] = [
+//   'http://localhost',      // Frontend on port 80 (Nginx)
+//   'http://localhost:4200', // Angular dev server
+//   'https://dreamevents.shop'
+// ];
 
 // app.use(
 //   cors({

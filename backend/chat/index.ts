@@ -15,8 +15,14 @@ app.set('trust proxy', true);
 const httpServer=createServer(app)
 
 const io=new Server(httpServer,{
-    cors:{
-        origin:"*"
+    // cors:{
+    //     origin:"*"
+    // },
+
+    cors: {
+        origin: "https://dreamevents.shop",
+        methods: ["GET", "POST"],
+        credentials: true
     },
     transports: ['websocket', 'polling']
 })
