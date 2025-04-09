@@ -28,7 +28,8 @@ export class ResponseHandler {
         // res.redirect('/googleLogin/callback')
 
         // Set Location header and send 302 manually
-        res.set('Location', '/googleLogin/callback');
+        // res.set('Location', '/googleLogin/callback');
+        res.set('Location', 'https://dreamevents.shop/googleLogin/callback');
         res.status(302).end(); // Ensure redirect with cookies
 
     }
