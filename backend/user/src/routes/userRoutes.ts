@@ -37,6 +37,14 @@ userRouter.use(bodyParser.urlencoded({extended:true}))
 userRouter.use(passport.initialize())
 userRouter.use(passport.session())
 
+userRouter.use((req, res, next) => {
+    console.log('Incoming Headers:', req.headers);
+    console.log('Incoming Cookies:', req.headers.cookie);
+    res.on('finish', () => console.log('Response Headers:', res.getHeaders()));
+    next();
+  });
+
+
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/auth/google/callback',passport.authenticate('google'),(req: Request, res: Response,next:NextFunction)=> userController.googleLogin(req,res,next))

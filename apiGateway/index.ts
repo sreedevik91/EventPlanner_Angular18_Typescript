@@ -130,6 +130,7 @@ const createProxy = ({ path, target }: ProxyOptions) => {
   const proxyOptions: Options = {
     target,
     changeOrigin: true,
+    cookieDomainRewrite: 'dreamevents.shop',
     // logLevel: 'debug',
     on: { // 👈 Use "on" with event names
       proxyRes: (proxyRes, req, res) => {
@@ -141,7 +142,7 @@ const createProxy = ({ path, target }: ProxyOptions) => {
           res.setHeader('Set-Cookie', [cookies]);
           console.log(`Forwarded Cookie for ${req.url}:`, cookies);
         }
-
+        console.log('Proxy Response Headers:', proxyRes.headers);
       },
       error: (err: Error, req: IncomingMessage, res: ServerResponse<IncomingMessage> | Socket) => {
         console.error(`Proxy Error for ${req.url}:`, err.message);
