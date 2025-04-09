@@ -24,6 +24,21 @@ const allowedOrigins: string[] = [
   'https://dreamevents.shop'
 ];
 
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, origin);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true, // Allow cookies
+    exposedHeaders: ['Set-Cookie'], // Expose Set-Cookie
+  })
+);
+
+
 // app.use(cors({
 //   // origin: 'http://localhost', // Ensure full URL
 //   origin: 'https://dreamevents.shop', // Ensure full URL
