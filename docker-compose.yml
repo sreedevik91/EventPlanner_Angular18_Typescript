@@ -39,7 +39,7 @@ services:
       - JWT_REFRESH_SECRET=sreedeviEventPlannerApplicationRefreshToken
       - GOOGLE_ID=464375724320-2aug4rpcgj3qv8rnjraa0uu3ikjjbuqt.apps.googleusercontent.com
       - GOOGLE_SECRET=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
-      - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
+      - EMAIL_APP_PASSWORD=gdcy mpbc hgvy nhbq
       - EMAIL_USER=sreedevisooraj15@gmail.com
       # - EMAIL_URL=http://localhost/api/
       # - GOOGLE_CALLBACK_URL=http://localhost/api/user/auth/google/callback
@@ -64,7 +64,7 @@ services:
     environment:
       - PORT=3002
       # - SERVICE_IMG_URL=http://nginx/api/service/uploads/ # Add nginx prefix
-      - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
+      - EMAIL_APP_PASSWORD=gdcy mpbc hgvy nhbq
       - EMAIL_USER=sreedevisooraj15@gmail.com
       - CLOUDINARY_CLOUD_NAME=dqsfjbusg
       - CLOUDINARY_API_KEY=854145994395918
@@ -88,7 +88,7 @@ services:
     environment:
       - PORT=3003
       # - EVENT_IMG_URL=http://nginx/api/event/uploads/ # Add nginx prefix
-      - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
+      - EMAIL_APP_PASSWORD=gdcy mpbc hgvy nhbq
       - EMAIL_USER=sreedevisooraj15@gmail.com
       - CLOUDINARY_CLOUD_NAME=dqsfjbusg
       - CLOUDINARY_API_KEY=854145994395918
@@ -109,7 +109,7 @@ services:
       dockerfile: backend/booking/Dockerfile
     environment:
       - PORT=3004
-      - EMAIL_APP_PASSWORD=uthk sxnz gvsl dqbb
+      - EMAIL_APP_PASSWORD=gdcy mpbc hgvy nhbq
       - EMAIL_USER=sreedevisooraj15@gmail.com
       - RAZORPAY_KEY_ID=rzp_test_85xo26IPuPICSY
       - RAZORPAY_SECRET=7r0r5ty9wj15t69rxcbQtzkL
