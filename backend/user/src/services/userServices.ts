@@ -147,14 +147,14 @@ export class UserServices implements IUserService {
                 const userUpdate = await this.UserRepository.updateUser(isUserByEmail._id, userData)
 
                 if (userData) {
-                    const isOtpSent = await this.otpService.sendOtp(userUpdate!)
-                    console.log('isOtpSent response from register user service: ', isOtpSent);
+                    // const isOtpSent = await this.otpService.sendOtp(userUpdate!)
+                    // console.log('isOtpSent response from register user service: ', isOtpSent);
 
-                    if (!isOtpSent) {
-                        // return { success: false, message: SERVICE_RESPONSES.commonError }
-                        console.log('otp sending failed');
+                    // if (!isOtpSent) {
+                    //     return { success: false, message: SERVICE_RESPONSES.commonError }
+                    //     console.log('otp sending failed');
                         
-                    }
+                    // }
                     return { success: true, message: SERVICE_RESPONSES.userRegisterSuccess, data: userUpdate }
                 } else {
                     return { success: false, message: SERVICE_RESPONSES.googleUserUpdateError }
