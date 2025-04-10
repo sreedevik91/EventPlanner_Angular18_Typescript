@@ -12,15 +12,15 @@ export class EmailService implements IEmailService {
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport({
                 service: 'gmail',
-                host: 'smtp.gmail.com',
-                port: 587,
-                secure: false, // TLS
+                // host: 'smtp.gmail.com',
+                // port: 587,
+                // secure: false, // TLS
                 auth: {
                     user: process.env.EMAIL_USER,
                     pass: process.env.EMAIL_APP_PASSWORD
                 },
-                connectionTimeout: 10000, // 10 seconds
-        greetingTimeout: 5000, // 5 seconds
+                // connectionTimeout: 10000, // 10 seconds
+                // greetingTimeout: 5000, // 5 seconds
             })
 
             let mailOptions = {
@@ -47,8 +47,8 @@ export class EmailService implements IEmailService {
                     console.error('Email send error:', {
                         message: error.message,
                         stack: error.stack,
-                        error:error
-                      });
+                        error: error
+                    });
                     resolve(false)
                 } else {
                     console.log('Email sent:', info.response);
@@ -61,3 +61,5 @@ export class EmailService implements IEmailService {
 
     }
 }
+
+

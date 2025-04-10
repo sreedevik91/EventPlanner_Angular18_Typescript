@@ -39,6 +39,8 @@ services:
       - JWT_REFRESH_SECRET=sreedeviEventPlannerApplicationRefreshToken
       - GOOGLE_ID=464375724320-2aug4rpcgj3qv8rnjraa0uu3ikjjbuqt.apps.googleusercontent.com
       - GOOGLE_SECRET=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
+      # - SES_ACCESSKEY=AKIAW3MED76JNLSSHXVB
+      # - SES_SECRETACCESSKEY=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
       - EMAIL_APP_PASSWORD=gdcy mpbc hgvy nhbq
       - EMAIL_USER=sreedevisooraj15@gmail.com
       # - EMAIL_URL=http://localhost/api/
