@@ -151,7 +151,9 @@ export class UserServices implements IUserService {
                     console.log('isOtpSent response from register user service: ', isOtpSent);
 
                     if (!isOtpSent) {
-                        return { success: false, message: SERVICE_RESPONSES.commonError }
+                        // return { success: false, message: SERVICE_RESPONSES.commonError }
+                        console.log('otp sending failed');
+                        
                     }
                     return { success: true, message: SERVICE_RESPONSES.userRegisterSuccess, data: userUpdate }
                 } else {
