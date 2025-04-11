@@ -22,8 +22,8 @@ export class EmailService implements IEmailService {
                 // // connectionTimeout: 10000, // 10 seconds
                 // // greetingTimeout: 5000, // 5 seconds
 
-                // host: 'localhost', // Point to the local machine running the tunnel/;
-                host:'111.92.78.138',
+                host: 'localhost', // Point to the local machine running the tunnel/;
+                // host:'111.92.78.138',
                 port: 2525, // Match the tunnel port
                 secure: false, // TLS negotiated
                 auth: {
