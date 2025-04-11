@@ -11,16 +11,27 @@ export class EmailService implements IEmailService {
 
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                // host: 'smtp.gmail.com',
-                // port: 587,
-                // secure: false, // TLS
+                // service: 'gmail',
+                // // host: 'smtp.gmail.com',
+                // // port: 587,
+                // // secure: false, // TLS
+                // auth: {
+                //     user: process.env.EMAIL_USER,
+                //     pass: process.env.EMAIL_APP_PASSWORD
+                // },
+                // // connectionTimeout: 10000, // 10 seconds
+                // // greetingTimeout: 5000, // 5 seconds
+
+                host: 'localhost', // Point to the local machine running the tunnel
+                port: 2525, // Match the tunnel port
+                secure: false, // TLS negotiated
                 auth: {
                     user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_APP_PASSWORD
+                    pass: process.env.EMAIL_APP_PASSWORD,
                 },
-                // connectionTimeout: 10000, // 10 seconds
-                // greetingTimeout: 5000, // 5 seconds
+                connectionTimeout: 10000,
+                greetingTimeout: 5000,
+                debug: true,
             })
 
             let mailOptions = {
