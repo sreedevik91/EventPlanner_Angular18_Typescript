@@ -49,7 +49,8 @@ services:
       - GOOGLE_CALLBACK_URL=https://dreamevents.shop/api/user/auth/google/callback
       - SESSION_SECRET_KEY=eventplannerapplication
       - GRPC_USER_SERVER=user-service:50051
-      - MONGO_URL=mongodb://mongodb:27017/userService
+      # - MONGO_URL=mongodb://mongodb:27017/userService
+      - MONGO_URL=mongodb+srv://Sreedevikpadmakumari:Sreedevikpadmakumari@dreameventcluster.gv2zz7z.mongodb.net/userService?retryWrites=true&w=majority
       - REDIS_CONNECTION_STRING=redis://redis:6379
       - RESEND_APIKEY=re_ZxZz33z5_G8MRFepj3EoBhYnXhCBx6C3D
       - RESEND_EMAIL=noreply@dreamevents.shop
@@ -73,7 +74,8 @@ services:
       - CLOUDINARY_CLOUD_NAME=dqsfjbusg
       - CLOUDINARY_API_KEY=854145994395918
       - CLOUDINARY_API_SECRET=qyxATSp5Lb2CEZ-DhYaII2YVpKk
-      - MONGO_URL=mongodb://mongodb:27017/serviceService
+      # - MONGO_URL=mongodb://mongodb:27017/serviceService
+      - MONGO_URL=mongodb+srv://Sreedevikpadmakumari:Sreedevikpadmakumari@dreameventcluster.gv2zz7z.mongodb.net/serviceService?retryWrites=true&w=majority
       - GRPC_SERVICE_SERVER=services-service:50052
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_EVENT_SERVER=event-service:50053
@@ -99,7 +101,8 @@ services:
       - CLOUDINARY_CLOUD_NAME=dqsfjbusg
       - CLOUDINARY_API_KEY=854145994395918
       - CLOUDINARY_API_SECRET=qyxATSp5Lb2CEZ-DhYaII2YVpKk
-      - MONGO_URL=mongodb://mongodb:27017/eventService
+      # - MONGO_URL=mongodb://mongodb:27017/eventService
+      - MONGO_URL=mongodb+srv://Sreedevikpadmakumari:Sreedevikpadmakumari@dreameventcluster.gv2zz7z.mongodb.net/eventService?retryWrites=true&w=majority
       - GRPC_EVENT_SERVER=event-service:50053
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_SERVICE_SERVER=services-service:50052
@@ -121,7 +124,8 @@ services:
       - EMAIL_USER=sreedevisooraj15@gmail.com
       - RAZORPAY_KEY_ID=rzp_test_85xo26IPuPICSY
       - RAZORPAY_SECRET=7r0r5ty9wj15t69rxcbQtzkL
-      - MONGO_URL=mongodb://mongodb:27017/bookingService
+      # - MONGO_URL=mongodb://mongodb:27017/bookingService
+      - MONGO_URL=mongodb+srv://Sreedevikpadmakumari:Sreedevikpadmakumari@dreameventcluster.gv2zz7z.mongodb.net/bookingService?retryWrites=true&w=majority
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_SERVICE_SERVER=services-service:50052
       - GRPC_EVENT_SERVER=event-service:50053
@@ -142,7 +146,8 @@ services:
       - CLOUDINARY_CLOUD_NAME=dqsfjbusg
       - CLOUDINARY_API_KEY=854145994395918
       - CLOUDINARY_API_SECRET=qyxATSp5Lb2CEZ-DhYaII2YVpKk
-      - MONGO_URL=mongodb://mongodb:27017/chatService
+      # - MONGO_URL=mongodb://mongodb:27017/chatService
+      - MONGO_URL=mongodb+srv://Sreedevikpadmakumari:Sreedevikpadmakumari@dreameventcluster.gv2zz7z.mongodb.net/chatService?retryWrites=true&w=majority
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_SERVICE_SERVER=services-service:50052
       - GRPC_EVENT_SERVER=event-service:50053
@@ -160,7 +165,8 @@ services:
       - "50054:50054"
     environment:
       - PORT=3006
-      - MONGO_URL=mongodb://mongodb:27017/walletService
+      # - MONGO_URL=mongodb://mongodb:27017/walletService
+      - MONGO_URL=mongodb+srv://Sreedevikpadmakumari:Sreedevikpadmakumari@dreameventcluster.gv2zz7z.mongodb.net/walletService?retryWrites=true&w=majority
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_SERVICE_SERVER=services-service:50052
       - GRPC_EVENT_SERVER=event-service:50053
