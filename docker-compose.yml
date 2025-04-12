@@ -51,6 +51,8 @@ services:
       - GRPC_USER_SERVER=user-service:50051
       - MONGO_URL=mongodb://mongodb:27017/userService
       - REDIS_CONNECTION_STRING=redis://redis:6379
+      - RESEND_APIKEY=re_ZxZz33z5_G8MRFepj3EoBhYnXhCBx6C3D
+      - RESEND_EMAIL=noreply@dreamevents.shop
     networks:
       - event_planner_network
     depends_on:
@@ -76,6 +78,8 @@ services:
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_EVENT_SERVER=event-service:50053
       - GRPC_WALLET_SERVER=wallet-service:50054
+      - RESEND_APIKEY=re_ZxZz33z5_G8MRFepj3EoBhYnXhCBx6C3D
+      - RESEND_EMAIL=noreply@dreamevents.shop
     networks:
       - event_planner_network
     depends_on:
@@ -100,6 +104,8 @@ services:
       - GRPC_USER_SERVER=user-service:50051
       - GRPC_SERVICE_SERVER=services-service:50052
       - GRPC_WALLET_SERVER=wallet-service:50054
+      - RESEND_APIKEY=re_ZxZz33z5_G8MRFepj3EoBhYnXhCBx6C3D
+      - RESEND_EMAIL=noreply@dreamevents.shop
     networks:
       - event_planner_network
     depends_on:
@@ -120,6 +126,8 @@ services:
       - GRPC_SERVICE_SERVER=services-service:50052
       - GRPC_EVENT_SERVER=event-service:50053
       - GRPC_WALLET_SERVER=wallet-service:50054
+      - RESEND_APIKEY=re_ZxZz33z5_G8MRFepj3EoBhYnXhCBx6C3D
+      - RESEND_EMAIL=noreply@dreamevents.shop
     networks:
       - event_planner_network
     depends_on:
@@ -157,6 +165,8 @@ services:
       - GRPC_SERVICE_SERVER=services-service:50052
       - GRPC_EVENT_SERVER=event-service:50053
       - GRPC_WALLET_SERVER=wallet-service:50054
+      - RESEND_APIKEY=re_ZxZz33z5_G8MRFepj3EoBhYnXhCBx6C3D
+      - RESEND_EMAIL=noreply@dreamevents.shop
     networks:
       - event_planner_network
     depends_on:
