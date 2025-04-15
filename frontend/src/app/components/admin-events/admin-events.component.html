@@ -116,9 +116,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     @if(isAddEvent){
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add User</h1>
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add Event</h1>
                     }@else {
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit User</h1>
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Event</h1>
                     }
 
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
@@ -131,12 +131,13 @@
 
                         <app-form [label]=" 'Name of event:' " [tooltip]=" 'Select Event' " [Validation]="eventForm.controls['name'].touched &&
                     eventForm.controls['name'].errors ? eventForm.controls['name'].errors : {}">
-                            <select class="form-select" formControlName="name" (change)="getEventServices($event)">
+                            <!-- <select class="form-select" formControlName="name" (change)="getEventServices($event)">
                                 @for (item of eventOptions; track $index) {
                                     <option [value]="item">{{item}}</option>
                                 }
                                
-                            </select>
+                            </select> -->
+                            <input type="text" class="form-control" formControlName="name">
                         </app-form>
 
                         <app-form [label]=" 'Image of service:' " [tooltip]=" 'Select img' " [Validation]="eventForm.controls['img'].touched &&
@@ -165,6 +166,10 @@
                                 }
 
                             </app-form>
+                            <!-- <button (click)="addServices();newServices=true">+</button>
+                            @if(newServices){
+                                <input type="text">
+                            } -->
                         </div>
 
                         <div class="d-grid gap-2 d-md-block">

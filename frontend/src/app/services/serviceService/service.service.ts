@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { INewServiceData } from '../../model/interface/interface';
+import { IAdminService, INewServiceData } from '../../model/interface/interface';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +23,22 @@ export class ServiceService {
 
   getAllServices(params: HttpParams) {
     return this.http.get(`${this.baseUrl}services`, { observe: 'response', params, withCredentials:true })
+  }
+
+  getAvailableEvents(){
+    return this.http.get(`${this.baseUrl}availableEvents`, { observe: 'response', withCredentials:true })
+  }
+
+  saveAdminService(serviceData:IAdminService){
+    return this.http.post(`${this.baseUrl}addAdminService`, serviceData, { observe: 'response', withCredentials:true })
+  }
+
+  getAdminServices(){
+    return this.http.get(`${this.baseUrl}adminServices`, { observe: 'response', withCredentials:true })
+  }
+
+  deleteAdminServices(service:string){
+    return this.http.delete(`${this.baseUrl}adminServices/${service}`, { observe: 'response', withCredentials:true })
   }
 
   deleteService(id: string) {

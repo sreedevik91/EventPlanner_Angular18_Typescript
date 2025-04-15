@@ -20,9 +20,9 @@ declare const google: any;
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export default class LoginComponent implements OnDestroy{
+export default class LoginComponent implements OnDestroy {
 
-  destroy$:Subject<void>= new Subject<void>()
+  destroy$: Subject<void> = new Subject<void>()
 
   @ViewChild('modal') modal!: ElementRef
 
@@ -96,19 +96,19 @@ export default class LoginComponent implements OnDestroy{
             this.alertService.getAlert("alert alert-danger", "Login Failed!", error.error.message)
             this.router.navigateByUrl(`verifyEmail`)
           } else {
-            this.alertService.getAlert("alert alert-danger", "Login Failed", error.message||'')
-          } 
+            this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message || '')
+          }
 
         } else if (error.status === HttpStatusCodes.FORBIDDEN) {
           this.router.navigateByUrl('login')
-          this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
+          this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message || error.message)
 
         }
         else {
-          this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message)
-    console.log(environment.apiUserUrl);
-         
-          console.log('login error:', error.error.message, error,error.message);
+          this.alertService.getAlert("alert alert-danger", "Login Failed", error.error.message || error.message)
+          console.log(environment.apiUserUrl);
+
+          console.log('login error:', error.error.message, error, error.message || error.message);
 
         }
 

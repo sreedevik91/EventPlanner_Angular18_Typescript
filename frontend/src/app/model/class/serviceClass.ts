@@ -24,10 +24,16 @@ export interface IChoice {
     choiceImgCategory:string;
 }
 
+export class AdminService {
 
+    services: string[];
+    // events: string[];
 
-
-
+    constructor(){
+        this.services=[]
+        // this.events=[]
+    } 
+}
 
 
 // export class Service {

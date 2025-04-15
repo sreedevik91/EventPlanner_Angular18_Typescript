@@ -11,6 +11,12 @@ export interface IService extends Document {
     isApproved: boolean;
     isActive: boolean;
 }
+
+export interface IAdminService extends Document {
+    name:string;
+    services: string[];
+}
+
 export interface IChoice {
     choiceName: string;
     choiceType: string;
@@ -38,18 +44,26 @@ export interface IRequestParams {
     sortBy?: string,
     sortOrder?: string,
     role?: string;
-    providerId?:string;
+    providerId?: string;
 }
 
 export interface IServiceDb extends IService, Document {
     _id: string;
 }
 
-export interface IResponse<T=unknown,U=unknown> {
+export interface IResponse<T = unknown, U = unknown> {
     success: boolean;
     message?: string;
     data?: T;
     extra?: U;
+}
+
+export interface IEvent {
+     _id:string;     
+     name:string;   
+    services:string[]; 
+    isActive: boolean;
+    img :string; 
   }
 
 export enum HttpStatusCodes {
@@ -91,6 +105,13 @@ export interface IServiceRepository {
     getServicesAndCount(filter: FilterQuery<IService>, options: QueryOptions): Promise<IServicesData[] | null>;
 }
 
+export interface IAdminServiceRepository {
+    getAllServices(query: FilterQuery<IAdminService>, options: QueryOptions): Promise<IAdminService[] | null>;
+    createService(service: Partial<IAdminService>): Promise<IAdminService | null>;
+    updateService(serviceId: string, service: Partial<IAdminService>): Promise<IAdminService | null>;
+    deleteService(serviceId: string): Promise<DeleteResult | null>;
+}
+
 export interface IEmailService {
     sendMail(userName: string, email: string, content: string, subject: string): Promise<boolean>
 }
@@ -105,17 +126,25 @@ export interface IServicesService {
     editStatus(id: string): Promise<IResponse>
     approveService(id: string): Promise<IResponse>
     getServiceByName(name: string): Promise<IResponse>
+    getAdminServices(): Promise<IResponse>
+    addAdminService(adminServiceData: string[]): Promise<IResponse>
+    deleteAdminService(name:string): Promise<IResponse>
+    getAvailableEvents(): Promise<IResponse>
 }
 
 export interface IServiceController {
-    getTotalServices(req: Request, res: Response,next:NextFunction): Promise<void>
-    createService(req: Request, res: Response,next:NextFunction): Promise<void>
-    getAllServices(req: Request, res: Response,next:NextFunction): Promise<void>
-    deleteService(req: Request, res: Response,next:NextFunction): Promise<void>
-    getServiceById(req: Request, res: Response,next:NextFunction): Promise<void>
-    editService(req: Request, res: Response,next:NextFunction): Promise<void>
-    approveService(req: Request, res: Response,next:NextFunction): Promise<void>
-    getServiceByName(req: Request, res: Response,next:NextFunction): Promise<void>
+    getTotalServices(req: Request, res: Response, next: NextFunction): Promise<void>
+    createService(req: Request, res: Response, next: NextFunction): Promise<void>
+    getAllServices(req: Request, res: Response, next: NextFunction): Promise<void>
+    deleteService(req: Request, res: Response, next: NextFunction): Promise<void>
+    getServiceById(req: Request, res: Response, next: NextFunction): Promise<void>
+    editService(req: Request, res: Response, next: NextFunction): Promise<void>
+    approveService(req: Request, res: Response, next: NextFunction): Promise<void>
+    getServiceByName(req: Request, res: Response, next: NextFunction): Promise<void>
+    getAdminServices(req: Request, res: Response, next: NextFunction): Promise<void>
+    addAdminService(req: Request, res: Response, next: NextFunction): Promise<void>
+    deleteAdminService(req: Request, res: Response, next: NextFunction): Promise<void>
+    getAvailableEvents(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
 export const SERVICE_RESPONSES = {
@@ -135,7 +164,8 @@ export const SERVICE_RESPONSES = {
     editStatusErrorNoService: 'Could not find service details',
     approveServiceSuccess: 'service approved',
     approveServiceError: 'could not approve service',
-    getServiceByNameError: 'Could not updated service status'
+    getServiceByNameError: 'Could not updated service status',
+    dataFetchError:'Could not fetch data'
 }
 
 export const CONTROLLER_RESPONSES = {

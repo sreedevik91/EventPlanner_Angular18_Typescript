@@ -21,9 +21,9 @@ import * as bootstrap from 'bootstrap';
   templateUrl: './provider-services.component.html',
   styleUrl: './provider-services.component.css'
 })
-export class ProviderServicesComponent implements OnInit,OnDestroy {
+export class ProviderServicesComponent implements OnInit, OnDestroy {
 
-  destroy$:Subject<void>= new Subject<void>()
+  destroy$: Subject<void> = new Subject<void>()
 
   serviceFromObj: Service = new Service()
   searchFilterFormObj: ServiceSearchFilter = new ServiceSearchFilter()
@@ -46,6 +46,7 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
   currentPage: number = Number(this.searchFilterFormObj.pageNumber)
   totalServices: number = 0
   services = signal<IService[]>([])
+  availableEvents = signal<string[]>([])
 
   choice: string[] = []
   type: string[][] = []
@@ -74,6 +75,7 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
       .set('pageSize', this.searchFilterFormObj.pageSize)
       .set('providerId', this.providerId)
     this.getAllServices(this.searchParams)
+    this.getAvailableEvents()
   }
 
   initialiseServiceForm() {
@@ -173,6 +175,26 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
 
     return events
   }
+
+  getAvailableEvents() {
+    this.serviceService.getAvailableEvents().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: HttpResponse<IResponse>) => {
+        if (res.status === HttpStatusCodes.SUCCESS) {
+          console.log('available events response: ',res );
+          
+          this.availableEvents.set(res.body?.data)
+        } else {
+          console.log(res.body?.message);
+          this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
+        }
+      },
+      error: (error: HttpErrorResponse) => {
+        this.alertService.getAlert("alert alert-danger", "Register User Failed", error.error.message)
+
+      }
+    })
+  }
+
   addEvent() {
     (<FormArray>this.serviceForm.get('events')).push(new FormControl(this.serviceFromObj.events, [Validators.required]))
   }
@@ -337,7 +359,7 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           console.log('getAllServices res from provider panel: ', res.body);
-          
+
           // this.totalServices=res.body.data.length
           this.services.set(res.body?.data.services)
           this.totalServices = res.body?.data.count
@@ -465,7 +487,7 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
         if (res.status === HttpStatusCodes.CREATED) {
           this.hideModal()
           // this.getTotalServices()
-          this.totalServices+=1
+          this.totalServices += 1
           this.getAllServices(this.searchParams)
           this.alertService.getAlert('alert alert-success', 'Success!', res.body?.message ? res.body?.message : '')
         } else {
@@ -562,27 +584,27 @@ export class ProviderServicesComponent implements OnInit,OnDestroy {
     })
   }
 
-//   toggleCollapse(id: string, event: Event) {
-//     // debugger
-//     console.log('toggler element id: ', id);
-    
-//     event.preventDefault();
-//     const collapseElement = document.getElementById(id);
-//     if (collapseElement) {
-//       const bsCollapse = new bootstrap.Collapse(collapseElement, { toggle: false });
-//       if (collapseElement.classList.contains('show')) {
-//           bsCollapse.hide(); // Collapse it
-//       } else {
-//           bsCollapse.show(); // Expand it
-//       }
-//       console.log('collapseElement class: ',  collapseElement.classList);
+  //   toggleCollapse(id: string, event: Event) {
+  //     // debugger
+  //     console.log('toggler element id: ', id);
 
-//         const button = event.target as HTMLElement;
-//         button.setAttribute('aria-expanded', collapseElement.classList.contains('show') ? 'true' : 'false');
-//         console.log('button aria-expanded class: ',  button.getAttribute('aria-expanded'));
-       
-//       }
-// }
+  //     event.preventDefault();
+  //     const collapseElement = document.getElementById(id);
+  //     if (collapseElement) {
+  //       const bsCollapse = new bootstrap.Collapse(collapseElement, { toggle: false });
+  //       if (collapseElement.classList.contains('show')) {
+  //           bsCollapse.hide(); // Collapse it
+  //       } else {
+  //           bsCollapse.show(); // Expand it
+  //       }
+  //       console.log('collapseElement class: ',  collapseElement.classList);
+
+  //         const button = event.target as HTMLElement;
+  //         button.setAttribute('aria-expanded', collapseElement.classList.contains('show') ? 'true' : 'false');
+  //         console.log('button aria-expanded class: ',  button.getAttribute('aria-expanded'));
+
+  //       }
+  // }
 
 
   onPageChange(page: number) {

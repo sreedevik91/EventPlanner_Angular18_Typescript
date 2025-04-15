@@ -66,7 +66,7 @@
                         <td>
 
                             <p class="d-inline-flex gap-1">
-                               
+
                                 <button class="btn btn-primary collapsed" type="button" data-bs-toggle="collapse"
                                     [attr.data-bs-target]="'#collapseExample'+ serviceIdx" aria-expanded="false"
                                     [attr.aria-controls]="'collapseExample'+ serviceIdx">
@@ -175,13 +175,13 @@
 
                         <app-form [label]=" 'Image of service:' " [tooltip]=" 'Select img' " [Validation]="serviceForm.controls['img'].touched &&
                         serviceForm.controls['img'].errors ? serviceForm.controls['img'].errors : {}">
-                           
+
                             <img [src]="imgUrl? imgUrl : serviceForm.controls['img'].value " alt="" width="50"
                                 height="50">
 
                             <input type="file" class="form-control" #serviceImgInput
                                 placeholder="Upload an image of your service" (change)="onImageUpload($event,'img')">
-                          
+
                         </app-form>
 
                         <div id="events" formArrayName="events">
@@ -194,10 +194,15 @@
                                 <div style="border: 1px solid grey; border-radius: 20px; padding: 10px;"
                                     class="d-flex flex-row">
                                     <select class="form-select" [formControlName]="$index">
+                                    @for(event of availableEvents(); track event) {
+                                        <option [value]="event">{{event}}</option>
+                                    }
+                                </select> 
+                                    <!-- <select class="form-select" [formControlName]="$index">
                                         <option [value]="'Marriage'">Marriage</option>
                                         <option [value]="'Engagement'">Engagement</option>
                                         <option [value]="'Birthday'">Birthday</option>
-                                    </select>
+                                    </select> -->
                                     <app-button [btnClass]="'btn-danger ms-2'" [btnTitle]="'Delete event'"
                                         (onBtnClick)="closeEvent($index)">X</app-button>
                                 </div>
@@ -244,7 +249,7 @@
                                         </app-form>
 
                                         <app-form [label]=" 'Image of choice:' " [tooltip]=" 'Select img' ">
-                                          
+
                                             <img [src]="choiceImageUrl[$index] ? choiceImageUrl[$index] : getChoiceImg($index)"
                                                 alt="" width="50" height="50">
 
@@ -256,14 +261,14 @@
 
                                         }@else{
                                         <app-form [label]=" 'Image of choice:' " [tooltip]=" 'Select img' ">
-                                          
+
                                             <img [src]="choiceImageUrl[$index] ? choiceImageUrl[$index] : getChoiceImg($index)"
                                                 alt="" width="50" height="50">
 
                                             <input type="file" class="form-control" #choiceImgInput
                                                 placeholder="Upload an image of your choice"
                                                 (change)="onImageUpload($event,'choiceImg',$index)">
-                                           
+
                                         </app-form>
                                         }
 

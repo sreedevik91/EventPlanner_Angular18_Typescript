@@ -16,7 +16,7 @@ export interface ILoginData {
     googleId?: string;
 }
 
-export interface IResponse<T=unknown,U=unknown> {
+export interface IResponse<T = unknown, U = unknown> {
     success?: boolean;
     message?: string;
     data?: any;
@@ -85,6 +85,10 @@ export interface IService {
     __v: number;
     isActive: boolean;
     isApproved: boolean;
+}
+
+export interface IAdminService {
+    services: string[];
 }
 
 interface IChoice {
@@ -158,7 +162,7 @@ export interface IBooking {
     deliveryDate: Date;
     orderDate: Date;
     venue: IAddress;
-    tag?:string;
+    tag?: string;
     totalCount: number;
     isConfirmed: boolean;
 }
@@ -189,7 +193,7 @@ export interface ITableColums {
     columnName: string;
     fieldName: string;
     dataType: string;
-    role:boolean;
+    role: boolean;
 }
 
 export interface ISales {
@@ -198,32 +202,32 @@ export interface ISales {
     event?: string;
     service?: string;
     date: string;
-  }
-
-  export interface IAdminBookingData{
-    type: string;
-    customer:string;
-    date: Date;
-    isConfirmed: boolean;
-  }
-
-  export interface IPaymentList {
-  user: string;
-  event?: string;
-  service?: string;
-  bookingDate: Date;
-  totalAmount: number;
-  isConfirmed:boolean;
 }
 
-export interface IWallet{
+export interface IAdminBookingData {
+    type: string;
+    customer: string;
+    date: Date;
+    isConfirmed: boolean;
+}
+
+export interface IPaymentList {
+    user: string;
+    event?: string;
+    service?: string;
+    bookingDate: Date;
+    totalAmount: number;
+    isConfirmed: boolean;
+}
+
+export interface IWallet {
     userId: string;
     amount: number;
-    transactions:IWalletTransactions[]
-  }
-  
-  export interface IWalletTransactions {
+    transactions: IWalletTransactions[]
+}
+
+export interface IWalletTransactions {
     type: String,
     amount: number,
     date: Date
-  }
+}

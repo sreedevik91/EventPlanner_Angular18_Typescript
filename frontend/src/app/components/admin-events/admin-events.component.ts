@@ -40,11 +40,12 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
 
   isAddEvent: boolean = true
   showServices: boolean = false
+  newServices: boolean = false
   currentPage: number = Number(this.searchFilterFormObj.pageNumber)
   totalEvents: number = 0
   events = signal<IEvent[]>([])
   services = signal<any[]>([])
-  eventServicesList = signal<string[]>([])
+  eventServicesList = signal<string[]>(['Catering','Decor','Event Coverage','Logistics','Security'])
 
   eventOptions = ['Marriage', 'Engagement', 'Birthday']
 
@@ -184,7 +185,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
         console.log('getServices res: ', res);
         if (res.status === HttpStatusCodes.SUCCESS) {
           this.services.set(res.body?.data)
-          this.eventServicesList.set(res.body?.extra)
+          // this.eventServicesList.set(res.body?.extra)
           this.showServices = true
         } else {
           console.log('could not get services', res.body?.message);
@@ -280,7 +281,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
           console.log('update form data: ', this.eventFromObj);
           this.initialiseEventForm()
           const eventName = this.eventForm.get('name')?.value
-          this.getServices(eventName)
+          // this.getServices(eventName)
           this.showModal()
         } else {
           this.alertService.getAlert("alert alert-danger", "Failed", res.body?.message ? res.body?.message : '')
@@ -384,6 +385,10 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
     })
   }
 
+  addServices(){
+    // this.newServices=true
+  }
+
   onPageChange(page: number) {
     this.currentPage = page
     this.searchFilterFormObj.pageNumber = page.toString()
@@ -412,7 +417,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
     this.eventFromObj = new Events()
     this.initialiseEventForm()
     this.isAddEvent = true
-    this.eventServicesList.set([])
+    // this.eventServicesList.set([])
     this.eventImgInput.nativeElement.value = ''
     console.log('on closing the model eventForm value: ', this.eventForm.value);
 

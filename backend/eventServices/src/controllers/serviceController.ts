@@ -10,6 +10,60 @@ export class ServiceController implements IServiceController {
 
     constructor(private serviceServices: IServicesService) { }
 
+    async getAdminServices(req: Request, res: Response, next: NextFunction): Promise<void> {
+          try {
+            let adminServices = await this.serviceServices.getAdminServices()
+           
+            adminServices?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, adminServices) : next(new AppError(adminServices))
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getAllServices controller: ', error.message) : console.log('Unknown error from getAllServices controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+
+        }
+    }
+    async addAdminService(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try{
+        const data=req.body.services
+        console.log('admin service data to add: ', data);
+        
+        const newAdminService = await this.serviceServices.addAdminService(data)
+        console.log('addAdminService controller response: ', newAdminService);
+
+        newAdminService?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, newAdminService) : next(new AppError(newAdminService))
+
+    } catch (error: unknown) {
+        error instanceof Error ? console.log('Error message from addAdminService controller: ', error.message) : console.log('Unknown error from addAdminService controller: ', error)
+        next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+
+    }
+    }
+    async deleteAdminService(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            let deleteAdminServices = await this.serviceServices.deleteAdminService(req.params.name)
+           
+            deleteAdminServices?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, deleteAdminServices) : next(new AppError(deleteAdminServices))
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from deleteService controller: ', error.message) : console.log('Unknown error from deleteService controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+
+        }
+    } 
+
+    async getAvailableEvents(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            let availableEvents = await this.serviceServices.getAvailableEvents()
+           
+            availableEvents?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, availableEvents) : next(new AppError(availableEvents))
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from deleteService controller: ', error.message) : console.log('Unknown error from deleteService controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+
+        }
+    } 
+
     async getTotalServices(req: Request, res: Response, next: NextFunction) {
         try {
             const servicesCount = await this.serviceServices.totalServices()

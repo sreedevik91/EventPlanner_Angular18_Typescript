@@ -1,11 +1,11 @@
-import { IChoice, IEmailService, IRequestParams, IService, IServiceDb, IServiceRepository, IServicesService, SERVICE_RESPONSES } from "../interfaces/serviceInterfaces"
+import { IAdminService, IAdminServiceRepository, IChoice, IEmailService, IEvent, IRequestParams, IResponse, IService, IServiceDb, IServiceRepository, IServicesService, SERVICE_RESPONSES } from "../interfaces/serviceInterfaces"
 // import serviceRepository from "../repository/serviceRepository"
 import nodemailer from 'nodemailer'
 import { config } from "dotenv";
 import axios from 'axios'
 import { getUserByIdGrpc } from "../grpc/grpcUserClient";
 import { log } from "console";
-import { updateEventWithNewServiceGrpc } from "../grpc/grpcEventClient";
+import { getEventsByGrpc, updateEventWithNewServiceGrpc } from "../grpc/grpcEventClient";
 import { FilterQuery, QueryOptions } from "mongoose";
 
 config()
@@ -14,8 +14,109 @@ export class ServiceServices implements IServicesService {
 
     constructor(
         private serviceRepository: IServiceRepository,
+        private adminServiceRepository: IAdminServiceRepository,
         private emailService: IEmailService
     ) { }
+
+    async getAdminServices(): Promise<IResponse> {
+
+        try {
+            const adminServices = await this.adminServiceRepository.getAllServices({}, {})
+
+            console.log('all admin services: ', adminServices);
+
+
+            return adminServices ? { success: true, data: adminServices[0].services } : { success: false, data: [], message: SERVICE_RESPONSES.getServicesError }
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServices service: ', error.message) : console.log('Unknown error from getServices service: ', error)
+            return { success: false, message: SERVICE_RESPONSES.commonError }
+        }
+    }
+
+    async addAdminService(adminServiceData: string[]): Promise<IResponse> {
+        try {
+            const adminServices = await this.adminServiceRepository.getAllServices({}, {})
+            console.log('all admin services from addAdminService: ', adminServices);
+
+            let resp: IResponse = { success: true }
+            if (adminServices && adminServices.length > 0) {
+                let newServicesArray = [...adminServices[0].services, ...adminServiceData]
+                let id: string = (adminServices[0]._id) as string
+                let updatedServices = await this.adminServiceRepository.updateService(id, { services: newServicesArray })
+                console.log('updated admin services : ', updatedServices);
+
+                resp = { success: true, data: updatedServices?.services, message: SERVICE_RESPONSES.editServiceSuccess }
+            } else {
+                let newData: Partial<IAdminService> = { services: adminServiceData }
+                let newService = await this.adminServiceRepository.createService(newData)
+                console.log('new admin services : ', newService);
+
+                resp = { success: true, data: newService?.services, message: SERVICE_RESPONSES.editServiceSuccess }
+            }
+
+            return resp
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServices service: ', error.message) : console.log('Unknown error from getServices service: ', error)
+            return { success: false, message: SERVICE_RESPONSES.commonError }
+        }
+    }
+
+    async deleteAdminService(name: string): Promise<IResponse> {
+        try {
+            let adminServices = await this.adminServiceRepository.getAllServices({}, {})
+            console.log('admin services data available from deleteAdminService : ', adminServices);
+
+            if (!adminServices) {
+                console.log('deleteAdminService error: no admin services data available');
+
+                return { success: false, message: SERVICE_RESPONSES.deleteServiceError }
+            }
+            let id: string = (adminServices[0]._id) as string
+            let newServices = adminServices[0].services.filter(e => e !== name)
+            console.log('new services data from deleteAdminService : ', newServices);
+
+            let updatedServices = await this.adminServiceRepository.updateService(id, { services: newServices })
+
+            if (updatedServices) {
+                return { success: true, data: updatedServices.services, message: SERVICE_RESPONSES.deleteServiceSuccess }
+            } else {
+                return { success: false, message: SERVICE_RESPONSES.deleteServiceError }
+            }
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServices service: ', error.message) : console.log('Unknown error from getServices service: ', error)
+            return { success: false, message: SERVICE_RESPONSES.commonError }
+        }
+    }
+
+    async getAvailableEvents(): Promise<IResponse> {
+        try {
+            let availableEvents = await getEventsByGrpc()
+            console.log('Available Events from getAvailableEvents : ', availableEvents);
+
+            let eventsArray: string[] = []
+
+            if (!availableEvents) {
+                console.log('deleteAdminService error: no admin services data available');
+
+                return { success: false, message: SERVICE_RESPONSES.dataFetchError }
+            }
+            availableEvents.events.forEach((e: IEvent) => eventsArray.push(e.name))
+            console.log('new eventsArray data from getAvailableEvents : ', eventsArray);
+
+            // if (updatedServices) {
+            //     return { success: true, data: updatedServices.services, message: SERVICE_RESPONSES.deleteServiceSuccess }
+            // } else {
+            //     return { success: false, message: SERVICE_RESPONSES.deleteServiceError }
+            // }
+            return { success: true, data: eventsArray}
+
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getServices service: ', error.message) : console.log('Unknown error from getServices service: ', error)
+            return { success: false, message: SERVICE_RESPONSES.commonError }
+        }
+    }
 
     async totalServices() {
 
@@ -102,17 +203,17 @@ export class ServiceServices implements IServicesService {
     async getServices(params: IRequestParams) {
 
         try {
-            const { serviceName, isApproved, provider,providerId, pageNumber, pageSize, sortBy, sortOrder,role } = params
+            const { serviceName, isApproved, provider, providerId, pageNumber, pageSize, sortBy, sortOrder, role } = params
             console.log('search filter params:', serviceName, provider, pageNumber, pageSize, sortBy, sortOrder);
-            
+
             let filterQ: FilterQuery<IService> = {}
             let sortQ: QueryOptions = {}
             let skip = 0
-            let limit:number | undefined = undefined
+            let limit: number | undefined = undefined
             if (serviceName !== undefined) {
                 filterQ.name = { $regex: `.*${serviceName}.*`, $options: 'i' }
             }
-           
+
             if (providerId !== undefined) {
                 filterQ.provider = providerId
             }
@@ -138,14 +239,14 @@ export class ServiceServices implements IServicesService {
             if (pageNumber !== undefined && pageSize !== undefined) {
                 skip = (Number(pageNumber) - 1) * Number(pageSize)
             }
-            if(pageSize !== undefined && role!=='user') limit=Number(pageSize)
+            if (pageSize !== undefined && role !== 'user') limit = Number(pageSize)
 
-            const options:{sort:QueryOptions,skip:number,limit?:number}={
+            const options: { sort: QueryOptions, skip: number, limit?: number } = {
                 sort: sortQ,
                 skip
             }
 
-            if(role!=='user') options.limit=limit
+            if (role !== 'user') options.limit = limit
 
             console.log('options: ', options);
 
@@ -155,8 +256,8 @@ export class ServiceServices implements IServicesService {
 
             if (servicesData) {
                 const data = {
-                    services: servicesData[0].services.length>0 ? servicesData[0].services : [],
-                    count: servicesData[0].servicesCount.length>0 ? servicesData[0].servicesCount[0].totalServices : 0
+                    services: servicesData[0].services.length > 0 ? servicesData[0].services : [],
+                    count: servicesData[0].servicesCount.length > 0 ? servicesData[0].servicesCount[0].totalServices : 0
                 }
                 console.log('final data: ', data);
                 let extra: Record<string, string>[] = []
@@ -185,7 +286,7 @@ export class ServiceServices implements IServicesService {
 
             console.log('deleteService service response: ', data);
             if (data) {
-                return { success: true, data: data, message:SERVICE_RESPONSES.deleteServiceSuccess }
+                return { success: true, data: data, message: SERVICE_RESPONSES.deleteServiceSuccess }
             } else {
                 return { success: false, message: SERVICE_RESPONSES.deleteServiceError }
             }
@@ -199,14 +300,14 @@ export class ServiceServices implements IServicesService {
     async getServiceById(id: string) {
         try {
             console.log('id to get service in getServiceById:', id);
-            
+
             const data = await this.serviceRepository.getServiceById(id)
 
             console.log('getServiceById service response: ', data);
             if (data) {
                 return { success: true, data: data }
             } else {
-                return { success: false, message:SERVICE_RESPONSES.getServiceByIdError }
+                return { success: false, message: SERVICE_RESPONSES.getServiceByIdError }
             }
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getServiceById service: ', error.message) : console.log('Unknown error from getServiceById service: ', error)
@@ -231,7 +332,7 @@ export class ServiceServices implements IServicesService {
 
             }
 
-            return updatedService ? { success: true, data: updatedService, message:SERVICE_RESPONSES.editServiceSuccess } : { success: false, message:SERVICE_RESPONSES.editServiceError }
+            return updatedService ? { success: true, data: updatedService, message: SERVICE_RESPONSES.editServiceSuccess } : { success: false, message: SERVICE_RESPONSES.editServiceError }
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from editService service: ', error.message) : console.log('Unknown error from editService service: ', error)
@@ -251,9 +352,9 @@ export class ServiceServices implements IServicesService {
                 console.log('editStatus service: ', service, serviceUpdated);
 
                 if (serviceUpdated) {
-                    return { success: true, data: serviceUpdated, message:SERVICE_RESPONSES.editStatusSuccess }
+                    return { success: true, data: serviceUpdated, message: SERVICE_RESPONSES.editStatusSuccess }
                 } else {
-                    return { success: false, message:SERVICE_RESPONSES.editStatusError}
+                    return { success: false, message: SERVICE_RESPONSES.editStatusError }
                 }
             } else {
                 return { success: false, message: SERVICE_RESPONSES.editStatusErrorNoService }
@@ -296,7 +397,7 @@ export class ServiceServices implements IServicesService {
                 }
                 return { success: true, message: SERVICE_RESPONSES.approveServiceSuccess, data: serviceApproved }
             } else {
-                return { success: false, message: SERVICE_RESPONSES.approveServiceError}
+                return { success: false, message: SERVICE_RESPONSES.approveServiceError }
 
             }
         } catch (error: unknown) {
@@ -317,14 +418,14 @@ export class ServiceServices implements IServicesService {
                     e.events = Array.from(new Set(e.events))
                     e.choicesType = Array.from(new Set(e.choicesType)).filter((e: string) => e !== null && e !== "")
                     e.choiceImg = Array.from(new Set(e.choiceImg))
-                   
+
                 })
 
                 console.log('getServiceByName aggregatedServiceData: ', aggregatedServiceData);
                 console.log('getServiceByName allServicesByName: ', allServicesByName);
                 return { success: true, data: aggregatedServiceData, extra: allServicesByName }
             } else {
-                return { success: false, message: SERVICE_RESPONSES.getServiceByNameError}
+                return { success: false, message: SERVICE_RESPONSES.getServiceByNameError }
             }
 
         } catch (error: unknown) {

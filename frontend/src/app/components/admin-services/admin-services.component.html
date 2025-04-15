@@ -4,7 +4,9 @@
         <div class="col-md-8 text-dark fs-3 fw-bold">
             <p>Service Management</p>
         </div>
-
+        <div class="col-md-4 text-end">
+            <app-button [btnClass]=" 'btn-dark' " (onBtnClick)="showModal()">Available Service</app-button>
+        </div>
     </div>
     <div class="row d-flex flex-row" [formGroup]="searchFilterForm">
         <div class="col-md-3">
@@ -53,11 +55,11 @@
                     <tr>
                         <th scope="row">{{$index + 1}}</th>
                         <td>{{item.name}}</td>
-                         @if(extra.length>0){
-                            <td>{{extra[$index].name}}</td>
-                         }@else {
-                            <td>{{item.provider}}</td>
-                         }
+                        @if(extra.length>0){
+                        <td>{{extra[$index].name}}</td>
+                        }@else {
+                        <td>{{item.provider}}</td>
+                        }
                         <td>
                             @for (event of item.events; track $index) {
                             <p>{{event}}</p>
@@ -66,7 +68,7 @@
                         <td>
 
                             <p class="d-inline-flex gap-1">
-                             
+
                                 <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                     [attr.data-bs-target]="'#collapseExample'+ $index" aria-expanded="false"
                                     [attr.aria-controls]="'collapseExample'+ $index">
@@ -135,6 +137,68 @@
                 </li>
             </ul>
         </nav>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal" #modal>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add Service</h1>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="hideModal()"></button>
+                </div>
+                <div class="modal-body">
+
+                    <h2 class="text-xl font-bold mb-4">Available Services</h2>
+
+                    <ul class="list-group">
+                        @for(item of adminServices(); track $index){
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{item}}
+                                <span class="badge text-bg-danger rounded-pill" (click)="deleteAdminService(item)">X</span>
+                              </li>
+                        }
+                      </ul>
+
+                    <form [formGroup]="servicesForm">
+                        <div id="events" formArrayName="services">
+                            <app-form [label]=" 'Name of Service:' " [tooltip]=" 'Add Service' " >
+                                @for (item of getServicesItem(); track $index) {
+
+                                <div style="border: 1px solid grey; border-radius: 20px; padding: 10px;"
+                                    class="d-flex flex-row">
+                                    <input type="text" class="form-control" [formControlName]="$index">
+                                    <app-button [btnClass]="'btn-danger ms-2'" [btnTitle]="'Delete service item'"
+                                        (onBtnClick)="deleteServiceItem($index)">X</app-button>
+                                </div>
+
+                                }
+
+                            </app-form>
+                        </div>
+
+                        <app-button [btnClass]="'btn-dark m-3'" (onBtnClick)="addServiceItem()">+</app-button>
+
+
+                        <div class="d-grid gap-2 d-md-block">
+
+                          
+                            <app-button [btnClass]=" 'btn-success m-3' " (onBtnClick)="saveAdminService()">Add
+                                Service</app-button>
+                            
+
+                            <app-button [btnClass]=" 'btn-info m-3' " (onBtnClick)="hideModal()">Cancel</app-button>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
     </div>
 
 
