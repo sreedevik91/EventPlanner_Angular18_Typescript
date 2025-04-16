@@ -4,11 +4,12 @@ import { UserSrerviceService } from '../../services/userService/user-srervice.se
 import { AdminBookingComponent } from "../admin-booking/admin-booking.component";
 import { UserBookingComponent } from "../user-booking/user-booking.component";
 import { Subject } from 'rxjs';
+import { ProviderBookingComponent } from '../provider-booking/provider-booking.component';
 
 @Component({
   selector: 'app-booking',
   standalone: true,
-  imports: [AdminBookingComponent, UserBookingComponent],
+  imports: [AdminBookingComponent, UserBookingComponent,ProviderBookingComponent],
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css'
 })

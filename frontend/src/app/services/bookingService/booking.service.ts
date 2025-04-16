@@ -35,6 +35,11 @@ export class BookingService {
     return this.http.get(`${this.baseUrl}bookings`, { observe: 'response', params, withCredentials:true })
   }
 
+  getProviderBookings(params: HttpParams, providerId:string) {
+    // debugger
+    return this.http.get(`${this.baseUrl}providerBookings/${providerId}`, { observe: 'response', params, withCredentials:true })
+  }
+
   getBookingsByUserId(id: string) {
     return this.http.get(`${this.baseUrl}user/${id}`, { observe: 'response', withCredentials:true })
   }

@@ -38,6 +38,7 @@ router.get('/user/:id',(req:Request,res:Response,next:NextFunction)=>bookingCont
 router.get('/bookings/:providerId',(req:Request,res:Response,next:NextFunction)=>bookingController.getBookingsByProvider(req,res,next))
 router.get('/chartDataAdmin/:filter',(req:Request,res:Response,next:NextFunction)=>bookingController.getAdminChartData(req,res,next))
 router.get('/chartDataProvider/:filter/:name',(req:Request,res:Response,next:NextFunction)=>bookingController.getProviderChartData(req,res,next))
+router.get('/providerBookings/:providerId',(req:Request,res:Response,next:NextFunction)=>bookingController.getProviderBookings(req,res,next))
 
 router.post('/new',(req:Request,res:Response,next:NextFunction)=>bookingController.createBooking(req,res,next)) 
 router.post('/confirm',(req:Request,res:Response,next:NextFunction)=>bookingController.confirmBooking(req,res,next))

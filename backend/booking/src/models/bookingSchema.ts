@@ -39,6 +39,9 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
     serviceName: {
       type: String
     },
+    providerId: {
+      type: String
+    },
     providerName: {
       type: String
     },
@@ -97,6 +100,10 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>({
     required: true
   },
   isConfirmed: {
+    type: Boolean,
+    default: false
+  },
+  isApproved: {
     type: Boolean,
     default: false
   },

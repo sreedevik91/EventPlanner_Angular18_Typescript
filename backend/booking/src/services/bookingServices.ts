@@ -59,6 +59,7 @@ export class BookingService implements IBookingService {
                 services?.forEach(s => {
                     s.serviceName = service[0].name
                     s.providerName = provider.name
+                    s.providerId = providerId
                 })
 
                 console.log('services array for booking after adding fields:', services);
@@ -189,6 +190,78 @@ export class BookingService implements IBookingService {
 
     }
 
+    async getProviderBookings(params: IRequestParams, providerId: string) {
+
+        try {
+            const { userName, pageNumber, pageSize, isConfirmed, sortBy, sortOrder } = params
+            console.log('search filter params:', userName, pageNumber, pageSize, sortBy, sortOrder);
+            console.log('provider id for getProviderBookings:', providerId);
+            let filterQ: FilterQuery<IBooking> = {}
+            let sortQ: QueryOptions = {}
+            let skip = 0
+
+            filterQ.services = { $elemMatch: { providerId } }
+
+            if (userName !== undefined) {
+                filterQ.user = { $regex: `.*${userName}.*`, $options: 'i' }
+            }
+
+            if (isConfirmed !== undefined) {
+                let value: boolean = (isConfirmed === 'true') ? true : false
+                filterQ.isConfirmed = value
+            }
+
+            if (isConfirmed === 'true') sortQ.orderDate = -1
+
+            if (sortOrder !== undefined && sortBy !== undefined) {
+                let order = sortOrder === 'asc' ? 1 : -1
+                if (sortBy === 'user') { sortQ.user = order }
+                else if (sortBy === 'isConfirmed') { sortQ.isConfirmed = order }
+
+            } else {
+                sortQ.createdAt = 1
+            }
+
+            console.log('filterQ: ', filterQ);
+            console.log('sortQ: ', sortQ);
+
+            if (pageNumber !== undefined && pageSize !== undefined) {
+                skip = (Number(pageNumber) - 1) * Number(pageSize)
+            }
+
+            console.log('skip: ', skip);
+
+            let bookingsData = await this.bookingRepository.getBookingsAndCount(filterQ, { sort: sortQ, limit: Number(pageSize), skip })
+            console.log('all provider bookings data : ', bookingsData);
+
+            let data: IBookingsDataOut = { bookings: [], count: 0 }
+            if (bookingsData) {
+                console.log('all provider bookings and total count: ', bookingsData[0].bookings, bookingsData[0].bookingsCount);
+                bookingsData[0].bookings.forEach(booking => {
+                    let servicesFiltered = booking.services.filter(e => e.providerId === providerId)
+                console.log('provider bookings services: ',servicesFiltered);
+                    booking.services = servicesFiltered
+                })
+
+                data = {
+                    bookings: bookingsData[0].bookings.length > 0 ? bookingsData[0].bookings : [],
+                    count: bookingsData[0].bookingsCount.length > 0 ? bookingsData[0].bookingsCount[0].totalBookings : 0
+                }
+            } else {
+                console.log('No data available: ', bookingsData);
+            }
+
+
+            return bookingsData ? { success: true, data } : { success: false, message: SERVICE_RESPONSES.fetchDataError }
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getProviderBookings service: ', error.message) : console.log('Unknown error from getProviderBookings service: ', error)
+
+            return { success: false, message: SERVICE_RESPONSES.commonError }
+        }
+
+    }
+
     async deleteBooking(id: string) {
         try {
             let amount = 0
@@ -222,7 +295,7 @@ export class BookingService implements IBookingService {
 
     async deleteBookedServices(bookingId: string, serviceName: string, serviceId: string) {
         try {
-            
+
             const data = await this.bookingRepository.updateBooking(bookingId, { $pull: { services: { _id: serviceId, serviceName } } })
 
             console.log('deleteBookedServices service response: ', data);
@@ -279,9 +352,12 @@ export class BookingService implements IBookingService {
     async getBookingsByProvider(id: string) {
         try {
             const provider = await getUserByIdGrpc(id)
-            const bookings = await this.bookingRepository.getBookingsByProvider(provider.name)
+            console.log('provider data from grpc: ', provider);
 
-            console.log('getEventById service response: ', bookings);
+            // const bookings = await this.bookingRepository.getBookingsByProvider(provider.name)
+            const bookings = await this.bookingRepository.getBookingsByProvider(id)
+
+            console.log('getBookingsByProvider service response: ', bookings);
 
             let newBookings: Partial<IBooking>[] = (bookings || []).map(booking => {
                 return {
@@ -466,7 +542,7 @@ export class BookingService implements IBookingService {
 
     }
 
-    async confirmBooking(bookingId: string,paymentMethod:string) {
+    async confirmBooking(bookingId: string, paymentMethod: string) {
         try {
 
             const booking = await this.bookingRepository.getBookingById(bookingId)
@@ -476,23 +552,23 @@ export class BookingService implements IBookingService {
                 return sum
             }, 0)
 
-            if(paymentMethod && booking){
-                const updateBooking = await this.bookingRepository.updateBooking(bookingId, { $set: { isConfirmed: true, orderDate: Date.now(),paymentType: paymentMethod} })
-                const updateWallet= await updateWalletByGrpc(booking?.userId,'debit',totalAmount!)
-                console.log('updated wallet:',updateWallet);
-                
+            if (paymentMethod && booking) {
+                const updateBooking = await this.bookingRepository.updateBooking(bookingId, { $set: { isConfirmed: true, orderDate: Date.now(), paymentType: paymentMethod } })
+                const updateWallet = await updateWalletByGrpc(booking?.userId, 'debit', totalAmount!)
+                console.log('updated wallet:', updateWallet);
+
                 return updateBooking ? { success: true, data: {} } : { success: false, message: SERVICE_RESPONSES.paymentError }
 
-            }else{
+            } else {
                 console.log('booking Id for razorpay order id: ', bookingId, ' ,total amount for razorpay order id: ', totalAmount);
-    
+
                 const razorpayOrderId = await this.paymentService.createOrder(bookingId, totalAmount!)
                 console.log('razorpay order id: ', razorpayOrderId);
-    
+
                 return razorpayOrderId ? { success: true, data: { razorpayOrderId, amount: totalAmount! * 100 } } : { success: false, message: SERVICE_RESPONSES.proceedPaymentError }
-    
+
             }
-            
+
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getServiceByEvent service: ', error.message) : console.log('Unknown error from getServiceByEvent service: ', error)
 

@@ -166,11 +166,13 @@
 
                         <app-form [label]=" 'Name of service:' " [tooltip]=" 'Select Service' " [Validation]="serviceForm.controls['name'].touched &&
                     serviceForm.controls['name'].errors ? serviceForm.controls['name'].errors : {}">
-                            <select class="form-select" formControlName="name" (change)="getChoiceOptions()">
+                            <!-- <select class="form-select" formControlName="name" (change)="getChoiceOptions()">
                                 <option value="Catering">Catering</option>
                                 <option value="Decor">Decor</option>
                                 <option value="Event Coverage">Event Coverage</option>
-                            </select>
+                            </select> -->
+
+                            <input type="text" class="form-control" (input)="getChoiceOptions()" formControlName="name" placeholder="eg: Catering, Decor etc">
                         </app-form>
 
                         <app-form [label]=" 'Image of service:' " [tooltip]=" 'Select img' " [Validation]="serviceForm.controls['img'].touched &&
@@ -230,22 +232,27 @@
                                     <div class="mt-1 mb-4">
                                         <app-form [label]=" 'Option Name:' " [tooltip]=" 'Enter option name' ">
 
-                                            <select class="form-select" formControlName="choiceName"
+                                            <!-- <select class="form-select" formControlName="choiceName"
                                                 (change)="getChoiceTypeOptions($index)">
                                                 @for (item of choice; track $index) {
                                                 <option [value]="item">{{item}}</option>
                                                 }
-                                            </select>
+                                            </select> -->
+
+                                            <input type="text" class="form-control" formControlName="choiceName" placeholder="eg: Menu, Dining or available options etc">
                                         </app-form>
 
                                         @if(isType){
                                         <app-form [label]=" 'Option Type:' " [tooltip]=" 'Enter option type' ">
-                                            <select class="form-select" formControlName="choiceType">
+                                            <!-- <select class="form-select" formControlName="choiceType">
                                                 @for (i of type[$index]; track $index) {
                                                 <option [value]="i">{{i}}</option>
                                                 }
 
-                                            </select>
+                                            </select> -->
+
+                                            <input type="text" class="form-control" formControlName="choiceType" placeholder="eg: Cuisine or plating arrangement">
+
                                         </app-form>
 
                                         <app-form [label]=" 'Image of choice:' " [tooltip]=" 'Select img' ">

@@ -450,9 +450,9 @@ export class ProviderServicesComponent implements OnInit, OnDestroy {
   saveService() {
     // console.log(this.serviceForm.errors);
     this.serviceForm.get('provider')?.setValue(this.providerId)
-    // console.log(this.serviceForm.value);
+    console.log('service form values: ',this.serviceForm.value);
     const { _id, ...rest } = this.serviceForm.value
-    // console.log('data to add new service: ', rest);
+    console.log('data to add new service: ', rest);
 
     const formData = new FormData()
 

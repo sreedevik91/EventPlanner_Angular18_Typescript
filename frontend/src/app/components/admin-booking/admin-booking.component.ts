@@ -90,8 +90,8 @@ export class AdminBookingComponent implements OnInit, OnDestroy {
     this.searchParams = this.searchParams
       .set('pageNumber', this.bookingFilterFormObj.pageNumber)
       .set('pageSize', this.bookingFilterFormObj.pageSize)
-      .set('sortBy', this.bookingFilterFormObj.sortBy)
-      .set('sortOrder', this.bookingFilterFormObj.sortOrder)
+      // .set('sortBy', this.bookingFilterFormObj.sortBy)
+      // .set('sortOrder', this.bookingFilterFormObj.sortOrder)
 
     if (this.bookingFilterFormObj.userName !== '') {
       this.searchParams = this.searchParams.set('userName', this.bookingFilterFormObj.userName)

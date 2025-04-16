@@ -11,8 +11,7 @@ export class BookingController implements IBookingController {
     constructor(
         private bookingServices: IBookingService
     ) { }
-
-
+   
     async getTotalBookings(req: Request, res: Response, next: NextFunction) {
         try {
             const bookingCount = await this.bookingServices.totalBookings()
@@ -50,6 +49,20 @@ export class BookingController implements IBookingController {
         try {
             let bookings = await this.bookingServices.getBookings(req.query)
             bookings?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, bookings) : next(new AppError(bookings))
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getAllBookings controller: ', error.message) : console.log('Unknown error from getAllBookings controller: ', error)
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+
+        }
+
+    }
+
+    async getProviderBookings(req: Request, res: Response, next: NextFunction) {
+
+        try {
+            let providerBookings = await this.bookingServices.getProviderBookings(req.query, req.params.providerId)
+            providerBookings?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, providerBookings) : next(new AppError(providerBookings))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from getAllBookings controller: ', error.message) : console.log('Unknown error from getAllBookings controller: ', error)

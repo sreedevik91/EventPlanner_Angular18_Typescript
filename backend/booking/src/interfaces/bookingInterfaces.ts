@@ -18,6 +18,7 @@ export interface IBooking extends Document {
   venue: IAddress;
   totalCount: number;
   isConfirmed: boolean;
+  isApproved: boolean;
   orderDate:Date;
   tag: string; // if there is eventId in the data from frontend then tag is event booking or if serviceId there then it is service booking 
 }
@@ -323,6 +324,7 @@ export interface IBookingService {
   getAdminChartData(filter:string): Promise<IResponse>
   getProviderChartData(filter:string, id:string): Promise<IResponse>
   getAdminPaymentList(): Promise<IResponse>
+  getProviderBookings(params: IRequestParams, providerId: string): Promise<IResponse>
 }
 
 export interface IBookingController {
@@ -347,6 +349,7 @@ export interface IBookingController {
   getAdminChartData(req: Request, res: Response, next: NextFunction): Promise<void>
   getProviderChartData(req: Request, res: Response, next: NextFunction): Promise<void>
   getAdminPaymentList(req: Request, res: Response, next: NextFunction): Promise<void>
+  getProviderBookings(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
 export interface IPaymentService{

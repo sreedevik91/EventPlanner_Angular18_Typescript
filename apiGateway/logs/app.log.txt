@@ -1,2 +1,3 @@
 C:\Users\USER\Documents\BroCampTasks\Angular_Project\apiGateway\logs\20250411-0000-01-app.log
 C:\Users\USER\Documents\BroCampTasks\Angular_Project\apiGateway\logs\20250416-0002-01-app.log
+C:\Users\USER\Documents\BroCampTasks\Angular_Project\apiGateway\logs\20250417-0000-01-app.log

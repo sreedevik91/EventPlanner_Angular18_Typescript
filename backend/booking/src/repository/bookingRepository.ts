@@ -208,10 +208,16 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
         }
     }
 
-    async getBookingsByProvider(name: string) {
+    async getBookingsByProvider(id: string) {
         try {
-            const regexPattern = new RegExp(name, 'i')
-            return await this.model.find({ isConfirmed: true, services: { $elemMatch: { providerName: { $regex: regexPattern } } }, orderDate: { $gte: new Date() } }).sort({ deliveryDate: 1 })
+            // const regexPattern = new RegExp(name, 'i')
+            // console.log('name regex pattern: ', regexPattern);
+
+            // let bookingsData = await this.model.find({ isConfirmed: true, services: { $elemMatch: { providerName: { $regex: regexPattern } } }, deliveryDate: { $gte: new Date() } }).sort({ deliveryDate: 1 })
+            let bookingsData = await this.model.find({ isConfirmed: true, services: { $elemMatch: { providerId: id} }, deliveryDate: { $gte: new Date() } }).sort({ deliveryDate: 1 })
+            console.log('bookings data from getBookingsByProvider repository: ', bookingsData);
+
+            return bookingsData
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from Booking BookingRepository: ', error.message) : console.log('Unknown error from Booking BookingRepository: ', error)
             return null
@@ -308,7 +314,7 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
                                 }
                             }
                         ],
-                       
+
                     }
                 }
             ])
@@ -359,15 +365,17 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
     async getPaymentList() {
         try {
             return await this.model.aggregate([
-                {$match:{}},
-                {$project:{
-                    user:1,
-                    event:1,
-                    service:1,
-                    bookingDate:'$createdAt',
-                    totalAmount:{$sum:'$services.choicePrice'},
-                    isConfirmed:1
-                }}
+                { $match: {} },
+                {
+                    $project: {
+                        user: 1,
+                        event: 1,
+                        service: 1,
+                        bookingDate: '$createdAt',
+                        totalAmount: { $sum: '$services.choicePrice' },
+                        isConfirmed: 1
+                    }
+                }
             ])
 
         } catch (error: unknown) {
