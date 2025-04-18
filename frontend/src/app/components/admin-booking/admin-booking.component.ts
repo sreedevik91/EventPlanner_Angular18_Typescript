@@ -7,14 +7,14 @@ import { ButtonComponent } from '../../shared/components/button/button.component
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { Booking, BookingSearchFilter } from '../../model/class/bookingClass';
 import { BookingService } from '../../services/bookingService/booking.service';
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 
 
 @Component({
   selector: 'app-admin-booking',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, AlertComponent,DatePipe],
+  imports: [ReactiveFormsModule, ButtonComponent, AlertComponent,DatePipe,CurrencyPipe],
   templateUrl: './admin-booking.component.html',
   styleUrl: './admin-booking.component.css'
 })

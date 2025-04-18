@@ -139,7 +139,7 @@ export interface IEventServiceResponse {
 }
 
 export interface IBookedServices {
-    _id?: string;
+    _id: string;
     serviceName: string;
     providerName: string;
     choiceName: string;
@@ -165,6 +165,7 @@ export interface IBooking {
     tag?: string;
     totalCount: number;
     isConfirmed: boolean;
+    isApproved: boolean;
 }
 
 export interface IServicesArray {

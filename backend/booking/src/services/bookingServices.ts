@@ -408,7 +408,8 @@ export class BookingService implements IBookingService {
             const booking = await this.bookingRepository.getBookingById(id)
 
             if (booking) {
-                const bookingUpdated = await this.bookingRepository.updateBooking(id, { $set: { isConfirmed: !booking.isConfirmed } })
+                // const bookingUpdated = await this.bookingRepository.updateBooking(id, { $set: { isConfirmed: !booking.isConfirmed } })
+                const bookingUpdated = await this.bookingRepository.updateBooking(id, { $set: { isApproved: !booking.isApproved } })
 
                 console.log('editStatus service: ', booking, bookingUpdated);
 

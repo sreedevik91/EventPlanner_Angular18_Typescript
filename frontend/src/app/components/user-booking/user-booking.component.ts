@@ -4,7 +4,7 @@ import { UserSrerviceService } from '../../services/userService/user-srervice.se
 import { AlertService } from '../../services/alertService/alert.service';
 import { BookingService } from '../../services/bookingService/booking.service';
 import { HttpStatusCodes, IBooking, ILoggedUserData, IResponse } from '../../model/interface/interface';
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ButtonComponent } from "../../shared/components/button/button.component";
 import { Subject, takeUntil } from 'rxjs';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
@@ -14,7 +14,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-user-booking',
   standalone: true,
-  imports: [DatePipe, AlertComponent],
+  imports: [DatePipe, AlertComponent,CurrencyPipe, ButtonComponent],
   templateUrl: './user-booking.component.html',
   styleUrl: './user-booking.component.css'
 })

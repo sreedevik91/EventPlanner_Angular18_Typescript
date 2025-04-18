@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
@@ -18,7 +18,7 @@ declare var Razorpay: any;
 @Component({
   selector: 'app-user-favorites',
   standalone: true,
-  imports: [DatePipe, ButtonComponent, AlertComponent],
+  imports: [DatePipe, ButtonComponent, AlertComponent, CurrencyPipe],
   templateUrl: './user-favorites.component.html',
   styleUrl: './user-favorites.component.css'
 })
@@ -32,6 +32,7 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
 
   isBookingSuccess: boolean = false
   confirmationMessage: string = ''
+  selectedServiceIdToDelete: string = ''
 
   userService = inject(UserSrerviceService)
   alertService = inject(AlertService)
@@ -48,6 +49,8 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
 
   userId: string = ''
   userName: string = ''
+
+  isServiceDelete: boolean = false
 
   bookingAmount: number = 0
   walletAmount: number = 0
@@ -68,7 +71,7 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
     this.walletService.getWallet(this.userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
-          this.walletAmount=res.body?.data.amount
+          this.walletAmount = res.body?.data.amount
           console.log('walletAmount: ', this.walletAmount);
         } else {
           console.log(res.body?.message);
@@ -151,12 +154,20 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
     })
     // }
   }
-  
-  confirmWalletBooking(bookingId: string,paymentType:string) {
-    this.bookingService.confirmBooking(bookingId,paymentType).pipe(takeUntil(this.destroy$)).subscribe({
+
+  showDeleteConfirmation(serviceId: string) {
+    this.selectedServiceIdToDelete = serviceId
+  }
+
+  hideDeleteConfirmation() {
+    this.selectedServiceIdToDelete = ''
+  }
+
+  confirmWalletBooking(bookingId: string, paymentType: string) {
+    this.bookingService.confirmBooking(bookingId, paymentType).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
-          console.log('confirmWalletBooking: ',res.body?.data);
+          console.log('confirmWalletBooking: ', res.body?.data);
           if (res.body?.success) {
             this.isBookingSuccess = true
             this.confirmationMessage = 'Booking confirmed.'
@@ -189,7 +200,7 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
       next: (res: HttpResponse<IResponse>) => {
         if (res.status === HttpStatusCodes.SUCCESS) {
           const { razorpayOrderId, amount } = res.body?.data
-          this.bookingAmount=amount
+          this.bookingAmount = amount
           console.log('razorpay orderId: ', razorpayOrderId, ' ,razorpay payment amount:  ', amount, ' ,bookingAmount:  ', this.bookingAmount);
           this.openRazorpayModal(amount, razorpayOrderId, bookingId)
         } else {

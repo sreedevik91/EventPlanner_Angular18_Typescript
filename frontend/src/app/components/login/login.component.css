@@ -4,3 +4,11 @@
     width:100vw;
   } */
 
+section {
+  display: block;
+  height: 100vh;
+  background-image: url('https://t3.ftcdn.net/jpg/10/75/13/60/360_F_1075136026_ml0zFqVlzojOuyd2kb7WqrytuSjT6Sez.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}

@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { Booking, BookingSearchFilter } from '../../model/class/bookingClass';
 import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
@@ -14,7 +14,7 @@ import { UserSrerviceService } from '../../services/userService/user-srervice.se
 @Component({
   selector: 'app-provider-booking',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, AlertComponent, DatePipe],
+  imports: [ReactiveFormsModule, ButtonComponent, AlertComponent, DatePipe, CurrencyPipe],
   templateUrl: './provider-booking.component.html',
   styleUrl: './provider-booking.component.css'
 })
@@ -124,7 +124,7 @@ export class ProviderBookingComponent implements OnInit, OnDestroy {
   }
 
 
-  confirmBooking(id: string) {
+  approveBooking(id: string) {
     // debugger
     this.bookingService.editStatus(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: HttpResponse<IResponse>) => {

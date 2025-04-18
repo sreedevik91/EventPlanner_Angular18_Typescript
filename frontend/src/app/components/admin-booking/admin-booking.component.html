@@ -1,4 +1,3 @@
-
 <section class="container mt-4 p-3">
 
     <div class="row mb-2">
@@ -11,7 +10,7 @@
         <div class="col-md-3">
             <label for=""> User: </label><input type="text" class="form-control" formControlName="userName">
         </div>
-       
+
         <div class="col-md-3">
             <app-button [btnClass]="'btn-dark mt-4 rounded-pill'" (onBtnClick)="onSearch()">Search</app-button>
             <app-button [btnClass]="'btn-dark mt-4 ms-3 rounded-pill'" (onBtnClick)="onRefresh()">Refresh</app-button>
@@ -44,7 +43,7 @@
                         <th scope="col">Details</th>
                         <th scope="col" role="button" (click)="onSort('isConfirmed')">Status</th>
                         <!-- <th scope="col" role="button" (click)="onSort('isApproved')">Approval</th> -->
-                        <th scope="col">Actions</th>
+                        <th scope="col">Payment Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,15 +52,15 @@
                         <th scope="row">{{$index + 1}}</th>
                         <td>{{item.user}}</td>
                         @if(item.service){
-                            <td>{{item.service}}</td>
+                        <td>{{item.service}}</td>
                         }@else if(item.event){
-                            <td>{{item.event}}</td>
+                        <td>{{item.event}}</td>
                         }
-                       
+
 
                         <td>
 
-                            <p class="d-inline-flex gap-1">
+                            <!-- <p class="d-inline-flex gap-1">
                               
                                 <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                     [attr.data-bs-target]="'#collapseExample'+ $index" aria-expanded="false"
@@ -118,24 +117,119 @@
                 
                                 </div>
 
+                            </div> -->
+
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                [attr.data-bs-target]="'#exampleModal'+ $index">
+                                View
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" [id]="'exampleModal'+ $index" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Booking Details</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table class="table table-success table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Sl.No</th>
+                                                        <th scope="col">Booking</th>
+                                                        <th scope="col">Style</th>
+                                                        <th scope="col">Booked By</th>
+                                                        <th scope="col">Services</th>
+                                                        <th scope="col">Date</th>
+                                                        <th scope="col">Guests</th>
+                                                        <th scope="col">Venue</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    <tr>
+                                                        <th scope="row">{{$index + 1}}</th>
+                                                        <td>
+                                                            @if(item.service){
+                                                            <p>{{item.service}}</p>
+                                                            }@else if(item.event){
+                                                            <p>{{item.event}}</p>
+                                                            }
+                                                        </td>
+                                                        <td> @if(item.service){
+                                                            {{item.style}}
+                                                            }@else{
+                                                            -
+                                                            }
+                                                        </td>
+                                                        <td> {{item.user}}</td>
+                                                        <td>
+                                                            @for (service of item.services; track $index) {
+
+                                                            <div class="d-flex justify-content-between">
+                                                                <p><u>{{service.serviceName}} by
+                                                                        {{service.providerName}}</u></p>
+                                                            </div>
+
+                                                            <!-- {{service.choiceName}} -->
+                                                            <ul>
+                                                                @if(service.choiceType){
+                                                                <li>{{service.choiceName}}-{{service.choiceType}}-{{service.choicePrice
+                                                                    | currency:'INR':'symbol':'1.0-0':'en-IN'}} </li>
+                                                                }@else{
+                                                                <li>{{service.choiceName}}-{{service.choicePrice |
+                                                                    currency:'INR':'symbol':'1.0-0':'en-IN'}}</li>
+                                                                }
+                                                            </ul>
+
+                                                            }
+                                                        </td>
+                                                        <td>{{item.deliveryDate | date:'longDate'}}</td>
+                                                        <td>{{item.totalCount}}</td>
+                                                        <td>
+                                                            <p>{{item.venue.building}}</p>
+                                                            <p>{{item.venue.street}},{{item.venue.city}} </p>
+                                                            <p></p>{{item.venue.district}},{{item.venue.state}}
+                                                        </td>
+                                                    </tr>
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                         </td>
                         <td>
-                            @if(item.isConfirmed){
-                            Booking Confirmed
+                            @if(item.isApproved){
+                            Booking Confirmed by Provider
                             }@else{
                             Pending Confirmation
                             }
                         </td>
-                     
+
                         <td>
                             @if(item.isConfirmed){
-                            <app-button [btnTitle]="'Service Approved'" [disabled]="true"><i
-                                    class="fa-regular fa-thumbs-up"></i></app-button>
+                            <!-- <app-button [btnTitle]="'Service Approved'" [disabled]="true">
+                                <i class="fa-regular fa-thumbs-up"></i>
+                                </app-button> -->
+                            Payment Done
                             }@else {
-                            <app-button [btnTitle]="'Approve service'" (onBtnClick)="confirmBooking(item._id)"><i
-                                    class="fa-regular fa-thumbs-down"></i></app-button>
+                            <!-- <app-button [btnTitle]="'Approve service'" (onBtnClick)="confirmBooking(item._id)">
+                                <i class="fa-regular fa-thumbs-down"></i>
+                            </app-button> -->
+                            Payment Pending
                             }
 
                         </td>

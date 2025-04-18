@@ -67,7 +67,7 @@
                         </td>
                         <td>
 
-                            <p class="d-inline-flex gap-1">
+                            <!-- <p class="d-inline-flex gap-1">
 
                                 <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                     [attr.data-bs-target]="'#collapseExample'+ $index" aria-expanded="false"
@@ -85,7 +85,62 @@
                                     <p>Price:{{choice.choicePrice}}</p>
                                 </div>
                                 }
+                            </div> -->
+
+
+                             <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                [attr.data-bs-target]="'#exampleModal'+ $index">
+                                View
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" [id]="'exampleModal'+ $index" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Service Details</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table class="table table-success table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Sl.No</th>
+                                                        <th scope="col">Name</th>
+                                                        <th scope="col">Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (choice of item.choices; track $index) {
+                                                    <tr>
+                                                        <th scope="row">{{$index + 1}}</th>
+                                                        <td>{{choice.choiceName}}</td>
+                                                        <td>
+                                                            @if(choice.choiceType !==''){
+                                                                {{choice.choiceType}}-{{choice.choicePrice | currency:'INR':'symbol':'1.0-0':'en-IN'}}
+                                                                }@else{
+                                                                {{choice.choicePrice | currency:'INR':'symbol':'1.0-0':'en-IN'}}
+                                                                }
+                                                        </td>
+                                                        
+                                                    </tr>
+                                                }
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
 
                         </td>
                         <td>

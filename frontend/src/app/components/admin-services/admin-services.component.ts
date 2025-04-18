@@ -9,11 +9,12 @@ import { ButtonComponent } from '../../shared/components/button/button.component
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { Subject, takeUntil } from 'rxjs';
 import { FormComponent } from '../../shared/components/form/form.component';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-admin-services',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, AlertComponent, FormComponent],
+  imports: [ReactiveFormsModule, ButtonComponent, AlertComponent, FormComponent, CurrencyPipe],
   templateUrl: './admin-services.component.html',
   styleUrl: './admin-services.component.css'
 })
