@@ -59,7 +59,7 @@ export class ChatServices implements IChatService {
 
         try {
 
-            const uploadImgVideo = await getImgVideoUrl(img, { public_id: name, resource_type: type, type:"authenticated",sign_url: true })
+            const uploadImgVideo = await getImgVideoUrl(img, { public_id: name, resource_type: type, type:"authenticated",sign_url: true,secure:true })
             console.log('cloudinary img/video upload result: ', uploadImgVideo);
             return uploadImgVideo
 
@@ -74,7 +74,7 @@ export class ChatServices implements IChatService {
 
         try {
             
-            const uploadAudio = await getAudioUrl(audio, { public_id: name, resource_type: 'video',type:"authenticated",sign_url: true})
+            const uploadAudio = await getAudioUrl(audio, { public_id: name, resource_type: 'video',type:"authenticated",sign_url: true,secure:true})
             console.log('cloudinary audio upload result: ', uploadAudio);
             return uploadAudio
 

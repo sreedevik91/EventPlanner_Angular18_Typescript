@@ -43,11 +43,17 @@ interface IAddress {
   pbNo: number;
 }
 
+export interface IGrpcUpdateEvent{
+  serviceName:string;
+  events: string[];
+}
+
 export interface IEvent {
   _id: string;
   name: string;
   services: string[];
   isActive: string;
+  img?:string;
 }
 
 export interface IBookingDb extends IBooking, Document {
