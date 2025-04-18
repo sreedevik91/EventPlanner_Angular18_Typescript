@@ -10,8 +10,8 @@
                 <h2>Active Users</h2>
                 @for(user of activeUsers(); track $index){   
                 <div class="user-card">
-                    <img class="avatar" src="" alt="">
-                    <p class="username" (click)="joinChat(user.userId)">{{user.userName}}</p>
+                    <!-- <img class="avatar" src="" alt=""> -->
+                    <p class="username" (click)="joinChat(user.userId)">🟢 {{user.userName}}</p>
                 </div>
             }
             </div>
