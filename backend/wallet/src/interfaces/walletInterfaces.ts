@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Date, DeleteResult, Document, FilterQuery, ObjectId, QueryOptions, UpdateQuery } from "mongoose";
+import grpc from '@grpc/grpc-js'
 
 export interface IWallet extends Document {
   userId: string;
@@ -127,4 +128,152 @@ export const SERVICE_RESPONSES = {
   deleteWalletError: 'Could not delete wallet data, Something went wrong',
   updateWalletSuccess: 'Wallet updated successfuly',
   updateWalletError: 'Could not updated wallet'
+}
+
+export interface IGrpcEventsService {
+  GetEvents: (request: {}, callback: (err: grpc.ServiceError, response: IGrpcEvent) => void) => void;
+  GetEventByName: (request: { name: string }, callback: (err: grpc.ServiceError, response: IGrpcEventByName) => void) => void;
+  GetEventImg: (request: { img: string }, callback: (err: grpc.ServiceError, response: string) => void) => void;
+  UpdateEventWithNewService: (request: IGrpcUpdateEventRequest, callback: (err: grpc.ServiceError, response: IGrpcUpdateEventResponse) => void) => void;
+}
+
+export interface IGrpcServiceDetails {
+  GetAvailableServices: (request: { serviceName: string }, callback: (err: grpc.ServiceError, response: IGrpcService) => void) => void;
+  GetAvailableServicesByProvider: (request: { providerId: string }, callback: (err: grpc.ServiceError, response: IGrpcService) => void) => void;
+  GetAvailableServiceByProviderAndName: (request: { serviceName: string, providerId: string }, callback: (err: grpc.ServiceError, response: IGrpcServiceByProvider) => void) => void;
+  GetServiceImg: (request: { img: string }, callback: (err: grpc.ServiceError, response: string) => void) => void;
+}
+
+export interface IGrpcUserService {
+  GetUser: (request: { id: string }, callback: (err: grpc.ServiceError, response: IGrpcUserObj) => void) => void;
+}
+
+export interface IGrpcWalletServiceServer {
+  GetWallet: (call: grpc.ServerUnaryCall<IGrpcWalletGetRequest,IGrpcWalletResponse>, callback:grpc.sendUnaryData<IGrpcWalletResponse>) => void;
+  UpdateWallet: (call: grpc.ServerUnaryCall<IGrpcWalletUpdateRequest,IGrpcWalletResponse>, callback:grpc.sendUnaryData<IGrpcWalletResponse>) => void;
+}
+
+export interface EventsPackage {
+  events: {
+    EventsService: new (address: string, credentials: grpc.ChannelCredentials) => IGrpcEventsService;
+  };
+}
+
+export interface UserPackage {
+  user: {
+    UserService: new (address: string, credentials: grpc.ChannelCredentials) => IGrpcUserService;
+  };
+}
+
+export interface ServicePackage {
+  service: {
+    ServiceDetails: new (address: string, credentials: grpc.ChannelCredentials) => IGrpcServiceDetails;
+  };
+}
+
+export interface WalletPackageServer {
+  wallet: {
+    WalletProto: {
+      service: grpc.ServiceDefinition<IGrpcWalletServiceServer>
+    }
+  };
+}
+
+export interface IGrpcUpdateEventRequest {
+  serviceName: string;
+  events: string[];
+}
+
+export interface IGrpcUpdateEventResponse {
+  message: string;
+  success: boolean;
+}
+
+export interface IGrpcEvent {
+  events: IEvent[]
+}
+
+export interface IGrpcEventByName {
+  event: IGrpcEventObj[]
+}
+
+export interface IGrpcService {
+  serviceData: IGrpcServiceObj[]
+}
+
+export interface IGrpcServiceByProvider {
+  serviceDetails: IGrpcServiceObj
+}
+
+interface IGrpcEventObj {
+  _id: string;
+  name: string;
+  services: string[];
+  isActive: string;
+  img: string;
+}
+
+interface IGrpcServiceObj {
+  id: string;
+  name: string;
+  provider: string;
+  events: string[];
+  choices: IChoice[];
+  img: string;
+}
+
+export interface IGrpcUserObj {
+  id: string;
+  name: string;
+  email: string;
+  isActive: boolean;
+}
+
+export interface IGrpcWalletUpdateRequest {
+  userId: string;
+  type: string;
+  amount: number;
+}
+
+export interface IGrpcWalletGetRequest {
+  userId: string;
+}
+
+export interface IGrpcWalletResponse {
+  id: string;
+  userId: string;
+  amount: number;
+  transactions: IWalletTransactions[];
+}
+
+export interface IGetAvailableServicesResponse {
+  serviceList: Array<{
+    id: string;
+    name: string;
+    provider: string;
+    img: string;
+    events: string[];
+    choices: Array<{
+      choiceName: string;
+      choiceType: string;
+      choicePrice: number;
+      choiceImg: string;
+    }>;
+  }>;
+}
+
+export interface IEvent {
+  _id: string;
+  name: string;
+  services: string[];
+  isActive: string;
+  img?: string;
+}
+
+export interface IChoice {
+  choiceName: string;
+  choiceType: string;
+  choicePrice: number;
+  choiceImg: string;
+  id: string;
 }

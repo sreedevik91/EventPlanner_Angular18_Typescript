@@ -2,6 +2,7 @@ import { CookieOptions, NextFunction } from "express";
 import { Document, DeleteResult, FilterQuery, QueryOptions } from "mongoose";
 import { Request, Response } from 'express'
 import { JwtHeader, JwtPayload } from "jsonwebtoken";
+import grpc from '@grpc/grpc-js'
 
 export interface IUser extends Document {
     name: string;
@@ -237,4 +238,27 @@ export const SERVICE_RESPONSES = {
     verifyUserError:'Could not verify user',
     verifyUserSuccess: 'User verified',
     googleUserUpdateError:'Could not update user, try login in using gmail account'
+}
+
+export interface IGrpcUserRequest{
+    id: string;
+}
+
+export interface IGrpcUserResponse{
+    id: string;
+    name: string;
+    email: string;
+    isActive: boolean;
+}
+
+export interface IGrpcUserService{
+    GetUser:(call:grpc.ServerUnaryCall<IGrpcUserRequest,IGrpcUserResponse>, callback:grpc.sendUnaryData<IGrpcUserResponse>)=>void;
+}
+
+export interface Userpackage{
+    user:{
+        UserService:{
+            service:grpc.ServiceDefinition<IGrpcUserService>
+        }
+    }
 }

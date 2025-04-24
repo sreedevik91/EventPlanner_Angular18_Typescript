@@ -1,7 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import path from 'path';
-import { IUserRepository } from '../interfaces/userInterface';
+import { IGrpcUserRequest, IGrpcUserResponse, IUserRepository, Userpackage } from '../interfaces/userInterface';
 import { UserRepository } from '../repository/userRepository';
 import { config } from 'dotenv';
 
@@ -11,17 +11,23 @@ const PROTO_PATH = path.join(__dirname, '../../../../proto/user.proto');
 
 // Load the .proto file
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
-const userProto: any = grpc.loadPackageDefinition(packageDefinition).user;
+const userProto= grpc.loadPackageDefinition(packageDefinition) as unknown as Userpackage;
 
 const userRepository: IUserRepository = new UserRepository()
 
 // Implement the gRPC service
-async function GetUser(call: any, callback: any) {
+async function GetUser(call:grpc.ServerUnaryCall<IGrpcUserRequest,IGrpcUserResponse>, callback:grpc.sendUnaryData<IGrpcUserResponse>) {
   try {
     const user = await userRepository.getUserById(call.request.id)
 
     if (user) {
-      callback(null, user);
+      let userResponse:IGrpcUserResponse={
+        id:user._id,
+        email:user.email,
+        isActive:user.isActive,
+        name:user.name
+      }
+      callback(null, userResponse);
     } else {
       callback({
         code: grpc.status.NOT_FOUND,
@@ -40,7 +46,7 @@ async function GetUser(call: any, callback: any) {
 export default function startGrpcServer() {
   return new Promise<void>((resolve) => {
     const server = new grpc.Server();
-    server.addService(userProto.UserService.service, { GetUser });
+    server.addService(userProto.user.UserService.service, { GetUser });
 
     server.bindAsync(
       process.env.GRPC_USER_SERVER!,

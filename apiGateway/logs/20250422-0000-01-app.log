@@ -1,0 +1,7 @@
+GET /chat 200 [21/Apr/2025:03:53:52 +0000] - 227.541 ms localhost
+GET /@vite/client 200 [21/Apr/2025:03:53:52 +0000] - 185.781 ms localhost
+GET /styles.css 200 [21/Apr/2025:03:53:52 +0000] - 194.717 ms localhost
+GET /polyfills.js 200 [21/Apr/2025:03:53:52 +0000] - 37.782 ms localhost
+GET /main.js 200 [21/Apr/2025:03:53:52 +0000] - 64.771 ms localhost
+GET /@fs/C:/Users/USER/Documents/BroCampTasks/Angular_Project/frontend/node_modules/vite/dist/client/env.mjs 200 [21/Apr/2025:03:53:53 +0000] - 102.819 ms localhost
+GET /scripts.js 200 [21/Apr/2025:03:53:53 +0000] - 76.993 ms localhost

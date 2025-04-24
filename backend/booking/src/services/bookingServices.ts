@@ -50,7 +50,7 @@ export class BookingService implements IBookingService {
 
                 console.log('serviceFromGrpc for booking: ', serviceFromGrpc);
 
-                const service = serviceFromGrpc.serviceData.filter((s: IChoice) => s.id === serviceId)
+                const service = serviceFromGrpc.serviceData.filter((s) => s.id === serviceId)
 
                 console.log('service selected for booking: ', service);
 
