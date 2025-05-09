@@ -157,6 +157,7 @@ export interface IUserService {
     getUsersCount(): Promise<IResponse>
     verifyUser(userId: string): Promise<IResponse>
     userLogout(token:string):Promise<IResponse>
+    getLoggedUser(token:string):Promise<IResponse>
 }
 
 export interface IUserController {
@@ -177,6 +178,8 @@ export interface IUserController {
     getUser(req: Request, res: Response,next:NextFunction):Promise<void>
     verifyEmail(req: Request, res: Response,next:NextFunction):Promise<void>
     verifyUser(req: Request, res: Response,next:NextFunction):Promise<void>
+    getLoggedUser(req: Request, res: Response,next:NextFunction):Promise<void>
+    
 }
 
 export enum HttpStatusCodes{

@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
+import { UserSrerviceService } from './services/userService/user-srervice.service';
 
 @Component({
   selector: 'app-root',
@@ -9,8 +10,15 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
-  title = 'frontend';
+export class AppComponent implements OnInit {
 
-  
+  title = 'frontend';
+  // userService=inject(UserSrerviceService)
+
+  ngOnInit(): void {
+    console.log('app component loaded');
+    
+    // this.userService.checkLoggedUser().subscribe()
+  }
+
 }

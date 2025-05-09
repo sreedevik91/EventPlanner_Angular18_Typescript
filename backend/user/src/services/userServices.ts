@@ -153,7 +153,7 @@ export class UserServices implements IUserService {
                     if (!isOtpSent) {
                         return { success: false, message: SERVICE_RESPONSES.commonError }
                         console.log('otp sending failed');
-                        
+
                     }
                     return { success: true, message: SERVICE_RESPONSES.userRegisterSuccess, data: userUpdate }
                 } else {
@@ -197,7 +197,7 @@ export class UserServices implements IUserService {
 
     }
 
-    async login(req:Request,loginData: LoginData) {
+    async login(req: Request, loginData: LoginData) {
 
         console.log('user loginData: ', loginData);
 
@@ -225,9 +225,9 @@ export class UserServices implements IUserService {
                         console.log('No token generated');
                     }
 
-                    
 
-                    let cookieData = await this.cookieService.getCookieOptions(req,user, accessToken!, refreshToken!)
+
+                    let cookieData = await this.cookieService.getCookieOptions(req, user, accessToken!, refreshToken!)
 
                     return { cookieData, success: true, emailVerified: true }
                 } else {
@@ -273,7 +273,7 @@ export class UserServices implements IUserService {
                         console.log('No token generated');
                     }
 
-                    let cookieData = await this.cookieService.getCookieOptions(req,user, accessToken!, refreshToken!)
+                    let cookieData = await this.cookieService.getCookieOptions(req, user, accessToken!, refreshToken!)
 
                     return { cookieData, success: true, emailVerified: true }
 
@@ -405,7 +405,7 @@ export class UserServices implements IUserService {
 
     }
 
-    async getNewToken(req:Request,refreshToken: string) {
+    async getNewToken(req: Request, refreshToken: string) {
 
         try {
             let decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as IJwtPayload
@@ -421,7 +421,7 @@ export class UserServices implements IUserService {
             if (!accessToken) {
                 return { success: false, message: SERVICE_RESPONSES.refreshTokenError }
             }
-            const cookieOptions = await this.cookieService.getCookieOptions(req,userData, accessToken!, refreshToken)
+            const cookieOptions = await this.cookieService.getCookieOptions(req, userData, accessToken!, refreshToken)
             return { success: true, accessToken, refreshToken, options: cookieOptions.options, payload: cookieOptions.payload }
 
         } catch (error: unknown) {
@@ -586,6 +586,23 @@ export class UserServices implements IUserService {
             const decoded = await this.tokenService.verifyAccessToken(token)
             const expirationTime = decoded?.exp
             return { success: true, data: expirationTime }
+        } catch (error) {
+            return { success: false, message: SERVICE_RESPONSES.commonError }
+
+        }
+    }
+
+    async getLoggedUser(token: string) {
+        try {
+            console.log('token to get logged user data from user service: ', token);
+            if (!token) return { success: false, message: SERVICE_RESPONSES.missingToken }
+            let loggedUser = await this.tokenService.verifyAccessToken(token)
+            console.log('logged user data from user service: ', loggedUser);
+
+            if (!loggedUser) console.log('no logged user found');
+
+            return loggedUser ? { success: true, data: loggedUser } : { success: false, data: loggedUser }
+
         } catch (error) {
             return { success: false, message: SERVICE_RESPONSES.commonError }
 

@@ -31,6 +31,5 @@ export const routes: Routes = [
     {
         path: '',
         loadChildren: () => import('../app/model/constants/childRoutes')
-       
     }
 ];

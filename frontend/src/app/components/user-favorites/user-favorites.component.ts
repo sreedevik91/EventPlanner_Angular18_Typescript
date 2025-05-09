@@ -57,6 +57,8 @@ export default class UserFavoritesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userService.loggedUser$.pipe(takeUntil(this.destroy$)).subscribe((user: any) => {
+      // console.log('logged user from subject: ', user);
+      
       this.userId = user.id
       this.userName = user.user
     })

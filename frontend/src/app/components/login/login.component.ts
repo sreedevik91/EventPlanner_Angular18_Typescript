@@ -81,7 +81,9 @@ export default class LoginComponent implements OnDestroy {
 
           this.router.navigateByUrl('dashboard')
           this.userService.setLoggedUser(res.body?.data)
-
+          localStorage.setItem('isLoggedIn', 'true')
+          // localStorage.setItem('loggedUser', JSON.stringify(res.body?.data))
+          
         } else {
           console.log(res.body?.message);
 

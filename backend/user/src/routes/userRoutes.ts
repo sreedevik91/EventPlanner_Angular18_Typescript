@@ -62,6 +62,7 @@ router.patch('/:userId',(req: Request, res: Response,next:NextFunction)=>userCon
 
 router.get('/logout',(req: Request, res: Response,next:NextFunction)=>userController.userLogout(req,res,next))
 router.get('/data',(req: Request, res: Response,next:NextFunction)=>userController.getGoogleUser(req,res,next))
+router.get('/check',(req: Request, res: Response,next:NextFunction)=>userController.getLoggedUser(req,res,next))
 router.get('/otp/:id',(req: Request, res: Response,next:NextFunction)=>userController.resendOtp(req,res,next))
 router.get('/token/refresh',(req: Request, res: Response,next:NextFunction)=>userController.refreshToken(req,res,next))
 router.get('/users',(req: Request, res: Response,next:NextFunction)=>userController.getAllUsers(req,res,next))

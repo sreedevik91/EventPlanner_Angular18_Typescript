@@ -30,7 +30,6 @@ export class UserChatComponent implements OnInit, OnDestroy {
   chatService = inject(ChatService)
   alertService = inject(AlertService);
 
-
   chatFormObj: Chat = new Chat()
   searchFilterFormObj: ChatSearchFilter = new ChatSearchFilter()
 

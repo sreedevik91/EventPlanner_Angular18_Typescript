@@ -10,8 +10,8 @@ export class ChatController implements IChatController {
 
     constructor(private chatServices: IChatService) {
         // inorder to make 'this' bound correctly to the class component and not result in undefined bind it with the methods manually
-        this.uploadToCloudinary = this.uploadToCloudinary.bind(this);
-        this.uploadAudioToCloudinary = this.uploadAudioToCloudinary.bind(this);
+        // this.uploadToCloudinary = this.uploadToCloudinary.bind(this);
+        // this.uploadAudioToCloudinary = this.uploadAudioToCloudinary.bind(this);
     }
 
     async getChatsByUserId(req: Request, res: Response, next: NextFunction) {

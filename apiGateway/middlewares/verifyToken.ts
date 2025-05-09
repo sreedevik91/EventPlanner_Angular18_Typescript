@@ -15,12 +15,12 @@ interface CustomRequest extends Request {
 
 const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction) => {
 
-    console.log('[Docker] Full Request URL:', req.originalUrl); // 👈 Log full URL
-    console.log('[Docker] req.path:', req.path); // 👈 Critical for debugging
+    // console.log('[Docker] Full Request URL:', req.originalUrl); // 👈 Log full URL
+    // console.log('[Docker] req.path:', req.path); // 👈 Critical for debugging
 
-    console.log('[Gateway] Incoming request to:', req.originalUrl);
-    console.log('[Gateway] Headers:', req.headers);
-    console.log('[Gateway] Cookies:', req.cookies);
+    // console.log('[Gateway] Incoming request to:', req.originalUrl);
+    // console.log('[Gateway] Headers:', req.headers);
+    // console.log('[Gateway] Cookies:', req.cookies);
 
     // Allow OPTIONS requests to bypass token checks
     if (req.method === 'OPTIONS') {
@@ -29,7 +29,7 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
     }
 
     console.log('entered token verification ');
-    console.log('Request Headers:', req.headers);
+    // console.log('Request Headers:', req.headers);
     console.log('Cookies:', req.cookies);
 
 
@@ -93,6 +93,7 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
 
             try {
                 const isBlacklisted = await redisClient.get(`blacklist:${token}`);
+                console.log('token blacklisted : ', isBlacklisted)
                 if (isBlacklisted) {
                     console.log('Token blocklisted');
                     res.status(401).json({ success: false, message: 'Token revoked' });

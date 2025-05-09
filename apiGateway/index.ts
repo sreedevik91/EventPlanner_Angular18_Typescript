@@ -39,17 +39,14 @@ app.set('trust proxy', true);
 //   })
 // );
 
-
-
-
-// app.use(cors({
-//   // origin: 'http://localhost', // Ensure full URL
-//   origin: 'https://dreamevents.shop', // Ensure full URL
-//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-//   exposedHeaders: ['Set-Cookie'] // 👈 Expose cookie headers to frontend
-// }));
+app.use(cors({
+  origin: 'http://localhost:4200', // Ensure full URL
+  // origin: 'https://dreamevents.shop', // Ensure full URL
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  exposedHeaders: ['Set-Cookie'] // 👈 Expose cookie headers to frontend
+}));
 
 app.use(cookieParser())
 
@@ -140,12 +137,12 @@ const createProxy = ({ path, target }: ProxyOptions) => {
         const cookies = proxyRes.headers['set-cookie'];
         if (cookies && Array.isArray(cookies)) {
           res.setHeader('Set-Cookie', cookies);
-          console.log(`Forwarded Cookies for ${req.url}:`, cookies);
+          // console.log(`Forwarded Cookies for ${req.url}:`, cookies);
         } else if (cookies) {
           res.setHeader('Set-Cookie', [cookies]);
-          console.log(`Forwarded Cookie for ${req.url}:`, cookies);
+          // console.log(`Forwarded Cookie for ${req.url}:`, cookies);
         }
-        console.log('Proxy Response Headers:', proxyRes.headers);
+        // console.log('Proxy Response Headers:', proxyRes.headers);
       },
       error: (err: Error, req: IncomingMessage, res: ServerResponse<IncomingMessage> | Socket) => {
         console.error(`Proxy Error for ${req.url}:`, err.message);
@@ -160,7 +157,8 @@ const createProxy = ({ path, target }: ProxyOptions) => {
       },
       proxyReq: (proxyReq, req) => {
         proxyReq.setHeader('X-Forwarded-Proto', 'https');
-        console.log('Proxy Request Headers:', req.headers);
+        // console.log('Proxy Request Headers:', req.headers);
+        console.log('Proxy Request url:', req.url);
       },
     }
 

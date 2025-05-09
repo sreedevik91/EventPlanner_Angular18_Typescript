@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button click="toggle()">Click</button>
+    <input type="checkbox" id="tCheck" > <label for="">Toggle</label>
+
+    <script>
+
+function toggle(){
+let checkbox= document.getElementById('tCheck') 
+if(checkbox){
+
+}
+
+}
+
+let arr=[4,5,6,4,2,4,6]
+
+let mySet= new Set()
+
+for(let n of arr){
+    if(n%2===0){
+        mySet.add(n)
+    }
+}
+
+console.log(Array.from(mySet));
+
+// let index=0
+// let value=arr[index]
+
+// for(let i=0;i<arr.length;i++){
+//     if(arr[i]%2 !==0){
+//         index++
+//     }else{
+//         if(arr[i]===value){
+//             arr.splice(i,1)
+//         }
+//         value=arr[i]
+//     }
+// }
+
+
+
+for(let i=0;i<arr.length;i++){
+    for(let j=i+1;j<arr.length-1;j++){
+        if(a[i]%2===0 && a[i]===a[j]){
+            arr.splice(j,1)
+        }
+    }
+}
+
+    </script>
+</body>
+</html>

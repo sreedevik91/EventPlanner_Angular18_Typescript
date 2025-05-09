@@ -16,7 +16,7 @@ export interface ILoginData {
     googleId?: string;
 }
 
-export interface IResponse<T = unknown, U = unknown> {
+export interface IResponse{
     success?: boolean;
     message?: string;
     data?: any;

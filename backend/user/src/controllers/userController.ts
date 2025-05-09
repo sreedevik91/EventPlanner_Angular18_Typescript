@@ -69,7 +69,7 @@ export class UserController implements IUserController {
                 return next(new AppError({ success: false, message: CONTROLLER_RESPONSES.googleLoginError }));
             }
 
-            const login = await this.userService.login(req,req.user);
+            const login = await this.userService.login(req, req.user);
             if (!login) {
                 console.log('sending login response from controller to frontend: login fail emailVerified success fail');
                 return next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }));
@@ -119,7 +119,7 @@ export class UserController implements IUserController {
 
     async userLogin(req: Request, res: Response, next: NextFunction) {
         try {
-            const login = await this.userService.login(req,req.body)
+            const login = await this.userService.login(req, req.body)
             if (login) {
 
                 if (login.success && login.cookieData) {
@@ -225,7 +225,8 @@ export class UserController implements IUserController {
             const userLogoutResponse = await this.userService.userLogout(token)
             console.log('user logout response from controller: ', userLogoutResponse);
 
-            userLogoutResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, userLogoutResponse) : next(new AppError(userLogoutResponse))
+            // userLogoutResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, userLogoutResponse) : next(new AppError(userLogoutResponse))
+            userLogoutResponse?.success ? ResponseHandler.logoutResponse(res, token, userLogoutResponse.data as number, HttpStatusCodes.OK, userLogoutResponse) : next(new AppError(userLogoutResponse))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from userLogout controller: ', error.message) : console.log('Unknown error from userLogout controller: ', error)
@@ -268,7 +269,7 @@ export class UserController implements IUserController {
                 next(new AppError({ success: false, message: CONTROLLER_RESPONSES.refreshTokenMissing }))
                 return
             }
-            let tokenRes: IResponse = await this.userService.getNewToken(req,refreshTokenOld)
+            let tokenRes: IResponse = await this.userService.getNewToken(req, refreshTokenOld)
             const { accessToken, refreshToken, options, payload } = tokenRes
             if (accessToken && refreshToken && options && payload) {
 
@@ -358,6 +359,20 @@ export class UserController implements IUserController {
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from verifyUser controller: ', error.message) : console.log('Unknown error from verifyUser controller: ', error)
+
+            next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
+        }
+    }
+
+    async getLoggedUser(req: Request, res: Response, next: NextFunction) {
+        try {
+            let token =  req.cookies?.accessToken
+            
+            let loggedUserResponse =await this.userService.getLoggedUser(token)
+            loggedUserResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, loggedUserResponse) : next(new AppError(loggedUserResponse))
+
+        } catch (error: unknown) {
+            error instanceof Error ? console.log('Error message from getLoggedUser controller: ', error.message) : console.log('Unknown error from getLoggedUser controller: ', error)
 
             next(new AppError({ success: false, message: CONTROLLER_RESPONSES.commonError }))
         }
