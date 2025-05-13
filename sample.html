@@ -48,10 +48,15 @@ console.log(Array.from(mySet));
 
 
 for(let i=0;i<arr.length;i++){
-    for(let j=i+1;j<arr.length-1;j++){
-        if(a[i]%2===0 && a[i]===a[j]){
-            arr.splice(j,1)
-        }
+    if(a[i]%2===0){
+        console.log('got even num')
+         for(let j=0;j<arr.length;j++){
+              console.log('entered 2nd loop')
+             if(a[i]===a[j]){
+                  console.log('deleting even num')
+                 arr.splice(j,1)
+             }
+         }
     }
 }
 
