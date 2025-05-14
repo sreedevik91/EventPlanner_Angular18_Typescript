@@ -9,6 +9,7 @@ import { CookieOptions, Request } from 'express'
 // import userRepository from '../repository/userRepository'
 import { credentials } from '@grpc/grpc-js'
 import { FilterQuery, QueryOptions } from 'mongoose'
+import redisClient from '../middlewares/redisClient'
 
 dotenv.config()
 
@@ -601,7 +602,15 @@ export class UserServices implements IUserService {
 
             if (!loggedUser) console.log('no logged user found');
 
-            return loggedUser ? { success: true, data: loggedUser } : { success: false, data: loggedUser }
+            const isBlacklisted = await redisClient.get(`blacklist:${token}`)
+
+            if (isBlacklisted) {
+                return { success: false, data: loggedUser }
+            } else {
+                return { success: true, data: loggedUser }
+            }
+
+            // return loggedUser ? { success: true, data: loggedUser } : { success: false, data: loggedUser }
 
         } catch (error) {
             return { success: false, message: SERVICE_RESPONSES.commonError }

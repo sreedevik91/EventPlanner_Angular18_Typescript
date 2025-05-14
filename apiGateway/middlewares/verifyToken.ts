@@ -45,7 +45,7 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
         '/otp/verify',
         '/otp/:id',
         '/token/refresh',
-        '/logout',
+        // '/logout',
         '/api/user/login',
         '/api/user/email/verify',
         '/api/user/auth/google',
@@ -56,7 +56,7 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
         '/api/user/otp/verify',
         '/api/user/otp/:id',
         '/api/user/token/refresh',
-        '/api/user/logout'
+        // '/api/user/logout'
     ]
 
 

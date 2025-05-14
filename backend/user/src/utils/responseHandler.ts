@@ -48,7 +48,7 @@ export class ResponseHandler {
             if (expirationTime > currentTime) {
                 const ttl = expirationTime - currentTime
                 const blacklist= await redisClient.set(`blackList:${token}`, 'true', { PX: ttl })
-                console.log('token blacklisted in redis:', blacklist, redisClient.get(`blackList:${token}`));
+                console.log('token blacklisted in redis:', blacklist, await redisClient.get(`blackList:${token}`));
             }
 
             res.clearCookie('accessToken', options)
