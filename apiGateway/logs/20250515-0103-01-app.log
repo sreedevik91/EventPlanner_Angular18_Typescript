@@ -1,0 +1,8 @@
+POST /api/user/login 200 [14/May/2025:12:30:11 +0000] - 367.115 ms localhost
+GET /api/user/check 200 [14/May/2025:12:30:11 +0000] - 336.707 ms localhost
+GET /api/user/check 200 [14/May/2025:12:30:26 +0000] - 89.175 ms localhost
+GET /api/user/check 200 [14/May/2025:12:31:19 +0000] - 299.309 ms localhost
+GET /api/user/check 304 [14/May/2025:12:33:58 +0000] - 282.182 ms localhost
+GET /api/service/services?role=user&limit=10&isApproved=true 304 [14/May/2025:12:33:59 +0000] - 643.626 ms localhost
+GET /api/user/check 200 [14/May/2025:12:44:23 +0000] - 999.416 ms localhost
+GET /api/user/check 200 [14/May/2025:13:52:17 +0000] - 938.410 ms localhost

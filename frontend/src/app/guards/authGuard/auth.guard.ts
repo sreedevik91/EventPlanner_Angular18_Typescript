@@ -82,8 +82,12 @@ export const authGuard: CanActivateFn = (route, state) => {
   return userService.checkLoggedUser().pipe(
     take(1),
     map((isUser) => {
+      console.log('is logged user while new req:', isUser);
+      
       if (isUser) {
         let loggedUser = userService.loggedUserSubject.value
+      console.log('logged user data while new req:', loggedUser);
+
         if (loggedUser && !(loggedUser.isActive)) {
           router.navigateByUrl('/login');  // Redirect to login if not authenticated
           alert.getAlert("alert alert-danger", "Account Blocked", "Your account has been blocked. Contact admin for more details.")
