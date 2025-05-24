@@ -41,7 +41,7 @@ export class ResponseHandler {
             // secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
             secure: process.env.NODE_ENV === 'production' ? req.protocol === 'https' : false,
             sameSite: 'lax', // Required for cross-origin cookies
-            ...(process.env.NODE_ENV === 'production' && { domain: 'dreamevents.shop' }) // only set in prod
+            // ...(process.env.NODE_ENV === 'production' && { domain: 'dreamevents.shop' }) // only set in prod
 
         }
 
@@ -51,8 +51,9 @@ export class ResponseHandler {
 
             if (expirationTime > currentTime) {
                 const ttl = expirationTime - currentTime
+                console.log('Setting blacklist key:', `blackList:${token}`, 'with TTL:', ttl);
                 const blacklist = await redisClient.set(`blackList:${token}`, 'true', { PX: ttl })
-                console.log('token blacklisted in redis:', blacklist, await redisClient.get(`blackList:${token}`));
+                console.log('Blacklist set result:', blacklist,await redisClient.get(`blackList:${token}`));
             }
 
             res.clearCookie('accessToken', options)

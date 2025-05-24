@@ -3,6 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { ILoggedUserData, ILoginData, IRegisterData, IResponse, IUser } from '../../model/interface/interface';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, catchError, map, of, take, tap } from 'rxjs';
+import { Router } from '@angular/router';
+import Cookies from 'js-cookie'
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,7 @@ import { BehaviorSubject, catchError, map, of, take, tap } from 'rxjs';
 export class UserSrerviceService {
 
   baseUrl: string = environment.apiUserUrl
-
+  router = inject(Router)
   http = inject(HttpClient)
 
   constructor() {
@@ -22,11 +24,11 @@ export class UserSrerviceService {
     //   this.loggedUserSubject.next(JSON.parse(storedUser))
     // }
 
-    if(isLoggedIn==='true'){
+    if (isLoggedIn === 'true') {
       console.log('isLoggedIn is true in localStorage');
-      
+
       // this.checkLoggedUser().subscribe()
-    } else{
+    } else {
       console.log(`isLoggedIn is ${isLoggedIn} in localStorage`);
 
     }
@@ -34,13 +36,14 @@ export class UserSrerviceService {
     // listen for localStorage value changes in other tabs and update the logged user accordingly
     window.addEventListener('storage', (event) => {
       console.log('window event triggered :', event);
-      
+
       if (event.key === 'isLoggedIn') {
         if (event.newValue === 'true') {
           // this.loggedUserSubject.next(JSON.parse(localStorage.getItem('loggedUser') || '{}'))
           this.checkLoggedUser().subscribe()
         } else {
-          this.loggedUserSubject.next(null)
+          this.clearLoggedUserData()
+          this.router.navigateByUrl('/login');
         }
       }
     })
@@ -63,22 +66,22 @@ export class UserSrerviceService {
         if (response.body?.success) {
           // localStorage.setItem('isLoggedIn', 'true')
           // localStorage.setItem('loggedUser', JSON.stringify(response.body?.data))
-          this.loggedUserSubject.next(response.body.data) 
+          this.loggedUserSubject.next(response.body.data)
         } else {
-          this.clearLoggedUserDate()
+          this.clearLoggedUserData()
         }
       }),
-      map((response=>!! response.body?.success)), // to convert strictly to a boolean value
+      map((response => !!response.body?.success)), // to convert strictly to a boolean value
       catchError(() => {
-        this.clearLoggedUserDate()
+        this.clearLoggedUserData()
         return of(false)
       })
     )
   }
 
-  clearLoggedUserDate() {
+  clearLoggedUserData() {
     console.log('logged user data cleared from localStorage and subject');
-    
+
     this.loggedUserSubject.next(null)
     localStorage.removeItem('isLoggedIn')
     // localStorage.removeItem('loggedUser')
@@ -118,7 +121,9 @@ export class UserSrerviceService {
       tap(() => {
         // Clear user data AFTER the API call succeeds
         // this.loggedUserSubject.next(null)
-        this.clearLoggedUserDate()
+        Cookies.remove('accessToken', { path: '/', domain: 'dreamevents.shop' })
+        Cookies.remove('refreshToken', { path: '/', domain: 'dreamevents.shop' })
+        this.clearLoggedUserData()
       })
     )
   }

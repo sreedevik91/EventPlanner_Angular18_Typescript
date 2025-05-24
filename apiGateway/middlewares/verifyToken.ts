@@ -92,7 +92,7 @@ const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction
         try {
 
             try {
-                const isBlacklisted = await redisClient.get(`blacklist:${token}`);
+                const isBlacklisted = await redisClient.get(`blackList:${token}`);
                 console.log('token blacklisted : ', isBlacklisted)
                 if (isBlacklisted) {
                     console.log('Token blocklisted');

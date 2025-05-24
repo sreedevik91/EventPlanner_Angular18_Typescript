@@ -602,8 +602,9 @@ export class UserServices implements IUserService {
 
             if (!loggedUser) console.log('no logged user found');
 
-            const isBlacklisted = await redisClient.get(`blacklist:${token}`)
-            console.log('is token blacklisted: ', isBlacklisted);
+            console.log('Checking blacklist for key:', `blackList:${token}`);
+            const isBlacklisted = await redisClient.get(`blackList:${token}`)
+            console.log('Blacklist check result:', isBlacklisted);
             if (isBlacklisted==='true') {
                 return { success: false, data: loggedUser }
             } else {
