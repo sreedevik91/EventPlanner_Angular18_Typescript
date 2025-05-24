@@ -226,7 +226,7 @@ export class UserController implements IUserController {
             console.log('user logout response from controller: ', userLogoutResponse);
 
             // userLogoutResponse?.success ? ResponseHandler.successResponse(res, HttpStatusCodes.OK, userLogoutResponse) : next(new AppError(userLogoutResponse))
-            userLogoutResponse?.success ? ResponseHandler.logoutResponse(res, token, userLogoutResponse.data as number, HttpStatusCodes.OK, userLogoutResponse) : next(new AppError(userLogoutResponse))
+            userLogoutResponse?.success ? ResponseHandler.logoutResponse(req,res, token, userLogoutResponse.data as number, HttpStatusCodes.OK, userLogoutResponse) : next(new AppError(userLogoutResponse))
 
         } catch (error: unknown) {
             error instanceof Error ? console.log('Error message from userLogout controller: ', error.message) : console.log('Unknown error from userLogout controller: ', error)

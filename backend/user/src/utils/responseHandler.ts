@@ -1,4 +1,4 @@
-import { CookieOptions, Response } from "express";
+import { CookieOptions, Response, Request } from "express";
 import { HttpStatusCodes, ICookie, IResponse } from "../interfaces/userInterface";
 import redisClient from "../middlewares/redisClient";
 
@@ -34,11 +34,15 @@ export class ResponseHandler {
 
     }
 
-    static async logoutResponse(res: Response, token: string, expTime: number, statusCode: number = HttpStatusCodes.OK, responseData: IResponse) {
+    static async logoutResponse(req: Request, res: Response, token: string, expTime: number, statusCode: number = HttpStatusCodes.OK, responseData: IResponse) {
 
         const options: CookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
+            // secure: process.env.NODE_ENV === 'production', // secure will become true when the app is running in production
+            secure: process.env.NODE_ENV === 'production' ? req.protocol === 'https' : false,
+            sameSite: 'lax', // Required for cross-origin cookies
+            ...(process.env.NODE_ENV === 'production' && { domain: 'dreamevents.shop' }) // only set in prod
+
         }
 
         try {
@@ -47,7 +51,7 @@ export class ResponseHandler {
 
             if (expirationTime > currentTime) {
                 const ttl = expirationTime - currentTime
-                const blacklist= await redisClient.set(`blackList:${token}`, 'true', { PX: ttl })
+                const blacklist = await redisClient.set(`blackList:${token}`, 'true', { PX: ttl })
                 console.log('token blacklisted in redis:', blacklist, await redisClient.get(`blackList:${token}`));
             }
 
